@@ -10,7 +10,7 @@ class AppController extends Controller
 
     public function index()
     {
-        $apps = App::all()->where('site_id',1); // Get current Site info from??
+        $apps = App::all();
         foreach($apps as $key => $app) {
             $apps[$key]->code = json_decode($app->code);
         }

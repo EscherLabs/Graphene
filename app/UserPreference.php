@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserPreferences extends Model
+class UserPreference extends Model
 {
     protected $fillable = ['app_instance_id','user_id','preferences'];
     public $incrementing = false;

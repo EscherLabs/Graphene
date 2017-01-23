@@ -14,17 +14,17 @@ class User extends Authenticatable
     }
     public function group_members()
     {
-      return $this->hasMany(GroupMembers::class);
+      return $this->hasMany(GroupMember::class);
     }
     public function group_admins()
     {
-      return $this->hasMany(GroupAdmins::class);
+      return $this->hasMany(GroupAdmin::class);
     }
     public function app_instance_preferences()
     {
-      return $this->belongsTo(AppInstancePreferences::class);
+      return $this->belongsTo(AppInstancePreference::class);
     }
     public function app_developers() {
-      return $this->hasMany(AppDevelopers::class);
+      return $this->hasMany(AppDeveloper::class);
     }
 }

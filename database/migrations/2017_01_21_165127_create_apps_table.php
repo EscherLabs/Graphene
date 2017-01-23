@@ -18,6 +18,7 @@ class CreateAppsTable extends Migration
             $table->string('name');
             $table->json('code')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('site_id')->references('id')->on('sites');
         });
 

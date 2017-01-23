@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class App extends Model
 {
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
     protected $fillable = ['name', 'code'];
 
     public function site() {
@@ -16,6 +19,6 @@ class App extends Model
     }
     public function developers()
     {
-      return $this->hasMany(AppDevelopers::class);
+      return $this->hasMany(AppDeveloper::class);
     }
 }

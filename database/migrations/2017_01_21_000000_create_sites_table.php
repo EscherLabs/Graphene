@@ -17,6 +17,7 @@ class CreateSitesTable extends Migration
             $table->string('domain')->unique();
             $table->string('theme')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
     }

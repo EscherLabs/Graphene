@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class GroupAdmins extends Model
+class GroupMember extends Model
 {
     protected $fillable = ['group_id','user_id','status'];
     protected $primaryKey = ['user_id', 'group_id'];
@@ -16,4 +16,5 @@ class GroupAdmins extends Model
     public function user() {
       return $this->belongsTo(User::class);
     }
+
 }

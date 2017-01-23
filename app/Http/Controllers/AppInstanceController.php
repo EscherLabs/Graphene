@@ -14,7 +14,7 @@ class AppInstanceController extends Controller
 
     public function show(AppInstance $app_instance)
     {
-        return $app_instance;
+        return $app_instance->with('app')->get()->first();
     }
 
     public function create(Request $request)

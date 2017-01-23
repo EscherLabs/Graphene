@@ -15,6 +15,6 @@ class AppInstance extends Model
       return $this->belongsTo(App::class);
     }
     public function user_preferences() {
-      return $this->belongsTo(AppInstancePreferences::class);
+      return $this->belongsTo(AppInstancePreference::class);
     }
 }

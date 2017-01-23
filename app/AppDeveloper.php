@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AppDevelopers extends Model
+class AppDeveloper extends Model
 {
     protected $fillable = ['app_id','user_id','status'];
     protected $primaryKey = ['user_id', 'app_id'];
