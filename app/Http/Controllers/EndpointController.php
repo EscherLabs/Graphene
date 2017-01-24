@@ -10,11 +10,12 @@ class EndpointController extends Controller
 {
     public function index()
     {
-        $endpoints = Endpoint::select('')->get('id,name'); 
-        foreach($endpoints as $key => $endpoint) {
-            $endpoints[$key]->credentials = json_decode($app->credentials);
-        }
-        return $endpoints;
+        return Endpoint::all();
+        // $endpoints = Endpoint::select('')->get('id,name'); 
+        // foreach($endpoints as $key => $endpoint) {
+        //     $endpoints[$key]->credentials = json_decode($app->credentials);
+        // }
+        // return $endpoints;
     }
 
     // Don't Allow Show Endpoint for security reasons

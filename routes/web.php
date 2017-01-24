@@ -12,7 +12,13 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('main');
+});
+Route::get('/admin/{resource?}', function ($resource = null) {
+    return view('admin', ['resource'=>$resource]);
+});
+Route::get('/admin/groups/{group}/members/', function ($group) {
+    return view('admin', ['resource'=>'groups/'.$group.'/members']);
 });
 
 /***** APPS *****/
@@ -48,13 +54,13 @@ Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceContr
 
 /***** ENDPOINTS *****/
 // List all endpoints
-Route::get('/api/endpoint','EndpointController@index');
+Route::get('/api/endpoints','EndpointController@index');
 // Create a new endpoint for group group_id
-Route::post('/api/endpoint/{group}','EndpointController@create');
+Route::post('/api/endpoints/{group}','EndpointController@create');
 // Update an existing endpoint by endpoint_id
-Route::put('/api/endpoint/{endpoint}','EndpointController@update');
+Route::put('/api/endpoints/{endpoint}','EndpointController@update');
 // Delete an existing endpoint by endpoint_id
-Route::delete('/api/endpoint/{endpoint}','EndpointController@destroy');
+Route::delete('/api/endpoints/{endpoint}','EndpointController@destroy');
 
 /***** SITES *****/
 // List all sites
