@@ -17,8 +17,8 @@ class CreateGroupMembersTable extends Migration
             $table->integer('group_id')->unsigned()->index();
             $table->string('status')->default(0);
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
-            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');;
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->unique(['user_id','group_id']);
         });
     }

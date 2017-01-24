@@ -17,8 +17,8 @@ class CreateUserPreferencesTable extends Migration
             $table->integer('app_instance_id')->unsigned()->index();
             $table->json('preferences')->nullable();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
-            $table->foreign('app_instance_id')->references('id')->on('app_instances')->onDelete('cascade');;
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('app_instance_id')->references('id')->on('app_instances')->onDelete('cascade');
             $table->unique(['user_id','app_instance_id']);
         });
     }
