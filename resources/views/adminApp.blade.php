@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>V6-{{ $name }}</title>
+    <title>V6</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
 
     <!-- Custom styles for this template -->
-    <link href="assets/css/dashboard.css" rel="stylesheet">
+    <link href="/assets/css/dashboard.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -46,11 +46,10 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="#">V6</a>
-          <a class="navbar-brand" >{{ $name }}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="/admin">Admin</a></li>
+            <li><a href="#">Dashboard</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -61,10 +60,17 @@
 
     <div class="container-fluid">
       <div class="row">
-
-        <div class="col-sm-12 main">
-          <h1 class="page-header"></h1>
-          <div id="app-container"><div>
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <!--<li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
+            <li><a href="/admin/users">Users</a></li>
+            <li><a href="/admin/apps">Apps</a></li>
+            <li><a href="/admin/groups">Groups</a></li>
+            <li><a href="/admin/endpoints">Endpoints</a></li>            
+            <li><a href="/admin/sites">Sites</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="content">
         </div>
       </div>
     </div>
@@ -75,62 +81,48 @@
 
     <!-- jQuery -->
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+
     <!-- Bootstrap -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
-
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
+    <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
+		<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js'></script>		
+
     	 <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
 			 <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
-			 <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
-			 <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
-			 <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
-<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
-<script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+			 <script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> 
 
-			 <script src='/assets/js/berryApp.js'></script> 
-			 <script>
-        var config = {!! $app['code'] !!};
-var opts = {
-$el: $('#app-container'),
-data: {
-"whoami": {"user":"otherguy"}
-},
-config: config,
-crud: function(name, data, callback, verb){
-returnData = '';
-switch(name){
-case 'whoami':
-returnData = {"user":"person"};
-break
-case 'echo':
-returnData = {};
-returnData[verb.toUpperCase()] = data;
-break
-}
-callback(returnData);
-console.log(verb)
-}
-}
-		$('body').append('<style>'+config.css+'</style>');
-
- 
-bae = new berryAppEngine(opts);
- 
-var refetch = function(data){
-bae.destroy();
-delete bae;
-bae = new berryAppEngine(opts);
-bae.app.on('refetch', refetch) 
-console.log('fetch')
-}
-bae.app.on('refetch', refetch) 
- 
-
-       </script> 
-
-		<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>
+		<!--<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js'></script>		-->
 		<!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
+    <script>
+    var attributes= {!! $app !!};
+    $('#content').berry({
+      action:'/api/apps/'+attributes.id,
+      method:'PUT',
+      autoDestroy:false,
+      attributes:attributes,
+      inline:true,
+      flatten:false,
+      fields:[
+        {label: 'Name', name:'name', required: true},
+        {name:'code', label: 'Code',  type: 'fieldset', fields:[
+          {label: 'CSS', name:'css'},
+          {label:'Templates',parsable:false, type:'fieldset',fields:[]},
+          {"multiple": {"duplicate": true},label: false, name: 'templates', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
+          {label:'Scripts',parsable:false, type:'fieldset',fields:[]},
+          {"multiple": {"duplicate": true},label: false, name: 'scripts', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
+          {label:'Sources',parsable:false, type:'fieldset',fields:[]},
+          {"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]}
+        ]}
+      ]})
+
+    </script>
+    <style>
+    fieldset hr{display:none}
+    fieldset > legend{font-size: 30px}
+    fieldset fieldset legend{    font-size: 21px}
+    </style>
   </body>
 </html>

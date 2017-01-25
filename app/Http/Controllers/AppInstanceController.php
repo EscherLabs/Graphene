@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class AppInstanceController extends Controller
 {
-        public function index()
+    public function index()
     {
-        return AppInstance::all()->where('site_id',1); // Get current Site info from??
+        return AppInstance::all(); // Get current Site info from??
     }
 
     public function show(AppInstance $app_instance)

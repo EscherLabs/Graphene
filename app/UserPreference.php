@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserPreference extends Model
 {
     protected $fillable = ['app_instance_id','user_id','preferences'];
+    protected $primaryKey = ['user_id', 'app_instance_id'];
+
     public $incrementing = false;
 
     public function app_instance() {
