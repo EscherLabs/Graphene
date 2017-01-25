@@ -21,6 +21,12 @@ Route::get('/admin/groups/{group}/members/', function ($group) {
     return view('admin', ['resource'=>'groups/'.$group.'/members']);
 });
 
+Route::get('/app/{slug}', function ($slug) {
+    $myApp = App\AppInstance::with('app')->where('slug', '=', $slug)->first();
+    // return $myApp;
+    return view('app',$myApp);
+});
+
 /***** APPS *****/
 // List all apps
 Route::get('/api/apps','AppController@index');

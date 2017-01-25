@@ -104,7 +104,7 @@
       ],
       'apps':[
         {label: 'Name', name:'name', required: true},
-        {name:'code', label: 'Code', type: 'fieldset', fields:[
+        {name:'code', label: 'Code', showColumn:false, type: 'fieldset', fields:[
           {label: 'CSS', name:'css'}
         ]}
       ],
@@ -136,6 +136,7 @@
             container: '#table', 
             schema: fieldsets['{{ $resource }}'], 
             data: data,
+            berry: {flatten: false},
             //click: function(model){window.location.href = '/admin/groups/'+model.attributes.id+'/members'},
             add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes});},
             edit: function(model){$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes});},
