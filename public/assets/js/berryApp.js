@@ -18,10 +18,13 @@ function App() {
 			this.inline.destroy();
 		}
 		this.view.teardown();
+		this.app.trigger('teardown')
 		this.draw();
 	}
 	function refresh() {
 		this.view.teardown();
+		this.app.trigger('teardown')
+
 		this.config = $.extend(true, {}, this.options.config);
 		this.load();
 		this.app.trigger('refreshed')
@@ -32,7 +35,7 @@ function App() {
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
-		this.$el.find(selector).on('click', callback.bind(this));
+		this.$el.on('click',selector, callback.bind(this));
 	}
 	this.events = {initialize: []};
 	this.addSub = Berry.prototype.addSub;
@@ -109,6 +112,7 @@ berryAppEngine = function(options) {
   }
 	this.destroy = function(){
 			this.view.teardown();
+			this.app.trigger('teardown')
 	}
 	this.options = $.extend(true, {}, options);
 	this.options.initializer = this.options.initializer || 'callback'

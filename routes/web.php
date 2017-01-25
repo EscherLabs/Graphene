@@ -47,15 +47,15 @@ Route::delete('/api/apps/{app}','AppController@destroy');
 
 /***** APP INSTANCES *****/
 // List all apps instances
-Route::get('/api/apps/instances','AppInstanceController@index');
+Route::get('/api/appinstances','AppInstanceController@index');
 // Lookup specific app instance by app_instance_id
-Route::get('/api/apps/instances/{app_instance}','AppInstanceController@show');
+Route::get('/api/appinstances/{app_instance}','AppInstanceController@show');
 // Create a new app instance
-Route::post('/api/apps/instances','AppInstanceController@create');
+Route::post('/api/appinstances','AppInstanceController@create');
 // Update an existing app instance by app_instance_id
-Route::put('/api/apps/instances/{app_instance}','AppInstanceController@update');
+Route::put('/api/appinstances/{app_instance}','AppInstanceController@update');
 // Delete an existing app instance by app_instance_id
-Route::delete('/api/apps/instances/{app_instance}','AppInstanceController@destroy');
+Route::delete('/api/appinstances/{app_instance}','AppInstanceController@destroy');
 
 // Fetch App User Preferences for current user by app_instance_id
 Route::get('/api/apps/instances/{app_instance}/user_prefs','AppInstanceController@get_preferences');
