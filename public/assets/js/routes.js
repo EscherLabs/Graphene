@@ -2,7 +2,7 @@
 var tableConfig = {
 		entries: [25, 50, 100],
 		count: 25,
-		autoSize: 10,
+		autoSize: 20,
 		container: '#table', 
 		berry: {flatten: false},
 		add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes});},
@@ -62,7 +62,7 @@ initializers['endpoints'] = function(){
 				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-					{label: 'Type', name:'type', required: true},
+					{label: 'Auth Type', name:'type', type: 'select', choices:[{label:'http Auth', value:'http_auth'}], required: true},
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'}
 				];
 				tableConfig.data = data;
@@ -95,8 +95,14 @@ initializers['appinstances'] = function(){
 				];
 				tableConfig.click = function(model){window.location.href = '/app/'+model.attributes.slug};
 				tableConfig.data = data;
+				tableConfig.events = [
+					{'name': 'manage', 'label': '<i class="fa fa-cogs"></i> Manage', callback: function(model){
+						$().berry(JSON.parse(JSON.parse(model.attributes.app.code).options));
+					}}
+				]
 				bt = new berryTable(tableConfig)
 			}
 		});
 }
+$('[href="/admin/'+route+'"]').parent().addClass('active');
 initializers[route]();

@@ -10,7 +10,7 @@ class AppInstanceController extends Controller
 {
     public function index()
     {
-        return AppInstance::all(); // Get current Site info from??
+        return AppInstance::with('app')->get(); // Get current Site info from??
     }
 
     public function show(AppInstance $app_instance)
