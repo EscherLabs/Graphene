@@ -50,9 +50,10 @@ class AppInstanceController extends Controller
         }
         if ($verb == 'GET') {
             $url_parts = parse_url($url);
+            parse_str($url_parts['query'],$url_parts_query);
             $url = $url_parts['scheme'].'://'.$url_parts['host'].
-                    $url_parts['path'].'?'.$url_parts['query'].'&'.
-                    http_build_query($request_data);
+                    $url_parts['path'].'?'.
+                    http_build_query(array_merge($request_data,$url_parts_query));
         } else {
             $request_config['content'] = http_build_query($request_data);
         }
@@ -123,7 +124,7 @@ class AppInstanceController extends Controller
         if ($resource_info->modifier == 'csv') {
             $data = array_map("str_getcsv", explode("\n", $data));
         } else if ($resource_info->modifier == 'xml') {
-            $data = json_decode(json_encode(simplexml_load_string($data)));
+            $data = json_decode(json_encode(simplexml_load_string($data)),true);
         }
         return $data;
     }
