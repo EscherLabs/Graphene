@@ -45,7 +45,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">V6</a>
+          <a class="navbar-brand" href="/">V6</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -109,11 +109,11 @@
         {label: 'Name', name:'name', required: true},
         {name:'code', label: 'Code',  type: 'fieldset', fields:[
           {label: 'CSS', name:'css'},
-          {label:'Templates',parsable:false, type:'fieldset',fields:[]},
+          {label:'Templates', name: 't',parsable:false, type:'fieldset',fields:[]},
           {"multiple": {"duplicate": true},label: false, name: 'templates', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
-          {label:'Scripts',parsable:false, type:'fieldset',fields:[]},
+          {label:'Scripts',name: 's', parsable:false, type:'fieldset',fields:[]},
           {"multiple": {"duplicate": true},label: false, name: 'scripts', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
-          {label:'Sources',parsable:false, type:'fieldset',fields:[]},
+          {label:'Sources',name:'s',parsable:false, type:'fieldset',fields:[]},
           {"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]},
           {label: 'Options', name:'options'},
 

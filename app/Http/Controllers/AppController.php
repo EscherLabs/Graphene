@@ -41,4 +41,8 @@ class AppController extends Controller
             return 1;
         }
     }
+    public function admin(App $app) {
+        $app->code = json_decode($app->code);
+        return view('adminApp', ['app'=>$app]);
+    }
 }

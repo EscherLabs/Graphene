@@ -45,7 +45,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">V6</a>
+          <a class="navbar-brand" href="/">V6</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -60,15 +60,13 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-          </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Dashboard</h1>
-          <div class="row ">
+        <div class="col-sm-12 main">
+          <h1 class="page-header">App Instances</h1>
+          <div class="row">
+            <ul class="list-group">
+              @foreach ($apps as $app)
+                <a href="/app/{{ $app->slug }}" class="list-group-item">{{ $app->name }}</a>
+              @endforeach
           </div>
         </div>
       </div>

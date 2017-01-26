@@ -13,28 +13,17 @@
 use App\App;
 
 Route::get('/', function () {
-    return view('main');
-});
-Route::get('/admin/{resource?}', function ($resource = null) {
-    return view('admin', ['resource'=>$resource]);
-});
-Route::get('/admin/apps/{app}', function (App $app) {
-    $app->code = json_decode($app->code);
-    return view('adminApp', ['app'=>$app]);
-});
-Route::get('/admin/groups/{group}/members/', function ($group) {
-    return view('admin', ['resource'=>'groups/'.$group.'/members']);
+    return view('main',['apps'=>\App\AppInstance::with('app')->get()]);
 });
 
-Route::get('/app/{slug}', function ($slug) {
-    $myApp = \App\AppInstance::with('app')->with(['user_preferences'=>function($query){
-        $query->where('user_id','=',1);
-    }])->where('slug', '=', $slug)->first();
-    return view('app', $myApp);
-});
+Route::get('/admin/{resource?}', 'AdminController@index');
+Route::get('/admin/apps/{app}', 'AppController@admin');
+
+Route::get('/app/{slug}', 'AppInstanceController@run');
 
 // Get app instance data
 Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data');
+Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data');
 
 /***** APPS *****/
 // List all apps

@@ -17,13 +17,15 @@ function App() {
 		if(typeof this.inline == 'object' && this.inline instanceof Berry) {
 			this.inline.destroy();
 		}
-		this.view.teardown();
+		this.$el.off('click');
 		this.app.trigger('teardown')
+		this.view.teardown();
 		this.draw();
 	}
 	function refresh() {
-		this.view.teardown();
+		this.$el.off('click');
 		this.app.trigger('teardown')
+		this.view.teardown();
 
 		this.config = $.extend(true, {}, this.options.config);
 		this.load();
@@ -35,16 +37,17 @@ function App() {
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
-		this.$el.on('click',selector, callback.bind(this));
+		// this.$el.off('click', selector, callback.bind(this));
+		this.$el.on('click', selector, callback.bind(this));
 	}
 	this.events = {initialize: []};
 	this.addSub = Berry.prototype.addSub;
  
 	return {
-		post:_.partial(router, 'post').bind(this),
-		get:_.partial(router, 'get').bind(this),
-		put:_.partial(router, 'put').bind(this),
-		delete:_.partial(router, 'delete').bind(this),
+		post:_.partial(router, 'POST').bind(this),
+		get:_.partial(router, 'GET').bind(this),
+		put:_.partial(router, 'PUT').bind(this),
+		delete:_.partial(router, 'DELETE').bind(this),
 		
 		redraw: redraw.bind(this),
 		refresh: refresh.bind(this),
@@ -111,8 +114,9 @@ berryAppEngine = function(options) {
     }
   }
 	this.destroy = function(){
-			this.view.teardown();
+			this.$el.off('click');
 			this.app.trigger('teardown')
+			this.view.teardown();
 	}
 	this.options = $.extend(true, {}, options);
 	this.options.initializer = this.options.initializer || 'callback'

@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>V6-{{ $name }}</title>
+    <title>V6-{{ $app->name }}</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
 
     <!-- Custom styles for this template -->
-    <link href="assets/css/dashboard.css" rel="stylesheet">
+    <!--<link href="assets/css/dashboard.css" rel="stylesheet">-->
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -45,8 +45,8 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">V6</a>
-          <a class="navbar-brand" >{{ $name }}</a>
+          <a class="navbar-brand" href="/">V6</a>
+          <a class="navbar-brand" >{{ $app->name }}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -64,7 +64,7 @@
 
         <div class="col-sm-12 main">
           <h1 class="page-header"></h1>
-          <div id="app-container"><div>
+          <div id="app-container"></div>
         </div>
       </div>
     </div>
@@ -81,54 +81,47 @@
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
-    	 <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
-			 <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
-			 <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
-			 <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
-			 <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
-<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
-<script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
+    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
+    <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
+    <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
+    <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
+    <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+    <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
 
-			 <script src='/assets/js/berryApp.js'></script> 
-			 <script>
-        var config = {!! $app['code'] !!};
-var opts = {
-$el: $('#app-container'),
-data: {
-"whoami": {"user":"otherguy"}
-},
-config: config,
-crud: function(name, data, callback, verb){
-returnData = '';
-switch(name){
-case 'whoami':
-returnData = {"user":"person"};
-break
-case 'echo':
-returnData = {};
-returnData[verb.toUpperCase()] = data;
-break
-}
-callback(returnData);
-console.log(verb)
-}
-}
-		$('body').append('<style>'+config.css+'</style>');
+    <script src='/assets/js/berryApp.js'></script> 
+    <script>
+      var opts = {
+        $el: $('#app-container'),
+        data:{!! $data !!},
+        config: {!! $app->app['code'] !!},
+        crud: function(name, data, callback, verb){
+              $.ajax({
+              url      : '/api/app_data/1/' +name+ '?verb='+verb,
+              dataType : 'json',
+              type: 'POST',
+              data: {request: data},
+              error: function (data) {
+              }.bind(this),
+              success  : callback.bind(this)
+            });
+        }
+      }
+      $('body').append('<style>'+opts.config.css+'</style>');
 
- 
-bae = new berryAppEngine(opts);
- 
-var refetch = function(data){
-bae.destroy();
-delete bae;
-bae = new berryAppEngine(opts);
-bae.app.on('refetch', refetch) 
-console.log('fetch')
-}
-bae.app.on('refetch', refetch) 
- 
+      bae = new berryAppEngine(opts);
+      
+      var refetch = function(data){
+        bae.destroy();
+        delete bae;
+        bae = new berryAppEngine(opts);
+        bae.app.on('refetch', refetch) 
+        // console.log('fetch')
+      }
+      bae.app.on('refetch', refetch) 
+      
 
-       </script> 
+    </script> 
 
 		<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
 		<!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->

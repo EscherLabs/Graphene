@@ -8,18 +8,15 @@ use Illuminate\Http\Request;
 
 class AppInstanceController extends Controller
 {
-    public function index()
-    {
+    public function index() {
         return AppInstance::with('app')->get(); // Get current Site info from??
     }
 
-    public function show(AppInstance $app_instance)
-    {
+    public function show(AppInstance $app_instance) {
         return $app_instance->with('app')->get()->first();
     }
 
-    public function create(Request $request)
-    {
+    public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app_instance = new AppInstance($request->all());
         $app_instance->site_id = 1; // Get current Site info from??
@@ -27,17 +24,38 @@ class AppInstanceController extends Controller
         return $app_instance;
     }
 
-    public function update(Request $request, AppInstance $app_instance)
-    {
+    public function update(Request $request, AppInstance $app_instance) {
         $app_instance->update($request->all());
         return $app;
     }
 
-    public function destroy(AppInstance $app_instance)
-    {
+    public function destroy(AppInstance $app_instance){
         if ($app_instance->delete()) {
             return 1;
         }
+    }
+
+    public function run($slug, Request $request) {
+        $myApp = \App\AppInstance::with('app')->with(['user_preferences'=>function($query){
+            $query->where('user_id','=',1);
+        }])->where('slug', '=', $slug)->first();
+
+        if($myApp != null){
+            // Create data object that will be used by the app
+            $data = [
+                'user'=>['name'=>'Demo'], //Auth::user();??
+                'options'=>json_decode($myApp->configuration)
+            ];
+
+            // Get each source
+            // TODO: add conditionals for types and "autofetch", etc
+            foreach(json_decode($myApp->app->code)->sources as $source){
+                $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+            }
+
+            return view('app', ['app'=>$myApp,'data'=>json_encode($data)]);
+        }
+        abort(404,'App not found');
     }
     
     private function http_fetch($url, $verb='GET', $request_data=[],$username=null,$password=null) {
@@ -50,7 +68,10 @@ class AppInstanceController extends Controller
         }
         if ($verb == 'GET') {
             $url_parts = parse_url($url);
-            parse_str($url_parts['query'],$url_parts_query);
+            $url_parts_query = [];
+            if(array_key_exists('query', $url_parts)){
+                parse_str($url_parts['query'],$url_parts_query);
+            }
             $url = $url_parts['scheme'].'://'.$url_parts['host'].
                     $url_parts['path'].'?'.
                     http_build_query(array_merge($request_data,$url_parts_query));
@@ -74,8 +95,8 @@ class AppInstanceController extends Controller
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
-        $app_instance->configuration = json_decode($app_instance->configuration);
-        $app_instance->resources = json_decode($app_instance->resources);
+        $configuration = json_decode($app_instance->configuration);
+        $resources = json_decode($app_instance->resources);
 
         $verb = 'GET'; // Default Verb
         if ($request->has('verb')) {
@@ -88,7 +109,7 @@ class AppInstanceController extends Controller
 
         // Lookup Resource by Name
         $endpoint_found = false;
-        foreach($app_instance->resources as $resource_info) {
+        foreach($resources as $resource_info) {
             if ($endpoint_name == $resource_info->name) {
                 $endpoint_found = true; break;
             }
@@ -102,7 +123,7 @@ class AppInstanceController extends Controller
         $endpoint->credentials = json_decode($endpoint->credentials);
 
         // Merge App Configuration with User Preferences, User Info, and `request` data
-        $all_data = ['configuration'=>$app_instance->configuration,
+        $all_data = ['configuration'=>$configuration,
                      'preferences'=>[], 'user'=>[],
                      'request'=>$request->has('request')?$request->input('request'):[]];
 
@@ -124,7 +145,7 @@ class AppInstanceController extends Controller
         if ($resource_info->modifier == 'csv') {
             $data = array_map("str_getcsv", explode("\n", $data));
         } else if ($resource_info->modifier == 'xml') {
-            $data = json_decode(json_encode(simplexml_load_string($data)),true);
+            $data = json_decode(json_encode(simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA)),true);
         }
         return $data;
     }
