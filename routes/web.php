@@ -33,6 +33,9 @@ Route::get('/app/{slug}', function ($slug) {
     return view('app', $myApp);
 });
 
+// Get app instance data
+Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data');
+
 /***** APPS *****/
 // List all apps
 Route::get('/api/apps','AppController@index');

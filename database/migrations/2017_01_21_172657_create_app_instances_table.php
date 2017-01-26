@@ -19,6 +19,8 @@ class CreateAppInstancesTable extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->integer('public');
+            $table->json('configuration')->nullable();
+            $table->json('resources')->nullable();
             $table->timestamps();
             $table->foreign('app_id')->references('id')->on('apps');
             $table->foreign('group_id')->references('id')->on('groups');

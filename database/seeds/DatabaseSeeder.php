@@ -44,7 +44,10 @@ class DatabaseSeeder extends Seeder
 
         $endpoint = new \App\Endpoint;
         $endpoint->name = 'My Endpoint';
-        $endpoint->type = 'http_auth';
+        $endpoint->type = 'http_basic_auth';
+        $endpoint->credentials = json_encode([
+            'username'=>'info','password'=>'info','url'=>'https://mercury.binghamton.edu/info/echo/'
+        ]);
         $endpoint->site_id = $site->id;
         $endpoint->group_id = $group->id;
         $endpoint->save();
@@ -54,6 +57,8 @@ class DatabaseSeeder extends Seeder
         $app_instance->slug = 'my_app_instance';
         $app_instance->app_id = $app->id;
         $app_instance->group_id = $group->id;
+        $app_instance->configuration = '{"test":"hello_world"}';
+        $app_instance->resources = '[{"name": "myroute","endpoint": "1","modifier": "none","cache": false,"fetch": true,"path": "?data={{configuration.test}}&myrequest={{request.abc}}"}]';
         $app_instance->public = 0;
         $app_instance->save();
 
