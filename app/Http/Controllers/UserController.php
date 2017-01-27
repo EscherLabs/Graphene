@@ -24,7 +24,7 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        $this->validate($request,['name'=>['required'],'email'=>['required']]);
+        $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);
         $user = new User($request->all());
         $user->site_id = 1; // Get current Site info from??
         $user->save();

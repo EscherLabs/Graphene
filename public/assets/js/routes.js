@@ -16,7 +16,8 @@ initializers['users'] = function(){
 			success: function(data){
 				$('#content').html('<h1 class="page-header">Users</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
-					{label: 'Name', name:'name', required: true},
+					{label: 'First Name', name:'first_name', required: true},
+					{label: 'Last Name', name:'last_name', required: true},
 					{label: 'Email', name:'email', type: 'email', required: true},
 					{name: 'id', type:'hidden'}
 				];

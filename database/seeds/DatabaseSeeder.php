@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         $user2->first_name = 'Adam';
         $user2->last_name = 'Smallcomb';
         $user2->email = 'atsmallcomb@gmail.com';
-        $user1->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
+        $user2->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
         $user2->save();
         $group->add_member($user2);
         $group->add_admin($user2);
