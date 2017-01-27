@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class EndpointController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index()
     {
         return Endpoint::all();

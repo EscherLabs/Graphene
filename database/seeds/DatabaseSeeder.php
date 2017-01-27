@@ -23,16 +23,20 @@ class DatabaseSeeder extends Seeder
 
         $user1 = new \App\User;
         $user1->site_id = $site->id;
-        $user1->name = 'Tim Cortesi';
+        $user1->first_name = 'Tim';
+        $user1->last_name = 'Cortesi';
         $user1->email = 'tcortesi@gmail.com';
+        $user1->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
         $user1->save();
         $group->add_member($user1);
         $group->add_admin($user1);
 
         $user2 = new \App\User;
         $user2->site_id = $site->id;
-        $user2->name = 'Adam Smallcomb';
+        $user2->first_name = 'Adam';
+        $user2->last_name = 'Smallcomb';
         $user2->email = 'atsmallcomb@gmail.com';
+        $user1->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
         $user2->save();
         $group->add_member($user2);
         $group->add_admin($user2);

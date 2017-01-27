@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class AppInstanceController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index() {
         return AppInstance::with('app')->get(); // Get current Site info from??
     }

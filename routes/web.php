@@ -12,9 +12,11 @@
 */
 use App\App;
 
-Route::get('/', function () {
-    return view('main',['apps'=>\App\AppInstance::with('app')->get()]);
-});
+Auth::routes();
+//Route::get('/home', 'HomeController@index');
+
+Route::get('/','HomeController@index');
+Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin');
@@ -115,3 +117,5 @@ Route::get('/api/groups/{group}/admins','GroupController@list_admins');
 Route::post('/api/groups/{group}/admins/{user}','GroupController@add_admin');
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/admins/{user}','GroupController@remove_admin');
+
+
