@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         $app->site_id = $site->id;
         $app->code = json_encode([
             "css" => "",
-            "options" => "",
+            "form"=>["fields"=>["Test"=>[]]],
             "scripts" => [
             [
                 "name" => "main",
@@ -91,8 +91,8 @@ class DatabaseSeeder extends Seeder
             ],
             ],
             "sources" => [
-                ["name" => "whoami",],
-                ["name" => "echo",],
+                ["name" => "whoami"],
+                ["name" => "echo"],
             ],
             "templates" => [
             [
@@ -118,9 +118,16 @@ class DatabaseSeeder extends Seeder
                 <div>\n
                 <strong>GET Response:</strong> {{echo.GET.result}}\n
                 </div>\n
-                <div>{{>Test}}</div>
+                <div>{{>Test}}</div>\n
+                 <div class='btn btn-success updateDirect'>=100</div>\n
+
                 ",
-            ],
+            ],[
+                "name" => "Test",
+                "content" => "
+                {{options.test}}
+                ",
+            ]
             ],
         ]);
         $app->save();

@@ -62,7 +62,7 @@ Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceContr
 // List all endpoints
 Route::get('/api/endpoints','EndpointController@index');
 // Create a new endpoint for group group_id
-Route::post('/api/endpoints/{group}','EndpointController@create');
+Route::post('/api/endpoints','EndpointController@create');
 // Update an existing endpoint by endpoint_id
 Route::put('/api/endpoints/{endpoint}','EndpointController@update');
 // Delete an existing endpoint by endpoint_id

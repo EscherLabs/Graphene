@@ -24,14 +24,15 @@ class AppInstanceController extends Controller
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app_instance = new AppInstance($request->all());
-        $app_instance->site_id = 1; // Get current Site info from??
+        $app_instance->app_id = $request->get('app_id');
+        $app_instance->group_id = $request->get('group_id');
         $app_instance->save();
         return $app_instance;
     }
 
     public function update(Request $request, AppInstance $app_instance) {
         $app_instance->update($request->all());
-        return $app;
+        return $app_instance;
     }
 
     public function destroy(AppInstance $app_instance){

@@ -1,4 +1,4 @@
-
+var api = '/api/'+route;
 var tableConfig = {
 		entries: [25, 50, 100],
 		count: 25,
@@ -32,7 +32,8 @@ initializers['apps'] = function(){
 			success: function(data){
 				$('#content').html('<h1 class="page-header">Apps</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
-					{label: 'Name', name:'name', required: true}
+					{label: 'Name', name:'name', required: true},
+					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/admin/'+route+'/'+model.attributes.id},
 
@@ -48,7 +49,8 @@ initializers['groups'] = function(){
 				$('#content').html('<h1 class="page-header">Groups</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},        
-					{label: 'Slug', name:'slug', required: true}
+					{label: 'Slug', name:'slug', required: true},
+					{name: 'id', type:'hidden'}
 				];
 				tableConfig.data = data;
 				bt = new berryTable(tableConfig)
@@ -62,8 +64,16 @@ initializers['endpoints'] = function(){
 				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-					{label: 'Auth Type', name:'type', type: 'select', choices:[{label:'http Auth', value:'http_basic_auth'}], required: true},
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'}
+					{label: 'Auth Type', name:'type', type: 'select', choices:[{label:'http No Auth', value:'http_no_auth'}, {label:'http Basic Auth', value:'http_basic_auth'}], required: true},
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'App', name:'group_id', required: true, type:'select', choices: '/api/apps'},
+
+					{label: 'Credentials',show:{matches:{name:'type',value:'http_basic_auth'}}, name:'credentials', showColumn:false, fields:[
+						{label:'Url', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'}
+					]},
+					{name: 'id', type:'hidden'}
 				];
 				tableConfig.data = data;
 				bt = new berryTable(tableConfig)
@@ -77,7 +87,8 @@ initializers['sites'] = function(){
 				$('#content').html('<h1 class="page-header">Sites</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'domain', required: true},
-					{label: 'Theme', name:'theme'}
+					{label: 'Theme', name:'theme'},
+					{name: 'id', type:'hidden'}
 				];
 				tableConfig.data = data;
 				bt = new berryTable(tableConfig)
@@ -91,13 +102,56 @@ initializers['appinstances'] = function(){
 				$('#content').html('<h1 class="page-header">App Instances</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-        	{label: 'Slug', name:'slug', required: true}
+        			{label: 'Slug', name:'slug', required: true},
+        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					// {label: 'Con',show:{matches:{name:'type',value:'http_basic_auth'}}, name:'credentials', showColumn:false, fields:[
+					// 	{label:'Url', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+					// 	{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+					// 	{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'}
+					// ]},
+					{name: 'configuration', type:'hidden'},
+					{name: 'app', type:'hidden'},
+					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/app/'+model.attributes.slug};
 				tableConfig.data = data;
 				tableConfig.events = [
-					{'name': 'manage', 'label': '<i class="fa fa-cogs"></i> Manage', callback: function(model){
-						$().berry(JSON.parse(JSON.parse(model.attributes.app.code).options));
+					{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
+						$().berry($.extend(true, {legend:'Update Configuration', attributes: JSON.parse(model.attributes.configuration) }, JSON.parse(model.attributes.app.code).form) ).on('save', function(){
+							$.ajax({url: api+'/1', type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
+								this.trigger('close');
+							}.bind(this)});
+						});
+					}},
+					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
+						 
+var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
+debugger;
+						$().berry({legend:'Update Routes',flatten:false, attributes: {container:{resources:attributes}},fields:[
+							        //   {label:'Resoures', name: 't',parsable:false, type:'fieldset',fields:[]},
+									        {name:'container', label: false,  type: 'fieldset', fields:[
+
+          {"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
+
+			  
+
+{label: 'Name', enabled:false},
+{label: 'Path'},
+{label: 'Cache', type: 'checkbox'},
+{label: 'Fetch', type: 'checkbox'},
+{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
+{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+
+		  ]}
+											]},
+						]} ).on('save', function(){
+							debugger;
+							$.ajax({url: api+'/1', type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
+								this.trigger('close');
+							}.bind(this)});
+						});
 					}}
 				]
 				bt = new berryTable(tableConfig)

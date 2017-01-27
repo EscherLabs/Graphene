@@ -15,12 +15,12 @@ class EndpointController extends Controller
     
     public function index()
     {
-        return Endpoint::all();
-        // $endpoints = Endpoint::select('')->get('id,name'); 
-        // foreach($endpoints as $key => $endpoint) {
-        //     $endpoints[$key]->credentials = json_decode($app->credentials);
-        // }
-        // return $endpoints;
+        // return Endpoint::all();
+        $endpoints = Endpoint::all(); 
+        foreach($endpoints as $key => $endpoint) {
+            $endpoints[$key]->credentials = json_decode($endpoint->credentials);
+        }
+        return $endpoints;
     }
 
     // Don't Allow Show Endpoint for security reasons
@@ -30,19 +30,27 @@ class EndpointController extends Controller
     //     return $endpoint;
     // }
 
-    public function create(Request $request, Group $group)
+    public function create(Request $request)
     {
         $this->validate($request,['name'=>['required'],'type'=>['required']]);
         $endpoint = new Endpoint($request->all());
         $endpoint->site_id = 1; // Get current Site info from??
-        $endpoint->group_id = $group->id;
+        $endpoint->group_id = $request->get('group_id');
+        $endpoint->credentials = json_encode($endpoint->credentials);
         $endpoint->save();
+        $endpoint->credentials = json_decode($endpoint->credentials);
+
         return $endpoint;
     }
 
     public function update(Request $request, Endpoint $endpoint)
     {
-        $endpoint->update($request->all());
+        $newData = $request->all();
+        if(isset($newData['credentials'])){
+            $newData['credentials'] = json_encode($newData['credentials']);
+        }
+        $endpoint->update($newData);
+        $endpoint->credentials = json_decode($endpoint->credentials);
         return $endpoint;
     }
 
