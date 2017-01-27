@@ -107,12 +107,6 @@ initializers['appinstances'] = function(){
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
-					// {label: 'Con',show:{matches:{name:'type',value:'http_basic_auth'}}, name:'credentials', showColumn:false, fields:[
-					// 	{label:'Url', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-					// 	{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-					// 	{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'}
-					// ]},
-					{name: 'configuration', type:'hidden'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				];
@@ -120,36 +114,36 @@ initializers['appinstances'] = function(){
 				tableConfig.data = data;
 				tableConfig.events = [
 					{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
-						$().berry($.extend(true, {legend:'Update Configuration', attributes: JSON.parse(model.attributes.configuration) }, JSON.parse(model.attributes.app.code).form) ).on('save', function(){
-							$.ajax({url: api+'/1', type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
+						debugger;
+						var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(model.attributes.app.code).form) 
+
+						options.attributes = JSON.parse(model.attributes.configuration)|| {};
+						options.attributes.id = model.attributes.id;
+						options.fields.push({name: 'id', type:'hidden'});
+						$().berry(options).on('save', function(){
+							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
 								this.trigger('close');
 							}.bind(this)});
 						});
 					}},
 					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
 						 
-var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
-debugger;
-						$().berry({legend:'Update Routes',flatten:false, attributes: {container:{resources:attributes}},fields:[
-							        //   {label:'Resoures', name: 't',parsable:false, type:'fieldset',fields:[]},
-									        {name:'container', label: false,  type: 'fieldset', fields:[
+						var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
+						$().berry({legend:'Update Routes',flatten:false, attributes: {id:model.attributes.id, container:{resources:attributes}},fields:[
+							{name: 'id', type:'hidden'},
+							{name:'container', label: false,  type: 'fieldset', fields:[
 
-          {"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
-
-			  
-
-{label: 'Name', enabled:false},
-{label: 'Path'},
-{label: 'Cache', type: 'checkbox'},
-{label: 'Fetch', type: 'checkbox'},
-{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
-{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
-
-		  ]}
-											]},
+								{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
+									{label: 'Name', enabled:false},
+									{label: 'Path'},
+									{label: 'Cache', type: 'checkbox'},
+									{label: 'Fetch', type: 'checkbox'},
+									{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
+									{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+								]}
+							]},
 						]} ).on('save', function(){
-							debugger;
-							$.ajax({url: api+'/1', type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
+							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
 								this.trigger('close');
 							}.bind(this)});
 						});

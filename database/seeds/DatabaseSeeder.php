@@ -44,9 +44,10 @@ class DatabaseSeeder extends Seeder
         $app = new \App\App;
         $app->name = 'My App';
         $app->site_id = $site->id;
+        
         $app->code = json_encode([
             "css" => "",
-            "form"=>["fields"=>["Test"=>[]]],
+            "form"=>json_decode('{"fields":[{"label":"Test","name":"test"}]}'),
             "scripts" => [
             [
                 "name" => "main",
