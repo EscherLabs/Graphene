@@ -22,7 +22,7 @@
     config: {!! $app->app['code'] !!},
     crud: function(name, data, callback, verb){
           $.ajax({
-          url      : '/api/app_data/1/' +name+ '?verb='+verb,
+          url      : '/api/app_data/{{ $app->id }}/' +name+ '?verb='+verb,
           dataType : 'json',
           type: 'POST',
           data: {request: data},

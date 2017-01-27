@@ -68,9 +68,8 @@ initializers['endpoints'] = function(){
 					{label: 'Auth Type', name:'type', type: 'select', choices:[{label:'http No Auth', value:'http_no_auth'}, {label:'http Basic Auth', value:'http_basic_auth'}], required: true},
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'App', name:'group_id', required: true, type:'select', choices: '/api/apps'},
-
-					{label: 'Credentials',show:{matches:{name:'type',value:'http_basic_auth'}}, name:'credentials', showColumn:false, fields:[
-						{label:'Url', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+					{label: 'Credentials', name:'credentials', showColumn:false, fields:[
+						{label:'Url', required: false,parsable:'show'},
 						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
 						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'}
 					]},
