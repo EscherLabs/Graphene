@@ -51,7 +51,7 @@ class Group extends Model
         $status = 0;
         $group_member = GroupMember::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
           ['status'=>$status]);
-        return $group_memnber;
+        return $group_member;
     }
     public function remove_member(User $user)
     {
