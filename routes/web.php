@@ -20,6 +20,9 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin');
+Route::get('/admin/groups/{group}/admins', 'AdminController@admins');
+Route::get('/admin/groups/{group}/members', 'AdminController@members');
+Route::get('/admin/apps/{app}/developers', 'AdminController@developers');
 
 Route::get('/app/{slug}', 'AppInstanceController@run');
 
@@ -117,5 +120,14 @@ Route::get('/api/groups/{group}/admins','GroupController@list_admins');
 Route::post('/api/groups/{group}/admins/{user}','GroupController@add_admin');
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/admins/{user}','GroupController@remove_admin');
+
+
+
+// List all developers of a specified app by app_id
+Route::get('/api/apps/{app}/developers','AppController@list_developers');
+// Make an existing user an developers of an existing app by app_id, user_id
+Route::post('/api/apps/{app}/developers/{user}','AppController@add_developer');
+// Remove an existing developer from an existing app by app_id, user_id
+Route::delete('/api/apps/{app}/developers/{user}','AppController@remove_developer');
 
 

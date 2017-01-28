@@ -49,9 +49,9 @@ class Group extends Model
     public function add_member(User $user, $status = Null)
     {
         $status = 0;
-        $group_admin = GroupAdmin::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
+        $group_member = GroupMember::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
           ['status'=>$status]);
-        return $group_admin;
+        return $group_memnber;
     }
     public function remove_member(User $user)
     {

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\App;
+use App\User;
+use App\AppDevelopers;
 use Illuminate\Http\Request;
 
 class AppController extends Controller
@@ -49,4 +51,26 @@ class AppController extends Controller
         $app->code = json_decode($app->code);
         return view('adminApp', ['app'=>$app]);
     }
+    public function list_members(Group $group)
+    {
+        return $group->list_members();
+    }
+
+    public function list_developers(App $app)
+    {
+        return $app->list_developers();
+    }
+    public function add_developer(App $app, User $user, Request $request)
+    {
+        if ($request->has('status')) {
+            return $app->add_developer($user,$request->status);
+        } else {
+            return $app->add_developer($user);
+        }
+    }
+    public function remove_developer(App $app, User $user)
+    {
+        return $app->remove_developer($user);
+    }
+
 }

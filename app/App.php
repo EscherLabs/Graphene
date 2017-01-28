@@ -21,4 +21,19 @@ class App extends Model
     {
       return $this->hasMany(AppDeveloper::class);
     }
+    public function list_developers()
+    {
+        return $this->developers()->with('user')->get();
+    }
+    public function add_developer(User $user, $status = Null)
+    {
+        $status = 0;
+        $app_developer = AppDeveloper::updateOrCreate(['app_id'=>$this->id,'user_id'=>$user->id],
+          ['status'=>$status]);
+        return $app_developer;
+    }
+    public function remove_developer(User $user)
+    {
+        AppDeveloper::where('app_id', $this->id)->where('app_id',$user->id)->delete();
+    }
 }
