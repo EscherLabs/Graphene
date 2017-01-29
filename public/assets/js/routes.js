@@ -84,7 +84,6 @@ initializers['endpoints'] = function(){
 						{label:'Google Sheets', value:'google_sheets'},
 					], required: true},
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
-					{label: 'App', name:'group_id', required: true, type:'select', choices: '/api/apps'},
 					{label: 'Credentials', name:'credentials', showColumn:false, fields:[
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
