@@ -70,6 +70,8 @@ Route::post('/api/endpoints','EndpointController@create');
 Route::put('/api/endpoints/{endpoint}','EndpointController@update');
 // Delete an existing endpoint by endpoint_id
 Route::delete('/api/endpoints/{endpoint}','EndpointController@destroy');
+// Perform Google Callback for Endpoint
+Route::get('/api/endpoints/google_callback','EndpointController@google_callback');
 
 /***** SITES *****/
 // List all sites

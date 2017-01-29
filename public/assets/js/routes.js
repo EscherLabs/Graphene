@@ -78,13 +78,20 @@ initializers['endpoints'] = function(){
 				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-					{label: 'Auth Type', name:'type', type: 'select', choices:[{label:'http No Auth', value:'http_no_auth'}, {label:'http Basic Auth', value:'http_basic_auth'}], required: true},
+					{label: 'Auth Type', name:'type', type: 'select', choices:[
+						{label:'HTTP No Auth', value:'http_no_auth'}, 
+						{label:'HTTP Basic Auth', value:'http_basic_auth'}, 
+						{label:'Google Sheets', value:'google_sheets'},
+					], required: true},
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'App', name:'group_id', required: true, type:'select', choices: '/api/apps'},
 					{label: 'Credentials', name:'credentials', showColumn:false, fields:[
-						{label:'Url', required: false,parsable:'show'},
+						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
+						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
+						{label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
+						{label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
 						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'}
+						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
 					]},
 					{name: 'id', type:'hidden'}
 				];
