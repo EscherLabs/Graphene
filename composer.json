@@ -9,7 +9,8 @@
         "google/apiclient": "^2.0",
         "laravel/framework": "5.3.*",
         "mustache/mustache": "~2.5",
-        "pulkitjalan/google-apiclient": "^3.1"
+        "pulkitjalan/google-apiclient": "^3.1",
+        "revolution/laravel-google-sheets": "^2.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
