@@ -125,11 +125,14 @@ class AppInstanceController extends Controller
     private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         $googleClient = new \PulkitJalan\Google\Client(config('google'));
         $client = $googleClient->getClient();
-        $client->setAccessToken($endpoint->config['accessToken']);
+        $config = $endpoint->config;
+        $client->setAccessToken($config['accessToken']);
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $endpoint->config['accessToken'] = $client->getAccessToken();
+            $config['accessToken'] = $client->getAccessToken();
+            $endpoint->config = json_encode($config);
             $endpoint->save();
+            $endpoint->config = $config;
         }
         $service = new \Google_Service_Sheets($client);
         $sheets = new \GoogleSheets\Sheets();

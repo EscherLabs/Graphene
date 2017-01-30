@@ -47,6 +47,8 @@ class EndpointController extends Controller
             $googleClient = new \PulkitJalan\Google\Client(config('google'));
             $client = $googleClient->getClient();
             $client->setState(base64_encode(json_encode(['endpoint_id'=>$endpoint->id])));
+            $client->setAccessType('offline'); // required to get refresh access token!
+            $client->setPrompt('consent'); // required to get refresh access token!
             $authUrl = $client->createAuthUrl();
             $config['google_redirect'] = $authUrl;
             $endpoint->config = json_encode($config);
