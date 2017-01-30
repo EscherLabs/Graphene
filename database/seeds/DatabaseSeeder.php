@@ -136,7 +136,7 @@ class DatabaseSeeder extends Seeder
         $endpoint = new \App\Endpoint;
         $endpoint->name = 'My Endpoint';
         $endpoint->type = 'http_basic_auth';
-        $endpoint->credentials = json_encode([
+        $endpoint->config = json_encode([
             'username'=>'info','password'=>'info','url'=>'https://mercury.binghamton.edu'
         ]);
         $endpoint->site_id = $site->id;

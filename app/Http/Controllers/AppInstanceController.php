@@ -102,14 +102,14 @@ class AppInstanceController extends Controller
     private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         // Derive and Map URL with Mustache
         $m = new \Mustache_Engine;
-        $url = $m->render($endpoint->credentials['url'] . $resource_info->path, $all_data);
+        $url = $m->render($endpoint->config['url'] . $resource_info->path, $all_data);
 
         // Fetch Data based on Endpoint Type
         if ($endpoint->type == 'http_no_auth') {
             $data = $this->http_fetch($url,$verb,$all_data['request']);
         } else if ($endpoint->type == 'http_basic_auth') {
             $data = $this->http_fetch($url,$verb,$all_data['request'],
-                    $endpoint->credentials['username'], $endpoint->credentials['password']);
+                    $endpoint->config['username'], $endpoint->config['password']);
         } else {
             abort(505,'Authentication Type Not Supported');
         }
@@ -125,19 +125,19 @@ class AppInstanceController extends Controller
     private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         $googleClient = new \PulkitJalan\Google\Client(config('google'));
         $client = $googleClient->getClient();
-        $client->setAccessToken($endpoint->credentials['accessToken']);
+        $client->setAccessToken($endpoint->config['accessToken']);
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $endpoint->credentials['accessToken'] = $client->getAccessToken();
+            $endpoint->config['accessToken'] = $client->getAccessToken();
             $endpoint->save();
         }
         $service = new \Google_Service_Sheets($client);
         $sheets = new \GoogleSheets\Sheets();
         $sheets->setService($service);
         if ($resource_info->path == '' ) {
-            abort(505,'The path endpoint path must specifiy a valid worksheet name');
+            abort(505,'The path endpoint must specifiy a valid worksheet name');
         }
-        $values = $sheets->spreadsheet($endpoint->credentials['sheet_id'])->sheet($resource_info->path)->all();
+        $values = $sheets->spreadsheet($endpoint->config['sheet_id'])->sheet($resource_info->path)->all();
         return $values;
     }
 
@@ -167,7 +167,7 @@ class AppInstanceController extends Controller
 
         // Lookup Endpoint
         $endpoint = Endpoint::find((int)$resource_info->endpoint);
-        $endpoint->credentials = json_decode($endpoint->credentials,true);
+        $endpoint->config = json_decode($endpoint->config,true);
 
         // Merge App Configuration with User Preferences, User Info, and `request` data
         $all_data = ['configuration'=>$configuration,

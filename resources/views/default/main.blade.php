@@ -46,6 +46,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url('/') }}">My Apps</a></li>
+                <li><a href="{{ url('/admin') }}">Admin</a></li>
                 <li><a href="{{ url('/logout') }}">Logout</a></li>
               </ul>
             </li>

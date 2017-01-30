@@ -18,7 +18,7 @@ class CreateEndpointsTable extends Migration
             $table->integer('group_id')->unsigned()->index();
             $table->string('name');
             $table->string('type');
-            $table->json('credentials')->nullable();
+            $table->json('config')->nullable();
             $table->timestamps();
             $table->foreign('site_id')->references('id')->on('sites');
             $table->foreign('group_id')->references('id')->on('groups');

@@ -18,7 +18,7 @@ class EndpointController extends Controller
         // return Endpoint::all();
         $endpoints = Endpoint::all(); 
         foreach($endpoints as $key => $endpoint) {
-            $endpoints[$key]->credentials = json_decode($endpoint->credentials);
+            $endpoints[$key]->config = json_decode($endpoint->config);
         }
         return $endpoints;
     }
@@ -26,7 +26,7 @@ class EndpointController extends Controller
     // Don't Allow Show Endpoint for security reasons
     // public function show(Endpoint $endpoint)
     // {
-    //     $endpoint->credentials = json_decode($endpoint->credentials);
+    //     $endpoint->config = json_decode($endpoint->config);
     //     return $endpoint;
     // }
 
@@ -36,22 +36,22 @@ class EndpointController extends Controller
         $endpoint = new Endpoint($request->all());
         $endpoint->site_id = 1; // Get current Site info from??
         $endpoint->group_id = $request->get('group_id');
-        $credentials = $endpoint->credentials;
+        $config = $endpoint->config;
         if ($endpoint->type == 'http_basic_auth' || $endpoint->type == 'http_no_auth') {
-            $endpoint->credentials = json_encode($credentials);
+            $endpoint->config = json_encode($config);
             $endpoint->save();
-            $endpoint->credentials = $credentials;
+            $endpoint->config = $config;
         } else if ($endpoint->type == 'google_sheets') {
-            $endpoint->credentials = json_encode($credentials);
+            $endpoint->config = json_encode($config);
             $endpoint->save();
             $googleClient = new \PulkitJalan\Google\Client(config('google'));
             $client = $googleClient->getClient();
             $client->setState(base64_encode(json_encode(['endpoint_id'=>$endpoint->id])));
             $authUrl = $client->createAuthUrl();
-            $credentials['google_redirect'] = $authUrl;
-            $endpoint->credentials = json_encode($credentials);
+            $config['google_redirect'] = $authUrl;
+            $endpoint->config = json_encode($config);
             $endpoint->save();
-            $endpoint->credentials = $credentials;
+            $endpoint->config = $config;
         }
         return $endpoint;
     }
@@ -59,12 +59,12 @@ class EndpointController extends Controller
     public function update(Request $request, Endpoint $endpoint)
     {
         $newData = $request->all();
-        if ($request->has('credentials')) {
-            $newCredentials = array_merge($request->credentials,json_decode($endpoint->credentials,true));
-            $newData->credentials = $newCredentials;
+        if ($request->has('config')) {
+            $newConfig = array_merge(json_decode($endpoint->config,true),$request->config);
+            $newData['config'] = json_encode($newConfig);
         }
         $endpoint->update($newData);
-        $endpoint->credentials = json_decode($endpoint->credentials);
+        $endpoint->config = json_decode($endpoint->config);
         return $endpoint;
     }
 
@@ -78,12 +78,12 @@ class EndpointController extends Controller
     public function google_callback(Request $request) {
         $state = json_decode(base64_decode($request->state),true);
         $endpoint = Endpoint::find($state['endpoint_id']);
-        $credentials = json_decode($endpoint->credentials,true);
+        $config = json_decode($endpoint->config,true);
         $googleClient = new \PulkitJalan\Google\Client(config('google'));
         $client = $googleClient->getClient();
-        $credentials['accessToken'] = $client->fetchAccessTokenWithAuthCode($request->code);
-        $credentials['google_redirect'] = 'Successfully Configured';
-        $endpoint->credentials = json_encode($credentials);
+        $config['accessToken'] = $client->fetchAccessTokenWithAuthCode($request->code);
+        $config['google_redirect'] = 'Successfully Configured';
+        $endpoint->config = json_encode($config);
         $endpoint->save();
     }
 }
