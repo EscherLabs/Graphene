@@ -5,7 +5,6 @@
 @endsection
 
 @section('content')
-<h1></h1>
 <div class="row">
   <div class="col-sm-12 main">
     <div id="app-container"></div>
