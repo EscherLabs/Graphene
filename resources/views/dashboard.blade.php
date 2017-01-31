@@ -6,23 +6,26 @@
 
 @section('content')
 				<div class="row">
-					<div class="col-sm-12 main">
+					<div class="col-sm-12">
+						<div class="dropdown pull-right">
+							<button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Widgets
+								<span class="caret"></span>
+							</button>
+							<ul id="sortableList" class="dropdown-menu list-group" aria-labelledby="dLabel">
+								<li data-type="RSS"><a href="javascript:void(0);">Rss</a></li>
+								<li data-type="Content"><a href="javascript:void(0);">Content</a></li>
+								<li data-type="uApp"><a href="javascript:void(0);">Apps</a></li>
+							</ul>
+						</div>
 						<h1 class="page-header">Dashboard</h1>
-												<ul id="sortableList" class="list-group ">
-													<li class="list-group-item" data-type="RSS"><a href="javascript:void(0);">Rss</a></li>
-													<li class="list-group-item" data-type="Content"><a href="javascript:void(0);">Content</a></li>
-													<li class="list-group-item" data-type="uApp"><a href="javascript:void(0);">Apps</a></li>
-												</ul>
+
 						<div class="row ">
 						<div class="widget_container col-md-6"></div>
 						<div class="widget_container col-md-6"></div>
-
 						</div>
 					</div>
 				</div>
-
-
-
 @endsection
 
 
