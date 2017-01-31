@@ -1,0 +1,26 @@
+
+.parent-hover{visibility: hidden;}
+*:hover > .parent-hover{visibility: visible;}
+.cobler_container{list-style:none;padding-left:0;}
+.cobler_container > li > .parent-hover{z-index: 10;opacity:.6;position:absolute;top:5px;right:5px;}
+.cobler_container > li{position: relative;display: block;overflow:hidden;}
+.cobler_container > li:hover{outline:dashed 1px #ccc;z-index: 1}
+.cobler_container > li.sortable-chosen {outline:none;outline:dashed 1px #222;background:#fff;}
+.cobler_container > li.sortable-ghost {opacity: 1;border:solid 0px #ccc;}
+.cobler_container > li.sortable-ghost .parent-hover{display:none !important;}
+.cobler_select.cobler_container > li:before{content:'';z-index: 10; position: absolute; top: 0; bottom: 0; left: 0; right: 0;}
+.cobler_select.cobler_container > li.widget_active{outline: dashed 1px #222;z-index: 2;background:#FFFFF8;}
+.cobler_select.cobler_container > li.sortable-ghost:before{background:#fff;}
+
+
+.cobler_container > li.widget_active{outline: dashed 1px #999;z-index: 2;background:#FFFFF8;}
+
+
+/*.opaque.cobler_container > li.sortable-ghost {opacity: 0;}
+.opaque.cobler_container > li.sortable-fallback {opacity: 1 !important;overflow:initial;}
+.opaque.cobler_container > li.sortable-chosen {outline:none;border:0;margin:0;background:none}
+.opaque.cobler_container > li:hover .cobler-li-content{box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);}
+.opaque.cobler_container > li.sortable-chosen .cobler-li-content{box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);}
+.opaque.cobler_container > li:hover{outline:0;}*/
+
+.widget_container{min-height: 50px}

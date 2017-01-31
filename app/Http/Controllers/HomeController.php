@@ -25,5 +25,14 @@ class HomeController extends Controller
     {
         //return view('home');
         return view('main',['apps'=>\App\AppInstance::with('app')->get()]);
+    }    
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function dashboard()
+    {
+        return view('dashboard',['apps'=>\App\AppInstance::with('app')->get()]);
     }
 }
