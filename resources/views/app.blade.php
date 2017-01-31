@@ -1,4 +1,4 @@
-@extends('default.main')
+@extends('default.apps')
 
 @section('welcome_name')
 {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}

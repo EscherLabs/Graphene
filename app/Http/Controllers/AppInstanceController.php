@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AppInstance;
 use App\Endpoint;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class AppInstanceController extends Controller
@@ -48,9 +49,10 @@ class AppInstanceController extends Controller
         if($myApp != null){
             // Create data object that will be used by the app
             $data = [
-                'user'=>['name'=>'Demo'], //Auth::user();??
+                'user'=>Auth::user(),
                 'options'=>json_decode($myApp->configuration)
             ];
+            $data['user']['preferences'] = $myApp->user_preferences;
 
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
@@ -58,7 +60,29 @@ class AppInstanceController extends Controller
                 $data[$source->name] = $this->get_data($myApp, $source->name, $request);
             }
 
-            return view('app', ['app'=>$myApp,'data'=>json_encode($data)]);
+            return view('app', ['apps'=>\App\AppInstance::with('app')->get(), 'app'=>$myApp,'data'=>json_encode($data)]);
+        }
+        abort(404,'App not found');
+    }
+    public function fetch($ai_id, Request $request) {
+        $myApp = \App\AppInstance::with(['user_preferences'=>function($query){
+            $query->where('user_id','=',1);
+        }])->where('id', '=', $ai_id)->first();
+
+        if($myApp != null){
+            // Create data object that will be used by the app
+            $data = [
+                'user'=>Auth::user(),
+                'options'=>json_decode($myApp->configuration)
+            ];
+            $data['user']['preferences'] = $myApp->user_preferences;
+            // Get each source
+            // TODO: add conditionals for types and "autofetch", etc
+            foreach(json_decode($myApp->app->code)->sources as $source){
+                $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+            }
+
+            return $data;
         }
         abort(404,'App not found');
     }

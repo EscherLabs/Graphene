@@ -1,25 +1,28 @@
-@extends('default.main')
+@extends('default.apps')
 
 @section('welcome_name')
 {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
 @endsection
 
 @section('content')
-<div class="row">
-  <div class="col-sm-12 main">
-    <h1 class="page-header">Dashboard</h1>
-    						<ul id="sortableList" class="list-group ">
-									<li class="list-group-item" data-type="RSS"><a href="javascript:void(0);">Rss</a></li>
-									<li class="list-group-item" data-type="Content"><a href="javascript:void(0);">Content</a></li>
-									<li class="list-group-item" data-type="uApp"><a href="javascript:void(0);">Apps</a></li>
-								</ul>
-    <div class="row ">
-    <div class="widget_container col-md-6"></div>
-    <div class="widget_container col-md-6"></div>
+				<div class="row">
+					<div class="col-sm-12 main">
+						<h1 class="page-header">Dashboard</h1>
+												<ul id="sortableList" class="list-group ">
+													<li class="list-group-item" data-type="RSS"><a href="javascript:void(0);">Rss</a></li>
+													<li class="list-group-item" data-type="Content"><a href="javascript:void(0);">Content</a></li>
+													<li class="list-group-item" data-type="uApp"><a href="javascript:void(0);">Apps</a></li>
+												</ul>
+						<div class="row ">
+						<div class="widget_container col-md-6"></div>
+						<div class="widget_container col-md-6"></div>
 
-    </div>
-  </div>
-</div>
+						</div>
+					</div>
+				</div>
+
+
+
 @endsection
 
 
@@ -30,6 +33,7 @@
 		<script type="text/javascript" src="/assets/js/sortable.js"></script>
 		<script type='text/javascript' src='/assets/js/cob/cob.js'></script>
 		<script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
+		<script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
 		<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
 		<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>`
 		<script type='text/javascript' src='assets/js/cob/widget_templates.js'></script>
@@ -46,9 +50,11 @@
 		<script type='text/javascript' >
       _.findWhere = _.find;
       var apps = {!! $apps !!};
+      var config = {!! $config !!};
+			var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} })}
 			templates['itemContainer'] = Hogan.compile(document.getElementsByName('itemContainer')[0].innerHTML);
 
-      var data = [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]]
+      var data = config.sections || [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
       cb = new Cobler({ disabled: false, targets: document.getElementsByClassName('widget_container'), items:data})
 
       list = document.getElementById('sortableList');
@@ -56,6 +62,13 @@
       list.addEventListener('click', function(e) {
         cb.collections[0].addItem($(e.target).closest('li').data('type'));
       })
+
+
+			cb.on('moved',save);
+			cb.on('reorder', save);
+			cb.on('remove', save);
+			cb.on('change',save);
+
 		</script>
 
 		<script type='text/javascript' >

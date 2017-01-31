@@ -45,11 +45,16 @@
                 @yield('welcome_name') <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="{{ url('/') }}">My Apps</a></li>
+                <li><a href="{{ url('/') }}">Dashboard</a></li>
                 <li><a href="{{ url('/admin') }}">Admin</a></li>
                 <li><a href="{{ url('/logout') }}">Logout</a></li>
               </ul>
             </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right visible-xs-block">
+					@foreach ($apps as $app)
+						<li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
+					@endforeach
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -58,9 +63,36 @@
       </div>
     </nav>
     <div class="container-fluid">
-      @yield('content')
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+					@foreach ($apps as $app)
+						<li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
+					@endforeach
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+          @yield('content')
+
+
+        </div>
+      </div>
+
     </div>
 
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
+    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
+    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
+    <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
+    <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
+    <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
+    <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+    <script src='http://unpkg.com/ractive/ractive.min.js'></script>
     @yield('bottom_page_scripts')
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->

@@ -15,8 +15,10 @@ use App\App;
 Auth::routes();
 //Route::get('/home', 'HomeController@index');
 
-Route::get('/','HomeController@index');
-Route::get('/dashboard','HomeController@dashboard');
+// Route::get('/','HomeController@index');
+// Route::get('/dashboard','HomeController@dashboard');
+Route::get('/','UserDashboardController@index');
+Route::post('/api/dashboard','UserDashboardController@update');
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
@@ -30,6 +32,7 @@ Route::get('/app/{slug}', 'AppInstanceController@run');
 // Get app instance data
 Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data');
 Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data');
+Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch');
 
 /***** APPS *****/
 // List all apps

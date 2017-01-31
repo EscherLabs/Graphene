@@ -48,6 +48,14 @@
               </ul>
             </li>
           </ul>
+          <ul class="nav navbar-nav navbar-right visible-xs-block">
+            <li><a href="/admin/users">Users</a></li>
+            <li><a href="/admin/apps">Apps</a></li>
+            <li><a href="/admin/appinstances">App Instances</a></li>
+            <li><a href="/admin/groups">Groups</a></li>
+            <li><a href="/admin/endpoints">Endpoints</a></li>            
+            <li><a href="/admin/sites">Sites</a></li>
+          </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
           </form>
