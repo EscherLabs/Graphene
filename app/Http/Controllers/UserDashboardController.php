@@ -18,7 +18,7 @@ class UserDashboardController extends Controller
         }else{
             $config = $config->config;
         }
-        return view('dashboard',['apps'=>\App\AppInstance::with('app')->get(),'config'=>$config]);
+        return view('dashboard',['apps'=>\App\AppInstance::with('app')->get(),'name'=>"Dashboard", 'config'=>$config]);
     }
 
     public function update(Request $request) {

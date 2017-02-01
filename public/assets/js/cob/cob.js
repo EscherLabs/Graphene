@@ -32,11 +32,16 @@ function Cobler(options) {
 
 	function collection(target, items, cob){
 		var sortable;
+		var events = {};
 		function init() {
-			target.addEventListener('click', eventManager.bind(this));
+			events.em = eventManager.bind(this);
+			target.addEventListener('click', events.em, false);
 			if(!cob.options.disabled) {
-				target.addEventListener('click', instanceManager.bind(this));
-				target.className += ' cobler_container';
+				events.im = instanceManager.bind(this);
+				target.addEventListener('click', events.im, false);
+				if(target.className.split(' ').indexOf('cobler_container') < 0){
+					target.className += ' cobler_container';
+				}
 				sortable = Sortable.create(target, {
 					forceFallback: !!cob.options.fallback,
 					group: cob.options.group || 'cb',
@@ -102,7 +107,6 @@ function Cobler(options) {
 				while(referenceNode !== null && !referenceNode.classList.contains('slice') && !referenceNode.classList.contains('widget')){
 					referenceNode = referenceNode.parentElement;
 				}
-
 				cob.publish(e.target.dataset.event, items[getNodeIndex(referenceNode)])
 			}
 		}
@@ -208,8 +212,8 @@ function Cobler(options) {
 		function destroy(){
 			reset();
 			if(typeof sortable !== 'undefined') { sortable.destroy(); }
-			target.removeEventListener('click', instanceManager);
-			target.removeEventListener('click', eventManager);
+			target.removeEventListener('click', events.em, false);
+			target.removeEventListener('click', events.im, false);
 		}
 		function indexOf(item){
 			return items.indexOf(item);

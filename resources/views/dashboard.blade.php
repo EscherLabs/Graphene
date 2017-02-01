@@ -4,25 +4,29 @@
 {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
 @endsection
 
-@section('content')
-				<div class="row">
-					<div class="col-sm-12">
-						<div class="dropdown pull-right">
+@section('titlebar')
+						<div class="dropdown pull-right hidden editTools" style="margin-left:15px;margin-top: 8px;">
 							<button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								Widgets
 								<span class="caret"></span>
 							</button>
 							<ul id="sortableList" class="dropdown-menu list-group" aria-labelledby="dLabel">
-								<li data-type="RSS"><a href="javascript:void(0);">Rss</a></li>
-								<li data-type="Content"><a href="javascript:void(0);">Content</a></li>
-								<li data-type="uApp"><a href="javascript:void(0);">Apps</a></li>
+								<li data-type="RSS"><a href="javascript:addWidget('RSS');">Rss</a></li>
+								<li data-type="Content"><a href="javascript:addWidget('Content');">Content</a></li>
+								<li data-type="uApp"><a href="javascript:addWidget('uApp');">Apps</a></li>
 							</ul>
 						</div>
-						<h1 class="page-header">Dashboard</h1>
+						<div class="btn btn-primary pull-right" id="startEditing" style="margin-top: 8px;" onclick="load(false);"><i class="fa fa-pencil"></i> Edit</div>
+						<div class="btn btn-danger pull-right hidden editTools" style="margin-top: 8px;" id="doneEditing" onclick="load(true);"><i class="fa fa-times"></i> Done</div>
+@endsection
+
+@section('content')
+				<div class="row">
+					<div class="col-sm-12">
 
 						<div class="row ">
-						<div class="widget_container col-md-6"></div>
-						<div class="widget_container col-md-6"></div>
+							<div class="cobler_container col-md-6"></div>
+							<div class="cobler_container col-md-6"></div>
 						</div>
 					</div>
 				</div>
@@ -52,25 +56,41 @@
 
 		<script type='text/javascript' >
       _.findWhere = _.find;
+			function load(status){
+				$('body').toggleClass('editor', !status)
+				if(typeof cb !== 'undefined'){
+					cb.destroy();
+					delete cb;
+				}
+				templates['itemContainer'] = Hogan.compile(document.getElementsByName('itemContainer')[0].innerHTML);
+				var template = 'widgets_container'
+				var target = 'widget';
+				if(!status){
+					target ='';
+					template = 'itemContainer';
+				}
+				
+				var data = config.sections || [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
+				cb = new Cobler({ disabled: status, targets: document.getElementsByClassName('cobler_container'),itemContainer: template,itemTarget:target, items:data})
+
+
+				if(!status){
+					cb.addSource(document.getElementById('sortableList'));
+					var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} },function(data){
+						config = JSON.parse(data.config);
+					})}
+					cb.on('moved',save);
+					cb.on('reorder', save);
+					cb.on('remove', save);
+					cb.on('change',save);
+				}
+			}
+
+			function addWidget(e) { cb.collections[0].addItem(e); }
+			var config = {!! $config !!};
       var apps = {!! $apps !!};
-      var config = {!! $config !!};
-			var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} })}
-			templates['itemContainer'] = Hogan.compile(document.getElementsByName('itemContainer')[0].innerHTML);
-
-      var data = config.sections || [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
-      cb = new Cobler({ disabled: false, targets: document.getElementsByClassName('widget_container'), items:data})
-
-      list = document.getElementById('sortableList');
-      cb.addSource(list);
-      list.addEventListener('click', function(e) {
-        cb.collections[0].addItem($(e.target).closest('li').data('type'));
-      })
-
-
-			cb.on('moved',save);
-			cb.on('reorder', save);
-			cb.on('remove', save);
-			cb.on('change',save);
+			// var status = true;
+			load(true);
 
 		</script>
 

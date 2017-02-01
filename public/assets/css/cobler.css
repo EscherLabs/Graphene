@@ -1,7 +1,7 @@
 
 .parent-hover{visibility: hidden;}
 *:hover > .parent-hover{visibility: visible;}
-.cobler_container{list-style:none;padding-left:0;}
+.cobler_container{list-style:none;/*padding-left:0;*/}
 .cobler_container > li > .parent-hover{z-index: 10;opacity:.6;position:absolute;top:5px;right:5px;}
 .cobler_container > li{position: relative;display: block;overflow:hidden;}
 .cobler_container > li:hover{outline:dashed 1px #ccc;z-index: 1}
@@ -23,4 +23,7 @@
 .opaque.cobler_container > li.sortable-chosen .cobler-li-content{box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);}
 .opaque.cobler_container > li:hover{outline:0;}*/
 
-.widget_container{min-height: 50px}
+.cobler_container{min-height: 50px;}
+
+.editor #startEditing{display:none}
+.editor .editTools.hidden{display:block !important;}

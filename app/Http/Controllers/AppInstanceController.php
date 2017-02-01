@@ -60,7 +60,7 @@ class AppInstanceController extends Controller
                 $data[$source->name] = $this->get_data($myApp, $source->name, $request);
             }
 
-            return view('app', ['apps'=>\App\AppInstance::with('app')->get(), 'app'=>$myApp,'data'=>json_encode($data)]);
+            return view('app', ['apps'=>\App\AppInstance::with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>json_encode($data)]);
         }
         abort(404,'App not found');
     }
