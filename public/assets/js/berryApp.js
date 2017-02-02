@@ -102,7 +102,7 @@ berryAppEngine = function(options) {
   }
  
   this.draw = function() {
-    this.view = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'main'], data: this.data, partials: this.partials});
+    this.view = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'main'] || this.partials['main'], data: this.data, partials: this.partials});
     if(typeof this.methods[this.options.initializer] !== 'undefined') {
       this.methods[this.options.initializer].call(this);
       this.app.on('call', function(name, args){

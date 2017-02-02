@@ -10,22 +10,6 @@ var tableConfig = {
 		delete: function(model){ $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE'});}
 	}
 initializers = {};
-initializers['users'] = function(){
-	$.ajax({
-		url: '/api/'+route,
-		success: function(data){
-			$('#content').html('<h1 class="page-header">Users</h1><div class="row "><div id="table"></div></div>');		
-			tableConfig.schema = [
-				{label: 'First Name', name:'first_name', required: true},
-				{label: 'Last Name', name:'last_name', required: true},
-				{label: 'Email', name:'email', type: 'email', required: true},
-				{name: 'id', type:'hidden'}
-			];
-			tableConfig.data = data;
-			bt = new berryTable(tableConfig)
-		}
-	});
-}
 
 initializers['apps'] = function(){
 		$.ajax({
@@ -47,73 +31,6 @@ initializers['apps'] = function(){
 			}
 		});
 }
-initializers['groups'] = function(){
-		$.ajax({
-			url: '/api/'+route,
-			success: function(data){
-				$('#content').html('<h1 class="page-header">Groups</h1><div class="row "><div id="table"></div></div>');		
-				tableConfig.schema = [
-					{label: 'Name', name:'name', required: true},        
-					{label: 'Slug', name:'slug', required: true},
-					{name: 'id', type:'hidden'}
-				];
-				tableConfig.events = [
-					{'name': 'config', 'label': '<i class="fa fa-lock"></i> Admins', callback: function(model){
-						window.location.href = '/admin/groups/'+model.attributes.id+'/admins'
-					}},
-					{'name': 'resources', 'label': '<i class="fa fa-person"></i> Members', callback: function(model){
-						window.location.href = '/admin/groups/'+model.attributes.id+'/members'
-
-					}}
-				]
-				tableConfig.data = data;
-				bt = new berryTable(tableConfig)
-			}
-		});
-}
-initializers['endpoints'] = function(){
-		$.ajax({
-			url: '/api/'+route,
-			success: function(data){
-				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div id="table"></div></div>');		
-				tableConfig.schema = [
-					{label: 'Name', name:'name', required: true},
-					{label: 'Auth Type', name:'type', type: 'select', choices:[
-						{label:'HTTP No Auth', value:'http_no_auth'}, 
-						{label:'HTTP Basic Auth', value:'http_basic_auth'}, 
-						{label:'Google Sheets', value:'google_sheets'},
-					], required: true},
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
-					{label: 'Configuration', name:'config', showColumn:false, fields:[
-						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
-						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
-						{label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
-						{label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
-						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-					]},
-					{name: 'id', type:'hidden'}
-				];
-				tableConfig.data = data;
-				bt = new berryTable(tableConfig)
-			}
-		});
-}
-initializers['sites'] = function(){
-		$.ajax({
-			url: '/api/'+route,
-			success: function(data){
-				$('#content').html('<h1 class="page-header">Sites</h1><div class="row "><div id="table"></div></div>');		
-				tableConfig.schema = [
-					{label: 'Name', name:'domain', required: true},
-					{label: 'Theme', name:'theme'},
-					{name: 'id', type:'hidden'}
-				];
-				tableConfig.data = data;
-				bt = new berryTable(tableConfig)
-			}
-		});
-}
 initializers['appinstances'] = function(){
 		$.ajax({
 			url: '/api/appinstances',
@@ -121,8 +38,8 @@ initializers['appinstances'] = function(){
 				$('#content').html('<h1 class="page-header">App Instances</h1><div class="row "><div id="table"></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-        			{label: 'Slug', name:'slug', required: true},
-        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+        	{label: 'Slug', name:'slug', required: true},
+        	{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{name: 'app', type:'hidden'},
@@ -132,7 +49,6 @@ initializers['appinstances'] = function(){
 				tableConfig.data = data;
 				tableConfig.events = [
 					{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
-						debugger;
 						var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(JSON.parse(model.attributes.app.code).form)) 
 
 						options.attributes = JSON.parse(model.attributes.configuration)|| {};
@@ -171,7 +87,91 @@ initializers['appinstances'] = function(){
 			}
 		});
 }
+initializers['sites'] = function(){
+		$.ajax({
+			url: '/api/'+route,
+			success: function(data){
+				$('#content').html('<h1 class="page-header">Sites</h1><div class="row "><div id="table"></div></div>');		
+				tableConfig.schema = [
+					{label: 'Name', name:'domain', required: true},
+					{label: 'Theme', name:'theme'},
+					{name: 'id', type:'hidden'}
+				];
+				tableConfig.data = data;
+				bt = new berryTable(tableConfig)
+			}
+		});
+}
 
+initializers['endpoints'] = function(){
+		$.ajax({
+			url: '/api/'+route,
+			success: function(data){
+				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div id="table"></div></div>');		
+				tableConfig.schema = [
+					{label: 'Name', name:'name', required: true},
+					{label: 'Auth Type', name:'type', type: 'select', choices:[
+						{label:'HTTP No Auth', value:'http_no_auth'}, 
+						{label:'HTTP Basic Auth', value:'http_basic_auth'}, 
+						{label:'Google Sheets', value:'google_sheets'},
+					], required: true},
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'Configuration', name:'config', showColumn:false, fields:[
+						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
+						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
+						{label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
+						{label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
+						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+					]},
+					{name: 'id', type:'hidden'}
+				];
+				tableConfig.data = data;
+				bt = new berryTable(tableConfig)
+			}
+		});
+}
+
+initializers['users'] = function(){
+	$.ajax({
+		url: '/api/'+route,
+		success: function(data){
+			$('#content').html('<h1 class="page-header">Users</h1><div class="row "><div id="table"></div></div>');		
+			tableConfig.schema = [
+				{label: 'First Name', name:'first_name', required: true},
+				{label: 'Last Name', name:'last_name', required: true},
+				{label: 'Email', name:'email', type: 'email', required: true},
+				{name: 'id', type:'hidden'}
+			];
+			tableConfig.data = data;
+			bt = new berryTable(tableConfig)
+		}
+	});
+}
+initializers['groups'] = function(){
+		$.ajax({
+			url: '/api/'+route,
+			success: function(data){
+				$('#content').html('<h1 class="page-header">Groups</h1><div class="row "><div id="table"></div></div>');		
+				tableConfig.schema = [
+					{label: 'Name', name:'name', required: true},        
+					{label: 'Slug', name:'slug', required: true},
+					{name: 'id', type:'hidden'}
+				];
+				tableConfig.events = [
+					{'name': 'config', 'label': '<i class="fa fa-lock"></i> Admins', callback: function(model){
+						window.location.href = '/admin/groups/'+model.attributes.id+'/admins'
+					}},
+					{'name': 'resources', 'label': '<i class="fa fa-person"></i> Members', callback: function(model){
+						window.location.href = '/admin/groups/'+model.attributes.id+'/members'
+
+					}}
+				]
+				tableConfig.data = data;
+				bt = new berryTable(tableConfig)
+			}
+		});
+}
 initializers['members'] = function(){
 		$.ajax({
 			url: '/api/groups/1/'+route,

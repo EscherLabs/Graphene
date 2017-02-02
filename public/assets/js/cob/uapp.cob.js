@@ -1,4 +1,3 @@
-
 Cobler.types.uApp = function(container){
 	function get() {
 		item.widgetType = 'uApp';
@@ -8,14 +7,14 @@ Cobler.types.uApp = function(container){
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/appinstances'},
+		'Template': {}
 	}
 	return {
 		fields: fields,
 		render: function() {
 			return templates['widgets_content'].render(get(), templates);
 		},
-				edit: berryEditor.call(this, container),
-
+		edit: berryEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {
@@ -29,11 +28,12 @@ Cobler.types.uApp = function(container){
 
 					success  : function(data){
             var opts = {
+              template: this.get().template || 'dashboard',
               $el: $(el).find('.collapsible'),
               crud: function(name, data, callback, verb){
                 $.ajax({
                 url      : '/api/app_data/'+ this.config.app_id + '/' +name+ '?verb='+verb,
-                dataType : 'json',
+                // dataType : 'json',
                 type: 'POST',
                 data: {request: data},
                 error: function (data) {
@@ -59,11 +59,6 @@ Cobler.types.uApp = function(container){
             this.bae.app.on('refetch', refetch) 
           }.bind(this)
       })
-      
-
-
-
-
 		}
 	}
 }
