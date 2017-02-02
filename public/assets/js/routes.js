@@ -133,7 +133,7 @@ initializers['appinstances'] = function(){
 				tableConfig.events = [
 					{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
 						debugger;
-						var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(model.attributes.app.code).form) 
+						var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(JSON.parse(model.attributes.app.code).form)) 
 
 						options.attributes = JSON.parse(model.attributes.configuration)|| {};
 						options.attributes.id = model.attributes.id;

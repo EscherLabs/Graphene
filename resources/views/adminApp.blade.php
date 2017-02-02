@@ -20,7 +20,7 @@
         {"multiple": {"duplicate": true},label: false, name: 'scripts', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
         {label:'Sources',name:'s',parsable:false, type:'fieldset',fields:[]},
         {"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]},
-        {label: 'Options', name:'options'},
+        {label: 'Form', name:'form'},
 
       ]}
     ]})
