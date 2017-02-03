@@ -22,7 +22,7 @@ Cobler.types.uApp = function(container){
 		},
 		initialize: function(el){
       $.ajax({
-          url: 'http://localhost:8000/api/fetch/'+this.get().app_id,
+          url: '/api/fetch/'+this.get().app_id,
           dataType : 'json',
 					type: 'GET',
 
@@ -32,7 +32,7 @@ Cobler.types.uApp = function(container){
               $el: $(el).find('.collapsible'),
               crud: function(name, data, callback, verb){
                 $.ajax({
-                url      : '/api/app_data/'+ this.config.app_id + '/' +name+ '?verb='+verb,
+                url: '/api/app_data/'+ this.config.app_id + '/' +name+ '?verb='+verb,
                 // dataType : 'json',
                 type: 'POST',
                 data: {request: data},

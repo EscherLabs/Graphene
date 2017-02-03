@@ -20,7 +20,7 @@ Auth::routes();
 Route::get('/','UserDashboardController@index');
 Route::post('/api/dashboard','UserDashboardController@update');
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
-Route::post('/api/preferences/{app}','UserPreferenceController@update');
+Route::post('/api/preferences/{appInstance}','UserPreferenceController@update');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin');

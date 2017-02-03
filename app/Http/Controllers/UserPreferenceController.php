@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\UserPreference;
-use App\App;
+use App\AppInstance;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -12,17 +12,8 @@ class UserPreferenceController extends Controller
         $this->middleware('auth');
     }
     
-
-    public function update($app, Request $request) {
-        $user_pref = UserPreference::where(['user_id'=>Auth::user()->id, 'app_instance_id'=>$app]);
-        if(is_null($user_pref)){
-            $user_pref = UserPreference::create(['user_id'=>Auth::user()->id, 'app_instance_id'=>$app, 'preferences'=>json_encode($request->get('preferences'))]);
-
-        }else{
-            $user_pref = UserPreference::update(['user_id'=>Auth::user()->id, 'app_instance_id'=>$app, 'preferences'=>json_encode($request->get('preferences'))]);
-
-        }
-        return $user_pref;
+    public function update(AppInstance $appInstance, Request $request)
+    {
+        return $appInstance->set_preference(Auth::user() , json_encode($request->get('preferences')));
     }
-
 }

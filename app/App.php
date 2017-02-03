@@ -34,6 +34,7 @@ class App extends Model
     }
     public function remove_developer(User $user)
     {
-        AppDeveloper::where('app_id', $this->id)->where('app_id',$user->id)->delete();
+        AppDeveloper::where('app_id', $this->id)->where('user_id',$user->id)->delete();
     }
+
 }

@@ -27,7 +27,7 @@
     config: {!! $app->app['code'] !!},
     crud: function(name, data, callback, verb){
           $.ajax({
-          url      : '/api/app_data/{{ $app->id }}/' +name+ '?verb='+verb,
+          url: '/api/app_data/{{ $app->id }}/' +name+ '?verb='+verb,
           type: 'POST',
           data: {request: data},
           error: function (data) {
@@ -37,14 +37,16 @@
     }
   }
   $('#edit_instance').on('click', function(){
-    // debugger;
-    $().berry(JSON.parse(opts.config.user_preference_form)).on('save', function(){
-      debugger;
+    $().berry($.extend(true, {attributes:bae.data.user.preferences},JSON.parse(opts.config.user_preference_form))).on('save', function(){
       $.ajax({
         type: 'POST',
         url:'/api/preferences/{{ $app->id }}',
         data: {'preferences': this.toJSON()},
+        success:function(data){
+          // opts.data.user.preferences = JSON.parse(data.preferences);
+          bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
 
+        }
       })
       this.trigger('close');
     })

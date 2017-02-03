@@ -43,16 +43,15 @@ class AppInstanceController extends Controller
 
     public function run($slug, Request $request) {
         $myApp = \App\AppInstance::with('app')->with(['user_preferences'=>function($query){
-            $query->where('user_id','=',1);
+            $query->where('user_id','=', Auth::user()->id);
         }])->where('slug', '=', $slug)->first();
-
         if($myApp != null){
             // Create data object that will be used by the app
             $data = [
                 'user'=>Auth::user(),
                 'options'=>json_decode($myApp->configuration)
             ];
-            $data['user']['preferences'] = $myApp->user_preferences;
+            $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
 
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
@@ -66,7 +65,7 @@ class AppInstanceController extends Controller
     }
     public function fetch($ai_id, Request $request) {
         $myApp = \App\AppInstance::with(['user_preferences'=>function($query){
-            $query->where('user_id','=',1);
+            $query->where('user_id','=',Auth::user()->id);
         }])->where('id', '=', $ai_id)->first();
 
         if($myApp != null){
@@ -75,7 +74,7 @@ class AppInstanceController extends Controller
                 'user'=>Auth::user(),
                 'options'=>json_decode($myApp->configuration)
             ];
-            $data['user']['preferences'] = $myApp->user_preferences;
+            $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
             foreach(json_decode($myApp->app->code)->sources as $source){

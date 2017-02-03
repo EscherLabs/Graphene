@@ -15,6 +15,14 @@ class AppInstance extends Model
       return $this->belongsTo(App::class);
     }
     public function user_preferences() {
-      return $this->hasMany(UserPreference::class);
+      return $this->hasOne(UserPreference::class);
     }
+    public function set_preference($user, $preferences)
+    {
+        if(!is_null(UserPreference::where(['user_id'=>$user->id, 'app_instance_id'=>$this->id])->first())) {
+            UserPreference::where('app_instance_id', $this->id)->where('user_id',$user->id)->delete();
+        }
+        return UserPreference::updateOrCreate(['app_instance_id'=>$this->id, 'user_id'=>$user->id],
+          ['preferences'=>$preferences]);
+    }    
 }
