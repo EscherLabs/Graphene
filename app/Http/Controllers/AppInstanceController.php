@@ -51,7 +51,14 @@ class AppInstanceController extends Controller
                 'user'=>Auth::user(),
                 'options'=>json_decode($myApp->configuration)
             ];
-            $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
+            if(!is_null($myApp->user_preferences)) {
+                $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
+                if(is_null($data['user']['preferences'])){
+                    $data['user']['preferences'] = [];
+                }
+            }else{
+                $data['user']['preferences'] = [];
+            }
 
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
@@ -74,7 +81,17 @@ class AppInstanceController extends Controller
                 'user'=>Auth::user(),
                 'options'=>json_decode($myApp->configuration)
             ];
-            $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
+            if(!is_null($myApp->user_preferences)) {
+                $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
+                if(is_null($data['user']['preferences'])){
+                    $data['user']['preferences'] = [];
+                }
+            }else{
+                $data['user']['preferences'] = [];
+            }
+
+
+
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
             foreach(json_decode($myApp->app->code)->sources as $source){
