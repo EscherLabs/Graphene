@@ -1,9 +1,5 @@
 @extends('default.main')
 
-@section('welcome_name')
-{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
-@endsection
-
 @section('content')
 <div class="row">
   <div class="col-sm-12 main">

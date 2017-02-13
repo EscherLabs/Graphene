@@ -36,25 +36,27 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">CrazyStairs: {{ $name}}</a>
+          <a class="navbar-brand" href="#"><i class="fa fa-signal"></i> CrazyStairs: {{ $name}}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                @yield('welcome_name') <span class="caret"></span>
+              <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
+                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?s=36&d=mm" /> 
+                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} 
+                <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="{{ url('/') }}">Dashboard</a></li>
-                <li><a href="{{ url('/admin') }}">Admin</a></li>
-                <li><a href="{{ url('/logout') }}">Logout</a></li>
+                <li><a href="{{ url('/') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                <li><a href="{{ url('/admin') }}"><i class="fa fa-gear"></i> Admin</a></li>
+                <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
             <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             @foreach ($apps as $app)
-              <li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
+              <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
             @endforeach
           </ul>
           <!--form class="navbar-form navbar-right">
@@ -70,7 +72,7 @@
           <ul class="nav nav-sidebar">
             <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             @foreach ($apps as $app)
-              <li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
+              <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
             @endforeach
           </ul>
         </div>

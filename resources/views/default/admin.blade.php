@@ -35,16 +35,18 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">CrazyStairs</a>
+          <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> CrazyStairs</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li>              
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} <span class="caret"></span>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
+                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?s=36&d=mm" /> 
+                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} 
+                <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="{{ url('/logout') }}">Logout</a></li>
+                <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
             </li>
           </ul>
@@ -80,7 +82,6 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>
     @yield('end_body_scripts_top')
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

@@ -1,9 +1,5 @@
 @extends('default.apps')
 
-@section('welcome_name')
-{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
-@endsection
-
 @section('titlebar')
 						<div class="dropdown pull-right hidden editTools" style="margin-left:15px;margin-top: 8px;">
 							<button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

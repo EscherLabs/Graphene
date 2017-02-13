@@ -37,13 +37,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">CrazyStairs</a>
+          <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> CrazyStairs</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                @yield('welcome_name') <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url('/') }}">My Apps</a></li>
@@ -61,7 +60,6 @@
     <div class="container-fluid">
       @yield('content')
     </div>
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>
     @yield('bottom_page_scripts')
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
