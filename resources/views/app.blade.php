@@ -5,11 +5,7 @@
 @endsection
 
 @section('content')
-<div class="row">
-  <div class="col-sm-12 main">
-    <div id="app-container"></div>
-  </div>
-</div>
+  <div id="app-container"></div>
 @endsection
 
 @section('titlebar')

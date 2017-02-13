@@ -36,8 +36,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">CrazyStairs -</a>
-          <a class="navbar-brand" href="/">{{ $name}}</a>
+          <a class="navbar-brand" href="#">CrazyStairs: {{ $name}}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -53,9 +52,10 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-					@foreach ($apps as $app)
-						<li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
-					@endforeach
+            <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            @foreach ($apps as $app)
+              <li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
+            @endforeach
           </ul>
           <!--form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -68,9 +68,10 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-					@foreach ($apps as $app)
-						<li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
-					@endforeach
+            <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            @foreach ($apps as $app)
+              <li><a href="/app/{{ $app->slug }}">{{ $app->name }}</a></li>
+            @endforeach
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -82,7 +83,7 @@
       </div>
 
     </div>
-
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>

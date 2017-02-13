@@ -49,12 +49,12 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            <li><a href="/admin/users">Users</a></li>
-            <li><a href="/admin/apps">Apps</a></li>
-            <li><a href="/admin/appinstances">App Instances</a></li>
-            <li><a href="/admin/groups">Groups</a></li>
-            <li><a href="/admin/endpoints">Endpoints</a></li>            
-            <li><a href="/admin/sites">Sites</a></li>
+            <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+            <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+            <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+            <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+            <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>            
+            <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
           </ul>
           <!--form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -67,12 +67,12 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li><a href="/admin/users">Users</a></li>
-            <li><a href="/admin/apps">Apps</a></li>
-            <li><a href="/admin/appinstances">App Instances</a></li>
-            <li><a href="/admin/groups">Groups</a></li>
-            <li><a href="/admin/endpoints">Endpoints</a></li>            
-            <li><a href="/admin/sites">Sites</a></li>
+            <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+            <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+            <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+            <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+            <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>            
+            <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -80,6 +80,7 @@
         </div>
       </div>
     </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>
     @yield('end_body_scripts_top')
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
