@@ -102,8 +102,8 @@ body {
 }
 @media (min-width: 768px) {
   .main {
-    padding-right: 40px;
-    padding-left: 40px;
+    /*padding-right: 40px;
+    padding-left: 40px;*/
   }
 }
 .main .page-header {

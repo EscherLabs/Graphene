@@ -15,7 +15,7 @@ initializers['apps'] = function(){
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Apps</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Apps</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
 					{name: 'id', type:'hidden'}
@@ -35,7 +35,7 @@ initializers['appinstances'] = function(){
 		$.ajax({
 			url: '/api/appinstances',
 			success: function(data){
-				$('#content').html('<h1 class="page-header">App Instances</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">App Instances</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
         	{label: 'Slug', name:'slug', required: true},
@@ -91,7 +91,7 @@ initializers['sites'] = function(){
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Sites</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Sites</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'domain', required: true},
 					{label: 'Theme', name:'theme'},
@@ -107,7 +107,7 @@ initializers['endpoints'] = function(){
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Endpoints</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
 					{label: 'Auth Type', name:'type', type: 'select', choices:[
@@ -136,7 +136,7 @@ initializers['users'] = function(){
 	$.ajax({
 		url: '/api/'+route,
 		success: function(data){
-			$('#content').html('<h1 class="page-header">Users</h1><div class="row "><div id="table"></div></div>');		
+			$('#content').html('<h1 class="page-header">Users</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 			tableConfig.schema = [
 				{label: 'First Name', name:'first_name', required: true},
 				{label: 'Last Name', name:'last_name', required: true},
@@ -152,7 +152,7 @@ initializers['groups'] = function(){
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Groups</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Groups</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},        
 					{label: 'Slug', name:'slug', required: true},
@@ -176,7 +176,7 @@ initializers['members'] = function(){
 		$.ajax({
 			url: '/api/groups/1/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Members</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Members</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
@@ -195,7 +195,7 @@ initializers['admins'] = function(){
 		$.ajax({
 			url: '/api/groups/1/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Admins</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Admins</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
@@ -214,7 +214,7 @@ initializers['developers'] = function(){
 		$.ajax({
 			url: '/api/apps/1/'+route,
 			success: function(data){
-				$('#content').html('<h1 class="page-header">Developers</h1><div class="row "><div id="table"></div></div>');		
+				$('#content').html('<h1 class="page-header">Developers</h1><div class="row "><div class="col-sm-12"><div id="table"></div></div></div>');		
 				tableConfig.schema = [
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},

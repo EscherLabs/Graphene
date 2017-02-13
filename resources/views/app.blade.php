@@ -5,7 +5,11 @@
 @endsection
 
 @section('content')
+<div class="panel panel-default">
+  <div class="panel-body">
   <div id="app-container"></div>
+  </div>
+</div>
 @endsection
 
 @section('titlebar')
