@@ -41,7 +41,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
-                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?s=36&d=mm" /> 
+                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?d=mm" /> 
                 {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} 
                 <span class="caret"></span>
               </a>

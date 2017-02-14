@@ -36,13 +36,16 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#"><i class="fa fa-signal"></i> CrazyStairs: {{ $name}}</a>
+          <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> CrazyStairs</a>
+          <ul class="nav navbar-nav navbar-right hidden-xs">
+            <li><a href="#"><h4 style="margin:0">{{ $name}}</h4></a></li>
+          </ul>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
-                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?s=36&d=mm" /> 
+                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?d=mm" /> 
                 {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} 
                 <span class="caret"></span>
               </a>
@@ -54,7 +57,7 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
             @foreach ($apps as $app)
               <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
             @endforeach
@@ -66,17 +69,19 @@
         </div>
       </div>
     </nav>
-    <div class="container-fluid">
+
+    <div class="col-sm-3 col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+        <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
+        @foreach ($apps as $app)
+          <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
+        @endforeach
+      </ul>
+    </div>
+    <div class="container-fluid" id="main-container">
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            @foreach ($apps as $app)
-              <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
-            @endforeach
-          </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+        <div class="col-sm-12 main">
 
           @yield('content')
 
@@ -85,7 +90,7 @@
       </div>
 
     </div>
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>
+    <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>-->
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
