@@ -36,6 +36,9 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> CrazyStairs</a>
+          <ul class="nav navbar-nav navbar-right hidden-xs">
+            <li><a href="#"><h4 style="margin:0"></h4></a></li>
+          </ul>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -64,20 +67,20 @@
         </div>
       </div>
     </nav>
-
-    <div class="container-fluid">
+    <div class="col-sm-3 col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+        <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+        <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+        <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+        <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+        <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>            
+        <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
+      </ul>
+    </div>
+    <div class="container-fluid" id="main-container">
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
-            <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
-            <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
-            <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
-            <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>            
-            <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
-          </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+        <div class="col-sm-12 main">
             <div id="content">@yield('content')</div>
         </div>
       </div>
