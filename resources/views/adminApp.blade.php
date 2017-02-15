@@ -2,6 +2,8 @@
 
 @section('end_body_scripts_bottom')
   <script>
+  $('.navbar-header .nav a h4').html('Developers');
+
   var attributes= {!! $app !!};
   $('#content').berry({
     action:'/api/apps/'+attributes.id,

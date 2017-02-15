@@ -179,3 +179,4 @@ body{
   text-align: center;
 }
 
+#table > .well{margin-bottom:0 !important;}
