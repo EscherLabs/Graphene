@@ -39,13 +39,13 @@ Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch');
 // List all apps
 Route::get('/api/apps','AppController@index');
 // Lookup specific app by app_id
-Route::get('/api/apps/{app}','AppController@show');
+Route::get('/api/apps/{app}','AppController@show')->middleware('can:get,app');
 // Create a new app
-Route::post('/api/apps','AppController@create');
+Route::post('/api/apps','AppController@create')->middleware('can:create,App\App');
 // Update an existing app by app_id
-Route::put('/api/apps/{app}','AppController@update');
+Route::put('/api/apps/{app}','AppController@update')->middleware('can:update,app');
 // Delete an existing app by app_id
-Route::delete('/api/apps/{app}','AppController@destroy');
+Route::delete('/api/apps/{app}','AppController@destroy')->middleware('can:delete,app');
 
 /***** APP INSTANCES *****/
 // List all apps instances
