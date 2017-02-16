@@ -49,7 +49,7 @@ class AppController extends Controller
     }
     public function admin(App $app) {
         $app->code = json_decode($app->code);
-        return view('adminApp', ['app'=>$app]);
+        return view('adminAppnew', ['app'=>$app]);
     }
     public function list_members(Group $group)
     {

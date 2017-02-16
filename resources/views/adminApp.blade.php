@@ -17,9 +17,9 @@
       {name:'code', label: 'Code',  type: 'fieldset', fields:[
         {label: 'CSS', name:'css'},
         {label:'Templates', name: 't',parsable:false, type:'fieldset',fields:[]},
-        {"multiple": {"duplicate": true},label: false, name: 'templates', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
+        {"multiple": {"duplicate": true},label: false, name: 'templates', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'ace'}]},
         {label:'Scripts',name: 's', parsable:false, type:'fieldset',fields:[]},
-        {"multiple": {"duplicate": true},label: false, name: 'scripts', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'textarea'}]},
+        {"multiple": {"duplicate": true},label: false, name: 'scripts', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'ace'}]},
         {label:'Sources',name:'s',parsable:false, type:'fieldset',fields:[]},
         {"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]},
         {label: 'Configuration Form', name:'form'},        

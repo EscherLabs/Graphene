@@ -1,3 +1,5 @@
+if(typeof route !== 'undefined'){
+
 var api = '/api/'+route;
 var tableConfig = {
 		entries: [25, 50, 100],
@@ -234,3 +236,44 @@ initializers['developers'] = function(){
 
 $('[href="/admin/'+route+'"]').parent().addClass('active');
 initializers[route]();
+
+}
+templates["berry_ace"] = new Hogan.Template({code: function (c,p,i) { var t=this;t.b(i=i||"");t.b("<div class=\"clearfix form-group\" name=\"");t.b(t.v(t.f("name",c,p,0)));t.b("\">");t.b("\n" + i);t.b(t.rp("<berry__label0",c,p,"	"));if(t.s(t.f("label",c,p,1),c,p,0,80,277,"{{ }}")){t.rs(c,p,function(c,p,t){t.b("	");if(t.s(t.f("inline",c,p,1),c,p,0,93,167,"{{ }}")){t.rs(c,p,function(c,p,t){t.b("<div class=\"col-md-12\" ");if(t.s(t.f("advanced",c,p,1),c,p,0,129,153,"{{ }}")){t.rs(c,p,function(c,p,t){t.b("style=\"padding:0px 13px\"");});c.pop();}t.b(">");});c.pop();}t.b("\n" + i);t.b("	");if(!t.s(t.f("inline",c,p,1),c,p,1,0,0,"")){t.b("<div class=\"col-md-8\" ");if(t.s(t.f("advanced",c,p,1),c,p,0,226,250,"{{ }}")){t.rs(c,p,function(c,p,t){t.b("style=\"padding:0px 13px\"");});c.pop();}t.b(">");};t.b("\n" + i);});c.pop();}if(!t.s(t.f("label",c,p,1),c,p,1,0,0,"")){t.b("	<div class=\"col-md-12\" ");if(t.s(t.f("advanced",c,p,1),c,p,0,337,361,"{{ }}")){t.rs(c,p,function(c,p,t){t.b("style=\"padding:0px 13px\"");});c.pop();}t.b(">");t.b("\n" + i);};t.b("		<div class=\"formcontrol\"><div placeholder=\"");t.b(t.v(t.f("placeholder",c,p,0)));t.b("\" style=\"min-height: 250px;outline:none;border:solid 1px #cbd5dd;");if(!t.s(t.f("unstyled",c,p,1),c,p,1,0,0,"")){t.b("background:#fff;padding:10px");};t.b("\" id=\"");t.b(t.v(t.f("id",c,p,0)));t.b("container\"></div></div>");t.b("\n" + i);t.b(t.rp("<berry__addons1",c,p,"			"));t.b("	</div>");t.b("\n" + i);t.b("</div>");return t.fl(); },partials: {"<berry__label0":{name:"berry__label", partials: {}, subs: {  }},"<berry__addons1":{name:"berry__addons", partials: {}, subs: {  }}}, subs: {  }});
+(function(b, $){
+	b.register({
+		type: 'ace',
+		create: function() {
+				return b.render('berry_ace', this);
+			},
+		setup: function() {
+			this.$el = this.self.find('.formcontrol > div');
+			this.$el.off();
+			if(this.onchange !== undefined) {
+				this.$el.on('input', this.onchange);
+			}
+			this.$el.on('input', $.proxy(function(){this.trigger('change');},this));
+
+			this.editor = ace.edit(this.id+"container");
+	    this.editor.setTheme(this.item.theme || "ace/theme/chrome");
+	    this.editor.getSession().setMode(this.item.mode || "ace/mode/handlebars");
+
+		},
+		setValue: function(value){
+			if(typeof this.lastSaved === 'undefined'){
+				this.lastSaved = value;
+			}
+			this.value = value;
+			this.editor.setValue(value);
+			return this.$el;
+		},
+		getValue: function(){
+			return this.editor.getValue()
+		},
+		// destroy: function(){
+		// 	this.editor.destroy();
+		// }
+		focus: function(){
+			this.editor.focus();
+		}
+	});
+})(Berry,jQuery);
