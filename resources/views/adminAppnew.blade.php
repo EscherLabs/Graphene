@@ -97,7 +97,7 @@
 
 
 
-  $('#sources').berry({
+  $('.app_name').berry({
     action:'/api/apps/'+attributes.id,
     method:'PUT',
     actions:false,
@@ -107,9 +107,9 @@
     inline:true,
     flatten:false,
     fields:[
-      {label: 'Name', name:'name', required: true, fieldset:'app_name'},
+      {label: 'Name', name:'name', required: true},
       {name:'code', label: false,  type: 'fieldset', fields:[
-        {label: 'CSS', name:'css', fieldset: 'styles', type:'ace', mode:'ace/mode/css'},
+        {label:false, name:'css', fieldset: 'styles', type:'ace', mode:'ace/mode/css'},
         // {label:'Templates', name: 't',parsable:false, type:'fieldset',fields:[]},
         {fieldset:'templates', "multiple": {"duplicate": true},label: false, name: 'templates', type: 'fieldset', fields:[{label: 'Name',name: 'name'},{label: 'Content', name: 'content', type:'ace'}]},
         // {label:'Scripts',name: 's', parsable:false, type:'fieldset',fields:[]},

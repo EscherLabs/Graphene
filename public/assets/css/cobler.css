@@ -27,3 +27,18 @@
 
 .editor #startEditing{display:none}
 .editor .editTools.hidden{display:block !important;}
+
+
+/*berryTables*/
+[data-popins]{ border-bottom: 1px dotted;}
+[data-popins]{cursor: pointer; }
+thead .form-group{margin-bottom:0;}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
