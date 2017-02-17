@@ -13,27 +13,28 @@ class AppPolicy
 
     public function get(User $user, App $app)
     {
-        if (in_array($app->id,session('developer_apps'))) {
+        if ($user->developer && in_array($app->id,$user->developer_apps)) {
             return true;
         }
     }
 
     public function create(User $user)
     {
-        // Need access to the group_id, and this is in Request, which I don't have
-        return true;
+        if ($user->developer) {
+            return true;
+        }
     }
 
     public function update(User $user, App $app)
     {
-        if (in_array($app->id,session('developer_apps'))) {
+        if ($user->developer && in_array($app->id,$user->developer_apps)) {
             return true;
         }
     }
 
     public function delete(User $user, App $app)
     {
-        if (in_array($app->id,session('developer_apps'))) {
+        if ($user->developer && in_array($app->id,$user->developer_apps)) {
             return true;
         }
     }

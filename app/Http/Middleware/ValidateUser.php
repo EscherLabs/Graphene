@@ -40,16 +40,12 @@ class ValidateUser
             $admin_groups[] = $admin_group->group_id;
         }
 
-        // Build Session Data for Current User
-        session(['developer_apps'=>$developer_apps,
-                'groups'=>$groups,
-                'admin_groups'=>$admin_groups,
-                'site'=>$user->site,
-                'is_developer'=>(count($developer_apps) > 0),
-                'is_admin'=>(count($admin_groups))]);
+        Auth::user()->developer_apps = $developer_apps;
+        Auth::user()->groups = $groups;
+        Auth::user()->admin_groups = $admin_groups;
 
         // Log user out if they are not a member of the current site!
-        // if (session('site')->domain != $request->server('SERVER_NAME')) {
+        // if ($user->site->domain != $request->server('SERVER_NAME')) {
         //     Auth::logout();
         //     return redirect('/login');
         // }

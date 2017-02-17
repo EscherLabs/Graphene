@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
         $user1->last_name = 'Cortesi';
         $user1->email = 'tcortesi@gmail.com';
         $user1->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
+        $user1->site_admin = 1;
+        $user1->developer = 1;
         $user1->save();
         $group->add_member($user1);
         $group->add_admin($user1);
@@ -37,6 +39,8 @@ class DatabaseSeeder extends Seeder
         $user2->last_name = 'Smallcomb';
         $user2->email = 'atsmallcomb@gmail.com';
         $user2->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
+        $user2->site_admin = 1;
+        $user2->developer = 1;
         $user2->save();
         $group->add_member($user2);
         $group->add_admin($user2);
@@ -132,6 +136,9 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
         $app->save();
+
+        $app->add_developer($user1,true);
+        $app->add_developer($user2,true);
 
         $endpoint = new \App\Endpoint;
         $endpoint->name = 'My Endpoint';
