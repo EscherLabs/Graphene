@@ -55,11 +55,21 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
-            <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
-            <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
-            <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
-            <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>            
+            @can('get_all','App\User')
+              <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+            @endcan
+            @can('get_all','App\App')
+              <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+            @endcan
+            @can('get_all','App\AppInstance')
+              <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+            @endcan
+            @can('get_all','App\Group')
+              <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+            @endcan
+            @can('get_all', 'App\Endpoint')
+              <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>  
+            @endcan   
             <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
           </ul>
           <!--form class="navbar-form navbar-right">
@@ -70,11 +80,21 @@
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
-        <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
-        <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
-        <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
-        <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>            
+        @can('get_all','App\User')
+          <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+        @endcan
+        @can('get_all','App\App')
+          <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+        @endcan
+        @can('get_all','App\AppInstance')
+          <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+        @endcan
+        @can('get_all','App\Group')
+          <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+        @endcan
+        @can('get_all', 'App\Endpoint')
+          <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>  
+        @endcan   
         <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
       </ul>
     </div>

@@ -70,6 +70,7 @@ class AppInstanceController extends Controller
         }
         abort(404,'App not found');
     }
+    
     public function fetch($ai_id, Request $request) {
         $myApp = \App\AppInstance::with(['user_preferences'=>function($query){
             $query->where('user_id','=',Auth::user()->id);

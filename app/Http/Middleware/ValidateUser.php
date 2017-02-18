@@ -50,10 +50,14 @@ class ValidateUser
         //     return redirect('/login');
         // }
 
-        // Disallow User from accessing /admin if not admin of any group
-        // if ($request->is('admin/*') && !(session('is_admin') || session('is_developer'))) {
-        //     App::abort(403, 'Access denied');
-        // }
+        // Disallow User from accessing /admin
+        if ($request->is('admin*') && 
+            !(  Auth::user()->site_admin || 
+                Auth::user()->developer ||
+                count(Auth::user()->admin_groups)>0
+            )) {
+            App::abort(403, 'Access denied');
+        }
 
         return $next($request);
     }
