@@ -72,6 +72,7 @@ Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceContr
 Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data')->middleware('can:get_data,app_instance');
 Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data')->middleware('can:get_data,app_instance');
 // Get all App Data by app_instance
+// TJC -- THIS MIDDLEWARE IS BROKEN.. NO IDEA WHY??
 Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch');//->middleware('can:fetch,app_instance');
 
 /***** ENDPOINTS *****/
@@ -88,15 +89,15 @@ Route::get('/api/endpoints/google_callback','EndpointController@google_callback'
 
 /***** SITES *****/
 // List all sites
-Route::get('/api/sites','SiteController@index');
+Route::get('/api/sites','SiteController@index')->middleware('can:get_all,App\Site');
 // Lookup specific site by site_id
-Route::get('/api/sites/{site}','SiteController@show');
+Route::get('/api/sites/{site}','SiteController@show')->middleware('can:get,site');
 // Create a new site
-Route::post('/api/sites','SiteController@create');
+Route::post('/api/sites','SiteController@create')->middleware('can:create,App\Endpoint');
 // Update an existing site by site_id
-Route::put('/api/sites/{site}','SiteController@update');
+Route::put('/api/sites/{site}','SiteController@update')->middleware('can:update,site');
 // Delete an existing site by site_id
-Route::delete('/api/sites/{site}','SiteController@destroy');
+Route::delete('/api/sites/{site}','SiteController@destroy')->middleware('can:delete,site');
 
 /***** USERS *****/
 // List all users

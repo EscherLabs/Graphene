@@ -70,7 +70,9 @@
             @can('get_all', 'App\Endpoint')
               <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>  
             @endcan   
-            <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
+            @can('get_all', 'App\Site')
+              <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
+            @endcan              
           </ul>
           <!--form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -95,7 +97,9 @@
         @can('get_all', 'App\Endpoint')
           <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>  
         @endcan   
-        <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
+        @can('get_all', 'App\Site')
+          <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
+        @endcan  
       </ul>
     </div>
     <div class="container-fluid" id="main-container">

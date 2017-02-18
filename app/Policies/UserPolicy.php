@@ -12,7 +12,6 @@ class UserPolicy
 
     public function get_all(User $user)
     {
-        return true;
         // User must be an admin of one or more groups, or a site admin, or a developer
         if (count($user->admin_groups)>0 || $user->site_admin || $user->developer) {
             return true;
