@@ -72,7 +72,7 @@ Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceContr
 Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data')->middleware('can:get_data,app_instance');
 Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data')->middleware('can:get_data,app_instance');
 // Get all App Data by app_instance
-Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch')->middleware('can:fetch,app_instance');
+Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch');//->middleware('can:fetch,app_instance');
 
 /***** ENDPOINTS *****/
 // List all endpoints
