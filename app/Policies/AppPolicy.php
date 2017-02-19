@@ -13,8 +13,8 @@ class AppPolicy
 
     public function get_all(User $user)
     {
-        // User must be a developer
-        if ($user->developer) {
+        // User must be a developer or a site admin or an admin of one or more groups
+        if ($user->developer || $user->site_admin || count($user->admin_groups)>0) {
             return true;
         }
     }
