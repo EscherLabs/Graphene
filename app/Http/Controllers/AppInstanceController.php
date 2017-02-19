@@ -14,7 +14,9 @@ class AppInstanceController extends Controller
     }
     
     public function index() {
-        return AppInstance::with('app')->get(); // Get current Site info from??
+        return AppInstance::with(['app'=>function($query) {
+            $query->where('site_id','=',Auth::user()->site->id);
+        }])->get();
     }
 
     public function show(AppInstance $app_instance) {

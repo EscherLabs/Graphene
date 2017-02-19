@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Site;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,13 @@ class SiteController extends Controller
         $this->validate($request,['domain'=>['required']]);
         $site = new Site($request->all());
         $site->save();
+
+        // After creating the site, copy the existing user as an admin of that site
+        $user = Auth::user();
+        $user->id = null;
+        $user->site_id = $site->id;
+        $user->site_admin = true;
+        $user->save();
         return $site;
     }
 

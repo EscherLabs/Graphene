@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Group;
 use App\User;
 use App\GroupAdmins;
@@ -17,7 +18,7 @@ class GroupController extends Controller
     
     public function index()
     {
-        return Group::all()->where('site_id',1); // Get current Site info from??
+        return Group::all()->where('site_id',Auth::user()->site->id);
     }
 
     public function show(Group $group)
@@ -29,7 +30,7 @@ class GroupController extends Controller
     {
         $this->validate($request,['name'=>['required'],'slug'=>['required']]);
         $group = new Group($request->all());
-        $group->site_id = 1; // Get current Site info from??
+        $group->site_id = Auth::user()->site->id;
         $group->save();
         return $group;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\App;
 use App\User;
 use App\AppDevelopers;
@@ -15,7 +16,7 @@ class AppController extends Controller
     }
 
     public function index() {
-        $apps = App::all();
+        $apps = App::all()->where('site_id',Auth::user()->site->id);
         foreach($apps as $key => $app) {
             $apps[$key]->code = json_decode($app->code);
         }
@@ -30,7 +31,7 @@ class AppController extends Controller
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app = new App($request->all());
-        $app->site_id = 1; // Get current Site info from??
+        $app->site_id = Auth::user()->site->id;
         $app->save();
         return $app;
     }
