@@ -56,23 +56,23 @@
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
             @can('get_all','App\User')
-              <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+              <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
             @endcan
             @can('get_all','App\App')
-              <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+              <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; Apps</a></li>
             @endcan
             @can('get_all','App\AppInstance')
-              <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+              <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
             @endcan
             @can('get_all','App\Group')
-              <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+              <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
             @endcan
             @can('get_all', 'App\Endpoint')
-              <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>  
+              <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
             @endcan   
             @can('get_all', 'App\Site')
-              <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
-            @endcan              
+              <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
+            @endcan            
           </ul>
           <!--form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -83,22 +83,22 @@
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         @can('get_all','App\User')
-          <li><a href="/admin/users"><i class="fa fa-user"></i> Users</a></li>
+          <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
         @endcan
         @can('get_all','App\App')
-          <li><a href="/admin/apps"><i class="fa fa-cube"></i> Apps</a></li>
+          <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; Apps</a></li>
         @endcan
         @can('get_all','App\AppInstance')
-          <li><a href="/admin/appinstances"><i class="fa fa-cubes"></i> App Instances</a></li>
+          <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
         @endcan
         @can('get_all','App\Group')
-          <li><a href="/admin/groups"><i class="fa fa-users"></i> Groups</a></li>
+          <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
         @endcan
         @can('get_all', 'App\Endpoint')
-          <li><a href="/admin/endpoints"><i class="fa fa-server"></i> Endpoints</a></li>  
+          <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
         @endcan   
         @can('get_all', 'App\Site')
-          <li><a href="/admin/sites"><i class="fa fa-cloud"></i> Sites</a></li>
+          <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
         @endcan  
       </ul>
     </div>

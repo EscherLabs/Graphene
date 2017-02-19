@@ -59,7 +59,7 @@
           <ul class="nav navbar-nav navbar-right visible-xs-block">
             <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
             @foreach ($apps as $app)
-              <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
+              <li><a href="/app/{{ $app->slug }}"><i class="fa fa-{{ $app->icon or 'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
             @endforeach
           </ul>
           <!--form class="navbar-form navbar-right">
@@ -74,7 +74,7 @@
       <ul class="nav nav-sidebar">
         <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
         @foreach ($apps as $app)
-          <li><a href="/app/{{ $app->slug }}"><i class="fa fa-cube"></i> {{ $app->name }}</a></li>
+          <li><a href="/app/{{ $app->slug }}"><i class="fa fa-{{ $app->icon or 'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
         @endforeach
       </ul>
     </div>

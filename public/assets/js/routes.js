@@ -42,8 +42,9 @@ initializers['appinstances'] = function(){
 				$('.navbar-header .nav a h4').html('App Instances');
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-        	{label: 'Slug', name:'slug', required: true},
-        	{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+        			{label: 'Slug', name:'slug', required: true},
+        			{label: 'Icon', name:'icon', required: false},
+        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{name: 'app', type:'hidden'},
