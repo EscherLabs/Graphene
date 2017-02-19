@@ -15,6 +15,7 @@ use App\App;
 Auth::routes();
 //Route::get('/home', 'HomeController@index');
 
+
 // Route::get('/','HomeController@index');
 // Route::get('/dashboard','HomeController@dashboard');
 Route::get('/','UserDashboardController@index');
