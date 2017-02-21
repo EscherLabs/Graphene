@@ -32,7 +32,7 @@
 /*berryTables*/
 [data-popins]{ border-bottom: 1px dotted;}
 [data-popins]{cursor: pointer; }
-thead .form-group{margin-bottom:0;}
+[data-inline] .form-group{margin-bottom:0;}
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -42,3 +42,4 @@ thead .form-group{margin-bottom:0;}
   user-select: none;           /* Non-prefixed version, currently
                                   not supported by any browser */
 }
+.ace_editor{height:500px}

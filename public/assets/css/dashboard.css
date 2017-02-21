@@ -138,7 +138,7 @@ body{
     border-right: 0;
     padding: 0 20px;
     background-color: #273135;
-    font-size: 16px;
+    /*font-size: 16px;*/
     width:200px;
   }
   #main-container{
