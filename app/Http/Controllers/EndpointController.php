@@ -16,7 +16,10 @@ class EndpointController extends Controller
     
     public function index()
     {
-        $groups = Group::whereIn('id',Auth::user()->group_admins)->with('endpoints')->get();
+        $groups = Group::whereIn('id',Auth::user()->group_admins)
+            ->where('site_id','=',Auth::user()->site_id)
+            ->with('endpoints')->get();
+
         $endpoints = [];
         foreach($groups as $group) {
             foreach($group->endpoints as $key => $endpoint) {
