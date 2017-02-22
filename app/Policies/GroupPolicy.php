@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\User;
+use App\Group;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,7 @@ class GroupPolicy
     public function create(User $user)
     {
         // User must be a site admin
-        if ( $user->site_admin) {
+        if ($user->site_admin) {
             return true;
         }
     }

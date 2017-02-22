@@ -25,11 +25,11 @@ class App extends Model
     {
         return $this->developers()->with('user')->get();
     }
-    public function add_developer(User $user, $status = Null)
+    public function add_developer(User $user, $status = false)
     {
-        $status = 0;
-        $app_developer = AppDeveloper::updateOrCreate(['app_id'=>$this->id,'user_id'=>$user->id],
-          ['status'=>$status]);
+        self::remove_developer($user); // First Delete the developer from the app
+        $app_developer = AppDeveloper::create(['app_id'=>$this->id,'user_id'=>$user->id,
+          'status'=>$status]);
         return $app_developer;
     }
     public function remove_developer(User $user)

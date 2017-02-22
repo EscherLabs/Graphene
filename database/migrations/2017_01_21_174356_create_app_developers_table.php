@@ -15,7 +15,7 @@ class CreateAppDevelopersTable extends Migration
         Schema::create('app_developers', function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->index();
             $table->integer('app_id')->unsigned()->index();
-            $table->string('status')->default(0);
+            $table->boolean('status')->default(false);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('app_id')->references('id')->on('apps')->onDelete('cascade');

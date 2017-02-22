@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $site = new \App\Site;
-        $site->domain = 'www.example.com';
+        $site->domain = '127.0.0.1';
         $site->save();
 
         $group = new \App\Group;
@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
         $group->save();
 
         $user1 = new \App\User;
-        $user1->site_id = $site->id;
         $user1->first_name = 'Tim';
         $user1->last_name = 'Cortesi';
         $user1->email = 'tcortesi@gmail.com';
@@ -32,9 +31,9 @@ class DatabaseSeeder extends Seeder
         $user1->save();
         $group->add_member($user1);
         $group->add_admin($user1);
+        $site->add_member($user1,1,1);
 
         $user2 = new \App\User;
-        $user2->site_id = $site->id;
         $user2->first_name = 'Adam';
         $user2->last_name = 'Smallcomb';
         $user2->email = 'atsmallcomb@gmail.com';
@@ -44,6 +43,7 @@ class DatabaseSeeder extends Seeder
         $user2->save();
         $group->add_member($user2);
         $group->add_admin($user2);
+        $site->add_member($user2,1,1);
 
         $app = new \App\App;
         $app->name = 'My App';

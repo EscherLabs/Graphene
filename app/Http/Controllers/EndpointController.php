@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Endpoint;
 use App\Group;
 use Illuminate\Http\Request;
@@ -15,10 +16,13 @@ class EndpointController extends Controller
     
     public function index()
     {
-        // return Endpoint::all();
-        $endpoints = Endpoint::all(); 
-        foreach($endpoints as $key => $endpoint) {
-            $endpoints[$key]->config = json_decode($endpoint->config);
+        $groups = Group::whereIn('id',Auth::user()->group_admins)->with('endpoints')->get();
+        $endpoints = [];
+        foreach($groups as $group) {
+            foreach($group->endpoints as $key => $endpoint) {
+                $endpoint->config = json_decode($endpoint->config);
+                $endpoints[] = $endpoint;
+            }
         }
         return $endpoints;
     }

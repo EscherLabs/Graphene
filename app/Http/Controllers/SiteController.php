@@ -29,12 +29,6 @@ class SiteController extends Controller
         $site = new Site($request->all());
         $site->save();
 
-        // After creating the site, copy the existing user as an admin of that site
-        $user = Auth::user();
-        $user->id = null;
-        $user->site_id = $site->id;
-        $user->site_admin = true;
-        $user->save();
         return $site;
     }
 
@@ -50,4 +44,18 @@ class SiteController extends Controller
             return 1;
         }
     }
+
+    public function list_members(Site $site)
+    {
+        return $site->list_members();
+    }
+    public function add_member(Site $site, User $user, Request $request)
+    {
+        return $group->add_member($user,$request->site_admin, $request->developer);
+    }
+    public function remove_member(Site $site, User $user)
+    {
+        return $group->remove_member($user);
+    }
+
 }

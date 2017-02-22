@@ -118,7 +118,7 @@ Route::get('/api/groups','GroupController@index')->middleware('can:get_all,App\G
 // Lookup specific group by group_id
 Route::get('/api/groups/{group}','GroupController@show')->middleware('can:get,group');
 // Create a new group
-Route::post('/api/groups','GroupController@create')->middleware('can:create,group');
+Route::post('/api/groups','GroupController@create')->middleware('can:create,App\Group');
 // Update an existing group by group_id
 Route::put('/api/groups/{group}','GroupController@update')->middleware('can:update,group');
 // Delete an existing group by group_id

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\User;
+use App\Site;
+use App\SiteMember;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -15,7 +17,12 @@ class UserController extends Controller
     
     public function index()
     {
-        return User::all()->where('site_id',Auth::user()->site->id);
+        $memberships = Site::find(Auth::user()->site_id)->list_members();
+        $users = [];
+        foreach($memberships as $membership) {
+            $users[] = $membership->user;
+        }
+        return $users;
     }
 
     public function show(User $user)
@@ -27,8 +34,14 @@ class UserController extends Controller
     {
         $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);
         $user = new User($request->all());
-        $user->site_id = Auth::user()->site->id;
         $user->save();
+
+        $site = Site::find(Auth::user()->site_id);
+        if ($request->has('developer') && $request->has('site_admin')) {
+            $site->add_member($user,$request->site_admin, $request->developer);
+        } else {
+            $site->add_member($user);
+        }
         return $user;
     }
 

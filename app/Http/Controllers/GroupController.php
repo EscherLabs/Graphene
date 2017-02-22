@@ -18,7 +18,7 @@ class GroupController extends Controller
     
     public function index()
     {
-        return Group::all()->where('site_id',Auth::user()->site->id);
+        return Group::all()->where('site_id',Auth::user()->site_id);
     }
 
     public function show(Group $group)
@@ -30,7 +30,7 @@ class GroupController extends Controller
     {
         $this->validate($request,['name'=>['required'],'slug'=>['required']]);
         $group = new Group($request->all());
-        $group->site_id = Auth::user()->site->id;
+        $group->site_id = Auth::user()->site_id;
         $group->save();
         return $group;
     }

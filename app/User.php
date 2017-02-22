@@ -9,8 +9,16 @@ class User extends Authenticatable
     protected $fillable = ['site_id', 'first_name', 'last_name', 'email', 'password'];
     protected $hidden = ['password', 'remember_token'];
 
-    public function site() {
-      return $this->belongsTo(Site::class);
+    /* Transient Properties not saved in the database */
+    public $developer_apps = [];
+    public $groups = [];
+    public $admin_groups = [];
+    public $site_admin = false;
+    public $developer = false;
+    public $site_id = null;
+
+    public function site_members() {
+      return $this->belongsTo(SiteMember::class);
     }
     public function group_members()
     {

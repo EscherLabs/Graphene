@@ -9,6 +9,7 @@ use App\Site;
 use App;
 use App\AppDeveloper;
 use App\GroupMember;
+use App\SiteMember;
 use App\GroupAdmin;
 
 class ValidateUser
@@ -22,11 +23,21 @@ class ValidateUser
      */
     public function handle($request, Closure $next)
     {
-        $user = Auth::user();
-
         // If user isn't currently logged in, do nothing
-        if (is_null($user)) {
+        if (is_null(Auth::user())) {
             return $next($request);
+        }
+
+        $current_site = Site::where('domain','=',$request->server('SERVER_NAME'))->first();
+        if (is_null($current_site)) {
+            App::abort(404, 'Not Found');
+        }
+
+        $user_site = SiteMember::where('user_id','=',Auth::user()->id)
+                                ->where('site_id','=',$current_site->id)->first();
+
+        if (is_null($user_site)) {
+            App::abort(403, 'Access denied');
         }
 
         $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
@@ -43,14 +54,10 @@ class ValidateUser
         Auth::user()->developer_apps = $developer_apps;
         Auth::user()->groups = $groups;
         Auth::user()->admin_groups = $admin_groups;
+        Auth::user()->site_id = $current_site->id;
+        Auth::user()->site_admin = $user_site->site_admin;
+        Auth::user()->developer = $user_site->developer;
 
-        // Log user out if they are not a member of the current site!
-        // if ($user->site->domain != $request->server('SERVER_NAME')) {
-        //     Auth::logout();
-        //     return redirect('/login');
-        // }
-
-        // Disallow User from accessing /admin
         if ($request->is('admin*') && 
             !(  Auth::user()->site_admin || 
                 Auth::user()->developer ||
@@ -58,7 +65,6 @@ class ValidateUser
             )) {
             App::abort(403, 'Access denied');
         }
-
         return $next($request);
     }
 }

@@ -15,7 +15,7 @@ class AppInstanceController extends Controller
     
     public function index() {
         return AppInstance::with(['app'=>function($query) {
-            $query->where('site_id','=',Auth::user()->site->id);
+            $query->where('site_id','=',Auth::user()->site_id);
         }])->get();
     }
 

@@ -16,7 +16,7 @@ class AppController extends Controller
     }
 
     public function index() {
-        $apps = App::all()->where('site_id',Auth::user()->site->id);
+        $apps = App::all()->where('site_id',Auth::user()->site_id);
         foreach($apps as $key => $app) {
             $apps[$key]->code = json_decode($app->code);
         }
@@ -31,7 +31,7 @@ class AppController extends Controller
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app = new App($request->all());
-        $app->site_id = Auth::user()->site->id;
+        $app->site_id = Auth::user()->site_id;
         $app->save();
         return $app;
     }

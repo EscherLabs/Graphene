@@ -15,7 +15,7 @@ class CreateGroupMembersTable extends Migration
         Schema::create('group_members', function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->index();
             $table->integer('group_id')->unsigned()->index();
-            $table->string('status')->default(0);
+            $table->boolean('status')->default(false);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');

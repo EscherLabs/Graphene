@@ -31,9 +31,9 @@ class Group extends Model
     {
         return $this->admins()->with('user')->get();
     }
-    public function add_admin(User $user,$status = Null)
+    public function add_admin(User $user,$status = 0)
     {
-        $status = 0;
+        self::remove_admin($user); // First Delete the admin from the group
         $group_admin = GroupAdmin::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
           ['status'=>$status]);
         return $group_admin;
@@ -46,11 +46,11 @@ class Group extends Model
     {
         return $this->members()->with('user')->get();
     }
-    public function add_member(User $user, $status = Null)
+    public function add_member(User $user, $status = false)
     {
-        $status = 0;
-        $group_member = GroupMember::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
-          ['status'=>$status]);
+        self::remove_member($user); // First Delete the member from the group
+        $group_member = GroupMember::create(['group_id'=>$this->id,'user_id'=>$user->id,
+          'status'=>$status]);
         return $group_member;
     }
     public function remove_member(User $user)
