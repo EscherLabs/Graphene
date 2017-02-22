@@ -244,14 +244,29 @@ templates['pages_tabpanel'] =Hogan.compile(`<div role="tabpanel" class="tab-pane
 templates['pages_listgroupitem'] =Hogan.compile(`{{#items}}{{^removed}}<a class="list-group-item tab" href="#{{key}}" aria-controls="{{key}}" data-toggle="tab">{{name}}</a>{{/removed}}{{/items}}`);
 templates['pages'] = Hogan.compile(
   `<div class="row">
-  <div class="col-md-9">
+  <div class="col-sm-9">
   <div class="tab-content">
     {{#items}}
 	{{>pages_tabpanel}}
     {{/items}}
   </div></div>
-  <div class="col-md-3">
-    	<div class="actions"><span class="btn btn-info"><i class="fa fa-pencil"></i></span> <span class="btn btn-success"><i class="fa fa-plus"></i></span> <span class="btn btn-danger"><i class="fa fa-times"></i></span></div>
+  <div class="col-sm-3">
+  {{#editable}}
+    	<div class="actions" style="height:40px">
+		<div class="btn-group">
+						<button type="button" class="btn  btn-info go pages_new">New <span class="">Section</span></button>
+						<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="caret"></span>
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right">
+							<li><a href="javascript:void(0);" class="pages_edit" ><i class="fa fa-pencil"></i> Edit Name</a></li>
+							<li><a href="javascript:void(0);" class="pages_delete" ><i class="fa fa-times"></i> Delete</a></li>
+						</ul>
+					</div>
+		</div>
+		  {{/editable}}
+
   <div class="list-group">
 	{{>pages_listgroupitem}}
   </div>
