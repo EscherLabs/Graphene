@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\UserDashboard;
+use App\AppInstance;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,8 @@ class UserDashboardController extends Controller
         }else{
             $config = $config->config;
         }
-        return view('dashboard',['apps'=>\App\AppInstance::with('app')->get(),'name'=>"Dashboard", 'config'=>$config]);
+        
+        return view('dashboard',['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>"Dashboard", 'config'=>$config]);
     }
 
     public function update(Request $request) {

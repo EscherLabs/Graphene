@@ -12,6 +12,7 @@ use App\AppDeveloper;
 use App\GroupMember;
 use App\SiteMember;
 use App\GroupAdmin;
+use App\Group;
 
 class ValidateUser
 {
@@ -42,15 +43,23 @@ class ValidateUser
         }
 
         $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
-        foreach(DB::select('select id from group_members left join groups on group_members.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
-            Auth::user()->groups[] = $group->id;
-        }
-        foreach(DB::select('select id from group_admins left join groups on group_admins.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
-            Auth::user()->admin_groups[] = $group->id;
-        }
+        // foreach(DB::select('select id from group_members left join groups on group_members.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
+        //     Auth::user()->groups[] = $group->id;
+        // }
+        // foreach(DB::select('select id from group_admins left join groups on group_admins.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
+        //     Auth::user()->admin_groups[] = $group->id;
+        // }
         foreach(DB::select('select id from app_developers left join apps on app_developers.app_id = apps.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $app) {
             Auth::user()->developer_apps[] = $app->id;
         }
+
+        Auth::user()->groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
+            $q->where('user_id', '=',  Auth::user()->id);
+        })->pluck('id')->toArray();
+        
+        Auth::user()->admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
+            $q->where('user_id', '=',  Auth::user()->id);
+        })->pluck('id')->toArray();
 
         Auth::user()->site_id = $current_site->id;
         Auth::user()->site_admin = $user_site->site_admin;

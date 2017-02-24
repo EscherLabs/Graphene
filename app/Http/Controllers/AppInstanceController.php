@@ -52,10 +52,12 @@ class AppInstanceController extends Controller
     }
 
     public function run($slug, Request $request) {
-        $myApp = \App\AppInstance::with('app')->with(['user_preferences'=>function($query){
+        $myApp = AppInstance::with('app')->with(['user_preferences'=>function($query){
             $query->where('user_id','=', Auth::user()->id);
         }])->where('slug', '=', $slug)->first();
-        if($myApp != null){
+        if($myApp != null) {
+            $this->authorize('fetch' ,$myApp);
+
             // Create data object that will be used by the app
             $data = [
                 'user'=>Auth::user(),
@@ -76,7 +78,7 @@ class AppInstanceController extends Controller
                 $data[$source->name] = $this->get_data($myApp, $source->name, $request);
             }
 
-            return view('app', ['apps'=>\App\AppInstance::with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>json_encode($data)]);
+            return view('app', ['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>json_encode($data)]);
         }
         abort(404,'App not found');
     }
