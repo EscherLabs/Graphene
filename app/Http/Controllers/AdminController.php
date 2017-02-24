@@ -14,15 +14,15 @@ class AdminController extends Controller
     }
     
     public function index($resource = null) {
-     return view('admin', ['resource'=>$resource]);
+     return view('admin', ['resource'=>$resource,'id'=>'']);
     }    
     public function members(Group $group) {
-     return view('admin', ['resource'=>'members']);
+     return view('admin', ['resource'=>'members','id'=>$group->id]);
     }
     public function admins(Group $group) {
-     return view('admin', ['resource'=>'admins']);
+     return view('admin', ['resource'=>'admins','id'=>$group->id]);
     }
     public function developers(App $app) {
-     return view('admin', ['resource'=>'developers']);
+     return view('admin', ['resource'=>'developers','id'=>$app->id]);
     }
 }

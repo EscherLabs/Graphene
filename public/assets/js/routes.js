@@ -179,7 +179,7 @@ initializers['groups'] = function(){
 }
 initializers['members'] = function(){
 		$.ajax({
-			url: '/api/groups/1/'+route,
+			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Members');
 				tableConfig.schema = [
@@ -198,7 +198,7 @@ initializers['members'] = function(){
 }
 initializers['admins'] = function(){
 		$.ajax({
-			url: '/api/groups/1/'+route,
+			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Admins');
 				tableConfig.schema = [
