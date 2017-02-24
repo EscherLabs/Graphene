@@ -15,7 +15,7 @@ class AppInstanceController extends Controller
     }
     
     public function index() {
-        $groups = Group::whereIn('id',Auth::user()->group_members)
+        $groups = Group::whereIn('id',Auth::user()->groups)
             ->where('site_id','=',Auth::user()->site_id)
             ->with('app_instances')->get();
         $app_instances = [];
