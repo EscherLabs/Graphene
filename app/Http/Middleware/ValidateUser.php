@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use App\User;
 use App\Site;
@@ -40,21 +41,17 @@ class ValidateUser
             App::abort(403, 'Access denied');
         }
 
-        // $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
-        // foreach(AppDeveloper::where('user_id','=', Auth::user()->id)->get() as $app) {
-        //     $developer_apps[] = $app->app_id;
-        // }
-        // foreach(GroupMember::where('user_id','=', Auth::user()->id)->get() as $group) {
-        //     $groups[] = $group->group_id;
-        // }
-        // foreach(GroupAdmin::where('user_id','=', Auth::user()->id)->get() as $admin_group) {
-        //     $admin_groups[] = $admin_group->group_id;
-        // }
-        
+        $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
+        foreach(DB::select('select id from group_members left join groups on group_members.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
+            Auth::user()->groups[] = $group->id;
+        }
+        foreach(DB::select('select id from group_admins left join groups on group_admins.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
+            Auth::user()->admin_groups[] = $group->id;
+        }
+        foreach(DB::select('select id from app_developers left join apps on app_developers.app_id = apps.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $app) {
+            Auth::user()->developer_apps[] = $app->id;
+        }
 
-        Auth::user()->developer_apps = AppDeveloper::where('user_id','=', Auth::user()->id)->pluck('app_id');
-        Auth::user()->groups = GroupMember::where('user_id','=', Auth::user()->id)->pluck('group_id');
-        Auth::user()->admin_groups = GroupAdmin::where('user_id','=', Auth::user()->id)->pluck('group_id');
         Auth::user()->site_id = $current_site->id;
         Auth::user()->site_admin = $user_site->site_admin;
         Auth::user()->developer = $user_site->developer;
