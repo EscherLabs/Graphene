@@ -17,7 +17,7 @@ class UserDashboardController extends Controller
         if(is_null($user_dashboard)){
             $config = '""';
         }else{
-            $config = $config->config;
+            $config = $user_dashboard->config;
         }
         
         return view('dashboard',['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>"Dashboard", 'config'=>$config]);

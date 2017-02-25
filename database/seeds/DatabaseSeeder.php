@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $site = new \App\Site;
         $site->domain = '127.0.0.1';
         $site->name = 'LocalDev';
-        $site->theme->css = '.navbar-inverse .navbar-brand, .navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus {background-color:blue;}';
+        $site->theme = ['css' => ''];
         $site->save();
 
         $group = new \App\Group;
