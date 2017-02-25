@@ -8,6 +8,19 @@ class AppInstance extends Model
 {
     protected $fillable = ['name', 'slug', 'public', 'configuration', 'resources','icon'];
 
+    public function getConfigurationAttribute($value) {
+      return json_decode($value);
+    }
+    public function setConfigurationAttribute($value) {
+      $this->attributes['configuration'] = json_encode($value);
+    }
+    public function getResourcesAttribute($value) {
+      return json_decode($value);
+    }
+    public function setResourcesAttribute($value) {
+      $this->attributes['resources'] = json_encode($value);
+    }
+
     public function group() {
       return $this->belongsTo(Group::class);
     }

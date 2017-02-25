@@ -6,7 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    protected $fillable = ['site_id', 'first_name', 'last_name', 'email', 'password'];
+    protected $fillable = ['first_name', 'last_name', 'email', 'password'];
     protected $hidden = ['password', 'remember_token'];
 
     /* Transient Properties not saved in the database */
@@ -15,7 +15,14 @@ class User extends Authenticatable
     public $admin_groups = [];
     public $site_admin = false;
     public $developer = false;
-    public $site_id = null;
+    public $site = null;
+
+    public function getParamsAttribute($value) {
+      return json_decode($value);
+    }
+    public function setParamsAttribute($value) {
+      $this->attributes['params'] = json_encode($value);
+    }
 
     public function site_members() {
       return $this->belongsTo(SiteMember::class);

@@ -8,6 +8,13 @@ class Endpoint extends Model
 {
     protected $fillable = ['name', 'type', 'config'];
 
+    public function getConfigAttribute($value) {
+      return json_decode($value);
+    }
+    public function setConfigAttribute($value) {
+      $this->attributes['config'] = json_encode($value);
+    }
+
     public function site() {
       return $this->belongsTo(Site::class);
     }

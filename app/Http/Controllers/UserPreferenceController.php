@@ -14,6 +14,6 @@ class UserPreferenceController extends Controller
     
     public function update(AppInstance $appInstance, Request $request)
     {
-        return $appInstance->set_preference(Auth::user() , json_encode($request->get('preferences')));
+        return $appInstance->set_preference(Auth::user() , $request->get('preferences'));
     }
 }

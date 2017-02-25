@@ -16,7 +16,7 @@ class AppInstanceController extends Controller
     
     public function index() {
         $groups = Group::whereIn('id',Auth::user()->groups)
-            ->where('site_id','=',Auth::user()->site_id)
+            ->where('site_id','=',Auth::user()->site->id)
             ->with('app_instances')->get();
         $app_instances = [];
         foreach($groups as $group) {
@@ -61,10 +61,10 @@ class AppInstanceController extends Controller
             // Create data object that will be used by the app
             $data = [
                 'user'=>Auth::user(),
-                'options'=>json_decode($myApp->configuration)
+                'options'=>$myApp->configuration
             ];
             if(!is_null($myApp->user_preferences)) {
-                $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
+                $data['user']['preferences'] = $myApp->user_preferences->preferences;
                 if(is_null($data['user']['preferences'])){
                     $data['user']['preferences'] = [];
                 }
@@ -74,17 +74,16 @@ class AppInstanceController extends Controller
 
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
-            foreach(json_decode($myApp->app->code)->sources as $source){
+            foreach($myApp->app->code->sources as $source){
                 $data[$source->name] = $this->get_data($myApp, $source->name, $request);
             }
-
-            return view('app', ['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>json_encode($data)]);
+            return view('app', ['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
         }
         abort(404,'App not found');
     }
     
     public function fetch($ai_id, Request $request) {
-        $myApp = \App\AppInstance::with(['user_preferences'=>function($query){
+        $myApp = AppInstance::with(['user_preferences'=>function($query){
             $query->where('user_id','=',Auth::user()->id);
         }])->where('id', '=', $ai_id)->first();
 
@@ -92,22 +91,19 @@ class AppInstanceController extends Controller
             // Create data object that will be used by the app
             $data = [
                 'user'=>Auth::user(),
-                'options'=>json_decode($myApp->configuration)
+                'options'=>$myApp->configuration
             ];
             if(!is_null($myApp->user_preferences)) {
-                $data['user']['preferences'] = json_decode($myApp->user_preferences->preferences);
+                $data['user']['preferences'] = $myApp->user_preferences->preferences;
                 if(is_null($data['user']['preferences'])){
                     $data['user']['preferences'] = [];
                 }
             }else{
                 $data['user']['preferences'] = [];
             }
-
-
-
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
-            foreach(json_decode($myApp->app->code)->sources as $source){
+            foreach($myApp->app->code->sources as $source){
                 $data[$source->name] = $this->get_data($myApp, $source->name, $request);
             }
 
@@ -155,14 +151,14 @@ class AppInstanceController extends Controller
     private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         // Derive and Map URL with Mustache
         $m = new \Mustache_Engine;
-        $url = $m->render($endpoint->config['url'] . $resource_info->path, $all_data);
+        $url = $m->render($endpoint->config->url . $resource_info->path, $all_data);
 
         // Fetch Data based on Endpoint Type
         if ($endpoint->type == 'http_no_auth') {
             $data = $this->http_fetch($url,$verb,$all_data['request']);
         } else if ($endpoint->type == 'http_basic_auth') {
             $data = $this->http_fetch($url,$verb,$all_data['request'],
-                    $endpoint->config['username'], $endpoint->config['password']);
+                    $endpoint->config->username, $endpoint->config->password);
         } else {
             abort(505,'Authentication Type Not Supported');
         }
@@ -178,14 +174,11 @@ class AppInstanceController extends Controller
     private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         $googleClient = new \PulkitJalan\Google\Client(config('google'));
         $client = $googleClient->getClient();
-        $config = $endpoint->config;
-        $client->setAccessToken($config['accessToken']);
+        $client->setAccessToken($endpoint->config->accessToken);
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $config['accessToken'] = $client->getAccessToken();
-            $endpoint->config = json_encode($config);
+            $endpoint->config->accessToken = $client->getAccessToken();
             $endpoint->save();
-            $endpoint->config = $config;
         }
         $service = new \Google_Service_Sheets($client);
         $sheets = new \GoogleSheets\Sheets();
@@ -193,13 +186,13 @@ class AppInstanceController extends Controller
         if ($resource_info->path == '' ) {
             abort(505,'The path endpoint must specifiy a valid worksheet name');
         }
-        $values = $sheets->spreadsheet($endpoint->config['sheet_id'])->sheet($resource_info->path)->all();
+        $values = $sheets->spreadsheet($endpoint->config->sheet_id)->sheet($resource_info->path)->all();
         return $values;
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
-        $configuration = json_decode($app_instance->configuration);
-        $resources = json_decode($app_instance->resources);
+        $configuration = $app_instance->configuration;
+        $resources = $app_instance->resources;
 
         $verb = 'GET'; // Default Verb
         if ($request->has('verb')) {
@@ -223,7 +216,6 @@ class AppInstanceController extends Controller
 
         // Lookup Endpoint
         $endpoint = Endpoint::find((int)$resource_info->endpoint);
-        $endpoint->config = json_decode($endpoint->config,true);
 
         // Merge App Configuration with User Preferences, User Info, and `request` data
         $all_data = ['configuration'=>$configuration,

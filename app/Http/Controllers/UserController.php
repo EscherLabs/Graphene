@@ -17,7 +17,7 @@ class UserController extends Controller
     
     public function index()
     {
-        $memberships = Site::find(Auth::user()->site_id)->list_members();
+        $memberships = Site::find(Auth::user()->site->id)->list_members();
         $users = [];
         foreach($memberships as $membership) {
             $users[] = $membership->user;
@@ -36,7 +36,7 @@ class UserController extends Controller
         $user = new User($request->all());
         $user->save();
 
-        $site = Site::find(Auth::user()->site_id);
+        $site = Site::find(Auth::user()->site->id);
         if ($request->has('developer') && $request->has('site_admin')) {
             $site->add_member($user,$request->site_admin, $request->developer);
         } else {

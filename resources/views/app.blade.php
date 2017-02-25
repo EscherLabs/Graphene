@@ -19,8 +19,8 @@
   $('[href="/app/{{ $app->slug }}"]').parent().addClass('active');
   var opts = {
     $el: $('#app-container'),
-    data:{!! $data !!},
-    config: {!! $app->app['code'] !!},
+    data:{!! json_encode($data) !!},
+    config: {!! json_encode($app->app['code']) !!},
     crud: function(name, data, callback, verb){
           $.ajax({
           url: '/api/app_data/{{ $app->id }}/' +name+ '?verb='+verb,

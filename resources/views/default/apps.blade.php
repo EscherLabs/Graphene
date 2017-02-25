@@ -36,7 +36,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> CrazyStairs</a>
+          <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> {{ Auth::user()->site->name }}</a>
           <ul class="nav navbar-nav navbar-right hidden-xs">
             <li><a href="#"><h4 style="margin:0">{{ $name}}</h4></a></li>
           </ul>
@@ -106,5 +106,6 @@
     @yield('bottom_page_scripts')
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
+    <style> {{ Auth::user()->site->theme->css }}</style>
   </body>
 </html>

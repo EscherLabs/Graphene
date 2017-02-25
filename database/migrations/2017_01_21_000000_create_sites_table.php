@@ -15,11 +15,11 @@ class CreateSitesTable extends Migration
         Schema::create('sites', function (Blueprint $table) {
             $table->increments('id');
             $table->string('domain')->unique();
-            $table->string('theme')->nullable();
+            $table->string('name')->nullalble()->default(null);
+            $table->json('theme')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
-
     }
 
     /**

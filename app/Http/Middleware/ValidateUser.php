@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Closure;
 use App\User;
 use App\Site;
-use App;
+use App\App;
 use App\AppDeveloper;
 use App\GroupMember;
 use App\SiteMember;
@@ -31,15 +31,20 @@ class ValidateUser
         }
 
         $current_site = Site::where('domain','=',$request->server('SERVER_NAME'))->first();
+        
+        /* Site does not exist */
         if (is_null($current_site)) {
-            App::abort(404, 'Not Found');
+            Auth::logout();
+            return redirect('/login');
         }
 
         $user_site = SiteMember::where('user_id','=',Auth::user()->id)
                                 ->where('site_id','=',$current_site->id)->first();
 
+        /* User is not a member of the current site */
         if (is_null($user_site)) {
-            App::abort(403, 'Access denied');
+            Auth::logout();
+            return redirect('/login');
         }
 
         $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
@@ -49,9 +54,9 @@ class ValidateUser
         // foreach(DB::select('select id from group_admins left join groups on group_admins.group_id = groups.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $group) {
         //     Auth::user()->admin_groups[] = $group->id;
         // }
-        foreach(DB::select('select id from app_developers left join apps on app_developers.app_id = apps.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $app) {
-            Auth::user()->developer_apps[] = $app->id;
-        }
+        // foreach(DB::select('select id from app_developers left join apps on app_developers.app_id = apps.id where user_id = :user_id and site_id = :site_id', ['user_id' => Auth::user()->id, 'site_id' => $current_site->id]) as $app) {
+        //     Auth::user()->developer_apps[] = $app->id;
+        // }
 
         Auth::user()->groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
@@ -61,7 +66,11 @@ class ValidateUser
             $q->where('user_id', '=',  Auth::user()->id);
         })->pluck('id')->toArray();
 
-        Auth::user()->site_id = $current_site->id;
+        Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
+            $q->where('user_id', '=',  Auth::user()->id);
+        })->pluck('id')->toArray();
+
+        Auth::user()->site = $current_site;
         Auth::user()->site_admin = $user_site->site_admin;
         Auth::user()->developer = $user_site->developer;
 

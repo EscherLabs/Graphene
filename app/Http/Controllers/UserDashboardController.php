@@ -13,8 +13,8 @@ class UserDashboardController extends Controller
     }
     
     public function index() {
-        $config = UserDashboard::find(Auth::user()->id);
-        if(is_null($config)){
+        $user_dashboard = UserDashboard::find(Auth::user()->id);
+        if(is_null($user_dashboard)){
             $config = '""';
         }else{
             $config = $config->config;
@@ -24,7 +24,7 @@ class UserDashboardController extends Controller
     }
 
     public function update(Request $request) {
-        return UserDashboard::updateOrCreate(['user_id'=>Auth::user()->id], ['config'=>json_encode($request->get('config'))]);
+        return UserDashboard::updateOrCreate(['user_id'=>Auth::user()->id], ['config'=>$request->get('config')]);
     }
 
 }

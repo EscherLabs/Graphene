@@ -2,6 +2,9 @@
 
 return [
 
+    /* Master CrazyStairs Site */
+    'master_site' => 'crazystairs.escherlabs.com',
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

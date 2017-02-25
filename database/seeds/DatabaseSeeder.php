@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         $site = new \App\Site;
         $site->domain = '127.0.0.1';
+        $site->name = 'LocalDev';
+        $site->theme->css = '.navbar-inverse .navbar-brand, .navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus {background-color:blue;}';
         $site->save();
 
         $group = new \App\Group;
@@ -49,7 +51,7 @@ class DatabaseSeeder extends Seeder
         $app->name = 'My App';
         $app->site_id = $site->id;
         
-        $app->code = json_encode([
+        $app->code = [
             "css" => "",
             "form"=>json_decode('{"fields":[{"label":"Test","name":"test"}]}'),
             "scripts" => [
@@ -134,7 +136,7 @@ class DatabaseSeeder extends Seeder
                 ",
             ]
             ],
-        ]);
+        ];
         $app->save();
 
         $app->add_developer($user1,true);
@@ -143,9 +145,9 @@ class DatabaseSeeder extends Seeder
         $endpoint = new \App\Endpoint;
         $endpoint->name = 'My Endpoint';
         $endpoint->type = 'http_basic_auth';
-        $endpoint->config = json_encode([
+        $endpoint->config = [
             'username'=>'info','password'=>'info','url'=>'https://mercury.binghamton.edu'
-        ]);
+        ];
         $endpoint->site_id = $site->id;
         $endpoint->group_id = $group->id;
         $endpoint->save();
@@ -155,11 +157,11 @@ class DatabaseSeeder extends Seeder
         $app_instance->slug = 'my_app_instance';
         $app_instance->app_id = $app->id;
         $app_instance->group_id = $group->id;
-        $app_instance->configuration = json_encode(["test"=>"hello_world"]);
-        $app_instance->resources = json_encode([
+        $app_instance->configuration = ["test"=>"hello_world"];
+        $app_instance->resources = [
             ['name'=>'echo','endpoint'=>1,'modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/echo/'],
             ['name'=>'whoami','endpoint'=>1,'modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/whoami/'],
-        ]);
+        ];
         $app_instance->public = 0;
         $app_instance->save();
 

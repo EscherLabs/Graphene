@@ -16,30 +16,24 @@ class AppController extends Controller
     }
 
     public function index() {
-        $apps = App::all()->where('site_id',Auth::user()->site_id);
-        foreach($apps as $key => $app) {
-            $apps[$key]->code = json_decode($app->code);
-        }
+        $apps = App::all()->where('site_id',Auth::user()->site->id);
         return $apps;
     }
 
     public function show(App $app) {
-        $app->code = json_decode($app->code);
         return $app;
     }
 
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app = new App($request->all());
-        $app->site_id = Auth::user()->site_id;
+        $app->site_id = Auth::user()->site->id;
         $app->save();
         return $app;
     }
 
     public function update(Request $request, App $app) {   
-        $app->code = json_encode($request->get('code'));
         $app->update($request->all());
-        $app->code = json_decode($app->code);
         return $app;
     }
 
@@ -49,7 +43,6 @@ class AppController extends Controller
         }
     }
     public function admin(App $app) {
-        $app->code = json_decode($app->code);
         return view('adminAppnew', ['app'=>$app]);
     }
     public function list_members(Group $group)
