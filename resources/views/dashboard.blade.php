@@ -83,7 +83,7 @@
 			}
 
 			function addWidget(e) { cb.collections[0].addItem(e); }
-			var config = {!! $config !!};
+			var config = {!! json_encode($config) !!};
       		var apps = {!! $apps !!};
 			// var status = true;
 			load(true);
