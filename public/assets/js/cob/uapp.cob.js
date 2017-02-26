@@ -43,7 +43,7 @@ Cobler.types.uApp = function(container){
               }
             }
             opts.data = data;
-            opts.config = JSON.parse(_.find(apps, {id: parseInt(this.get().app_id,10)}).app.code);
+            opts.config = _.find(apps, {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');
 

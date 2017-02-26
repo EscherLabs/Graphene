@@ -20,7 +20,7 @@
   var opts = {
     $el: $('#app-container'),
     data:{!! json_encode($data) !!},
-    config: {!! json_encode($app->app['code']) !!},
+    config: {!! json_encode($app->app->code) !!},
     crud: function(name, data, callback, verb){
           $.ajax({
           url: '/api/app_data/{{ $app->id }}/' +name+ '?verb='+verb,
@@ -34,14 +34,16 @@
   }
   $('#edit_instance').on('click', function(){
     $().berry($.extend(true, {attributes:bae.data.user.preferences},JSON.parse(opts.config.user_preference_form))).on('save', function(){
+    // $().berry($.extend(true, {attributes:bae.data.user.preferences},opts.config.user_preference_form)).on('save', function(){
+
       $.ajax({
         type: 'POST',
         url:'/api/preferences/{{ $app->id }}',
         data: {'preferences': this.toJSON()},
         success:function(data){
           // opts.data.user.preferences = JSON.parse(data.preferences);
-          bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
-
+          // bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
+          bae.app.update({user:{preferences:data.preferences}})
         }
       })
       this.trigger('close');

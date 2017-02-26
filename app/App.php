@@ -10,13 +10,7 @@ class App extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = ['name'];
-
-    public function getCodeAttribute($value) {
-      return json_decode($value);
-    }
-    public function setCodeAttribute($value) {
-      $this->attributes['code'] = json_encode($value);
-    }
+    protected $casts = ['code' => 'object'];
 
     public function site() {
       return $this->belongsTo(Site::class);

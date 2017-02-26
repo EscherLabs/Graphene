@@ -11,12 +11,7 @@ class Site extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = ['domain','theme'];
 
-    public function getThemeAttribute($value) {
-      return json_decode($value);
-    }
-    public function setThemeAttribute($value) {
-      $this->attributes['theme'] = json_encode($value);
-    }
+    protected $casts = ['theme' => 'object'];
 
     public function members() {
       return $this->hasMany(SiteMember::class);

@@ -17,12 +17,7 @@ class User extends Authenticatable
     public $developer = false;
     public $site = null;
 
-    public function getParamsAttribute($value) {
-      return json_decode($value);
-    }
-    public function setParamsAttribute($value) {
-      $this->attributes['params'] = json_encode($value);
-    }
+    protected $casts = ['params' => 'object'];
 
     public function site_members() {
       return $this->belongsTo(SiteMember::class);

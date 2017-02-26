@@ -73,7 +73,8 @@
 				if(!status){
 					cb.addSource(document.getElementById('sortableList'));
 					var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} },function(data){
-						config = JSON.parse(data.config);
+						// config = JSON.parse(data.config);
+						config = data.config;
 					})}
 					cb.on('moved',save);
 					cb.on('reorder', save);

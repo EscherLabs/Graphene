@@ -33,6 +33,7 @@ class AppController extends Controller
     }
 
     public function update(Request $request, App $app) {   
+        //dd($request->all());
         $app->update($request->all());
         return $app;
     }

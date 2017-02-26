@@ -54,20 +54,27 @@ initializers['appinstances'] = function(){
 				tableConfig.data = data;
 				tableConfig.events = [
 					{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
-						var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(JSON.parse(model.attributes.app.code).form)) 
+						// var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(JSON.parse(model.attributes.app.code).form)) 
+						var options = $.extend(true, {legend:'Update Configuration'}, model.attributes.app.code.form) 
 
-						options.attributes = JSON.parse(model.attributes.configuration)|| {};
+						// options.attributes = JSON.parse(model.attributes.configuration)|| {};
+						options.attributes = model.attributes.configuration || {};
+
 						options.attributes.id = model.attributes.id;
 						options.fields.push({name: 'id', type:'hidden'});
 						$().berry(options).on('save', function(){
-							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
+							// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
+							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: this.toJSON()},success:function(){
+
 								this.trigger('close');
 							}.bind(this)});
 						});
 					}},
 					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
 						 
-						var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
+						// var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
+						var attributes = $.extend(true, [],model.attributes.app.code.sources, model.attributes.resources);
+
 						$().berry({legend:'Update Routes',flatten:false, attributes: {id:model.attributes.id, container:{resources:attributes}},fields:[
 							{name: 'id', type:'hidden'},
 							{name:'container', label: false,  type: 'fieldset', fields:[
@@ -82,7 +89,8 @@ initializers['appinstances'] = function(){
 								]}
 							]},
 						]} ).on('save', function(){
-							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
+							// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
+							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: this.toJSON().container.resources},success:function(){
 								this.trigger('close');
 							}.bind(this)});
 						});

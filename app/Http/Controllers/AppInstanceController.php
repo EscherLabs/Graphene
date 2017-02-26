@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AppInstance;
+use App\App;
 use App\Endpoint;
 use App\Group;
 use Illuminate\Support\Facades\Auth;
@@ -15,15 +16,11 @@ class AppInstanceController extends Controller
     }
     
     public function index() {
-        $groups = Group::whereIn('id',Auth::user()->groups)
-            ->where('site_id','=',Auth::user()->site->id)
-            ->with('app_instances')->get();
-        $app_instances = [];
-        foreach($groups as $group) {
-            foreach($group->app_instances as $key => $app_instance) {
-                $app_instances[] = $app_instance;
-            }
-        }
+        $app_instances = AppInstance::with('app')
+            ->whereHas('group', function($q){
+                $q->whereIn('id',Auth::user()->groups);
+            })
+            ->get();
         return $app_instances;
     }
 
