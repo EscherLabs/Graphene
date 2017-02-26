@@ -32,9 +32,9 @@ class AppController extends Controller
         return $app;
     }
 
-    public function update(Request $request, App $app) {   
-        //dd($request->all());
-        $app->update($request->all());
+    public function update(Request $request, App $app) {  
+        $app->code = $request->code;
+        $app->save();
         return $app;
     }
 
