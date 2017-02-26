@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserDashboard extends Model
 {
     protected $fillable = ['user_id', 'site_id', 'config'];
-    protected $primaryKey = 'user_id';
+    protected $primaryKey = ['user_id','site_id'];
 
     public $incrementing = false;
 

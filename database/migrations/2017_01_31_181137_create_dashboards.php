@@ -19,7 +19,7 @@ class CreateDashboards extends Migration
             $table->json('config')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['user_id']);
+            $table->unique(['user_id','site_id']);
         });    
     }
 
