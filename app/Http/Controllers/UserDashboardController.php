@@ -13,8 +13,8 @@ class UserDashboardController extends Controller
     }
     
     public function index() {
-        $user_dashboard = UserDashboard::find(Auth::user()->id);
-        if(is_null($user_dashboard)){
+        $user_dashboard = UserDashboard::where('user_id','=',Auth::user()->id)->where('site_id','=',Auth::user()->site->id)->first();
+        if(is_null($user_dashboard) || !isset($user_dashboard->config)){
             $config = '""';
         }else{
             $config = $user_dashboard->config;
@@ -24,7 +24,17 @@ class UserDashboardController extends Controller
     }
 
     public function update(Request $request) {
-        return UserDashboard::updateOrCreate(['user_id'=>Auth::user()->id], ['config'=>$request->get('config')]);
+        $user_dashboard = UserDashboard::where('user_id','=',Auth::user()->id)->where('site_id','=',Auth::user()->site->id)->first();
+        if ($user_dashboard) {
+            $user_dashboard->config = $request->get('config');
+        } else {
+            $user_dashboard = new UserDashboard();
+            $user_dashboard->user_id = Auth::user()->id;
+            $user_dashboard->site_id = Auth::user()->site->id;
+            $user_dashboard->config = $request->get('config');
+        }
+        $user_dashboard->save();
+        return $user_dashboard;
     }
 
 }

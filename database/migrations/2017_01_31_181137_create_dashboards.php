@@ -15,6 +15,7 @@ class CreateDashboards extends Migration
     {
         Schema::create('user_dashboards', function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->index();
+            $table->integer('site_id')->unsigned()->index();
             $table->json('config')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
