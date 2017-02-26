@@ -24,17 +24,9 @@ class UserDashboardController extends Controller
     }
 
     public function update(Request $request) {
-        $user_dashboard = UserDashboard::where('user_id','=',Auth::user()->id)->where('site_id','=',Auth::user()->site->id)->first();
-        if ($user_dashboard) {
-            $user_dashboard->config = $request->get('config');
-        } else {
-            $user_dashboard = new UserDashboard([
-                'user_id'=>Auth::user()->id,
-                'site_id'=>Auth::user()->site->id,
-                'config'=>$request->get('config')]);
-        }
-        $user_dashboard->save();
-        return $user_dashboard;
+        return UserDashboard::updateOrCreate(
+            ['user_id'=>Auth::user()->id, 'site_id'=>Auth::user()->site->id], 
+            ['config'=>$request->config]);
     }
 
 }
