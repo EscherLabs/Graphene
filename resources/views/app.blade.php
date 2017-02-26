@@ -38,7 +38,7 @@
 
       $.ajax({
         type: 'POST',
-        url:'/api/preferences/{{ $app->id }}',
+        url:'/api/apps/instances/{{ $app->id }}/user_prefs',
         data: {'preferences': this.toJSON()},
         success:function(data){
           // opts.data.user.preferences = JSON.parse(data.preferences);

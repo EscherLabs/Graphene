@@ -29,6 +29,7 @@ class AppController extends Controller
         $app = new App($request->all());
         $app->site_id = Auth::user()->site->id;
         $app->save();
+        $app->add_developer(Auth::user(),true);
         return $app;
     }
 

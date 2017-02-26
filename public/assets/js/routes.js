@@ -191,7 +191,7 @@ initializers['members'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Members');
 				tableConfig.schema = [
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					/* {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'}, */
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
 					{name: 'id', type:'hidden'}
 				];
@@ -210,7 +210,7 @@ initializers['admins'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Admins');
 				tableConfig.schema = [
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					/* {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'}, */
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
 					{name: 'id', type:'hidden'}
 				];
@@ -225,11 +225,11 @@ initializers['admins'] = function(){
 }
 initializers['developers'] = function(){
 		$.ajax({
-			url: '/api/apps/1/'+route,
+			url: '/api/apps/'+resource_id+'/'+route,
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Developers');
 				tableConfig.schema = [
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					/* {label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'}, */
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
 					{name: 'id', type:'hidden'}
 				];

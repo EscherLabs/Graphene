@@ -24,7 +24,7 @@ class App extends Model
     }
     public function list_developers()
     {
-        return $this->developers()->with('user')->get();
+        return $this->developers()->get();
     }
     public function add_developer(User $user, $status = false)
     {

@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $site = new \App\Site;
         $site->domain = '127.0.0.1';
         $site->name = 'LocalDev';
-        $site->theme = ['css' => ''];
+        $site->theme = ['css' => '','icon'=>'file'];
         $site->save();
 
         $group = new \App\Group;

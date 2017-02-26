@@ -21,13 +21,12 @@ Auth::routes();
 Route::get('/','UserDashboardController@index');
 Route::post('/api/dashboard','UserDashboardController@update');
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
-Route::post('/api/preferences/{appInstance}','UserPreferenceController@update');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
-Route::get('/admin/apps/{app}', 'AppController@admin');
-Route::get('/admin/groups/{group}/admins', 'AdminController@admins');
-Route::get('/admin/groups/{group}/members', 'AdminController@members');
-Route::get('/admin/apps/{app}/developers', 'AdminController@developers');
+Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
+Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');;
+Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');;
+Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');;
 
 Route::get('/app/{slug}', 'AppInstanceController@run');
 

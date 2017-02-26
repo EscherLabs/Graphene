@@ -48,6 +48,11 @@ class AppInstanceController extends Controller
         }
     }
 
+    public function save_preferences(AppInstance $app_instance, Request $request)
+    {
+        return $app_instance->set_preference(Auth::user() , $request->get('preferences'));
+    }
+
     public function run($slug, Request $request) {
         $myApp = AppInstance::with('app')->with(['user_preferences'=>function($query){
             $query->where('user_id','=', Auth::user()->id);
