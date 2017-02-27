@@ -8,9 +8,10 @@ var tableConfig = {
 		container: '#table', 
 		berry: {flatten: false},
 		add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes,
-			success:function() {
+			success:function(data) {
+				model.set(data);
 				toastr.success('', 'Successfully Added')
-			},
+			}.bind(model),
 			error:function(e) {
 				toastr.error(e.statusText, 'ERROR');
 			}

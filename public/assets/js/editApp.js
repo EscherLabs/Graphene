@@ -1,36 +1,33 @@
-  if(loaded.code == null){loaded.code = {scripts:[{name:'main',content:''}],templates:[{name:'main',content:''}]};}
-  var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
+if(loaded.code == null){loaded.code = {scripts:[{name:'main',content:''}],templates:[{name:'main',content:''}]};}
+var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
 
-  $('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
-  $('.navbar-header .nav a h4').on('click',function(){
-    $().berry({legend:'Update App Name',fields:[{name:'name',label:false, value: attributes.name}]}).on('save', function(){
-        attributes.name = this.toJSON().name;
-        $('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
-        this.trigger('close');
-    });
+$('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
+$('.navbar-header .nav a h4').on('click',function(){
+  $().berry({legend:'Update App Name',fields:[{name:'name',label:false, value: attributes.name}]}).on('save', function(){
+      attributes.name = this.toJSON().name;
+      $('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
+      this.trigger('close');
+  });
+})
+$('#save').on('click',function() {
+  var data = $.extend(true, {}, attributes,Berries.app.toJSON());
+  data.code.templates = templatePage.toJSON();
+  data.code.scripts = scriptPage.toJSON();
+  var temp = formPage.toJSON();
+  data.code.form = temp[0].content;
+  data.code.user_preference_form = temp[1].content;
+  $.ajax({
+    url: '/api/apps/'+attributes.id,
+    method: 'put',
+    data: data,
+    success:function() {
+      toastr.success('', 'Successfully Saved')
+    },
+    error:function(e) {
+      toastr.error(e.statusText, 'ERROR');
+    }
   })
-  $('#save').on('click',function() {
-    var data = $.extend(true, {}, attributes,Berries.app.toJSON());
-    data.code.templates = templatePage.toJSON();
-    data.code.scripts = scriptPage.toJSON();
-    var temp = formPage.toJSON();
-    data.code.form = temp[0].content;
-    data.code.user_preference_form = temp[1].content;
-    $.ajax({
-      url: '/api/apps/'+attributes.id,
-      method: 'put',
-      data: data,
-			success:function() {
-				toastr.success('', 'Successfully Saved')
-			},
-			error:function(e) {
-				toastr.error(e.statusText, 'ERROR');
-			}
-    })
-  })
-
-
-
+})
 
 var paged = function(selector, options){
   this.$el = $(selector);
@@ -96,7 +93,7 @@ var paged = function(selector, options){
     $(e.currentTarget).addClass('active');
     this.active = $(e.currentTarget).attr('aria-controls');
     this.berry.fields[this.active].editor.clearSelection();
-
+ this.berry.fields[this.active].focus();
   }.bind(this))
   $(selector).find('.list-group-item.tab').first().click();
 
@@ -118,25 +115,25 @@ var paged = function(selector, options){
 }
 
 
-  $('.sources').berry({
-    actions:false,
-    name: 'app',
-    autoDestroy:false,
-    attributes:attributes,
-    inline:true,
-    flatten:false,
-    fields:[
-      // {label: 'Name', name:'name', required: true, fieldset:"app_name"},
-      {name:'code', label: false,  type: 'fieldset', fields:[
-        {label:false, name:'css', fieldset: 'styles', type:'ace', mode:'ace/mode/css'},
-        {fieldset:'sources',"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]},
-        // {fieldset:'forms',label: 'Configuration Form',type:'ace', name:'form', mode:'ace/mode/javascript'},        
-        // {fieldset:'forms',label: 'User Preferences Form',type:'ace', name:'user_preference_form', mode:'ace/mode/javascript'}
-      ]}
-    ]})
-    var temp = $(window).height() - $('.nav-tabs').offset().top -77;// - (88+ this.options.autoSize) +'px');
+$('.sources').berry({
+  actions:false,
+  name: 'app',
+  autoDestroy:false,
+  attributes:attributes,
+  inline:true,
+  flatten:false,
+  fields:[
+    // {label: 'Name', name:'name', required: true, fieldset:"app_name"},
+    {name:'code', label: false,  type: 'fieldset', fields:[
+      {label:false, name:'css', fieldset: 'styles', type:'ace', mode:'ace/mode/css'},
+      {fieldset:'sources',"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]},
+      // {fieldset:'forms',label: 'Configuration Form',type:'ace', name:'form', mode:'ace/mode/javascript'},        
+      // {fieldset:'forms',label: 'User Preferences Form',type:'ace', name:'user_preference_form', mode:'ace/mode/javascript'}
+    ]}
+  ]})
+  var temp = $(window).height() - $('.nav-tabs').offset().top -77;// - (88+ this.options.autoSize) +'px');
 
-    $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
-    templatePage = new paged('.templates',{items:attributes.code.templates});
-    scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
-    formPage = new paged('.forms',{items:[{name:'Form',content:attributes.code.form},{name:'User Preference Form',content:attributes.code.user_preference_form}], editable: false, mode:'ace/mode/javascript'});
+  $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
+  templatePage = new paged('.templates',{items:attributes.code.templates});
+  scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
+  formPage = new paged('.forms',{items:[{name:'Form',content:attributes.code.form},{name:'User Preference Form',content:attributes.code.user_preference_form}], editable: false, mode:'ace/mode/javascript'});
