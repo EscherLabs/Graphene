@@ -48,7 +48,6 @@ Cobler.types.uApp = function(container){
               }
             }
             opts.data = data;
-            // debugger;
             opts.config = _.find(apps, {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');
