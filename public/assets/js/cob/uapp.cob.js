@@ -32,7 +32,7 @@ Cobler.types.uApp = function(container){
               $el: $(el).find('.collapsible'),
               crud: function(name, data, callback, verb){
                 $.ajax({
-                url: '/api/app_data/'+ this.config.app_id + '/' +name+ '?verb='+verb,
+                url: '/api/app_data/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
                 // dataType : 'json',
                 type: 'POST',
                 data: {request: data},
@@ -49,7 +49,7 @@ Cobler.types.uApp = function(container){
             }
             opts.data = data;
             opts.config = _.find(apps, {id: parseInt(this.get().app_id,10)}).app.code;
-            opts.config.app_id = this.get().app_id;
+            opts.config.app_instance_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');
 
             this.bae = new berryAppEngine(opts);

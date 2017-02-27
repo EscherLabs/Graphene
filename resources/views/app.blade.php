@@ -40,7 +40,7 @@
     }
   }
   $('#edit_instance').on('click', function(){
-    $().berry($.extend(true, {attributes:bae.data.user.preferences},JSON.parse(opts.config.user_preference_form))).on('save', function(){
+    $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.preferences},JSON.parse(opts.config.user_preference_form))).on('save', function(){
     // $().berry($.extend(true, {attributes:bae.data.user.preferences},opts.config.user_preference_form)).on('save', function(){
 
       $.ajax({
@@ -50,10 +50,14 @@
         success:function(data){
           // opts.data.user.preferences = JSON.parse(data.preferences);
           // bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
-          bae.app.update({user:{preferences:data.preferences}})
+          bae.app.update({user:{preferences:data.preferences}});
+          this.trigger('close');
+          toastr.success('', 'Options Updated Successfully');
+        }.bind(this),
+        error:function(data){
+            toastr.error(data.statusText, 'An error occured updating options')
         }
       })
-      this.trigger('close');
     })
   })
 

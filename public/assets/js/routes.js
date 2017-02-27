@@ -7,9 +7,48 @@ var tableConfig = {
 		autoSize: -20,
 		container: '#table', 
 		berry: {flatten: false},
-		add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes});},
-		edit: function(model){$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes});},
-		delete: function(model){ $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE'});}
+		add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes,
+			success:function() {
+				toastr.success('', 'Successfully Added')
+			},
+			error:function(e) {
+				toastr.error(e.statusText, 'ERROR');
+			}
+		});},
+		edit: function(model){$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+			success:function() {
+				toastr.success('', 'Successfully Updated')
+			},
+			error:function(e) {
+				toastr.error(e.statusText, 'ERROR');
+			}
+		});},
+		delete: function(model){ $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
+			success:function() {
+				toastr.success('', 'Successfully Deleted')
+			},
+			error:function(e) {
+				toastr.error(e.statusText, 'ERROR');
+			}
+		});}
+
+		// tableConfig.add = function(model){
+		// 	if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
+		// 		$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.user_id, type: 'POST', data: model.attributes,
+		// 			success:function(data){
+		// 				toastr.success('', 'Developer successfully Added')
+		// 			},
+		// 			error:function(e){
+		// 				toastr.error(e.statusText, 'ERROR');
+		// 			}
+		// 		});
+		// 	}else{
+		// 		toastr.error('Developer already exists', 'Duplicate')
+		// 		model.delete();
+		// 		model.owner.draw();
+		// 	}
+		// },
+
 	}
 $('#content').html('<div class="row "><div class="col-sm-12"><div id="table" style="margin:-21px"></div></div></div>');		
 
@@ -65,9 +104,13 @@ initializers['appinstances'] = function(){
 						$().berry(options).on('save', function(){
 							// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
 							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: this.toJSON()},success:function(){
-
-								this.trigger('close');
-							}.bind(this)});
+									this.trigger('close');
+									toastr.success('', 'Successfully Updated Config')
+								}.bind(this),
+								error:function(e) {
+									toastr.error(e.statusText, 'ERROR');
+								}
+						 	});
 						});
 					}},
 					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
@@ -91,8 +134,13 @@ initializers['appinstances'] = function(){
 						]} ).on('save', function(){
 							// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
 							$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: this.toJSON().container.resources},success:function(){
-								this.trigger('close');
-							}.bind(this)});
+									this.trigger('close');
+									toastr.success('', 'Successfully updated Routes')
+								}.bind(this),
+								error:function(e) {
+									toastr.error(e.statusText, 'ERROR');
+								}
+						 	});
 						});
 					}}
 				]
@@ -191,14 +239,38 @@ initializers['members'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Members');
 				tableConfig.schema = [
-					/* {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'}, */
-					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
-					{name: 'id', type:'hidden'}
+					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
 				];
 				tableConfig.data = data;
-				tableConfig.add = function(model){$.ajax({url: '/api/groups/'+model.attributes.group_id+'/members/'+model.attributes.user_id, type: 'POST', data: model.attributes});},
-				tableConfig.edit = function(model){$.ajax({url: '/api/groups/'+model.attributes.group_id+'/members/'+model.attributes.user_id, type: 'PUT', data: model.attributes});},
-				tableConfig.delete = function(model){ $.ajax({url: '/api/groups/'+model.attributes.group_id+'/members/'+model.attributes.user_id, type: 'DELETE'});}
+				tableConfig.add = function(model){
+					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
+						$.ajax({url: '/api/groups/'+resource_id+'/members/'+model.attributes.user_id, type: 'POST', data: model.attributes,
+							success:function(data){
+								toastr.success('', 'Member successfully Added')
+							}.bind(model),
+							error:function(e){
+								this.delete();
+								this.owner.draw();
+			                    toastr.error(e.statusText, 'ERROR');
+							}.bind(model)
+						});
+					}else{
+						toastr.error('Member already exists', 'Duplicate')
+						model.delete();
+						model.owner.draw();
+					}
+				},
+				tableConfig.edit = false,
+				tableConfig.delete = function(model){
+						$.ajax({url: '/api/groups/'+resource_id+'/members/'+model.attributes.user_id, type: 'DELETE',
+							success:function(){
+								toastr.success('', 'Member successfully Removed')
+							},
+							error:function(e){
+			                    toastr.error(e.statusText, 'ERROR');
+							}
+						});
+				}
 
 				bt = new berryTable(tableConfig)
 			}
@@ -210,15 +282,38 @@ initializers['admins'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Admins');
 				tableConfig.schema = [
-					/* {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'}, */
-					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
-					{name: 'id', type:'hidden'}
+					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
 				];
 				tableConfig.data = data;
-				tableConfig.add = function(model){$.ajax({url: '/api/groups/'+model.attributes.group_id+'/admins/'+model.attributes.user_id, type: 'POST', data: model.attributes});},
-				tableConfig.edit = function(model){$.ajax({url: '/api/groups/'+model.attributes.group_id+'/admins/'+model.attributes.user_id, type: 'PUT', data: model.attributes});},
-				tableConfig.delete = function(model){ $.ajax({url: '/api/groups/'+model.attributes.group_id+'/admins/'+model.attributes.user_id, type: 'DELETE'});}
-				
+				tableConfig.add = function(model){
+					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
+						$.ajax({url: '/api/groups/'+resource_id+'/admins/'+model.attributes.user_id, type: 'POST', data: model.attributes,
+							success:function(data){
+								toastr.success('', 'Admin successfully Added')
+							}.bind(model),
+							error:function(e){
+								this.delete();
+								this.owner.draw();
+			                    toastr.error(e.statusText, 'ERROR');
+							}.bind(model)
+						});
+					}else{
+						toastr.error('Admin already exists', 'Duplicate')
+						model.delete();
+						model.owner.draw();
+					}
+				},
+				tableConfig.edit = false,
+				tableConfig.delete = function(model){
+						$.ajax({url: '/api/groups/'+resource_id+'/admins/'+model.attributes.user_id, type: 'DELETE',
+							success:function(){
+								toastr.success('', 'Admin successfully Removed')
+							},
+							error:function(e){
+			                    toastr.error(e.statusText, 'ERROR');
+							}
+						});
+				}
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -229,15 +324,38 @@ initializers['developers'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Developers');
 				tableConfig.schema = [
-					/* {label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'}, */
-					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'},
-					{name: 'id', type:'hidden'}
+					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
 				];
 				tableConfig.data = data;
-				tableConfig.add = function(model){$.ajax({url: '/api/apps/'+model.attributes.app_id+'/developers/'+model.attributes.user_id, type: 'POST', data: model.attributes});},
-				tableConfig.edit = function(model){$.ajax({url: '/api/apps/'+model.attributes.app_id+'/developers/'+model.attributes.user_id, type: 'PUT', data: model.attributes});},
-				tableConfig.delete = function(model){ $.ajax({url: '/api/apps/'+model.attributes.app_id+'/developers/'+model.attributes.user_id, type: 'DELETE'});}
-				
+				tableConfig.add = function(model){
+					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
+						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.user_id, type: 'POST', data: model.attributes,
+							success:function(data){
+								toastr.success('', 'Developer successfully Added')
+							}.bind(model),
+							error:function(e){
+								this.delete();
+								this.owner.draw();
+			                    toastr.error(e.statusText, 'ERROR');
+							}.bind(model)
+						});
+					}else{
+						toastr.error('Developer already exists', 'Duplicate')
+						model.delete();
+						model.owner.draw();
+					}
+				},
+				tableConfig.edit = false,
+				tableConfig.delete = function(model){
+						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.user_id, type: 'DELETE',
+							success:function(){
+								toastr.success('', 'Developer successfully Removed')
+							},
+							error:function(e){
+			                    toastr.error(e.statusText, 'ERROR');
+							}
+						});
+				}
 				bt = new berryTable(tableConfig)
 			}
 		});

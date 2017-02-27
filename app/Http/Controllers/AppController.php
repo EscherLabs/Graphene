@@ -35,6 +35,7 @@ class AppController extends Controller
 
     public function update(Request $request, App $app) {  
         $app->code = $request->code;
+        $app->name = $request->name;
         $app->save();
         return $app;
     }

@@ -20,8 +20,12 @@
       url: '/api/apps/'+attributes.id,
       method: 'put',
       data: data,
-      success: function() {
-      }
+			success:function() {
+				toastr.success('', 'Successfully Saved')
+			},
+			error:function(e) {
+				toastr.error(e.statusText, 'ERROR');
+			}
     })
   })
 
@@ -91,6 +95,8 @@ var paged = function(selector, options){
     $(e.currentTarget).parent().find('.list-group-item').removeClass('active');
     $(e.currentTarget).addClass('active');
     this.active = $(e.currentTarget).attr('aria-controls');
+    this.berry.fields[this.active].editor.clearSelection();
+
   }.bind(this))
   $(selector).find('.list-group-item.tab').first().click();
 
