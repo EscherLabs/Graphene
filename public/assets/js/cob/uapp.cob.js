@@ -37,12 +37,18 @@ Cobler.types.uApp = function(container){
                 type: 'POST',
                 data: {request: data},
                 error: function (data) {
+                  if(data.responseJSON.error) {
+                    toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
+                  }else{
+                    toastr.error(data.statusText, 'ERROR')
+                  }
                 }.bind(this),
                 success  : callback.bind(this)
                 });
               }
             }
             opts.data = data;
+            // debugger;
             opts.config = _.find(apps, {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');

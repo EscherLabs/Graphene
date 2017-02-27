@@ -40,6 +40,7 @@
 		<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
 		<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>`
 		<script type='text/javascript' src='assets/js/cob/widget_templates.js'></script>
+	    <script src='/assets/js/lib.js'></script> 
 
 		<script type='text/template' name="itemContainer">
 			<div class="cobler-li-content"></div>

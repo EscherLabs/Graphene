@@ -15,6 +15,8 @@
 
 @section('bottom_page_scripts')
 <script src='/assets/js/berryApp.js'></script> 
+    <script src='/assets/js/lib.js'></script> 
+
 <script>
   $('[href="/app/{{ $app->slug }}"]').parent().addClass('active');
   var opts = {
@@ -27,8 +29,13 @@
           type: 'POST',
           data: {request: data},
           error: function (data) {
+            if(data.responseJSON.error) {
+              toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
+            }else{
+              toastr.error(data.statusText, 'ERROR')
+            }
           }.bind(this),
-          success  : callback.bind(this)
+          success  : callback.bind(this),
         });
     }
   }
