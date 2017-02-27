@@ -1,4 +1,3 @@
-var loaded = {!! $app !!};
   if(loaded.code == null){loaded.code = {scripts:[{name:'main',content:''}],templates:[{name:'main',content:''}]};}
   var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
 

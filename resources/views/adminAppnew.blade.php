@@ -43,7 +43,9 @@
 
 
 @section('end_body_scripts_bottom')
-  <script type='text/javascript' src='assets/js/runApp.js'></script>
+<script>var loaded = {!! $app !!};
+</script>
+  <script type='text/javascript' src='/assets/js/runApp.js'></script>
 @endsection
 
 @section('bottom_page_styles')
