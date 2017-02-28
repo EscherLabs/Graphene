@@ -27,7 +27,7 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body class="topbar sidemenu">
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">

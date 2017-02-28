@@ -76,8 +76,12 @@ class AppInstanceController extends Controller
 
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
-            foreach($myApp->app->code->sources as $source){
-                $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+            if(!is_null($myApp->app->code) && count($myApp->app->code->sources) > 0){
+                foreach($myApp->app->code->sources as $source){
+                    if($source->name !== ''){
+                        $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+                    }
+                }
             }
             return view('app', ['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
         }
@@ -204,7 +208,9 @@ class AppInstanceController extends Controller
         if ($request->has('request') && !is_array($request->input('request'))) {
             abort(505,'request must be an array');
         }
-        if(count($resources)){
+        if(!count($resources)){
+            return [];
+        }
         // Lookup Resource by Name
         $endpoint_found = false;
         foreach($resources as $resource_info) {
@@ -218,7 +224,7 @@ class AppInstanceController extends Controller
 
         // Lookup Endpoint
         $endpoint = Endpoint::find((int)$resource_info->endpoint);
-        }
+        
         // Merge App Configuration with User Preferences, User Info, and `request` data
         $all_data = ['configuration'=>$configuration,
                      'preferences'=>[], 'user'=>[],

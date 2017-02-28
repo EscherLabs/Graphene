@@ -9,7 +9,7 @@
 @endsection
 
 @section('titlebar')
-    @if ($app->app->code->user_preference_form)
+    @if (!is_null($app->app->code) && $app->app->code->user_preference_form)
     <div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;"><i class="fa fa-gears"></i> Options</div>
     @endif
 
