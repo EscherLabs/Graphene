@@ -46,7 +46,7 @@ class AppController extends Controller
         }
     }
     public function admin(App $app) {
-        return view('adminAppnew', ['app'=>$app]);
+        return view('adminApp', ['app'=>$app]);
     }
     public function list_members(Group $group)
     {

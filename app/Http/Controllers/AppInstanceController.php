@@ -204,7 +204,7 @@ class AppInstanceController extends Controller
         if ($request->has('request') && !is_array($request->input('request'))) {
             abort(505,'request must be an array');
         }
-
+        if(count($resources)){
         // Lookup Resource by Name
         $endpoint_found = false;
         foreach($resources as $resource_info) {
@@ -218,7 +218,7 @@ class AppInstanceController extends Controller
 
         // Lookup Endpoint
         $endpoint = Endpoint::find((int)$resource_info->endpoint);
-
+        }
         // Merge App Configuration with User Preferences, User Info, and `request` data
         $all_data = ['configuration'=>$configuration,
                      'preferences'=>[], 'user'=>[],
