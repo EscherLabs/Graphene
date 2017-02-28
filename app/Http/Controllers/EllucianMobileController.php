@@ -43,7 +43,7 @@ class EllucianMobileController extends Controller
             $counter++;
             foreach($group->app_instances as $app_instance) {
                 $ellucian_group_apps['mappa'.$app_instance->id] = 
-                    ['type'=>'web','name'=>$app_instance->name,'access'=>[(string)$app_instance->id],'hideBeforeLogin'=>false,
+                    ['type'=>'web','name'=>$app_instance->name,'access'=>[(string)$group->id],'hideBeforeLogin'=>false,
                     'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug.'?topbar=false&sidemenu=false'],'order'=>(string)$counter];
                 $counter++;
             }
