@@ -3,7 +3,7 @@
  */
 
 /* Move down content because we have a fixed navbar that is 50px tall */
-body {
+body.topbar {
   padding-top: 50px;
 }
 
@@ -134,14 +134,17 @@ body{
 
 @media (min-width: 768px) {
   .sidebar {
-    top: 50px;
+    top:0;
     border-right: 0;
     padding: 0 20px;
     background-color: #273135;
     /*font-size: 16px;*/
     width:200px;
   }
-  #main-container{
+  body.topbar .sidebar {
+    top: 50px;
+  }
+  body.sidemenu #main-container{
     margin-left:200px;
   }
 }

@@ -28,7 +28,15 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body class="
+  @if( Request::get('topbar') !== 'false' )
+  topbar
+  @endif  
+  @if( Request::get('sidemenu') !== 'false' )
+  sidemenu
+  @endif
+">
+    @if( Request::get('topbar') !== 'false' )
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -71,7 +79,8 @@
         </div>
       </div>
     </nav>
-
+    @endif
+    @if( Request::get('sidemenu') !== 'false' )
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
@@ -80,6 +89,7 @@
         @endforeach
       </ul>
     </div>
+    @endif
     <div class="container-fluid" id="main-container">
       <div class="row">
 
