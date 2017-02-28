@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class EllucianMobileController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
     
     public function login() {
@@ -27,8 +27,8 @@ class EllucianMobileController extends Controller
     }
 
     public function config() {
-        $group_apps = Group::with('app_instances')->whereHas('members', function($q){
-            $q->where('user_id', '=',  Auth::user()->id);
+        $group_apps = Group::with('app_instances')->whereHas('site', function($q){
+            $q->where('domain', '=', request()->server('SERVER_NAME'));
         })->get();
         //return $group_apps;
         $ellucian_group_apps = [];

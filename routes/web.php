@@ -24,9 +24,9 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
-Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');;
-Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');;
-Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');;
+Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');
+Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');
+Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
 
 Route::get('/app/{slug}', 'AppInstanceController@run');
 
@@ -137,9 +137,6 @@ Route::post('/api/groups/{group}/admins/{user}','GroupController@add_admin')->mi
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/admins/{user}','GroupController@remove_admin')->middleware('can:remove_admin,group');
 
-// Route::get('/ellucianmobile/login',function() {
-//     return '<html><head><title>Authentication Success</title></head><body><div class="message">Logged in successfully</div></body></html>';
-// })->middleware('auth');
-Route::get('/ellucianmobile/login','EllucianMobileController@login');
-Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
+Route::get('/ellucianmobile/login','EllucianMobileController@login')->middleware('auth');
+Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo')->middleware('auth');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
