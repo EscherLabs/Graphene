@@ -18,11 +18,15 @@ class EllucianMobileController extends Controller
     }
 
     public function userinfo() {
+        $groups = Auth::user()->group_members()->pluck('group_id');
+        foreach($groups as $index => $group) {
+            $groups[$index] = (string)$group;
+        }
         return [
             'status'=>'success',
-            'userId'=>Auth::user()->id,
+            'userId'=>(string)Auth::user()->id,
             'authId'=>Auth::user()->email,
-            'roles'=>Auth::user()->group_members()->pluck('group_id')
+            'roles'=>$groups
         ];
     }
 
@@ -32,13 +36,16 @@ class EllucianMobileController extends Controller
         })->get();
         //return $group_apps;
         $ellucian_group_apps = [];
+        $counter = 1;
         foreach($group_apps as $group) {
             $ellucian_group_apps['mappg'.$group->id] = 
-                ['type'=>'header','name'=>$group->name,'access'=>[$group->id],'hideBeforeLogin'=>false];
+                ['type'=>'header','name'=>$group->name,'access'=>[(string)$group->id],'hideBeforeLogin'=>false,'order'=>(string)$counter];
+            $counter++;
             foreach($group->app_instances as $app_instance) {
                 $ellucian_group_apps['mappa'.$app_instance->id] = 
-                    ['type'=>'web','name'=>$app_instance->name,'access'=>[$app_instance->id],'hideBeforeLogin'=>false,
-                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug]];
+                    ['type'=>'web','name'=>$app_instance->name,'access'=>[(string)$app_instance->id],'hideBeforeLogin'=>false,
+                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug.'?topbar=false&sidemenu=false'],'order'=>(string)$counter];
+                $counter++;
             }
         }
         //return $ellucian_group_apps;
