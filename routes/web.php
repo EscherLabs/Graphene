@@ -137,6 +137,6 @@ Route::post('/api/groups/{group}/admins/{user}','GroupController@add_admin')->mi
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/admins/{user}','GroupController@remove_admin')->middleware('can:remove_admin,group');
 
-
-
-
+Route::get('/ellucianmobile/login',function() {
+    return '<html><head><title>Authentication Success</title></head><body><div class="message">Logged in successfully</div></body></html>';
+})->middleware('auth');
