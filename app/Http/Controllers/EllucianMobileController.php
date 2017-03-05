@@ -34,7 +34,7 @@ class EllucianMobileController extends Controller
         $group_apps = Group::with('app_instances')->whereHas('site', function($q){
             $q->where('domain', '=', request()->server('SERVER_NAME'));
         })->get();
-        //return $group_apps;
+
         $ellucian_group_apps = [];
         $counter = 1;
         foreach($group_apps as $group) {
@@ -48,7 +48,6 @@ class EllucianMobileController extends Controller
                 $counter++;
             }
         }
-        //return $ellucian_group_apps;
 
         return [
             'lastUpdated'=>date('c'),
@@ -88,32 +87,3 @@ class EllucianMobileController extends Controller
     }
 
 }
-
-
-
-//   "mapp": {
-//     "mappg69": {
-//       "type": "header",
-//       "name": "Campus Life",
-//       "order": "1",
-//       "access": [
-//         "MAIN"
-//       ],
-//       "hideBeforeLogin": "false"
-//     },
-//     "mappp163": {
-//       "type": "web",
-//       "name": "Live Bus View",
-//       "order": "2",
-//       "icon": "",
-//       "urls": {
-//         "url": "http://crazystairs.escherlabs.com/app/bus"
-//       },
-//       "access": [
-//         "MAIN"
-//       ],
-//       "hideBeforeLogin": "false",
-//       "homeScreenOrder": "1"
-//     }
-//   }
-// }

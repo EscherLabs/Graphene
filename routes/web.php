@@ -137,6 +137,12 @@ Route::post('/api/groups/{group}/admins/{user}','GroupController@add_admin')->mi
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/admins/{user}','GroupController@remove_admin')->middleware('can:remove_admin,group');
 
+// List all composites of a specified group by group_id
+Route::get('/api/groups/{group}/composites','GroupController@list_composites')->middleware('can:list_composites,group');
+Route::post('/api/groups/{group}/composites/{composite_group}','GroupController@add_composite')->middleware('can:add_composite,group,composite_group');
+Route::delete('/api/groups/{group}/composites/{composite_group}','GroupController@remove_composite')->middleware('can:remove_composite,group,composite_group');
+
+
 Route::get('/ellucianmobile/login','EllucianMobileController@login')->middleware('auth');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo')->middleware('auth');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');

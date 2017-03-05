@@ -79,4 +79,16 @@ class GroupController extends Controller
     {
         return $group->remove_admin($user);
     }
+    public function list_composites(Group $group)
+    {
+        return $group->list_composites();
+    }
+    public function add_composite(Group $group, Group $composite_group)
+    {
+        return $group->add_composite($composite_group);
+    }
+    public function remove_composite(Group $group, Group $composite_group)
+    {
+        return $group->remove_composite($composite_group);
+    }
 }

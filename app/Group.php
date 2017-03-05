@@ -14,6 +14,9 @@ class Group extends Model
     public function site() {
       return $this->belongsTo(Site::class);
     }
+    public function composites() {
+      return $this->hasMany(GroupComposite::class);
+    }
     public function endpoints() {
       return $this->hasMany(Endpoint::class);
     }
@@ -26,7 +29,6 @@ class Group extends Model
     public function admins() {
       return $this->hasMany(GroupAdmin::class);
     }
-
     public function list_admins()
     {
         return $this->admins()->with('user')->get();
@@ -56,5 +58,21 @@ class Group extends Model
     public function remove_member(User $user)
     {
         GroupMember::where('group_id',$this->id)->where('user_id',$user->id)->delete();
+    }
+    public function list_composites()
+    {
+        return $this->composites()->with('group')->get();
+    }
+    public function add_composite(Group $group)
+    {
+        self::remove_composite($group); // First Delete the group from the composite
+        $composite = GroupComposite::create([
+          'group_id'=>$this->id,
+          'composite_group_id'=>$group->id]);
+        return $composite;
+    }
+    public function remove_composite(Group $group)
+    {
+        GroupComposite::where('group_id',$this->id)->where('composite_group_id',$group->id)->delete();
     }
 }

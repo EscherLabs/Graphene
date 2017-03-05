@@ -98,4 +98,32 @@ class GroupPolicy
             return true;
         }
     }
+
+    public function list_composites(User $user, Group $group)
+    {
+        // User must be an admin of the group or a site admin
+        if (in_array($group->id,$user->admin_groups) || $user->site_admin) {
+            return true;
+        }
+    }
+
+    public function add_composite(User $user, Group $group, Group $composite_group)
+    {
+        // User must be an admin of the group & composite group or a site admin
+        if ((in_array($group->id,$user->admin_groups) &&
+             in_array($composite_group->id,$user->admin_groups))
+            || $user->site_admin) {
+            return true;
+        }
+    }
+
+    public function remove_composite(User $user, Group $group, Group $composite_group)
+    {
+        // User must be an admin of the group & composite group or a site admin
+        if ((in_array($group->id,$user->admin_groups) &&
+             in_array($composite_group->id,$user->admin_groups))
+            || $user->site_admin) {
+            return true;
+        }
+    }
 }
