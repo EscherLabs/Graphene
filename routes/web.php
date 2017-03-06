@@ -26,6 +26,7 @@ Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
 Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');
 Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');
+Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
 Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
 
 Route::get('/app/{slug}', 'AppInstanceController@run');

@@ -13,6 +13,7 @@ use App\GroupMember;
 use App\SiteMember;
 use App\GroupAdmin;
 use App\Group;
+use App\GroupComposite;
 
 class ValidateUser
 {
@@ -49,10 +50,12 @@ class ValidateUser
 
         $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
 
-        // Must be updated to add composites
-        Auth::user()->groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
+        // Must be updated to add composites 
+        $member_groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
         })->pluck('id')->toArray();
+        $composite_groups = GroupComposite::whereIn('group_id', $member_groups)->pluck('composite_group_id')->toArray();
+        Auth::user()->groups = array_unique(array_merge($member_groups, $composite_groups));
         
         Auth::user()->admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
             $q->where('user_id', '=',  Auth::user()->id);

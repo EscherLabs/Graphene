@@ -25,4 +25,7 @@ class AdminController extends Controller
     public function developers(App $app) {
      return view('admin', ['resource'=>'developers','id'=>$app->id]);
     }
+    public function composites(Group $group) {
+     return view('admin', ['resource'=>'composites','id'=>$group->id]);
+    }
 }

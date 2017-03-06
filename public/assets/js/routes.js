@@ -230,9 +230,11 @@ initializers['groups'] = function(){
 					{'name': 'config', 'label': '<i class="fa fa-lock"></i> Admins', callback: function(model){
 						window.location.href = '/admin/groups/'+model.attributes.id+'/admins'
 					}},
-					{'name': 'resources', 'label': '<i class="fa fa-person"></i> Members', callback: function(model){
+					{'name': 'resources', 'label': '<i class="fa fa-users"></i> Members', callback: function(model){
 						window.location.href = '/admin/groups/'+model.attributes.id+'/members'
-
+					}},
+					{'name': 'composites', 'label': '<i class="fa fa-puzzle-piece"></i> Composites', callback: function(model){
+						window.location.href = '/admin/groups/'+model.attributes.id+'/composites'
 					}}
 				]
 				tableConfig.data = data;
@@ -315,6 +317,48 @@ initializers['admins'] = function(){
 						$.ajax({url: '/api/groups/'+resource_id+'/admins/'+model.attributes.user_id, type: 'DELETE',
 							success:function(){
 								toastr.success('', 'Admin successfully Removed')
+							},
+							error:function(e){
+			                    toastr.error(e.statusText, 'ERROR');
+							}
+						});
+				}
+				bt = new berryTable(tableConfig)
+			}
+		});
+}
+initializers['composites'] = function(){
+		$.ajax({
+			url: '/api/groups/'+resource_id+'/'+route,
+			success: function(data){
+				$('.navbar-header .nav a h4').html('Group Composites');
+				tableConfig.schema = [
+					{label: 'Group', name:'composite_group_id', required: true, type:'select', choices: '/api/groups', label_key:'composite_group_id'}
+				];
+				tableConfig.data = data;
+				tableConfig.add = function(model){
+					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
+						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.composite_group_id, type: 'POST', data: model.attributes,
+							success:function(data){
+								toastr.success('', 'Composite successfully Added')
+							}.bind(model),
+							error:function(e){
+								this.delete();
+								this.owner.draw();
+			                    toastr.error(e.statusText, 'ERROR');
+							}.bind(model)
+						});
+					}else{
+						toastr.error('Composite already exists', 'Duplicate')
+						model.delete();
+						model.owner.draw();
+					}
+				},
+				tableConfig.edit = false,
+				tableConfig.delete = function(model){
+						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.composite_group_id, type: 'DELETE',
+							success:function(){
+								toastr.success('', 'Composite successfully Removed')
 							},
 							error:function(e){
 			                    toastr.error(e.statusText, 'ERROR');
