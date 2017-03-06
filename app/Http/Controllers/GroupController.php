@@ -18,7 +18,7 @@ class GroupController extends Controller
     
     public function index()
     {
-        return Group::all()->where('site_id',Auth::user()->site->id);
+        return Group::where('site_id',Auth::user()->site->id)->get();
     }
 
     public function show(Group $group)

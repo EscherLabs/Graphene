@@ -16,7 +16,7 @@ class AppController extends Controller
     }
 
     public function index() {
-        $apps = App::all()->where('site_id',Auth::user()->site->id);
+        $apps = App::where('site_id',Auth::user()->site->id)->get();
         return $apps;
     }
 
