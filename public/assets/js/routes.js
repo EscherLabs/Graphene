@@ -337,7 +337,7 @@ initializers['composites'] = function(){
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
-					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
+					if(!model.owner.find({user_id:parseInt(model.attributes.composite_group_id)}).length){
 						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.composite_group_id, type: 'POST', data: model.attributes,
 							success:function(data){
 								toastr.success('', 'Composite successfully Added')
