@@ -1,4 +1,4 @@
-@extends('default.main')
+@extends('default.guest')
 
 @section('welcome_name')
 Guest

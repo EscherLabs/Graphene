@@ -1,11 +1,11 @@
-@extends('default.main')
+@extends('default.guest')
 
 @section('welcome_name')
 Guest
 @endsection
 
 @section('content')
-<div class="row" style="margin-top: 20px">
+<div class="row">
     <div class="col-md-8 col-md-offset-2">
         <div class="panel panel-default">
             <div class="panel-heading">Reset Password</div>

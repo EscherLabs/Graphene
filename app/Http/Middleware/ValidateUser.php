@@ -26,17 +26,11 @@ class ValidateUser
      */
     public function handle($request, Closure $next)
     {
+        $current_site = config('app.site');
+
         // If user isn't currently logged in, do nothing
         if (is_null(Auth::user())) {
             return $next($request);
-        }
-
-        $current_site = Site::where('domain','=',$request->server('SERVER_NAME'))->first();
-        
-        /* Site does not exist */
-        if (is_null($current_site)) {
-            Auth::logout();
-            return redirect('/login');
         }
 
         $user_site = SiteMember::where('user_id','=',Auth::user()->id)
@@ -45,7 +39,7 @@ class ValidateUser
         /* User is not a member of the current site */
         if (is_null($user_site)) {
             Auth::logout();
-            return redirect('/login');
+            abort(403, 'Unauthorized action.');
         }
 
         $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;

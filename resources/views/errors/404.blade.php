@@ -1,47 +1,13 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Not Found.</title>
+@extends('default.guest')
 
-        <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
-
-        <style>
-            html, body {
-                height: 100%;
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                color: #B0BEC5;
-                display: table;
-                font-weight: 100;
-                font-family: 'Lato', sans-serif;
-            }
-
-            .container {
-                text-align: center;
-                display: table-cell;
-                vertical-align: middle;
-            }
-
-            .content {
-                text-align: center;
-                display: inline-block;
-            }
-
-            .title {
-                font-size: 72px;
-                margin-bottom: 40px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="content">
-                <div class="title">Not Found</div>
-            </div>
+@section('content')
+        <div style="text-align:center;">
+            <div style="text-shadow:2px 2px 5px rgba(0,0,0,.8);font-size:200px;text-align:center;">404</div>
+            <h1 style="margin:25px;">
+                The Page You Requested Was Not Found
+            </h1>
+            <a class="btn btn-default" style="font-size:20px;" href="/">
+                <i class="fa fa-fw fa-home"></i> Go Back to Home Page
+            </a>
         </div>
-    </body>
-</html>
+@endsection

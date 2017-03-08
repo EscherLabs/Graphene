@@ -8,12 +8,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/assets/favicon.png">
-
     <title>CrazyStairs</title>
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
@@ -27,7 +27,8 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body class="topbar">
+    @if( Request::get('topbar') !== 'false' )
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -37,29 +38,52 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/"><i class="fa fa-signal"></i> CrazyStairs</a>
+          <a class="navbar-brand" href="/"><i class="fa fa-{{ config('app.site')->theme->icon }} fa-fw"></i> {{ config('app.site')->name }}</a>
+          <!--<ul class="nav navbar-nav navbar-right hidden-xs">
+            <li><a href="#"><h4 style="margin:0">HELLO WORLD</h4></a></li>
+          </ul>-->
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-              </a>
+              <!--<a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
+                Guest
+                <span class="caret"></span>
+              </a>-->
               <ul class="dropdown-menu">
-                <li><a href="{{ url('/') }}">My Apps</a></li>
-                <li><a href="{{ url('/admin') }}">Admin</a></li>
-                <li><a href="{{ url('/logout') }}">Logout</a></li>
+                <li><a href="{{ url('/') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                <li><a href="{{ url('/admin') }}"><i class="fa fa-gear"></i> Admin</a></li>
+                <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
             </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right visible-xs-block">
+            <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
+            HELLO WORLD
           </ul>
           <!--form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
           </form-->
+          @yield('titlebar')
         </div>
       </div>
     </nav>
-    <div class="container-fluid">
-      @yield('content')
+    @endif
+    <div class="container-fluid" id="main-container">
+      <div class="row">
+
+        <div class="col-sm-12 main">
+
+          @yield('content')
+
+
+        </div>
+      </div>
+
     </div>
+    <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>-->
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     @yield('bottom_page_scripts')
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
