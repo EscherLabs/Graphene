@@ -67,7 +67,9 @@ class AppInstanceController extends Controller
             $current_user = new User;
             $myApp = AppInstance::with('app')->where('slug', '=', $slug)->where('public','=','1')->first();
             if (is_null($myApp)) { abort(403); }
-            $current_user_apps = AppInstance::where('public','=','1')->with('app')->get();
+            $current_user_apps = AppInstance::where('public','=','1')->whereHas('group', function($q){
+                $q->where('site_id', '=', config('app.site')->id);
+            })->with('app')->get();
         }
 
         if($myApp != null) {

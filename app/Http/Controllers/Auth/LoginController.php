@@ -45,7 +45,9 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        $current_user_apps = AppInstance::where('public','=','1')->with('app')->get();
+        $current_user_apps = AppInstance::where('public','=','1')->whereHas('group', function($q){
+            $q->where('site_id', '=', config('app.site')->id);
+        })->with('app')->get();
         return view('auth.login', ['apps'=>$current_user_apps]);
 
         //return view('auth.login');
