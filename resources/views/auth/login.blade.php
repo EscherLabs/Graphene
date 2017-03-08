@@ -4,6 +4,26 @@
 Guest
 @endsection
 
+@section('body_classes')
+    @if(Request::get('sidemenu') !== 'false' && count($apps)>0)
+        sidemenu
+    @endif
+@endsection
+
+@section('sidemenu')
+    @if( Request::get('sidemenu') !== 'false' && count($apps)>0))
+    <div class="col-sm-3 col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+        <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
+        @foreach ($apps as $app)
+        
+          <li><a href="/app/{{ $app->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
+        @endforeach
+      </ul>
+    </div>
+    @endif
+@endsection
+
 @section('content')
 <div class="row">
     <div class="col-md-8 col-md-offset-2">

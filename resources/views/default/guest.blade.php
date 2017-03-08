@@ -27,7 +27,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body class="topbar">
+  <body class="topbar @yield('body_classes')">
     @if( Request::get('topbar') !== 'false' )
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
@@ -46,15 +46,26 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <!--<a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
-                Guest
+              @if(Auth::check())
+              <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
+                <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?d=mm" /> 
+                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} 
                 <span class="caret"></span>
-              </a>-->
+              </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url('/') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                <li><a href="{{ url('/admin') }}"><i class="fa fa-gear"></i> Admin</a></li>
+                <li><a href="{{ url('/admin/users') }}"><i class="fa fa-gear"></i> Admin</a></li>
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
+              @else
+              <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
+                <img class="gravatar" src="https://www.gravatar.com/avatar/?d=mm&f=y" /> Guest 
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url('/login') }}"><i class="fa fa-sign-in fa-fw"></i> Login</a></li>
+              </ul>
+              @endif
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
@@ -69,6 +80,7 @@
       </div>
     </nav>
     @endif
+    @yield('sidemenu')
     <div class="container-fluid" id="main-container">
       <div class="row">
 
@@ -87,5 +99,6 @@
     @yield('bottom_page_scripts')
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
+    <style> {{ config('app.site')->theme->css }}</style>
   </body>
 </html>

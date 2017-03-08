@@ -6,13 +6,15 @@ use App\AppInstance;
 use App\App;
 use App\Endpoint;
 use App\Group;
+use App\UserPreference;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class AppInstanceController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('run','get_data');
     }
     
     public function index() {
@@ -54,24 +56,28 @@ class AppInstanceController extends Controller
     }
 
     public function run($slug, Request $request) {
-        $myApp = AppInstance::with('app')->with(['user_preferences'=>function($query){
-            $query->where('user_id','=', Auth::user()->id);
-        }])->where('slug', '=', $slug)->first();
-        if($myApp != null) {
+        if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+            $myApp = AppInstance::with('app')->with(['user_preferences'=>function($query){
+                $query->where('user_id','=', Auth::user()->id);
+            }])->where('slug', '=', $slug)->first();
             $this->authorize('fetch' ,$myApp);
+            $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
+        } else { /* User is not Authenticated */
+            $current_user = new User;
+            $myApp = AppInstance::with('app')->where('slug', '=', $slug)->where('public','=','1')->first();
+            if (is_null($myApp)) { abort(403); }
+            $current_user_apps = AppInstance::where('public','=','1')->with('app')->get();
+        }
 
+        if($myApp != null) {
             // Create data object that will be used by the app
-            $data = [
-                'user'=>Auth::user(),
-                'options'=>$myApp->configuration
-            ];
-            if(!is_null($myApp->user_preferences)) {
-                $data['user']['preferences'] = $myApp->user_preferences->preferences;
-                if(is_null($data['user']['preferences'])){
-                    $data['user']['preferences'] = [];
-                }
-            }else{
+            $data = ['user'=>$current_user,'options'=>$myApp->configuration];
+
+            if(!isset($myApp->user_preferences) || is_null($myApp->user_preferences) || is_null($myApp->user_preferences->preferences)) {
                 $data['user']['preferences'] = [];
+            } else { 
+                $data['user']['preferences'] = $myApp->user_preferences->preferences;
             }
 
             // Get each source
@@ -83,7 +89,7 @@ class AppInstanceController extends Controller
                     }
                 }
             }
-            return view('app', ['apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(),'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
+            return view('app', ['apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
         }
         abort(404,'App not found');
     }
@@ -197,6 +203,10 @@ class AppInstanceController extends Controller
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
+        if ($app_instance->public !== 1) {
+            $this->authorize('get_data', $app_instance);
+        } 
+
         $configuration = $app_instance->configuration;
         $resources = $app_instance->resources;
 

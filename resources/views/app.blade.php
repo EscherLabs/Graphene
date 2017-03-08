@@ -9,11 +9,12 @@
 @endsection
 
 @section('titlebar')
-    @if (!is_null($app->app->code) && $app->app->code->user_preference_form)
+    @if (Auth::check() && !is_null($app->app->code) && $app->app->code->user_preference_form)
     <div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;"><i class="fa fa-gears"></i> Options</div>
     @endif
-
+    @if (Auth::check())
 		<a class="btn btn-default pull-right" style="margin-top: 8px;margin-right:15px" href="/admin/apps/{{ $app->app_id }}"><i class="fa fa-pencil"></i> Edit App</a>
+    @endif
 @endsection
 
 @section('bottom_page_scripts')

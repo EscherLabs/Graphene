@@ -70,8 +70,8 @@ Route::post('/api/apps/instances/{app_instance}/user_prefs','AppInstanceControll
 Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceController@call_route')->middleware('can:get_route,app_instance,route');
 
 // Get App Instance External Resource Data by endpoint_id (POST or GET)
-Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data')->middleware('can:get_data,app_instance');
-Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data')->middleware('can:get_data,app_instance');
+Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
+Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
 // Get all App Data by app_instance
 // TJC -- THIS MIDDLEWARE IS BROKEN.. NO IDEA WHY??
 Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch');//->middleware('can:fetch,app_instance');
