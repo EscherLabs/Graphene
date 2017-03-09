@@ -48,4 +48,20 @@ class PageController extends Controller
             return 1;
         }
     }
+
+    public function run($slug, Request $request) {
+        if (Auth::check()) { /* User is Authenticated */
+            // Code goes here
+            //$myPage = Page!
+        } else { /* User is not Authenticated */
+            // More different code goes here
+            //$myPage = Page!
+        }
+
+        if($myPage != null) {
+            // Other code goes here
+            return view('page', ['apps'=>[],'name'=>$myPage->name, 'data'=>$myPage->content]);
+        }
+        abort(404,'App not found');
+    }
 }
