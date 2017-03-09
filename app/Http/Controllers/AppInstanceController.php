@@ -26,6 +26,10 @@ class AppInstanceController extends Controller
         return $app_instances;
     }
 
+    public function admin(AppInstance $app_instance) {
+     return view('admin', ['resource'=>'app_instance','id'=>$app_instance->id]);
+    }
+
     public function show(AppInstance $app_instance) {
         return $app_instance->with('app')->get()->first();
     }

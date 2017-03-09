@@ -56,11 +56,11 @@ $('#content').html('<div class="row "><div class="col-sm-12"><div id="table" sty
 
 initializers = {};
 
-initializers['apps'] = function(){
+initializers['apps'] = function() {
+		$('.navbar-header .nav a h4').html('Apps');
 		$.ajax({
 			url: '/api/'+route,
-			success: function(data){
-				$('.navbar-header .nav a h4').html('Apps');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
 					{name: 'id', type:'hidden'}
@@ -76,11 +76,11 @@ initializers['apps'] = function(){
 			}
 		});
 }
-initializers['appinstances'] = function(){
+initializers['appinstances'] = function() {
+		$('.navbar-header .nav a h4').html('App Instances');
 		$.ajax({
 			url: '/api/appinstances',
-			success: function(data){
-				$('.navbar-header .nav a h4').html('App Instances');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
         			{label: 'Slug', name:'slug', required: true},
@@ -156,11 +156,118 @@ initializers['appinstances'] = function(){
 			}
 		});
 }
-initializers['sites'] = function(){
+initializers['app_instance'] = function() {
+		$('.navbar-header .nav a h4').html('App Instances');
+		$.ajax({
+			url: '/api/appinstances/'+resource_id,
+			success: function(data) {
+				tableConfig.schema = [
+					{label: 'Name', name:'name', required: true},
+        			{label: 'Slug', name:'slug', required: true},
+        			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					{name: 'app', type:'hidden'},
+					{name: 'id', type:'hidden'}
+				];
+				tableConfig.events = [
+
+					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
+						 
+						// var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
+						if(model.attributes.app.code.sources[0].name !== '') {
+							
+							var attributes = $.extend(true, [],model.attributes.app.code.sources, model.attributes.resources);
+
+							$().berry({legend:'Update Routes',flatten:false, attributes: {id:model.attributes.id, container:{resources:attributes}},fields:[
+								{name: 'id', type:'hidden'},
+								{name:'container', label: false,  type: 'fieldset', fields:[
+
+									{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
+										{label: 'Name', enabled:false},
+										{label: 'Path'},
+										{label: 'Cache', type: 'checkbox'},
+										{label: 'Fetch', type: 'checkbox'},
+										{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
+										{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+									]}
+								]},
+							]} ).on('save', function(){
+								// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
+								$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: this.toJSON().container.resources},success:function(){
+										this.trigger('close');
+										toastr.success('', 'Successfully updated Routes')
+									}.bind(this),
+									error:function(e) {
+										toastr.error(e.statusText, 'ERROR');
+									}
+								});
+							});
+						}
+					}}
+				]
+				
+
+
+				$('#table').html(`
+				<div style="margin:21px">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
+    <li role="presentation"><a href="#config" aria-controls="profile" role="tab" data-toggle="tab">Config</a></li>
+    <li role="presentation"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;">...</div>
+    <div role="tabpanel" class="tab-pane" id="config" style="padding-top: 20px;">...</div>
+    <div role="tabpanel" class="tab-pane" id="resources" style="padding-top: 20px;">...</div>
+  </div>
+
+</div>
+				`)
+				$('#main').berry({fields:tableConfig.schema,attributes:data, actions:false})
+									
+				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.form)) 
+
+				// options.attributes = JSON.parse(model.attributes.configuration)|| {};
+				options.attributes = data.configuration || {};
+
+				options.attributes.id = data.id;
+				options.fields.push({name: 'id', type:'hidden'});
+				$('#config').berry(options)
+						if(data.app.code.sources[0].name !== '') {	
+							var attributes = $.extend(true, [],data.app.code.sources, data.resources);
+							$('#resources').berry({flatten:false, attributes: {id:data.id, container:{resources:attributes}},fields:[
+								{name: 'id', type:'hidden'},
+								{name:'container', label: false,  type: 'fieldset', fields:[
+
+									{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
+										{label: 'Name', enabled:false},
+										{label: 'Fetch', type: 'checkbox'},
+										{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
+										{label: 'Path'},
+										{label: 'Cache', type: 'checkbox'},
+										{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+									]}
+								]},
+							]} )
+						}
+			}
+		});
+}
+
+
+
+
+initializers['sites'] = function() {
+		$('.navbar-header .nav a h4').html('Sites');
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data){
-				$('.navbar-header .nav a h4').html('Sites');
 				tableConfig.schema = [
 					{label: 'Name', name:'domain', required: true},
 					{label: 'Theme', name:'theme'},
@@ -172,6 +279,7 @@ initializers['sites'] = function(){
 		});
 }
 
+<<<<<<< Updated upstream
 initializers['pages'] = function(){
 		$.ajax({
 			url: '/api/'+route,
@@ -191,11 +299,11 @@ initializers['pages'] = function(){
 		});
 }
 
-initializers['endpoints'] = function(){
+initializers['endpoints'] = function() {
+		$('.navbar-header .nav a h4').html('Endpoints');
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data){
-				$('.navbar-header .nav a h4').html('Endpoints');
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
 					{label: 'Auth Type', name:'type', type: 'select', choices:[
@@ -220,11 +328,11 @@ initializers['endpoints'] = function(){
 		});
 }
 
-initializers['users'] = function(){
+initializers['users'] = function() {
+	$('.navbar-header .nav a h4').html('Users');
 	$.ajax({
 		url: '/api/'+route,
-		success: function(data){
-			$('.navbar-header .nav a h4').html('Users');
+		success: function(data) {
 			tableConfig.schema = [
 				{label: 'First Name', name:'first_name', required: true},
 				{label: 'Last Name', name:'last_name', required: true},
@@ -236,11 +344,11 @@ initializers['users'] = function(){
 		}
 	});
 }
-initializers['groups'] = function(){
+initializers['groups'] = function() {
+		$('.navbar-header .nav a h4').html('Groups');
 		$.ajax({
 			url: '/api/'+route,
-			success: function(data){
-				$('.navbar-header .nav a h4').html('Groups');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},        
 					{label: 'Slug', name:'slug', required: true},
@@ -262,11 +370,11 @@ initializers['groups'] = function(){
 			}
 		});
 }
-initializers['members'] = function(){
+initializers['members'] = function() {
+		$('.navbar-header .nav a h4').html('Members');
 		$.ajax({
 			url: '/api/groups/'+resource_id+'/'+route,
-			success: function(data){
-				$('.navbar-header .nav a h4').html('Members');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
 				];
@@ -305,11 +413,11 @@ initializers['members'] = function(){
 			}
 		});
 }
-initializers['admins'] = function(){
+initializers['admins'] = function() {
+		$('.navbar-header .nav a h4').html('Admins');
 		$.ajax({
 			url: '/api/groups/'+resource_id+'/'+route,
-			success: function(data){
-				$('.navbar-header .nav a h4').html('Admins');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
 				];
@@ -347,11 +455,11 @@ initializers['admins'] = function(){
 			}
 		});
 }
-initializers['composites'] = function(){
+initializers['composites'] = function() {
+		$('.navbar-header .nav a h4').html('Group Composites');
 		$.ajax({
 			url: '/api/groups/'+resource_id+'/'+route,
-			success: function(data){
-				$('.navbar-header .nav a h4').html('Group Composites');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Group', name:'composite_group_id', required: true, type:'select', choices: '/api/groups', label_key:'composite_group_id'}
 				];
@@ -389,11 +497,11 @@ initializers['composites'] = function(){
 			}
 		});
 }
-initializers['developers'] = function(){
+initializers['developers'] = function() {
+		$('.navbar-header .nav a h4').html('Developers');
 		$.ajax({
 			url: '/api/apps/'+resource_id+'/'+route,
-			success: function(data){
-				$('.navbar-header .nav a h4').html('Developers');
+			success: function(data) {
 				tableConfig.schema = [
 					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
 				];
