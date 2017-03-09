@@ -86,6 +86,7 @@ initializers['appinstances'] = function(){
         			{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+        			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{name: 'app', type:'hidden'},
@@ -163,6 +164,25 @@ initializers['sites'] = function(){
 				tableConfig.schema = [
 					{label: 'Name', name:'domain', required: true},
 					{label: 'Theme', name:'theme'},
+					{name: 'id', type:'hidden'}
+				];
+				tableConfig.data = data;
+				bt = new berryTable(tableConfig)
+			}
+		});
+}
+
+initializers['pages'] = function(){
+		$.ajax({
+			url: '/api/'+route,
+			success: function(data){
+				$('.navbar-header .nav a h4').html('Pages');
+				tableConfig.schema = [
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'Name', name:'name', required: true},
+					{label: 'Slug', name:'slug', required: true},
+        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+        			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.data = data;

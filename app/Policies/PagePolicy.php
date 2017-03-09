@@ -7,7 +7,7 @@ use App\Page;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\Request;
 
-class AppPagePolicy
+class PagePolicy
 {
     use HandlesAuthorization;
 

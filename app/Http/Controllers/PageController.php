@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Page;
 use Illuminate\Http\Request;
 
 class PageController extends Controller

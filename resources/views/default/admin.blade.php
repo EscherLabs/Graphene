@@ -66,6 +66,9 @@
             @can('get_all','App\AppInstance')
               <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
             @endcan
+            @can('get_all','App\Page')
+              <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
+            @endcan
             @can('get_all','App\Group')
               <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
             @endcan
@@ -92,6 +95,9 @@
         @endcan
         @can('get_all','App\AppInstance')
           <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
+        @endcan
+        @can('get_all','App\Page')
+          <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
         @endcan
         @can('get_all','App\Group')
           <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
