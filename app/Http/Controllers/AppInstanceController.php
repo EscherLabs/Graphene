@@ -65,9 +65,9 @@ class AppInstanceController extends Controller
             $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            $myApp = AppInstance::with('app')->where('slug', '=', $slug)->where('public','=','1')->first();
+            $myApp = AppInstance::with('app')->where('slug', '=', $slug)->where('public','=',true)->first();
             if (is_null($myApp)) { abort(403); }
-            $current_user_apps = AppInstance::where('public','=','1')->whereHas('group', function($q){
+            $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
                 $q->where('site_id', '=', config('app.site')->id);
             })->with('app')->get();
         }
@@ -205,7 +205,7 @@ class AppInstanceController extends Controller
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
-        if ($app_instance->public !== 1) {
+        if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);
         } 
 

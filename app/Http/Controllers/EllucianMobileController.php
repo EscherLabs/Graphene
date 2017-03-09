@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class EllucianMobileController extends Controller
 {
     public function __construct() {
-        //$this->middleware('auth');
+        $this->middleware('auth')->except('config');
     }
     
     public function login() {

@@ -112,6 +112,18 @@ Route::put('/api/users/{user}','UserController@update')->middleware('can:update,
 // Delete an existing user by user_id
 Route::delete('/api/users/{user}','UserController@destroy')->middleware('can:delete,user');
 
+/***** Pages *****/
+// List all pages
+Route::get('/api/pages','PageController@index')->middleware('can:get_all,App\Page');
+// Lookup specific page by page id
+Route::get('/api/pages/{page}','PageController@show')->middleware('can:get,page');
+// Create a new page
+Route::post('/api/pages','PageController@create')->middleware('can:create,App\Page');
+// Update an existing page by page id
+Route::put('/api/pages/{page}','PageController@update')->middleware('can:update,page');
+// Delete an existing page by page id
+Route::delete('/api/pages/{page}','PageController@destroy')->middleware('can:delete,page');
+
 /***** GROUPS *****/
 // List all groups
 Route::get('/api/groups','GroupController@index')->middleware('can:get_all,App\Group');
@@ -144,6 +156,6 @@ Route::post('/api/groups/{group}/composites/{composite_group}','GroupController@
 Route::delete('/api/groups/{group}/composites/{composite_group}','GroupController@remove_composite')->middleware('can:remove_composite,group,composite_group');
 
 
-Route::get('/ellucianmobile/login','EllucianMobileController@login')->middleware('auth');
-Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo')->middleware('auth');
+Route::get('/ellucianmobile/login','EllucianMobileController@login');
+Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
