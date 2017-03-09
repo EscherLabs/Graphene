@@ -15,10 +15,21 @@ Guest
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
-        @foreach ($apps as $app)
-        
-          <li><a href="/app/{{ $app->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
+        @if(isset($links))
+        @foreach ($links as $app)
+          <li><a href="#"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a>
+          <ul>
+          @foreach ($app->app_instances as $instance)
+                    <li><a href="/app/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
+          @endforeach
+          @foreach ($app->pages as $page)
+                    <li><a href="/page/{{ $app->slug }}/{{ $page->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($page->icon)&&$page->icon!='')?$page->icon:'cube' }} fa-fw"></i>&nbsp; {{ $page->name }}</a></li>
+          @endforeach
+          </ul>
+          </li>
+
         @endforeach
+        @endif
       </ul>
     </div>
     @endif

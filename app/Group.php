@@ -23,6 +23,9 @@ class Group extends Model
     public function app_instances() {
       return $this->hasMany(AppInstance::class);
     }
+    public function pages() {
+      return $this->hasMany(Page::class);
+    }
     public function members() {
       return $this->hasMany(GroupMember::class);
     }

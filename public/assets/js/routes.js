@@ -279,7 +279,6 @@ initializers['sites'] = function() {
 		});
 }
 
-<<<<<<< Updated upstream
 initializers['pages'] = function(){
 		$.ajax({
 			url: '/api/'+route,
@@ -293,6 +292,8 @@ initializers['pages'] = function(){
         			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
 					{name: 'id', type:'hidden'}
 				];
+				tableConfig.click = function(model){window.location.href = '/page/'+model.attributes.group_id+'/'+model.attributes.slug};
+
 				tableConfig.data = data;
 				bt = new berryTable(tableConfig)
 			}

@@ -95,7 +95,12 @@ class AppInstanceController extends Controller
                     }
                 }
             }
-            return view('app', ['apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
+            $links = Group::with(array('app_instances'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'icon');
+        },'pages'=>function($q){
+            $q->select('group_id','id', 'name', 'slug');
+        }))->whereIn('id',Auth::user()->groups)->get();
+            return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
         }
         abort(404,'App not found');
     }

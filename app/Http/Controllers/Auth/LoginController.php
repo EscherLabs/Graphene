@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\AppInstance;
+use App\Group;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -48,7 +49,16 @@ class LoginController extends Controller
         $current_user_apps = AppInstance::where('public','=','1')->whereHas('group', function($q){
             $q->where('site_id', '=', config('app.site')->id);
         })->with('app')->get();
-        return view('auth.login', ['apps'=>$current_user_apps]);
+
+        $links = Group::with(array('app_instances'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
+            $q->where('public','=','1');
+        },'pages'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'public');            
+            $q->where('public','=','1');
+        }))->where('site_id', '=', config('app.site')->id)->get();
+
+        return view('auth.login', ['apps'=>$current_user_apps, 'links'=>$links]);
 
         //return view('auth.login');
     }
