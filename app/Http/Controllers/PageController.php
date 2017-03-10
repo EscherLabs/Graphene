@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Page;
+use App\User;
 use App\Group;
 use App\AppInstance;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class PageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except('show');
+        $this->middleware('auth')->except('show', 'run');
     }
     
     public function index()
@@ -64,6 +65,17 @@ class PageController extends Controller
                 App::abort(403, 'Access denied');
             }
         }
+
+        if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+            $apps = AppInstance::whereIn('group_id', $current_user->groups)->with('app')->get();
+        } else { /* User is not Authenticated */
+            $current_user = new User;
+            $apps = AppInstance::where('public', '=', 1)->with('app')->get();
+
+        }
+
+        
         if($myPage != null) {
             if(!isset($myPage->content)){
                 $config = '""';
@@ -75,8 +87,8 @@ class PageController extends Controller
                 $q->select('group_id','id', 'name', 'slug', 'icon');
             },'pages'=>function($q){
                 $q->select('group_id','id', 'name', 'slug');
-            }))->whereIn('id',Auth::user()->groups)->get();
-            return view('dashboard',['links'=>$links, 'apps'=>AppInstance::whereIn('group_id', Auth::user()->groups)->with('app')->get(),'name'=>$name, 'config'=>$config, 'id'=>$myPage->id]);
+            }))->whereIn('id',$current_user->groups)->get();
+            return view('dashboard',['links'=>$links, 'apps'=>$apps,'name'=>$name, 'config'=>$config, 'id'=>$myPage->id]);
 
         }
         abort(404,'App not found');

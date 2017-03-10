@@ -50,14 +50,22 @@ class LoginController extends Controller
             $q->where('site_id', '=', config('app.site')->id);
         })->with('app')->get();
 
-        $links = Group::with(array('app_instances'=>function($q){
+        $links = Group::where('site_id', '=', config('app.site')->id)->with(['app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
             $q->where('public','=','1');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'public');            
+            $q->select('group_id','id', 'name', 'slug', 'public');
             $q->where('public','=','1');
-        }))->where('site_id', '=', config('app.site')->id)->get();
 
+        }])
+        ->whereHas('app_instances', function($q) {
+             $q->where('public','=','1');
+         })
+        ->orWhereHas('pages', function($q) {
+             $q->where('public','=','1');
+        })
+        ->get();
+        // dd($links->toArray());
         return view('auth.login', ['apps'=>$current_user_apps, 'links'=>$links]);
 
         //return view('auth.login');

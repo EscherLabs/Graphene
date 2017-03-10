@@ -11,10 +11,9 @@ Guest
 @endsection
 
 @section('sidemenu')
-    @if( Request::get('sidemenu') !== 'false' && count($apps)>0))
+    @if( Request::get('sidemenu') !== 'false' && count($links)>0))
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
         @if(isset($links))
         @foreach ($links as $app)
           <li><a href="#"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a>
