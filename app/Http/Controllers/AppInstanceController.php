@@ -113,7 +113,7 @@ class AppInstanceController extends Controller
             // }])->where('slug', '=', $slug)->first();
 
             $myApp = AppInstance::with(['user_preferences'=>function($query){
-                $query->where('user_id','=',$current_user->id);
+                $query->where('user_id','=',Auth::user()->id);
             }])->where('id', '=', $ai_id)->first();
             $this->authorize('fetch' ,$myApp);
             // $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
