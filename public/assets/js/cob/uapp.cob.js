@@ -21,6 +21,7 @@ Cobler.types.uApp = function(container){
 			$.extend(item, newItem);
 		},
 		initialize: function(el){
+    if(typeof this.get().app_id == 'undefined'){return false;};
       $.ajax({
           url: '/api/fetch/'+this.get().app_id,
           dataType : 'json',

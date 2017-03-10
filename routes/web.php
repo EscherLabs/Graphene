@@ -13,14 +13,16 @@
 use App\App;
 
 Auth::routes();
-//Route::get('/home', 'HomeController@index');
 
-
-// Route::get('/','HomeController@index');
-// Route::get('/dashboard','HomeController@dashboard');
-Route::get('/','UserDashboardController@index');
-Route::post('/api/dashboard','UserDashboardController@update');
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
+
+/***** User Content *****/
+Route::get('/','UserDashboardController@index');
+Route::get('/app/{slug}', 'AppInstanceController@run');
+Route::get('/page/{group}/{slug}', 'PageController@run');
+
+/***** Dashboard  *****/
+Route::post('/api/dashboard','UserDashboardController@update');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
@@ -28,8 +30,8 @@ Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware
 Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');
 Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
 Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
+Route::get('/admin/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
 
-Route::get('/app/{slug}', 'AppInstanceController@run');
 
 /***** APPS *****/
 // List all apps

@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class AppInstanceController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth')->except('run','get_data');
+        $this->middleware('auth')->except('run','fetch', 'get_data');
     }
     
     public function index() {
@@ -24,6 +24,10 @@ class AppInstanceController extends Controller
             })
             ->get();
         return $app_instances;
+    }
+
+    public function admin(AppInstance $app_instance) {
+     return view('admin', ['resource'=>'app_instance','id'=>$app_instance->id]);
     }
 
     public function show(AppInstance $app_instance) {
@@ -91,20 +95,46 @@ class AppInstanceController extends Controller
                     }
                 }
             }
-            return view('app', ['apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
+            $links = Group::with(array('app_instances'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'icon');
+        },'pages'=>function($q){
+            $q->select('group_id','id', 'name', 'slug');
+        }))->whereIn('id',$current_user->groups)->get();
+            return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
         }
         abort(404,'App not found');
     }
     
     public function fetch($ai_id, Request $request) {
-        $myApp = AppInstance::with(['user_preferences'=>function($query){
-            $query->where('user_id','=',Auth::user()->id);
-        }])->where('id', '=', $ai_id)->first();
+       if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+            // $myApp = AppInstance::with('app')->with(['user_preferences'=>function($query){
+            //     $query->where('user_id','=', Auth::user()->id);
+            // }])->where('slug', '=', $slug)->first();
+
+            $myApp = AppInstance::with(['user_preferences'=>function($query){
+                $query->where('user_id','=',Auth::user()->id);
+            }])->where('id', '=', $ai_id)->first();
+            $this->authorize('fetch' ,$myApp);
+            // $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
+        } else { /* User is not Authenticated */
+            $current_user = new User;
+            // $myApp = AppInstance::with('app')->where('slug', '=', $slug)->where('public','=',true)->first();
+            $myApp = AppInstance::where('id', '=', $ai_id)->first();
+            if (is_null($myApp)) { abort(403); }
+            // $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
+            //     $q->where('site_id', '=', config('app.site')->id);
+            // })->with('app')->get();
+        }
+        
+        // $myApp = AppInstance::with(['user_preferences'=>function($query){
+        //     $query->where('user_id','=',$current_user->id);
+        // }])->where('id', '=', $ai_id)->first();
 
         if($myApp != null){
             // Create data object that will be used by the app
             $data = [
-                'user'=>Auth::user(),
+                'user'=>$current_user,
                 'options'=>$myApp->configuration
             ];
             if(!is_null($myApp->user_preferences)) {

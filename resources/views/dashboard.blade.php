@@ -7,7 +7,7 @@
 								<span class="caret"></span>
 							</button>
 							<ul id="sortableList" class="dropdown-menu list-group" aria-labelledby="dLabel">
-								<li data-type="RSS"><a href="javascript:addWidget('RSS');">Rss</a></li>
+								<li data-type="Image"><a href="javascript:addWidget('Image');">Image</a></li>
 								<li data-type="Content"><a href="javascript:addWidget('Content');">Content</a></li>
 								<li data-type="uApp"><a href="javascript:addWidget('uApp');">Apps</a></li>
 							</ul>
@@ -39,7 +39,7 @@
 		<script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
 		<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
 		<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>`
-		<script type='text/javascript' src='assets/js/cob/widget_templates.js'></script>
+		<script type='text/javascript' src='/assets/js/cob/widget_templates.js'></script>
 	    <script src='/assets/js/lib.js'></script> 
 
 		<script type='text/template' name="itemContainer">
@@ -67,16 +67,26 @@
 					template = 'itemContainer';
 				}
 				
-				var data = config.sections || [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
+				var data = config.sections || [[]];// [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
 				cb = new Cobler({ disabled: status, targets: document.getElementsByClassName('cobler_container'),itemContainer: template,itemTarget:target, items:data})
-
 
 				if(!status){
 					cb.addSource(document.getElementById('sortableList'));
+					if('{{$name}}' == 'Dashboard'){
 					var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} },function(data){
 						// config = JSON.parse(data.config);
 						config = data.config;
 					})}
+					}else{
+						var save = function(){$.ajax({
+							url:'/api/pages/'+1,
+							data:{"content":{"sections":cb.toJSON({editor: true})} },
+							method:'PUT',
+							success: function(data){
+								config = data.content;
+							}
+						})}
+					}
 					cb.on('moved',save);
 					cb.on('reorder', save);
 					cb.on('remove', save);
