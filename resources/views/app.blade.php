@@ -9,7 +9,7 @@
 @endsection
 
 @section('titlebar')
-    @if (Auth::check() && !is_null($app->app->code) && $app->app->code->user_preference_form)
+    @if (!is_null($app->app->code) && $app->app->code->user_preference_form)
     <div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;"><i class="fa fa-gears"></i> Options</div>
     @endif
     @if (Auth::check())
@@ -22,7 +22,7 @@
     <script src='/assets/js/lib.js'></script> 
 
 <script>
-  $('[href="/app/{{ $app->slug }}"]').parent().addClass('active');
+  $('[href="/app/{{ $app->slug }}"]').parent().addClass('active').parent().addClass('in');
   var opts = {
     $el: $('#app-container'),
     data:{!! json_encode($data) !!},
@@ -47,22 +47,29 @@
     $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.preferences},JSON.parse(opts.config.user_preference_form))).on('save', function(){
     // $().berry($.extend(true, {attributes:bae.data.user.preferences},opts.config.user_preference_form)).on('save', function(){
 
-      $.ajax({
-        type: 'POST',
-        url:'/api/apps/instances/{{ $app->id }}/user_prefs',
-        data: {'preferences': this.toJSON()},
-        success:function(data){
-          // opts.data.user.preferences = JSON.parse(data.preferences);
-          // bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
-          bae.app.update({user:{preferences:data.preferences}});
-          this.trigger('close');
-          toastr.success('', 'Options Updated Successfully');
-        }.bind(this),
-        error:function(data){
-            toastr.error(data.statusText, 'An error occured updating options')
-        }
-      })
+      if(authenticated){
+        $.ajax({
+          type: 'POST',
+          url:'/api/apps/instances/{{ $app->id }}/user_prefs',
+          data: {'preferences': this.toJSON()},
+          success:function(data){
+            // opts.data.user.preferences = JSON.parse(data.preferences);
+            // bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
+            bae.app.update({user:{preferences:data.preferences}});
+            this.trigger('close');
+            toastr.success('', 'Options Updated Successfully');
+          }.bind(this),
+          error:function(data){
+              toastr.error(data.statusText, 'An error occured updating options')
+          }
+        })
+      }else if(!editor){
+        Lockr.set(url, {'preferences': this.toJSON()})
+      }
+
     })
+
+    
   })
 
   $('body').append('<style>'+opts.config.css+'</style>');

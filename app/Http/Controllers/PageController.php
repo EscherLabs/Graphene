@@ -61,7 +61,7 @@ class PageController extends Controller
         $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
 
         if($myPage->public == 0) {
-            if(!Auth::check() || !in_array($group, $Auth::user()->groups)) {
+            if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
                 App::abort(403, 'Access denied');
             }
         }

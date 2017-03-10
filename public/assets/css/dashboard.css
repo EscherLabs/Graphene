@@ -152,24 +152,38 @@ body{
 .navbar-inverse {
   background-color: #333;
 }
-.nav-sidebar > li {
+.nav-sidebar li {
   border-bottom: 1px solid #444;
 }
-.nav-sidebar > li > a {
+.nav-sidebar li > a {
   color: #89949B;
 }
-.nav-sidebar > li a:hover,
-.nav-sidebar > li a:focus {
+.nav-sidebar li a:hover,
+.nav-sidebar li a:focus {
   background-color:rgba(0,0,0,0.2);
 }
 
-.nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
+.nav-sidebar .active > a,
+.nav-sidebar .active > a:hover,
+.nav-sidebar .active > a:focus {
   color: #fff;
   background-color:rgba(0,0,0,0.4);
 }
 
+.nav-sidebar.nav li>a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
+
+.nav-sidebar.nav  ul>li>a {
+    padding-left: 25px;    
+    text-decoration: none;
+}
+
+.nav-sidebar.nav ul li {
+    margin-left: -40px;
+}
 
 #footer {
   position: absolute;

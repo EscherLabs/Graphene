@@ -212,12 +212,21 @@ initializers['app_instance'] = function() {
 
 				$('#table').html(`
 				<div style="margin:21px">
-
+<div class="btn-group pull-right">
+  <button type="button" class="btn btn-primary" id="save">Save</button>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Visit</a></li>
+  </ul>
+</div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
-    <li role="presentation"><a href="#config" aria-controls="profile" role="tab" data-toggle="tab">Config</a></li>
     <li role="presentation"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
+		<li role="presentation"><a href="#config" aria-controls="profile" role="tab" data-toggle="tab">Config</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -229,33 +238,47 @@ initializers['app_instance'] = function() {
 
 </div>
 				`)
-				$('#main').berry({fields:tableConfig.schema,attributes:data, actions:false})
-									
+				$('#main').berry({fields:tableConfig.schema,attributes:data, actions:false, name:'main'})
+				$('#save').on('click',function(){
+					var item = Berries.main.toJSON();
+					item.configuration = Berries.config.toJSON();
+					item.resources = Berries.resources.toJSON().resources;
+
+					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', data: item, success:function(){
+							toastr.success('', 'Successfully updated App Instance')
+						}.bind(this),
+						error:function(e) {
+							toastr.error(e.statusText, 'ERROR');
+						}
+					});
+
+				})
 				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.form)) 
 
 				// options.attributes = JSON.parse(model.attributes.configuration)|| {};
 				options.attributes = data.configuration || {};
 
 				options.attributes.id = data.id;
-				options.fields.push({name: 'id', type:'hidden'});
-				$('#config').berry(options)
-						if(data.app.code.sources[0].name !== '') {	
-							var attributes = $.extend(true, [],data.app.code.sources, data.resources);
-							$('#resources').berry({flatten:false, attributes: {id:data.id, container:{resources:attributes}},fields:[
-								{name: 'id', type:'hidden'},
-								{name:'container', label: false,  type: 'fieldset', fields:[
+				// options.fields.push({name: 'id', type:'hidden'});
+				options.name = 'config';
+				$('#config').berry(options);
+				
+				if(data.app.code.sources[0].name !== '') {	
+					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
+					$('#resources').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
+						{name:'container', label: false,  type: 'fieldset', fields:[
 
-									{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
-										{label: 'Name', enabled:false},
-										{label: 'Fetch', type: 'checkbox'},
-										{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
-										{label: 'Path'},
-										{label: 'Cache', type: 'checkbox'},
-										{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
-									]}
-								]},
-							]} )
-						}
+							{"multiple": {"duplicate": false},label: '<hr>', name: 'resources', type: 'fieldset', fields:[
+								{label: 'Name', enabled:false},
+								{label: 'Fetch', type: 'checkbox'},
+								{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
+								{label: 'Path'},
+								{label: 'Cache', type: 'checkbox'},
+								{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+							]}
+						]},
+					]} )
+				}
 			}
 		});
 }

@@ -82,7 +82,7 @@ class Group extends Model
 
     public function scopePublicLinks($query)
     {
-        return $query->where('site_id', '=', config('app.site')->id)->with(['app_instances'=>function($q){
+        return $query->with(['app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
             $q->where('public','=','1');
         },'pages'=>function($q){
@@ -91,10 +91,12 @@ class Group extends Model
 
         }])
         ->whereHas('app_instances', function($q) {
-             $q->where('public','=','1');
+            $q->where('public','=','1');
+            $q->where('site_id','=',config('app.site')->id);
          })
         ->orWhereHas('pages', function($q) {
-             $q->where('public','=','1');
+            $q->where('public','=','1');
+            $q->where('site_id','=',config('app.site')->id);
         });
     }
     public function scopeLinks($query)

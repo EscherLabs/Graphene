@@ -73,10 +73,10 @@
 				if(!status){
 					cb.addSource(document.getElementById('sortableList'));
 					if('{{$name}}' == 'Dashboard'){
-					var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} },function(data){
-						// config = JSON.parse(data.config);
-						config = data.config;
-					})}
+						var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} },function(data){
+							// config = JSON.parse(data.config);
+							config = data.config;
+						})}
 					}else{
 						var save = function(){$.ajax({
 							url:'/api/pages/'+1,
@@ -99,6 +99,7 @@
       		var apps = {!! $apps !!};
 			// var status = true;
 			load(true);
+  		$('[href$="{{ $name }}"]').parent().addClass('active').parent().addClass('in');
 
 		</script>
 

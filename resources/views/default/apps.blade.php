@@ -95,8 +95,8 @@
       <ul class="nav nav-sidebar">
         @if(isset($links))
         @foreach ($links as $app)
-          <li><a href="#"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a>
-          <ul>
+          <li><a data-toggle="collapse" href="#collapse{{ $app->id }}"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
+          <ul class="collapse"  id="collapse{{ $app->id }}">
           @foreach ($app->app_instances as $instance)
                     <li><a href="/app/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
           @endforeach
@@ -104,7 +104,6 @@
                     <li><a href="/page/{{ $app->slug }}/{{ $page->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($page->icon)&&$page->icon!='')?$page->icon:'cube' }} fa-fw"></i>&nbsp; {{ $page->name }}</a></li>
           @endforeach
           </ul>
-          </li>
 
         @endforeach
         @endif
@@ -136,7 +135,7 @@
     <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
     <script src='http://unpkg.com/ractive/ractive.min.js'></script>    
-    
+    <script src='//cdnjs.cloudflare.com/ajax/libs/lockr/0.8.4/lockr.min.js'></script>    
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'></script> 
 
     @yield('bottom_page_scripts')
