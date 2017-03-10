@@ -18,6 +18,7 @@ class CreatePagesTable extends Migration
             $table->integer('group_id')->unsigned()->index();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('icon')->nullable()->default(null);
 			$table->json('content')->nullable();
 			$table->json('mobile_order')->nullable();
             $table->boolean('unlist')->default(false);

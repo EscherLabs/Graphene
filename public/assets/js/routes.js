@@ -181,6 +181,7 @@ initializers['pages'] = function(){
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
+        			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
         			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
 					{name: 'id', type:'hidden'}
