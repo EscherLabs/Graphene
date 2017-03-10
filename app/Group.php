@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Group extends Model
 {
@@ -78,4 +79,33 @@ class Group extends Model
     {
         GroupComposite::where('group_id',$this->id)->where('composite_group_id',$group->id)->delete();
     }
+
+    public function scopePublicLinks($query)
+    {
+        return $query->where('site_id', '=', config('app.site')->id)->with(['app_instances'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
+            $q->where('public','=','1');
+        },'pages'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'public');
+            $q->where('public','=','1');
+
+        }])
+        ->whereHas('app_instances', function($q) {
+             $q->where('public','=','1');
+         })
+        ->orWhereHas('pages', function($q) {
+             $q->where('public','=','1');
+        });
+    }
+    public function scopeLinks($query)
+    {
+        return $query->with(array('app_instances'=>function($q){
+            $q->select('group_id','id', 'name', 'slug', 'icon');
+        },'pages'=>function($q){
+            $q->select('group_id','id', 'name', 'slug');
+        }))->whereIn('id', Auth::user()->groups);
+    }
+
+
+
 }

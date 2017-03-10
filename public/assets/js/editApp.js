@@ -10,8 +10,25 @@ $('.navbar-header .nav a h4').on('click',function(){
   });
 })
 $('#save').on('click',function() {
-  var data = $.extend(true, {}, attributes,Berries.app.toJSON());
+  var data = $.extend(true, {}, attributes, Berries.app.toJSON());
+  data.code.sources = Berries.app.toJSON().code.sources;
   data.code.templates = templatePage.toJSON();
+  // var successCompile = false;
+  try{
+    _.each(data.code.templates, function(partial){
+      Ractive.parse(partial.content);
+    })
+    // if(!this.resourcesForm.validate()){
+    //   toastr.error(e.message, e.name);
+    //   return false;
+    // }
+  }catch(e) {
+      toastr.error(e.message, e.name);
+      return false;
+  }
+
+
+
   data.code.scripts = scriptPage.toJSON();
   var temp = formPage.toJSON();
   data.code.form = temp[0].content;

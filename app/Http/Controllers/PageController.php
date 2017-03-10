@@ -69,10 +69,11 @@ class PageController extends Controller
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $apps = AppInstance::whereIn('group_id', $current_user->groups)->with('app')->get();
+            $links = Group::links()->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
             $apps = AppInstance::where('public', '=', 1)->with('app')->get();
-
+            $links = Group::publicLinks()->get();
         }
 
         
@@ -83,11 +84,11 @@ class PageController extends Controller
                 $config = $myPage->content;
             }
             $name = $myPage->name;
-            $links = Group::with(array('app_instances'=>function($q){
-                $q->select('group_id','id', 'name', 'slug', 'icon');
-            },'pages'=>function($q){
-                $q->select('group_id','id', 'name', 'slug');
-            }))->whereIn('id',$current_user->groups)->get();
+            // $links = Group::with(array('app_instances'=>function($q){
+            //     $q->select('group_id','id', 'name', 'slug', 'icon');
+            // },'pages'=>function($q){
+            //     $q->select('group_id','id', 'name', 'slug');
+            // }))->whereIn('id',$current_user->groups)->get();
             return view('dashboard',['links'=>$links, 'apps'=>$apps,'name'=>$name, 'config'=>$config, 'id'=>$myPage->id]);
 
         }
