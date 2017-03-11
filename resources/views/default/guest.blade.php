@@ -8,7 +8,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/assets/favicon.png">
-    <title>CrazyStairs</title>
+    <title>{{ config('app.site')->name }}</title>
+    <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{ config('app.site')->theme->icon }}.png" />
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->

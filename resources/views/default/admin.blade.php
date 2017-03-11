@@ -7,7 +7,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title>CrazyStairs</title>
+    <title>{{ config('app.site')->name }}</title>
+    <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{ config('app.site')->theme->icon }}.png" />
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
@@ -38,7 +39,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/"><i class="fa fa-{{ Auth::user()->site->theme->icon }} fa-fw"></i> {{ Auth::user()->site->name }}</a>
+          <a class="navbar-brand" href="/"><i class="fa fa-{{ config('app.site')->theme->icon }} fa-fw"></i> {{ config('app.site')->name }}</a>
           <ul class="nav navbar-nav navbar-right hidden-xs">
             <li><a href="#"><h4 style="margin:0"></h4></a></li>
           </ul>
@@ -137,6 +138,6 @@
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
-    <style> {{ Auth::user()->site->theme->css }}</style>
+    <style> {{ config('app.site')->theme->css }}</style>
   </body>
 </html>
