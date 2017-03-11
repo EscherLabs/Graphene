@@ -16,7 +16,7 @@ Guest
       <ul class="nav nav-sidebar">
         @if(isset($links))
         @foreach ($links as $app)
-          <li><a href="#"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
+          <li><a href="#">{{ $app->name }}</a></li>
           <ul>
           @foreach ($app->app_instances as $instance)
                     <li><a href="/app/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>

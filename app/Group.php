@@ -86,7 +86,7 @@ class Group extends Model
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
             $q->where('public','=','1');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'public');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
             $q->where('public','=','1');
 
         }])
@@ -104,7 +104,7 @@ class Group extends Model
         return $query->with(array('app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug');
+            $q->select('group_id','id', 'name', 'slug', 'icon');
         }))->whereIn('id', Auth::user()->groups);
     }
 

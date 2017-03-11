@@ -96,7 +96,7 @@
       <ul class="nav nav-sidebar">
         @if(isset($links))
         @foreach ($links as $app)
-          <li><a data-toggle="collapse" href="#collapse{{ $app->id }}"><i class="fa fa-{{ (!is_null($app->icon)&&$app->icon!='')?$app->icon:'cube' }} fa-fw"></i>&nbsp; {{ $app->name }}</a></li>
+          <li><a data-toggle="collapse" href="#collapse{{ $app->id }}">{{ $app->name }}</a></li>
           <ul class="collapse"  id="collapse{{ $app->id }}">
           @foreach ($app->app_instances as $instance)
                     <li><a href="/app/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
