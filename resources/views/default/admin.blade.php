@@ -125,7 +125,7 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
-    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js'></script>		
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
     <script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> 
