@@ -53,24 +53,24 @@ class AppPolicy
 
     public function list_developers(User $user, App $app)
     {
-        // User must be a developer and a developer of the app
-        if ($user->developer && in_array($app->id,$user->developer_apps)) {
+        // User must be a developer and a developer of the app OR a site admin
+        if (($user->developer && in_array($app->id,$user->developer_apps)) || $user->site_admin) {
             return true;
         }
     }
 
     public function add_developer(User $user, App $app)
     {
-        // User must be a developer and a developer of the app
-        if ($user->developer && in_array($app->id,$user->developer_apps)) {
+        // User must be a developer and a developer of the app OR a site admin
+        if (($user->developer && in_array($app->id,$user->developer_apps)) || $user->site_admin) {
             return true;
         }
     }
 
     public function remove_developer(User $user, App $app)
     {
-        // User must be a developer and a developer of the app
-        if ($user->developer && in_array($app->id,$user->developer_apps)) {
+        // User must be a developer and a developer of the app OR a site admin
+        if (($user->developer && in_array($app->id,$user->developer_apps)) || $user->site_admin) {
             return true;
         }
     }
