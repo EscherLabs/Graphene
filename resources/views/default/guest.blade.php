@@ -9,8 +9,9 @@
     <meta name="author" content="">
     <link rel="icon" href="/assets/favicon.png">
     <title>{{ config('app.site')->name }}</title>
-    <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{ config('app.site')->theme->icon }}.png" />
-    <!-- Bootstrap -->
+    @if(!empty(config('app.site')->theme->icon))
+      <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{ config('app.site')->theme->icon }}.png" />
+    @endif    <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -19,6 +20,7 @@
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
     <link href="/assets/css/dashboard.css" rel="stylesheet">
+    @if(!empty(config('app.site')->theme->css))<style> {!! config('app.site')->theme->css !!}</style>@endif
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <!--<script src="../../assets/js/ie-emulation-modes-warning.js"></script>-->
@@ -39,7 +41,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/"><i class="fa fa-{{ config('app.site')->theme->icon }} fa-fw"></i> {{ config('app.site')->name }}</a>
+          <a class="navbar-brand" href="/">
+            @if(!empty(config('app.site')->theme->icon))
+            <i class="fa fa-{{ config('app.site')->theme->icon }} fa-fw" style="font-size: 36px;margin: -8px 0px 0px -8px;float: left;"></i>
+            @endif
+            &nbsp;{{ config('app.site')->name }}
+          </a>
           <!--<ul class="nav navbar-nav navbar-right hidden-xs">
             <li><a href="#"><h4 style="margin:0">HELLO WORLD</h4></a></li>
           </ul>-->
@@ -100,6 +107,5 @@
     @yield('bottom_page_scripts')
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>-->
     <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
-    <style> {{ config('app.site')->theme->css }}</style>
   </body>
 </html>
