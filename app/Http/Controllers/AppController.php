@@ -7,6 +7,7 @@ use App\App;
 use App\User;
 use App\AppDevelopers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class AppController extends Controller
 {
@@ -15,9 +16,12 @@ class AppController extends Controller
         $this->middleware('auth');
     }
 
-    public function index() {
-        $apps = App::where('site_id',Auth::user()->site->id)->get();
-        return $apps;
+    public function index(Request $request) {
+        if (Input::has('limit') || !Auth::user()->site_admin) {
+            return App::where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+        } else {
+            return App::where('site_id',config('app.site')->id)->get();
+        }
     }
 
     public function show(App $app) {

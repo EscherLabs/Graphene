@@ -19,10 +19,9 @@ class PageController extends Controller
     
     public function index()
     {
-        $pages = Page::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id);
+        return Page::whereHas('group', function($q){
+            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups);
         })->get();
-        return $pages;
     }
 
     public function show(Page $page)

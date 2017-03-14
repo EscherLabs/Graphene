@@ -72,7 +72,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url('/') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                <li><a href="{{ url('/admin/users') }}"><i class="fa fa-gear"></i> Admin</a></li>
+                <li><a href="{{ url('/admin/groups') }}"><i class="fa fa-gear"></i> Admin</a></li>
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
               @else

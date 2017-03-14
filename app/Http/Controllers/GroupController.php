@@ -8,6 +8,7 @@ use App\User;
 use App\GroupAdmins;
 use App\GroupMembers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class GroupController extends Controller
 {
@@ -16,9 +17,13 @@ class GroupController extends Controller
         $this->middleware('auth');
     }
     
-    public function index()
+    public function index(Request $request)
     {
-        return Group::where('site_id',Auth::user()->site->id)->get();
+        if (Input::has('limit') || !Auth::user()->site_admin) {
+            return Group::where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups)->get();
+        } else {
+            return Group::where('site_id',config('app.site')->id)->get();
+        }
     }
 
     public function show(Group $group)

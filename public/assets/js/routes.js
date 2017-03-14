@@ -87,8 +87,8 @@ initializers['appinstances'] = function() {
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
         			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps?limit=true'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				];
@@ -195,8 +195,8 @@ initializers['app_instance'] = function() {
         			{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps?limit=true'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				],attributes:data, actions:false, name:'main'})
@@ -269,7 +269,7 @@ initializers['pages'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Pages');
 				tableConfig.schema = [
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
@@ -297,7 +297,7 @@ initializers['endpoints'] = function() {
 						{label:'HTTP Basic Auth', value:'http_basic_auth'}, 
 						{label:'Google Sheets', value:'google_sheets'},
 					], required: true},
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'Configuration', name:'config', showColumn:false, fields:[
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
@@ -447,7 +447,7 @@ initializers['composites'] = function() {
 			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'Group', name:'composite_group_id', required: true, type:'select', choices: '/api/groups', label_key:'composite_group_id'}
+					{label: 'Group', name:'composite_group_id', required: true, type:'select', choices: '/api/groups?limit=true', label_key:'composite_group_id'}
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){

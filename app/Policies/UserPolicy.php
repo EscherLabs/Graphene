@@ -10,6 +10,12 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
+    public function view_in_admin(User $user) {
+        if ($user->site_admin) {
+            return true;
+        }
+    }
+
     public function get_all(User $user)
     {
         // User must be an admin of one or more groups, or a site admin, or a developer

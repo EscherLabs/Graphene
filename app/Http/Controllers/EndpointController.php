@@ -16,17 +16,9 @@ class EndpointController extends Controller
     
     public function index()
     {
-        $groups = Group::whereIn('id',Auth::user()->admin_groups)
-            ->where('site_id','=',Auth::user()->site->id)
-            ->with('endpoints')->get();
-
-        $endpoints = [];
-        foreach($groups as $group) {
-            foreach($group->endpoints as $key => $endpoint) {
-                $endpoints[] = $endpoint;
-            }
-        }
-        return $endpoints;
+        return Endpoint::whereHas('group', function($q){
+            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups);
+        })->get();
     }
 
     public function create(Request $request)

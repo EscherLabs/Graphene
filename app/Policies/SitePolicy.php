@@ -13,16 +13,17 @@ class SitePolicy
 
     public function get_all(User $user)
     {
-        // At Master Site, and user is a site admin
-        if (config('app.master_site')==request()->server('SERVER_NAME') && $user->site_admin) {
+        //  Current User is a site admin
+        if ($user->site_admin) {
             return true;
         }
     }
 
     public function get(User $user, Site $site)
     {
-        // At Master Site, and user is a site admin
-        if (config('app.master_site')==request()->server('SERVER_NAME') && $user->site_admin) {
+        // User is Site Admin of Specified Site OR At Master Site, and user is a site admin
+        if (($user->site_admin && $site->id == config('app.site')->id) || 
+            (config('app.master_site')==request()->server('SERVER_NAME') && $user->site_admin)) {
             return true;
         }
     }
@@ -37,8 +38,9 @@ class SitePolicy
 
     public function update(User $user, Site $site)
     {
-        // At Master Site, and user is a site admin
-        if (config('app.master_site')==request()->server('SERVER_NAME') && $user->site_admin) {
+        // User is Site Admin of Specified Site OR At Master Site, and user is a site admin
+        if (($user->site_admin && $site->id == config('app.site')->id) || 
+            (config('app.master_site')==request()->server('SERVER_NAME') && $user->site_admin)) {
             return true;
         }
     }

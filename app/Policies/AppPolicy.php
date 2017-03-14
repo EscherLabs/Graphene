@@ -11,6 +11,14 @@ class AppPolicy
 {
     use HandlesAuthorization;
 
+    public function view_in_admin(User $user)
+    {
+        // User must be a developer or a site admin
+        if ($user->developer || $user->site_admin) {
+            return true;
+        }
+    }
+
     public function get_all(User $user)
     {
         // User must be a developer or a site admin or an admin of one or more groups

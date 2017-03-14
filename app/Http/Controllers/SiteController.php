@@ -15,7 +15,11 @@ class SiteController extends Controller
     
     public function index()
     {
-        return Site::all();
+        if (config('app.master_site')==request()->server('SERVER_NAME')) {
+            return Site::all();
+        } else {
+            return [config('app.site')];
+        }
     }
 
     public function show(Site $site)

@@ -17,7 +17,12 @@ class UserController extends Controller
     
     public function index()
     {
-        $memberships = Site::find(Auth::user()->site->id)->list_members();
+        // Broken??
+        // return User::whereHas('site_members', function($q){
+        //     $q->where('site_id','=',config('app.site')->id);
+        // })->get();
+
+        $memberships = config('app.site')->list_members();
         $users = [];
         foreach($memberships as $membership) {
             $users[] = $membership->user;
