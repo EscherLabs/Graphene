@@ -162,4 +162,4 @@ $('.sources').berry({
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
   templatePage = new paged('.templates',{items:attributes.code.templates});
   scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
-  formPage = new paged('.forms',{items:[{name:'Form',content:attributes.code.form},{name:'User Preference Form',content:attributes.code.user_preference_form}], editable: false, mode:'ace/mode/javascript'});
+  formPage = new paged('.forms',{items:[{name:'Options Form',content:attributes.code.form},{name:'User Options Form',content:attributes.code.user_preference_form}], editable: false, mode:'ace/mode/javascript'});

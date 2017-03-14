@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserPreferencesTable extends Migration
+class CreateUserOptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,10 @@ class CreateUserPreferencesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_preferences', function (Blueprint $table) {
+        Schema::create('user_options', function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->index();
             $table->integer('app_instance_id')->unsigned()->index();
-            $table->json('preferences')->nullable();
+            $table->json('options')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('app_instance_id')->references('id')->on('app_instances')->onDelete('cascade');
@@ -30,6 +30,6 @@ class CreateUserPreferencesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('user_preferences');
+        Schema::drop('user_options');
     }
 }
