@@ -92,7 +92,7 @@ initializers['appinstances'] = function() {
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				];
-				tableConfig.click = function(model){window.location.href = '/app/'+model.attributes.slug};
+				tableConfig.click = function(model){window.location.href = '/admin/appinstances/'+model.attributes.id};
 				tableConfig.data = data;
 				// tableConfig.events = [
 				// 	{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
