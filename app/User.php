@@ -10,8 +10,8 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = ['first_name', 'last_name', 'email', 'password'];
-    protected $hidden = ['password', 'remember_token'];
-    protected $appends = ['options','groups'];
+    protected $hidden = ['password', 'remember_token','created_at','updated_at'];
+    protected $appends = ['options','groups','admin_groups','site_admin','developer'];
 
     /* Transient Properties not saved in the database */
     public $developer_apps = [];
@@ -44,5 +44,14 @@ class User extends Authenticatable
     }
     public function getGroupsAttribute() {
         return $this->groups;
+    }
+  public function getAdminGroupsAttribute() {
+        return $this->admin_groups;
+    }
+    public function getSiteAdminAttribute() {
+        return ($this->site_admin == 1);
+    }
+    public function getDeveloperAttribute() {
+        return ($this->developer == 1);
     }
 }
