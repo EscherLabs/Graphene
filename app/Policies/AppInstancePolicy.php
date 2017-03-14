@@ -51,14 +51,14 @@ class AppInstancePolicy
         }
     }
 
-    public function get_preferences(User $user, AppInstance $app_instance)
+    public function get_user_options(User $user, AppInstance $app_instance)
     {
         // User must be member or admin of app_instance group
         if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->admin_groups)) {
             return true;
         }
     }
-    public function update_preferences(User $user, AppInstance $app_instance)
+    public function update_user_options(User $user, AppInstance $app_instance)
     {
         // User must be member or admin of app_instance group
         if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->admin_groups)) {

@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserPreference extends Model
+class UserOption extends Model
 {
-    protected $fillable = ['app_instance_id', 'user_id', 'preferences'];
+    protected $fillable = ['app_instance_id', 'user_id', 'options'];
     protected $primaryKey = ['user_id', 'app_instance_id'];
     public $incrementing = false;
 
-    protected $casts = ['preferences' => 'object'];
+    protected $casts = ['options' => 'object'];
 
     public function app_instance() {
       return $this->belongsTo(AppInstance::class);

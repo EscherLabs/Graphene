@@ -54,15 +54,15 @@ class AppInstanceController extends Controller
         }
     }
 
-    public function save_preferences(AppInstance $app_instance, Request $request)
+    public function save_user_options(AppInstance $app_instance, Request $request)
     {
-        return $app_instance->set_preference(Auth::user() , $request->get('preferences'));
+        return $app_instance->set_user_options(Auth::user(),$request->get('options'));
     }
 
     public function run($slug, Request $request) {
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $myApp = AppInstance::with('app')->with(['user_preferences'=>function($query){
+            $myApp = AppInstance::with('app')->with(['user_options'=>function($query){
                 $query->where('user_id','=', Auth::user()->id);
             }])->where('slug', '=', $slug)->first();
             $this->authorize('fetch' ,$myApp);
@@ -83,10 +83,10 @@ class AppInstanceController extends Controller
             // Create data object that will be used by the app
             $data = ['user'=>$current_user,'options'=>$myApp->configuration];
 
-            if(!isset($myApp->user_preferences) || is_null($myApp->user_preferences) || is_null($myApp->user_preferences->preferences)) {
-                $data['user']['preferences'] = [];
+            if(!isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
+                $data['user']->options = [];
             } else { 
-                $data['user']['preferences'] = $myApp->user_preferences->preferences;
+                $data['user']->options = $myApp->user_options->options;
             }
 
             // Get each source
@@ -107,7 +107,7 @@ class AppInstanceController extends Controller
     public function fetch($ai_id, Request $request) {
        if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $myApp = AppInstance::with(['user_preferences'=>function($query){
+            $myApp = AppInstance::with(['user_options'=>function($query){
                 $query->where('user_id','=',Auth::user()->id);
             }])->where('id', '=', $ai_id)->first();
             $this->authorize('fetch' ,$myApp);
@@ -124,13 +124,13 @@ class AppInstanceController extends Controller
                 'user'=>$current_user,
                 'options'=>$myApp->configuration
             ];
-            if(!is_null($myApp->user_preferences)) {
-                $data['user']['preferences'] = $myApp->user_preferences->preferences;
-                if(is_null($data['user']['preferences'])){
-                    $data['user']['preferences'] = [];
+            if(!is_null($myApp->user_options)) {
+                $data['user']->options = $myApp->user_options->options;
+                if(is_null($data['user']->options)){
+                    $data['user']->options = [];
                 }
             }else{
-                $data['user']['preferences'] = [];
+                $data['user']->options = [];
             }
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
@@ -256,7 +256,7 @@ class AppInstanceController extends Controller
         
         // Merge App Configuration with User Preferences, User Info, and `request` data
         $all_data = ['configuration'=>$configuration,
-                     'preferences'=>[], 'user'=>[],
+                     'user_options'=>[], 'user'=>[],
                      'request'=>$request->has('request')?$request->input('request'):[]];
 
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {

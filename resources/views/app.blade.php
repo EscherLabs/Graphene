@@ -44,18 +44,15 @@
     }
   }
   $('#edit_instance').on('click', function(){
-    $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.preferences},JSON.parse(opts.config.user_preference_form))).on('save', function(){
-    // $().berry($.extend(true, {attributes:bae.data.user.preferences},opts.config.user_preference_form)).on('save', function(){
+    $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.options},JSON.parse(opts.config.user_preference_form))).on('save', function(){
 
-      if(authenticated){
+      //if(authenticated){ // what is this??
         $.ajax({
           type: 'POST',
-          url:'/api/apps/instances/{{ $app->id }}/user_prefs',
-          data: {'preferences': this.toJSON()},
+          url:'/api/apps/instances/{{ $app->id }}/user_options',
+          data: {'options': this.toJSON()},
           success:function(data){
-            // opts.data.user.preferences = JSON.parse(data.preferences);
-            // bae.app.update({user:{preferences:JSON.parse(data.preferences)}})
-            bae.app.update({user:{preferences:data.preferences}});
+            bae.app.update({user:{options:data.options}});
             this.trigger('close');
             toastr.success('', 'Options Updated Successfully');
           }.bind(this),
@@ -63,9 +60,9 @@
               toastr.error(data.statusText, 'An error occured updating options')
           }
         })
-      }else if(!editor){
-        Lockr.set(url, {'preferences': this.toJSON()})
-      }
+      // }else if(!editor){
+      //   Lockr.set(url, {'user_options': this.toJSON()})
+      // }
 
     })
 

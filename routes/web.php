@@ -64,10 +64,10 @@ Route::put('/api/appinstances/{app_instance}','AppInstanceController@update')->m
 // Delete an existing app instance by app_instance_id
 Route::delete('/api/appinstances/{app_instance}','AppInstanceController@destroy')->middleware('can:delete,app_instance');
 
-// Fetch App User Preferences for current user by app_instance_id
-Route::get('/api/apps/instances/{app_instance}/user_prefs','AppInstanceController@get_preferences')->middleware('can:get_preferences,app_instance');
-// Save App User Preferences for current user by app_instance_id
-Route::post('/api/apps/instances/{app_instance}/user_prefs','AppInstanceController@save_preferences')->middleware('can:update_preferences,app_instance');
+// Fetch App User Options for current user by app_instance_id
+Route::get('/api/apps/instances/{app_instance}/user_options','AppInstanceController@get_user_options')->middleware('can:get_user_options,app_instance');
+// Save App User Options for current user by app_instance_id
+Route::post('/api/apps/instances/{app_instance}/user_options','AppInstanceController@save_user_options')->middleware('can:update_user_options,app_instance');
 // Call App Instance Route for current user by app_instance_id, route name
 Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceController@call_route')->middleware('can:get_route,app_instance,route');
 

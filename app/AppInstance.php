@@ -16,15 +16,15 @@ class AppInstance extends Model
     public function app() {
       return $this->belongsTo(App::class);
     }
-    public function user_preferences() {
-      return $this->hasOne(UserPreference::class);
+    public function user_options() {
+      return $this->hasOne(UserOption::class);
     }
-    public function set_preference($user, $preferences)
+    public function set_user_options($user, $user_options)
     {
-        if(!is_null(UserPreference::where(['user_id'=>$user->id, 'app_instance_id'=>$this->id])->first())) {
-            UserPreference::where('app_instance_id', $this->id)->where('user_id',$user->id)->delete();
+        if(!is_null(UserOption::where(['user_id'=>$user->id, 'app_instance_id'=>$this->id])->first())) {
+            UserOption::where('app_instance_id', $this->id)->where('user_id',$user->id)->delete();
         }
-        return UserPreference::updateOrCreate(['app_instance_id'=>$this->id, 'user_id'=>$user->id],
-          ['preferences'=>$preferences]);
+        return UserOption::updateOrCreate(['app_instance_id'=>$this->id, 'user_id'=>$user->id],
+          ['options'=>$user_options]);
     }    
 }
