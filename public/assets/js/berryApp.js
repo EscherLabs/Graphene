@@ -81,10 +81,10 @@ berryAppEngine = function(options) {
 		return mount.call({data:data});
   }catch(e) {
 		console.log(e);
-		return undefined;
+		return;
   }
   })(this.options.data || {}, this.config.script)
-  if(typeof mountResult !== undefined) {
+  if(typeof mountResult !== 'undefined') {
     this.data= mountResult.data;
     
     this.methods = {};

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Page;
 use App\User;
 use App\Group;
+
 use App\AppInstance;
 use Illuminate\Http\Request;
 
@@ -62,7 +63,7 @@ class PageController extends Controller
 
         if($myPage->public == 0) {
             if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
-                App::abort(403, 'Access denied');
+                abort(403, 'Access denied');
             }
         }
 
@@ -83,13 +84,7 @@ class PageController extends Controller
             }else{
                 $config = $myPage->content;
             }
-            $name = $myPage->name;
-            // $links = Group::with(array('app_instances'=>function($q){
-            //     $q->select('group_id','id', 'name', 'slug', 'icon');
-            // },'pages'=>function($q){
-            //     $q->select('group_id','id', 'name', 'slug');
-            // }))->whereIn('id',$current_user->groups)->get();
-            return view('dashboard',['links'=>$links, 'apps'=>$apps,'name'=>$name, 'config'=>$config, 'id'=>$myPage->id]);
+            return view('dashboard',['links'=>$links, 'apps'=>$apps, 'name'=>$myPage->name, 'slug'=>$myPage->slug, 'config'=>$config, 'id'=>$myPage->id]);
 
         }
         abort(404,'App not found');

@@ -26,7 +26,14 @@ class UserDashboardController extends Controller
             $q->select('group_id','id', 'name', 'slug');
         }))->whereIn('id',Auth::user()->groups)->get();
         
-        return view('dashboard',['links'=>Group::links()->get(),'name'=>"Dashboard",'apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(), 'config'=>$config, 'id'=>Auth::user()->id]);
+        return view('dashboard',[
+            'links'=>Group::links()->get(),
+            'name'=>"Dashboard",
+            'slug'=>'',
+            'apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(), 
+            'config'=>$config, 
+            'id'=>Auth::user()->id
+        ]);
     }
 
     public function update(Request $request) {

@@ -94,64 +94,64 @@ initializers['appinstances'] = function() {
 				];
 				tableConfig.click = function(model){window.location.href = '/app/'+model.attributes.slug};
 				tableConfig.data = data;
-				tableConfig.events = [
-					{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
-						// var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(JSON.parse(model.attributes.app.code).form)) 
-						if(model.attributes.app.code.form.length){
-							var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(model.attributes.app.code.form)) 
+				// tableConfig.events = [
+				// 	{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
+				// 		// var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(JSON.parse(model.attributes.app.code).form)) 
+				// 		if(model.attributes.app.code.form.length){
+				// 			var options = $.extend(true, {legend:'Update Configuration'}, JSON.parse(model.attributes.app.code.form)) 
 
-							// options.attributes = JSON.parse(model.attributes.configuration)|| {};
-							options.attributes = model.attributes.configuration || {};
+				// 			// options.attributes = JSON.parse(model.attributes.configuration)|| {};
+				// 			options.attributes = model.attributes.configuration || {};
 
-							options.attributes.id = model.attributes.id;
-							options.fields.push({name: 'id', type:'hidden'});
-							$().berry(options).on('save', function(){
-								// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
-								$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: this.toJSON()},success:function(){
-										this.trigger('close');
-										toastr.success('', 'Successfully Updated Config')
-									}.bind(this),
-									error:function(e) {
-										toastr.error(e.statusText, 'ERROR');
-									}
-								});
-							});
-						}
-					}},
-					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
+				// 			options.attributes.id = model.attributes.id;
+				// 			options.fields.push({name: 'id', type:'hidden'});
+				// 			$().berry(options).on('save', function(){
+				// 				// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: JSON.stringify(this.toJSON())},success:function(){
+				// 				$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {configuration: this.toJSON()},success:function(){
+				// 						this.trigger('close');
+				// 						toastr.success('', 'Successfully Updated Config')
+				// 					}.bind(this),
+				// 					error:function(e) {
+				// 						toastr.error(e.statusText, 'ERROR');
+				// 					}
+				// 				});
+				// 			});
+				// 		}
+				// 	}},
+				// 	{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
 						 
-						// var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
-						if(model.attributes.app.code.sources[0].name !== '') {
+				// 		// var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
+				// 		if(model.attributes.app.code.sources[0].name !== '') {
 							
-							var attributes = $.extend(true, [],model.attributes.app.code.sources, model.attributes.resources);
+				// 			var attributes = $.extend(true, [],model.attributes.app.code.sources, model.attributes.resources);
 
-							$().berry({legend:'Update Routes',flatten:false, attributes: {id:model.attributes.id, container:{resources:attributes}},fields:[
-								{name: 'id', type:'hidden'},
-								{name:'container', label: false,  type: 'fieldset', fields:[
+				// 			$().berry({legend:'Update Routes',flatten:false, attributes: {id:model.attributes.id, container:{resources:attributes}},fields:[
+				// 				{name: 'id', type:'hidden'},
+				// 				{name:'container', label: false,  type: 'fieldset', fields:[
 
-									{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
-										{label: 'Name', enabled:false},
-										{label: 'Path'},
-										{label: 'Cache', type: 'checkbox'},
-										{label: 'Fetch', type: 'checkbox'},
-										{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
-										{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
-									]}
-								]},
-							]} ).on('save', function(){
-								// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
-								$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: this.toJSON().container.resources},success:function(){
-										this.trigger('close');
-										toastr.success('', 'Successfully updated Routes')
-									}.bind(this),
-									error:function(e) {
-										toastr.error(e.statusText, 'ERROR');
-									}
-								});
-							});
-						}
-					}}
-				]
+				// 					{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
+				// 						{label: 'Name', enabled:false},
+				// 						{label: 'Path'},
+				// 						{label: 'Cache', type: 'checkbox'},
+				// 						{label: 'Fetch', type: 'checkbox'},
+				// 						{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
+				// 						{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+				// 					]}
+				// 				]},
+				// 			]} ).on('save', function(){
+				// 				// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
+				// 				$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: this.toJSON().container.resources},success:function(){
+				// 						this.trigger('close');
+				// 						toastr.success('', 'Successfully updated Routes')
+				// 					}.bind(this),
+				// 					error:function(e) {
+				// 						toastr.error(e.statusText, 'ERROR');
+				// 					}
+				// 				});
+				// 			});
+				// 		}
+				// 	}}
+				// ]
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -160,56 +160,7 @@ initializers['app_instance'] = function() {
 		$('.navbar-header .nav a h4').html('App Instances');
 		$.ajax({
 			url: '/api/appinstances/'+resource_id,
-			success: function(data) {
-				tableConfig.schema = [
-					{label: 'Name', name:'name', required: true},
-        			{label: 'Slug', name:'slug', required: true},
-        			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
-					{name: 'app', type:'hidden'},
-					{name: 'id', type:'hidden'}
-				];
-				tableConfig.events = [
-
-					{'name': 'resources', 'label': '<i class="fa fa-road"></i> Resources', callback: function(model){
-						 
-						// var attributes = $.extend(true, [],JSON.parse(model.attributes.app.code).sources, JSON.parse(model.attributes.resources));
-						if(model.attributes.app.code.sources[0].name !== '') {
-							
-							var attributes = $.extend(true, [],model.attributes.app.code.sources, model.attributes.resources);
-
-							$().berry({legend:'Update Routes',flatten:false, attributes: {id:model.attributes.id, container:{resources:attributes}},fields:[
-								{name: 'id', type:'hidden'},
-								{name:'container', label: false,  type: 'fieldset', fields:[
-
-									{"multiple": {"duplicate": false},label: 'Resource', name: 'resources', type: 'fieldset', fields:[
-										{label: 'Name', enabled:false},
-										{label: 'Path'},
-										{label: 'Cache', type: 'checkbox'},
-										{label: 'Fetch', type: 'checkbox'},
-										{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
-										{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
-									]}
-								]},
-							]} ).on('save', function(){
-								// $.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: JSON.stringify(this.toJSON().container.resources)},success:function(){
-								$.ajax({url: api+'/'+this.toJSON().id, type: 'PUT', data: {resources: this.toJSON().container.resources},success:function(){
-										this.trigger('close');
-										toastr.success('', 'Successfully updated Routes')
-									}.bind(this),
-									error:function(e) {
-										toastr.error(e.statusText, 'ERROR');
-									}
-								});
-							});
-						}
-					}}
-				]
-				
-
-
+			success: function(data) {				
 				$('#table').html(`
 				<div style="margin:21px">
 <div class="btn-group pull-right">
@@ -219,7 +170,7 @@ initializers['app_instance'] = function() {
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu">
-    <li><a href="#">Visit</a></li>
+    <li><a href="/app/`+data.slug+`">Visit</a></li>
   </ul>
 </div>
   <!-- Nav tabs -->
@@ -238,7 +189,17 @@ initializers['app_instance'] = function() {
 
 </div>
 				`)
-				$('#main').berry({fields:tableConfig.schema,attributes:data, actions:false, name:'main'})
+
+				$('#main').berry({fields: [
+					{label: 'Name', name:'name', required: true},
+        			{label: 'Slug', name:'slug', required: true},
+        			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					{name: 'app', type:'hidden'},
+					{name: 'id', type:'hidden'}
+				],attributes:data, actions:false, name:'main'})
 				$('#save').on('click',function(){
 					var item = Berries.main.toJSON();
 					item.configuration = Berries.config.toJSON();

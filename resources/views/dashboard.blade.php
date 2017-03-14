@@ -99,7 +99,7 @@
       		var apps = {!! $apps !!};
 			// var status = true;
 			load(true);
-  		$('[href$="{{ $name }}"]').parent().addClass('active').parent().addClass('in');
+  		$('[href$="{{ $slug }}"]').parent().addClass('active').parent().addClass('in');
 
 		</script>
 

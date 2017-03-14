@@ -99,6 +99,12 @@
         @can('get_all','App\User')
           <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
         @endcan
+        @can('get_all','App\Group')
+          <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
+        @endcan
+        @can('get_all', 'App\Endpoint')
+          <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
+        @endcan   
         @can('get_all','App\App')
           <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; Apps</a></li>
         @endcan
@@ -108,12 +114,6 @@
         @can('get_all','App\Page')
           <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
         @endcan
-        @can('get_all','App\Group')
-          <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
-        @endcan
-        @can('get_all', 'App\Endpoint')
-          <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
-        @endcan   
         @can('get_all', 'App\Site')
           <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
         @endcan  
