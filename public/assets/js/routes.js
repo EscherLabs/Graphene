@@ -269,12 +269,12 @@ initializers['pages'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Pages');
 				tableConfig.schema = [
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
         			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/page/'+model.attributes.group_id+'/'+model.attributes.slug};
