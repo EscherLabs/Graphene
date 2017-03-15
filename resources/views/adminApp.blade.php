@@ -19,11 +19,11 @@
 </div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-coffee"></i> Scripts</a></li>
-    <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> Templates</a></li>
-    <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> Styles</a></li>
-    <li role="presentation"><a href="#sources" aria-controls="sources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> Resources</a></li>
-    <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> Forms</a></li>
+    <li role="presentation" class="active"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-coffee"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
+    <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
+    <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li>
+    <li role="presentation"><a href="#sources" aria-controls="sources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
+    <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -46,8 +46,19 @@
 <script src='http://unpkg.com/ractive/ractive.min.js'></script>    
 
 <script>var loaded = {!! $app !!};
+
 </script>
+		<script type="text/javascript" src="/assets/js/sortable.js"></script>
+
+  <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
+  <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
+  <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
+  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
+  
+  <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
   <script type='text/javascript' src='/assets/js/editApp.js'></script>
+      <link href="/assets/css/cobler.css" rel="stylesheet">
+
 @endsection
 
 @section('bottom_page_styles')
@@ -55,6 +66,7 @@
   fieldset hr{display:none}
   fieldset > legend{font-size: 30px}
   fieldset fieldset legend{    font-size: 21px}
+  .modal-dialog{width:900px}
   </style>
 @endsection
 

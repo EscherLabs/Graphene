@@ -60,7 +60,6 @@ Cobler.types.uApp = function(container){
               delete bae;
               this.bae = new berryAppEngine(opts);
               this.bae.app.on('refetch', refetch) 
-              // console.log('fetch')
             }.bind(this)
             this.bae.app.on('refetch', refetch) 
           }.bind(this)

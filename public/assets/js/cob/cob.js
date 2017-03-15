@@ -300,10 +300,11 @@ Cobler.types = {};
 berryEditor = function(container){
 	return function(){
 		var formConfig = $.extend(true, {}, {
-			// renderer: 'tabs', 
+			renderer: 'tabs', 
 			attributes: this.get(), 
 			fields: this.fields,
-			autoDestroy: true
+			autoDestroy: true,
+			inline:true
 		}, this.formOptions || {});
 
 		var opts = container.owner.options;
@@ -312,7 +313,7 @@ berryEditor = function(container){
 			formConfig.actions = false;
 			events = 'change';
 		}	
-		var myBerry = new Berry(formConfig, this.formTarget || $(container.elementOf(this)).find('.panel-body'));
+		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)).find('.panel-body'));
 		myBerry.on(events, function(){
 		 	container.update(myBerry.toJSON(), this);
 		 	container.deactivate();

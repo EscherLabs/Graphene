@@ -182,15 +182,18 @@ initializers['app_instance'] = function() {
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;">...</div>
-    <div role="tabpanel" class="tab-pane" id="config" style="padding-top: 20px;">...</div>
-    <div role="tabpanel" class="tab-pane" id="resources" style="padding-top: 20px;">...</div>
+    <div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+  <div class="col-sm-3"></div></div></div>
+    <div role="tabpanel" class="tab-pane" id="config" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+  <div class="col-sm-3"></div></div></div>
+    <div role="tabpanel" class="tab-pane" id="resources" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+  <div class="col-sm-3"></div></div></div>
   </div>
 
 </div>
 				`)
 
-				$('#main').berry({fields: [
+				$('#main .col-sm-9').berry({fields: [
 					{label: 'Name', name:'name', required: true},
         			{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
@@ -222,11 +225,11 @@ initializers['app_instance'] = function() {
 				options.attributes.id = data.id;
 				// options.fields.push({name: 'id', type:'hidden'});
 				options.name = 'config';
-				$('#config').berry(options);
+				$('#config .col-sm-9').berry(options);
 				
 				if(data.app.code.sources[0].name !== '') {	
 					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
-					$('#resources').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
+					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
 						{name:'container', label: false,  type: 'fieldset', fields:[
 
 							{"multiple": {"duplicate": false},label: '<hr>', name: 'resources', type: 'fieldset', fields:[

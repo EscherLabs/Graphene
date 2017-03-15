@@ -22,7 +22,7 @@
     <script src='/assets/js/lib.js'></script> 
 
 <script>
-  $('[href="/app/{{ $app->slug }}"]').parent().addClass('active').parent().addClass('in');
+  $('[href$="/{{ $app->slug }}"]').parent().addClass('active').parent().addClass('in');
   var opts = {
     $el: $('#app-container'),
     data:{!! json_encode($data) !!},
@@ -43,10 +43,10 @@
         });
     }
   }
+
   $('#edit_instance').on('click', function(){
     $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.options},JSON.parse(opts.config.user_preference_form))).on('save', function(){
-
-      //if(authenticated){ // what is this??
+      if(typeof opts.data.user.id !== 'undefined'){ // what is this??
         $.ajax({
           type: 'POST',
           url:'/api/apps/instances/{{ $app->id }}/user_options',
@@ -60,9 +60,9 @@
               toastr.error(data.statusText, 'An error occured updating options')
           }
         })
-      // }else if(!editor){
-      //   Lockr.set(url, {'user_options': this.toJSON()})
-      // }
+      }else if(!editor){
+        Lockr.set(url, {'user_options': this.toJSON()})
+      }
 
     })
 

@@ -163,3 +163,92 @@ $('.sources').berry({
   templatePage = new paged('.templates',{items:attributes.code.templates});
   scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
   formPage = new paged('.forms',{items:[{name:'Options Form',content:attributes.code.form},{name:'User Options Form',content:attributes.code.user_preference_form}], editable: false, mode:'ace/mode/javascript'});
+
+
+// modal = function(options) {
+// 	$('#myModal').remove();
+// 	this.ref = $(templates.modal.render(options));
+
+// 	$(this.ref).appendTo('body');
+
+// 	// if(options.content) {
+// 		this.ref.find('.modal-body').html(options.content);
+// 		this.ref.find('.modal-footer').html(options.legend);
+//   this.ref.on('hide.bs.modal', function(){
+//     cb.destroy();
+//     delete cb;
+//   });
+
+// 	this.ref.modal();
+// 	return this;
+// };
+
+function editForm(form, name){
+    if(typeof cb === 'undefined'){
+      if(typeof form === 'string'){
+        form = JSON.parse(form);
+      }
+
+      $('#myModal').remove();
+
+      this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+      $(this.ref).appendTo('body');
+      this.ref.find('.modal-body').html(templates.formEditor.render());
+      // this.ref.find('.modal-footer').html('Form Editor: '+name);
+      this.ref.on('hide.bs.modal', function(){
+        cb.destroy();
+        delete cb;
+      });
+
+      this.ref.modal();
+
+      cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
+      $('.modal #form').keydown(function(event) {
+				switch(event.keyCode) {
+					case 27://escape
+              event.stopPropagation();
+							cb.deactivate();
+              return false;
+						break;
+				}
+			});
+      list = document.getElementById('sortableList');
+      cb.addSource(list);
+      cb.on('activate', function(){
+        if(list.className.indexOf('hidden') == -1){
+          list.className += ' hidden';
+        }
+        $('#form').removeClass('hidden');
+      })
+      cb.on('deactivate', function(){
+        list.className = list.className.replace('hidden', '');
+        $('#form').addClass('hidden');
+      })
+      document.getElementById('sortableList').addEventListener('click', function(e) {
+        cb.collections[0].addItem(e.target.dataset.type);
+      })
+    }
+
+    if(typeof form !== 'undefined'){
+      var temp = $.extend(true, {}, form);
+      for(var i in temp.fields){
+
+        temp.fields[i] = Berry.normalizeItem(Berry.processOpts(temp.fields[i]), i);
+        switch(temp.fields[i].type) {
+          case "select":
+          case "radio":
+            temp.fields[i].widgetType = 'select';
+            break;
+          case "checkbox":
+            temp.fields[i].widgetType = 'checkbox';
+            break;
+          default:
+            temp.fields[i].widgetType = 'textbox';
+        }
+
+      }
+
+      list.className = list.className.replace('hidden', '');
+      cb.collections[0].load(temp.fields);
+    }
+}

@@ -59,18 +59,23 @@ class AppInstanceController extends Controller
         return $app_instance->set_user_options(Auth::user(),$request->get('options'));
     }
 
-    public function run($slug, Request $request) {
+    public function run($group, $slug, Request $request) {
+        if(!is_numeric($group)) {
+			$groupObj = Group::where('slug','=',$group)->first();
+			$group = $groupObj->id;
+		}
+
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $myApp = AppInstance::with('app')->with(['user_options'=>function($query){
                 $query->where('user_id','=', Auth::user()->id);
-            }])->where('slug', '=', $slug)->first();
+            }])->where('group_id','=', $group)->where('slug', '=', $slug)->first();
             $this->authorize('fetch' ,$myApp);
             $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
             $links = Group::links()->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            $myApp = AppInstance::with('app')->where('slug', '=', $slug)->where('public','=',true)->first();
+            $myApp = AppInstance::with('app')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
             if (is_null($myApp)) { abort(403); }
             $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
                 $q->where('site_id', '=', config('app.site')->id);

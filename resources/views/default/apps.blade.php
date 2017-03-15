@@ -110,13 +110,12 @@
           <li><a data-toggle="collapse" href="#collapse{{ $app->id }}">{{ $app->name }}</a></li>
           <ul class="collapse"  id="collapse{{ $app->id }}">
           @foreach ($app->app_instances as $instance)
-                    <li><a href="/app/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
+                    <li><a href="/app/{{ $app->slug }}/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
           @endforeach
           @foreach ($app->pages as $page)
                     <li><a href="/page/{{ $app->slug }}/{{ $page->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($page->icon)&&$page->icon!='')?$page->icon:'cube' }} fa-fw"></i>&nbsp; {{ $page->name }}</a></li>
           @endforeach
           </ul>
-
         @endforeach
         @endif
       </ul>
@@ -124,12 +123,8 @@
     @endif
     <div class="container-fluid" id="main-container">
       <div class="row">
-
         <div class="col-sm-12 main">
-
           @yield('content')
-
-
         </div>
       </div>
 
@@ -138,7 +133,7 @@
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type='text/javascript' src='//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
-    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		
+    <!--/*<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		*/-->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
@@ -147,6 +142,7 @@
     <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
     <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+    <script>_.findWith = _.find;</script>
     <script src='http://unpkg.com/ractive/ractive.min.js'></script>    
     <script src='//cdnjs.cloudflare.com/ajax/libs/lockr/0.8.4/lockr.min.js'></script>    
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'></script> 
