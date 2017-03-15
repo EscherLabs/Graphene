@@ -68,7 +68,7 @@ class ValidateUser
                 Auth::user()->developer ||
                 count(Auth::user()->admin_groups)>0
             )) {
-            App::abort(403, 'Access denied');
+            abort(403, 'Access denied');
         }
         return $next($request);
     }

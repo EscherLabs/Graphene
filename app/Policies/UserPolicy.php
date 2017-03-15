@@ -55,4 +55,11 @@ class UserPolicy
             return true;
         }
     }
+
+    public function visit_admin(User $user) {
+        // User must be a site admin, a developer, or a group admin
+        if ( $user->site_admin || $user->developer || count($user->admin_groups)>0 ) {
+            return true;
+        }
+    }
 }

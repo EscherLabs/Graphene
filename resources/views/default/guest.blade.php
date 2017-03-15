@@ -62,7 +62,9 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url('/') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                <li><a href="{{ url('/admin/groups') }}"><i class="fa fa-gear"></i> Admin</a></li>
+                @can('visit_admin', 'App\User')
+                  <li><a href="{{ url('/admin/groups') }}"><i class="fa fa-gear"></i> Admin</a></li>
+                @endcan  
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
               @else
