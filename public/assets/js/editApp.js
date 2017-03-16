@@ -1,4 +1,10 @@
-if(loaded.code == null){loaded.code = {scripts:[{name:'main',content:''}],templates:[{name:'main',content:''}]};}
+// if(loaded.code == null){loaded.code = {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
+// forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
+// };}
+loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
+forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
+},loaded.code)
+
 var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
 
 $('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
@@ -31,8 +37,10 @@ $('#save').on('click',function() {
 
   data.code.scripts = scriptPage.toJSON();
   var temp = formPage.toJSON();
-  data.code.form = temp[0].content;
-  data.code.user_preference_form = temp[1].content;
+  data.code.forms = formPage.toJSON();
+
+  // data.code.form = temp[0].content;
+  // data.code.user_options_form = temp[1].content;
   $.ajax({
     url: '/api/apps/'+attributes.id,
     method: 'put',
@@ -48,7 +56,7 @@ $('#save').on('click',function() {
 
 var paged = function(selector, options){
   this.$el = $(selector);
-
+  options.hasextra  = (typeof options.extra == 'function');
   options.u_id =  Berry.getUID();
   options.items = _.map(options.items, function(item) {
     item.key = options.u_id+item.name.toLowerCase().replace(/ /g,"_");
@@ -74,13 +82,13 @@ var paged = function(selector, options){
     $('[href="#'+this.active+'"]').click();
   }
 
-  $(selector+' .actions .pages_delete,'+selector+' .actions .pages_edit,'+selector+' .actions .pages_new').on('click', function(e){
+  $(selector+' .actions .pages_delete,'+selector+' .actions .pages_edit,'+selector+' .actions .pages_new,'+selector+' .pages_extra').on('click', function(e){
     var currentItem = _.findWhere(this.options.items, {key: this.active});
-    if($(e.currentTarget).hasClass('pages_delete')){
+    if($(e.currentTarget).hasClass('pages_delete') && !currentItem.disabled){
       currentItem.removed = true;
       this.render();
     }else{
-      if($(e.currentTarget).hasClass('pages_edit')){
+      if($(e.currentTarget).hasClass('pages_edit') && !currentItem.disabled){
         $().berry({name:'page_name', legend: 'Edit Section', attributes: {name: currentItem.name},fields: {'Name': {}}}).on('save', function(){
           _.findWhere(this.options.items, {key:this.active}).name = Berries.page_name.toJSON().name;
           this.render();
@@ -100,6 +108,10 @@ var paged = function(selector, options){
 
             Berries.page_name.trigger('close');
           }, this);
+        }else{
+          if($(e.currentTarget).hasClass('pages_extra')) {
+            this.options.extra.call(this, currentItem);
+          }
         }
       }
     }
@@ -128,6 +140,19 @@ var paged = function(selector, options){
       });
       return _.filter(temp, function(item){return item;});
     }.bind(this),
+    getCurrent:function(){
+      return _.findWhere(this.options.items, {key: this.active});
+    }.bind(this),
+    update:function(key,value){
+      this.berry.fields[key].setValue(value)
+    }.bind(this)
+  //  setCurrent: function(value){
+  //   //  return currentItem;
+  //   //  return _.findWhere(this.options.items, {key: this.active});
+  //   // debugger;
+  //   this.berry.fields[this.active].setValue(value)
+
+  //   }.bind(this)
   }
 }
 
@@ -162,93 +187,90 @@ $('.sources').berry({
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
   templatePage = new paged('.templates',{items:attributes.code.templates});
   scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
-  formPage = new paged('.forms',{items:[{name:'Options Form',content:attributes.code.form},{name:'User Options Form',content:attributes.code.user_preference_form}], editable: false, mode:'ace/mode/javascript'});
+  formPage = new paged('.forms',{items:attributes.code.forms, mode:'ace/mode/javascript',extra: function(item){
+    if (!_.some(JSON.parse(formPage.getCurrent().content).fields, function(o) { return _.has(o, "fields"); })) {
 
-
-// modal = function(options) {
-// 	$('#myModal').remove();
-// 	this.ref = $(templates.modal.render(options));
-
-// 	$(this.ref).appendTo('body');
-
-// 	// if(options.content) {
-// 		this.ref.find('.modal-body').html(options.content);
-// 		this.ref.find('.modal-footer').html(options.legend);
-//   this.ref.on('hide.bs.modal', function(){
-//     cb.destroy();
-//     delete cb;
-//   });
-
-// 	this.ref.modal();
-// 	return this;
-// };
-
-function editForm(form, name){
-    if(typeof cb === 'undefined'){
-      if(typeof form === 'string'){
-        form = JSON.parse(form);
-      }
-
-      $('#myModal').remove();
-
-      this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-      $(this.ref).appendTo('body');
-      this.ref.find('.modal-body').html(templates.formEditor.render());
-      // this.ref.find('.modal-footer').html('Form Editor: '+name);
-      this.ref.on('hide.bs.modal', function(){
-        cb.destroy();
-        delete cb;
+      modalForm(item.content, item.name, function(){
+        var old = formPage.getCurrent();
+        formPage.update(old.key, JSON.stringify($.extend(true, {}, JSON.parse(old.content),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
       });
-
-      this.ref.modal();
-
-      cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-      $('.modal #form').keydown(function(event) {
-				switch(event.keyCode) {
-					case 27://escape
-              event.stopPropagation();
-							cb.deactivate();
-              return false;
-						break;
-				}
-			});
-      list = document.getElementById('sortableList');
-      cb.addSource(list);
-      cb.on('activate', function(){
-        if(list.className.indexOf('hidden') == -1){
-          list.className += ' hidden';
-        }
-        $('#form').removeClass('hidden');
-      })
-      cb.on('deactivate', function(){
-        list.className = list.className.replace('hidden', '');
-        $('#form').addClass('hidden');
-      })
-      document.getElementById('sortableList').addEventListener('click', function(e) {
-        cb.collections[0].addItem(e.target.dataset.type);
-      })
+    }else{
+      toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Supported');
     }
+  }});
+  // formPage = new paged('.forms',{items:[{name:'Options Form',content:attributes.code.form},{name:'User Options Form',content:attributes.code.user_preference_form}],  mode:'ace/mode/javascript'});
 
-    if(typeof form !== 'undefined'){
-      var temp = $.extend(true, {}, form);
-      for(var i in temp.fields){
 
-        temp.fields[i] = Berry.normalizeItem(Berry.processOpts(temp.fields[i]), i);
-        switch(temp.fields[i].type) {
-          case "select":
-          case "radio":
-            temp.fields[i].widgetType = 'select';
-            break;
-          case "checkbox":
-            temp.fields[i].widgetType = 'checkbox';
-            break;
-          default:
-            temp.fields[i].widgetType = 'textbox';
-        }
+function modalForm(form, name, onSave){
+  if(typeof cb === 'undefined'){
+    if(typeof form === 'string'){
+      form = JSON.parse(form);
+    }
+    form = form || {};
+    $('#myModal').remove();
+    this.onSave = onSave;
+    this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+    $(this.ref).appendTo('body');
+    this.ref.find('.modal-body').html(templates.formEditor.render());
+    this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
+    this.ref.on('hide.bs.modal', function(){
+      cb.destroy();
+      delete cb;
+    });
+    this.ref.find('#saveForm').on('click', function(){
+      this.onSave.call(this)
+      this.ref.modal('hide');
+      
+    }.bind(this))
+    this.ref.modal();
 
+    cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
+    $('.modal #form').keydown(function(event) {
+      switch(event.keyCode) {
+        case 27://escape
+            event.stopPropagation();
+            cb.deactivate();
+            return false;
+          break;
+      }
+    });
+    list = document.getElementById('sortableList');
+    cb.addSource(list);
+    cb.on('activate', function(){
+      if(list.className.indexOf('hidden') == -1){
+        list.className += ' hidden';
+      }
+      $('#form').removeClass('hidden');
+    })
+    cb.on('deactivate', function(){
+      list.className = list.className.replace('hidden', '');
+      $('#form').addClass('hidden');
+    })
+    document.getElementById('sortableList').addEventListener('click', function(e) {
+      cb.collections[0].addItem(e.target.dataset.type);
+    })
+  }
+
+  if(typeof form !== 'undefined'){
+    var temp = $.extend(true, {}, form);
+    for(var i in temp.fields){
+
+      temp.fields[i] = Berry.normalizeItem(Berry.processOpts(temp.fields[i]), i);
+      switch(temp.fields[i].type) {
+        case "select":
+        case "radio":
+          temp.fields[i].widgetType = 'select';
+          break;
+        case "checkbox":
+          temp.fields[i].widgetType = 'checkbox';
+          break;
+        default:
+          temp.fields[i].widgetType = 'textbox';
       }
 
-      list.className = list.className.replace('hidden', '');
-      cb.collections[0].load(temp.fields);
     }
+
+    list.className = list.className.replace('hidden', '');
+    cb.collections[0].load(temp.fields);
+  }
 }

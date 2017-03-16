@@ -45,7 +45,7 @@
   }
 
   $('#edit_instance').on('click', function(){
-    $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.options},JSON.parse(opts.config.user_preference_form))).on('save', function(){
+    $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.options},JSON.parse(opts.config.forms[1].content))).on('save', function(){
       if(typeof opts.data.user.id !== 'undefined'){ // what is this??
         $.ajax({
           type: 'POST',

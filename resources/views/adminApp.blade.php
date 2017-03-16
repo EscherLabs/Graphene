@@ -30,7 +30,9 @@
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane scripts active" id="scripts"></div>
     <div role="tabpanel" class="tab-pane templates" id="templates"></div>
-    <div role="tabpanel" class="tab-pane sources" id="sources"></div>
+    <div role="tabpanel" class="tab-pane " id="sources">
+      <div class="row"><div class="col-md-9 sources"></div>
+  <div class="col-md-3"></div></div></div>
     <div role="tabpanel" class="tab-pane" id="styles">
        <div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div>
@@ -66,7 +68,7 @@
   fieldset hr{display:none}
   fieldset > legend{font-size: 30px}
   fieldset fieldset legend{    font-size: 21px}
-  .modal-dialog{width:900px}
+  #myModal .modal-dialog{width:900px}
   </style>
 @endsection
 

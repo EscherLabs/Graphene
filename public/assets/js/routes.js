@@ -177,14 +177,14 @@ initializers['app_instance'] = function() {
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
     <li role="presentation"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
-		<li role="presentation"><a href="#config" aria-controls="profile" role="tab" data-toggle="tab">Config</a></li>
+		<li role="presentation"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div></div>
-    <div role="tabpanel" class="tab-pane" id="config" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+    <div role="tabpanel" class="tab-pane" id="options" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div></div>
     <div role="tabpanel" class="tab-pane" id="resources" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div></div>
@@ -205,7 +205,7 @@ initializers['app_instance'] = function() {
 				],attributes:data, actions:false, name:'main'})
 				$('#save').on('click',function(){
 					var item = Berries.main.toJSON();
-					item.configuration = Berries.config.toJSON();
+					item.configuration = Berries.options.toJSON();
 					item.resources = Berries.resources.toJSON().resources;
 
 					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', data: item, success:function(){
@@ -217,15 +217,16 @@ initializers['app_instance'] = function() {
 					});
 
 				})
-				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.form)) 
+				debugger;
+				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
 
 				// options.attributes = JSON.parse(model.attributes.configuration)|| {};
 				options.attributes = data.configuration || {};
 
 				options.attributes.id = data.id;
 				// options.fields.push({name: 'id', type:'hidden'});
-				options.name = 'config';
-				$('#config .col-sm-9').berry(options);
+				options.name = 'options';
+				$('#options .col-sm-9').berry(options);
 				
 				if(data.app.code.sources[0].name !== '') {	
 					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
@@ -544,9 +545,12 @@ templates['pages'] = Hogan.compile(
 	{{>pages_tabpanel}}
     {{/items}}
   </div></div>
-  <div class="col-sm-3">
+  <div class="col-sm-3" style="padding-top: 5px;">
   {{#editable}}
-    	<div class="actions" style="height:40px">
+    	{{#hasextra}}<a href="javascript:void(0);" class="pages_extra btn btn-default pull-right" ><i class="fa fa-gears"></i></a>{{/hasextra}}
+
+		<div class="actions" style="height:40px">
+		
 		<div class="btn-group">
 						<button type="button" class="btn  btn-info go pages_new">New <span class="">Section</span></button>
 						<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -559,6 +563,7 @@ templates['pages'] = Hogan.compile(
 						</ul>
 					</div>
 		</div>
+
 		  {{/editable}}
 
   <div class="list-group">

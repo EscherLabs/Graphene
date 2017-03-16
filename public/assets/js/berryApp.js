@@ -65,7 +65,7 @@ berryAppEngine = function(options) {
   // var parsed_template = this.config.templates;
   this.partials = {};
   for(var i in this.config.templates) {
-  	this.partials[this.config.templates[i].name] = this.config.templates[i].content;
+  	this.partials[this.config.templates[i].name.toLowerCase()] = this.config.templates[i].content;
   }
   
   try{

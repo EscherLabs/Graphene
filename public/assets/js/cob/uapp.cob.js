@@ -7,12 +7,12 @@ Cobler.types.uApp = function(container){
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/appinstances'},
-		'Template': {}
+		// 'Template': {}
 	}
 	return {
 		fields: fields,
 		render: function() {
-			return templates['widgets_content'].render(get(), templates);
+			return templates['widgets_microapp'].render(get(), templates);
 		},
 		edit: berryEditor.call(this, container),
 		toJSON: get,
