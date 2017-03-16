@@ -75,6 +75,7 @@ class AppInstanceController extends Controller
             $links = Group::links()->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
+
             $myApp = AppInstance::with('app')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
             if (is_null($myApp)) { abort(403); }
             $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
@@ -87,9 +88,10 @@ class AppInstanceController extends Controller
         if($myApp != null) {
             // Create data object that will be used by the app
             $data = ['user'=>$current_user,'options'=>$myApp->configuration];
+            
 
-            if(!isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
-                $data['user']->options = [];
+            if(!Auth::check() || !isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
+                $data['user']->options = json_decode('{}');
             } else { 
                 $data['user']->options = $myApp->user_options->options;
             }

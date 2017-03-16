@@ -9,7 +9,7 @@
 @endsection
 
 @section('titlebar')
-    @if (!is_null($app->app->code) && $app->app->code->user_preference_form)
+    @if (!is_null($app->app->code) && strlen($app->app->code->forms[1]->content)) )
     <div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;"><i class="fa fa-gears"></i> Options</div>
     @endif
     @if (Auth::check())
@@ -43,13 +43,16 @@
         });
     }
   }
-
+  if(typeof opts.data.user.id === 'undefined') {
+    opts.data.user.options =  Lockr.get('/api/apps/instances/{{ $app->id }}/user_options').options;
+  }
   $('#edit_instance').on('click', function(){
-    $().berry($.extend(true, {legend:'Edit Options', attributes:bae.data.user.options},JSON.parse(opts.config.forms[1].content))).on('save', function(){
-      if(typeof opts.data.user.id !== 'undefined'){ // what is this??
+    $().berry($.extend(true, {legend:'Edit Options', attributes: bae.data.user.options},JSON.parse(opts.config.forms[1].content))).on('save', function(){
+      var url = '/api/apps/instances/{{ $app->id }}/user_options';
+      if(typeof opts.data.user.id !== 'undefined') { // what is this??
         $.ajax({
           type: 'POST',
-          url:'/api/apps/instances/{{ $app->id }}/user_options',
+          url:url,
           data: {'options': this.toJSON()},
           success:function(data){
             bae.app.update({user:{options:data.options}});
@@ -60,8 +63,10 @@
               toastr.error(data.statusText, 'An error occured updating options')
           }
         })
-      }else if(!editor){
-        Lockr.set(url, {'user_options': this.toJSON()})
+      }else{
+        Lockr.set(url, {'options': this.toJSON()})
+        this.trigger('close');
+        toastr.success('', 'Options Updated Successfully');
       }
 
     })
