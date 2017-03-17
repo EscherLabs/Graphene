@@ -44,7 +44,7 @@
     }
   }
   if(typeof opts.data.user.id === 'undefined') {
-    opts.data.user.options =  Lockr.get('/api/apps/instances/{{ $app->id }}/user_options').options;
+    opts.data.user.options =  (Lockr.get('/api/apps/instances/{{ $app->id }}/user_options') || {options:{}}).options;
   }
   $('#edit_instance').on('click', function(){
     $().berry($.extend(true, {legend:'Edit Options', attributes: bae.data.user.options},JSON.parse(opts.config.forms[1].content))).on('save', function(){
@@ -64,6 +64,7 @@
           }
         })
       }else{
+        bae.app.update({user:{options:this.toJSON()}});
         Lockr.set(url, {'options': this.toJSON()})
         this.trigger('close');
         toastr.success('', 'Options Updated Successfully');

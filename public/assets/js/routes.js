@@ -88,7 +88,7 @@ initializers['appinstances'] = function() {
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
         			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps?limit=true'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				];
@@ -199,7 +199,7 @@ initializers['app_instance'] = function() {
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps?limit=true'},
+					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				],attributes:data, actions:false, name:'main'})
