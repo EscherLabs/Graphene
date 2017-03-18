@@ -2,9 +2,11 @@
 
 ## About Graphene
 
-Graphene is a Micro App Framework
+Graphene is a fully featured Application Development and Content Management Engine built on top of Laravel 5.
 
-- It supports Micro Apps
+Leveraging Berry, BerryTables, Cobler, uAppEngine, Mustache, and Bootstrap together into one streamlined system, Graphene makes developing and deploying Micro-Applications incredibly simple.
+
+With built-in permissions and access management, secure RESTful web service integrations, and an out-of-the box web based IDE, development to deployment time is faster than ever.
 
 ## License
 
