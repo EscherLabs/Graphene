@@ -31,7 +31,7 @@ class AppInstanceController extends Controller
     }
 
     public function show(AppInstance $app_instance) {
-        return $app_instance->with('app')->get()->first();
+        return AppInstance::with('app')->where('id', '=', $app_instance->id)->first();
     }
 
     public function create(Request $request) {

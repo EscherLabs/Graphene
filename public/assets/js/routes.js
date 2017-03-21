@@ -217,7 +217,6 @@ initializers['app_instance'] = function() {
 					});
 
 				})
-				debugger;
 				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
 
 				// options.attributes = JSON.parse(model.attributes.configuration)|| {};
