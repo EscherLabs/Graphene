@@ -143,7 +143,7 @@
     <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
     <script>_.findWhere = _.find;</script>
-    <script src='http://unpkg.com/ractive/ractive.min.js'></script>    
+    <script src='//unpkg.com/ractive/ractive.min.js'></script>    
     <script src='//cdnjs.cloudflare.com/ajax/libs/lockr/0.8.4/lockr.min.js'></script>    
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'></script> 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>
