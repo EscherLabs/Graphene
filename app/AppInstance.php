@@ -16,6 +16,9 @@ class AppInstance extends Model
     public function app() {
       return $this->belongsTo(App::class);
     }
+    public function appVersion() {
+      return $this->belongsTo(AppVersion::class);
+    }
     public function user_options() {
       return $this->hasOne(UserOption::class);
     }

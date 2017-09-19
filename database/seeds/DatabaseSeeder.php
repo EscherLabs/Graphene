@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         $user1->first_name = 'Tim';
         $user1->last_name = 'Cortesi';
         $user1->email = 'tcortesi@gmail.com';
-        $user1->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
+        $user1->password = '$2y$10$/7lJmdRUSwPT5O4FWZk6X.yUPs08KG78DeRh7g9PCzDefD71.JLCS';
         $user1->site_admin = 1;
         $user1->developer = 1;
         $user1->save();
@@ -50,10 +50,16 @@ class DatabaseSeeder extends Seeder
         $app = new \App\App;
         $app->name = 'My App';
         $app->site_id = $site->id;
-        
-        $app->code = [
+        $app->save();
+
+        $app_version = new \App\AppVersion;
+        $app_version->app_id = $app->id;
+        $app_version->summary = 'Initial Version';
+        $app_version->stable = true;
+        $app_version->code = [
             "css" => "",
             "form"=>json_decode('{"fields":[{"label":"Test","name":"test"}]}'),
+            "forms"=>[["name"=>"Options","content"=>""],["name"=>"User Options","content"=>""]],
             "scripts" => [
             [
                 "name" => "main",
@@ -137,6 +143,11 @@ class DatabaseSeeder extends Seeder
             ]
             ],
         ];
+        $app_version->save();
+
+        // Save code in app, even though this should be in the version
+        // Will be deprecated in next version
+        $app->code = $app_version->code;
         $app->save();
 
         $app->add_developer($user1,true);
@@ -153,6 +164,7 @@ class DatabaseSeeder extends Seeder
         $endpoint->save();
 
         $app_instance = new \App\AppInstance;
+        $app_instance->app_version_id = $app_version->id;
         $app_instance->name = 'My App Instance';
         $app_instance->slug = 'my_app_instance';
         $app_instance->app_id = $app->id;

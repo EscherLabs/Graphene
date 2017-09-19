@@ -16,6 +16,7 @@ class CreateAppsTable extends Migration
             $table->increments('id');
             $table->integer('site_id')->unsigned()->index();
             $table->string('name');
+            // Move Code to App Versions
             $table->json('code')->nullable();
             $table->timestamps();
             $table->softDeletes();

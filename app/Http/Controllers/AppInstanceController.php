@@ -37,6 +37,8 @@ class AppInstanceController extends Controller
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app_instance = new AppInstance($request->all());
+        // Add App Version
+        // $app_instance->app_version_id = $request->get('app_version_id');
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
         $app_instance->save();
