@@ -55,11 +55,11 @@ class SiteController extends Controller
     }
     public function add_member(Site $site, User $user, Request $request)
     {
-        return $group->add_member($user,$request->site_admin, $request->developer);
+        return $site->add_member($user,$request->site_admin, $request->developer);
     }
     public function remove_member(Site $site, User $user)
     {
-        return $group->remove_member($user);
+        return $site->remove_member($user);
     }
 
 }

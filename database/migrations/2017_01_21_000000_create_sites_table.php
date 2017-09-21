@@ -17,6 +17,8 @@ class CreateSitesTable extends Migration
             $table->string('domain')->unique();
             $table->string('name')->nullalble()->default(null);
             $table->json('theme')->nullable();
+            $table->string('auth')->nullalble()->default(null);
+            $table->json('auth_config')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

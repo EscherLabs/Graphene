@@ -183,6 +183,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         PulkitJalan\Google\GoogleServiceProvider::class,
         GoogleSheets\Providers\SheetsServiceProvider::class,
+        /* CAS Authentication TJC 9/19/17 */
+        Subfission\Cas\CasServiceProvider::class,
     ],
 
     /*
@@ -232,7 +234,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Google' => PulkitJalan\Google\Facades\Google::class,
         'Sheets' => GoogleSheets\Facades\Sheets::class,
-
+        /* CAS Support TJC 9/16/17 */
+        'Cas' => Subfission\Cas\Facades\Cas::class,
     ],
 
 ];

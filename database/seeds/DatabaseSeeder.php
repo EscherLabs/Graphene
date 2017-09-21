@@ -12,9 +12,23 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $site = new \App\Site;
-        $site->domain = '127.0.0.1';
+        $site->domain = 'graphenedev.local';
         $site->name = 'LocalDev';
         $site->theme = ['css' => '','icon'=>'file'];
+        $site->auth = 'basic';
+        $site->auth_config = [
+            'cas_hostname'        => 'securetest.binghamton.edu',
+            'cas_real_hosts'      => 'securetest.binghamton.edu',
+            'cas_port'            => 443,
+            'cas_uri'             => '/cas',
+            'cas_login_url'       => '',
+            'cas_logout_url'      => '',
+            'cas_enable_saml'     => true,
+            'cas_saml_map'        => [
+                'unique_id' => 'UDC_IDENTIFIER', 'first_name' => 'firstname', 
+                'last_name' => 'lastname', 'email' => 'mail'
+            ]
+        ];
         $site->save();
 
         $group = new \App\Group;

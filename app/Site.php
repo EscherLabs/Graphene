@@ -9,9 +9,8 @@ class Site extends Model
 {
     use SoftDeletes;
     protected $dates = ['deleted_at'];
-    protected $fillable = ['domain','theme'];
-
-    protected $casts = ['theme' => 'object'];
+    protected $fillable = ['domain','theme','auth'];
+    protected $casts = ['theme' => 'object','auth_config' => 'object'];
 
     public function members() {
       return $this->hasMany(SiteMember::class);
