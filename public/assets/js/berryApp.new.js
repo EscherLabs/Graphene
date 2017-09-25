@@ -62,42 +62,38 @@ function App() {
  
 berryAppEngine = function(options) {
   this.load = function() {
-		// var parsed_template = this.config.templates;
-		this.partials = {};
-		for(var i in this.config.templates) {
-			this.partials[this.config.templates[i].name.toLowerCase()] = this.config.templates[i].content;
-		}
-		
-		try{
-			var temp = JSON.parse(this.config.scripts);
-			this.config.script = temp;
-		}catch(e){}
-		if(typeof this.config.scripts == 'object') {
-			this.config.script = _.map(this.config.scripts, 'content').join(';');
-		}
-		var mountResult = (function(data, script) {
-		try{
-			eval('function mount(){'+script+';return this;}');
-			return mount.call({data:data});
-		}catch(e) {
-			console.log(e);
-			return;
-		}
-		})(this.options.data || {}, this.config.script)
-		if(typeof mountResult !== 'undefined') {
-			this.data= mountResult.data;
-			this.methods = {};
-			for(var i in mountResult) {
-				if(typeof mountResult[i] == 'function') {
-					this.methods[i] = mountResult[i];
-				}
+  // var parsed_template = this.config.templates;
+  this.partials = {};
+  for(var i in this.config.templates) {
+  	this.partials[this.config.templates[i].name.toLowerCase()] = this.config.templates[i].content;
+  }
+  
+  try{
+		var temp = JSON.parse(this.config.scripts);
+		this.config.script = temp;
+  }catch(e){}
+  if(typeof this.config.scripts == 'object') {
+  	this.config.script = _.map(this.config.scripts, 'content').join(';');
+  }
+  var mountResult = (function(data, script) {
+  try{
+		eval('function mount(){'+script+';return this;}');
+		return mount.call({data:data});
+  }catch(e) {
+		console.log(e);
+		return;
+  }
+  })(this.options.data || {}, this.config.script)
+  if(typeof mountResult !== 'undefined') {
+    this.data= mountResult.data;
+    
+    this.methods = {};
+    for(var i in mountResult) {
+			if(typeof mountResult[i] == 'function') {
+				this.methods[i] = mountResult[i];
 			}
-		}else{
-			this.data = this.options.data;
-		}
-
-		$.extend(this.data, this.data.options);
-
+    }
+  }
     if(typeof this.app == 'undefined'){
       this.app = App.call(this)
     }
@@ -107,7 +103,7 @@ berryAppEngine = function(options) {
  
   this.draw = function() {
     this.view = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'main'] || this.partials['main'], data: this.data, partials: this.partials});
-    if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
+    if(typeof this.methods[this.options.initializer] !== 'undefined') {
       this.methods[this.options.initializer].call(this);
       this.app.on('call', function(name, args){
         if(typeof this.methods[args.name] !== 'undefined'){this.methods[args.name].call(this,args.args)}
@@ -125,14 +121,5 @@ berryAppEngine = function(options) {
 	this.options = $.extend(true, {}, options);
 	this.options.initializer = this.options.initializer || 'callback'
 	this.config = this.options.config;
-
-
-	this.get = function(){
-		return this.data;
-	}
-
 	this.load();
-
-
-
 }
