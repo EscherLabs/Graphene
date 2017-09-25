@@ -18,7 +18,7 @@ class CreateAppInstancesTable extends Migration
             $table->integer('app_version_id')->unsigned()->index();
             $table->integer('group_id')->unsigned()->index();
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->string('icon')->nullable()->default(null);
             $table->boolean('public')->default(false);
             $table->boolean('unlist')->default(false);

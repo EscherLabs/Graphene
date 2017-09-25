@@ -17,11 +17,13 @@ class CreatePagesTable extends Migration
 			$table->increments('id');
             $table->integer('group_id')->unsigned()->index();
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->string('icon')->nullable()->default(null);
 			$table->json('content')->nullable();
+            $table->integer('order')->unsigned()->default(2147483647);
+            $table->tinyInteger('device')->unsigned();
 			$table->json('mobile_order')->nullable();
-            $table->boolean('unlist')->default(false);
+            $table->boolean('unlisted')->default(false);
 			$table->boolean('public')->default(false);
 			$table->timestamps();
             $table->foreign('group_id')->references('id')->on('groups');

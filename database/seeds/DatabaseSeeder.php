@@ -73,46 +73,49 @@ class DatabaseSeeder extends Seeder
         $app_version->code = [
             "css" => "",
             "form"=>json_decode('{"fields":[{"label":"Test","name":"test"}]}'),
-            "forms"=>[["name"=>"Options","content"=>""],["name"=>"User Options","content"=>""]],
+            "forms"=>[
+                ["name"=>"Options","content"=>"{\"fields\":[{\"label\": \"admin_option\"}]}"],
+                ["name"=>"User Options","content"=>"{\"fields\":[{\"label\": \"user_option\"}]}"]
+            ],
             "scripts" => [
             [
                 "name" => "main",
                 "content" => "
-                this.data.counter = 1;\n
-                this.data.echo = {};\n
-                this.callback = function() {\n
-                    this.app.on('hello',function(){\n
-                        console.log('stuff');\n
-                    })\n
-                    this.app.click('.btn-info', function() {\n
-                        this.app.refresh();\n
-                    })\n
-                    this.app.click('.btn-danger', function() {\n
-                        this.data.counter++;\n
-                        this.app.update();\n
-                    })\n
-                    this.app.click('.btn-warning',function() {\n
-                        this.app.get('whoami',{},function(response){\n
-                            this.data.whoami = response;\n
-                            this.app.update();\n
-                        })\n
-                    })\n
-                    this.app.click('.post-echo',function() {\n
-                        this.app.post('echo',{'result':this.".'$'."el.find('#post-echo-input').val()},function(response){\n
-                            this.data.echo.POST = response.POST;\n
-                            this.app.update();\n
-                        })\n
-                    })\n
-                    this.app.click('.get-echo',function() {\n
-                        this.app.get('echo',{'result':this.".'$'."el.find('#get-echo-input').val()},function(response){\n
-                            this.app.update({echo:{GET:response.GET}});\n
-                        })\n
-                    })\n
-                    this.app.click('.updateDirect', function(){\n
-                        this.data.counter = 100;//.set({counter:100});\n
-                        this.app.redraw();\n
-                        \n
-                    })\n
+                this.data.counter = 1;
+                this.data.echo = {};
+                this.callback = function() {
+                    this.app.on('hello',function(){
+                        console.log('stuff');
+                    })
+                    this.app.click('.btn-info', function() {
+                        this.app.refresh();
+                    })
+                    this.app.click('.btn-danger', function() {
+                        this.data.counter++;
+                        this.app.update();
+                    })
+                    this.app.click('.btn-warning',function() {
+                        this.app.get('whoami',{},function(response){
+                            this.data.whoami = response;
+                            this.app.update();
+                        })
+                    })
+                    this.app.click('.post-echo',function() {
+                        this.app.post('echo',{'result':this.".'$'."el.find('#post-echo-input').val()},function(response){
+                            this.data.echo.POST = response.POST;
+                            this.app.update();
+                        })
+                    })
+                    this.app.click('.get-echo',function() {
+                        this.app.get('echo',{'result':this.".'$'."el.find('#get-echo-input').val()},function(response){
+                            this.app.update({echo:{GET:response.GET}});
+                        })
+                    })
+                    this.app.click('.updateDirect', function(){
+                        this.data.counter = 100;//.set({counter:100});
+                        this.app.redraw();
+                        
+                    })
                 }
                 ",
             ],
@@ -125,28 +128,30 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "main",
                 "content" => "
-                <div class='btn btn-info'>Refresh Button!</div>\n
-                <div>{{options.mytext}}</div>\n
-                <div class='btn btn-danger'>Redraw Increment Counter</div>\n
-                <div><strong>Counter:</strong> {{counter}}</div>\n
-                <div class='btn btn-warning'>Who Am I?</div>\n
-                <div><strong>Who Am I?</strong> {{whoami.user}}</div>\n
-                <div>\n
-                    <input id='post-echo-input' type='text' />\n
-                    <div class='btn btn-success post-echo'>POST Echo</div>\n
-                </div>\n
-                <div>\n
-                    <strong>POST Response:</strong> {{echo.POST.result}}\n
-                </div>\n
-                <div>\n
-                    <input id='get-echo-input' type='text' />\n
-                    <div class='btn btn-success get-echo'>GET Echo</div>\n
-                </div>\n
-                <div>\n
-                <strong>GET Response:</strong> {{echo.GET.result}}\n
-                </div>\n
-                <div>{{>Test}}</div>\n
-                 <div class='btn btn-success updateDirect'>=100</div>\n
+                <div>Admin Option: {{options.admin_option}}</div>
+                <div>User Option: {{user.options.user_option}}</div>
+                <div class='btn btn-info'>Refresh Button!</div>
+                <div>{{options.mytext}}</div>
+                <div class='btn btn-danger'>Redraw Increment Counter</div>
+                <div><strong>Counter:</strong> {{counter}}</div>
+                <div class='btn btn-warning'>Who Am I?</div>
+                <div><strong>Who Am I?</strong> {{whoami.user}}</div>
+                <div>
+                    <input id='post-echo-input' type='text' />
+                    <div class='btn btn-success post-echo'>POST Echo</div>
+                </div>
+                <div>
+                    <strong>POST Response:</strong> {{echo.POST.result}}
+                </div>
+                <div>
+                    <input id='get-echo-input' type='text' />
+                    <div class='btn btn-success get-echo'>GET Echo</div>
+                </div>
+                <div>
+                <strong>GET Response:</strong> {{echo.GET.result}}
+                </div>
+                <div>{{>Test}}</div>
+                 <div class='btn btn-success updateDirect'>=100</div>
 
                 ",
             ],[

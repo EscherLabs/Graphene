@@ -17,6 +17,8 @@ class CreateGroupsTable extends Migration
             $table->integer('site_id')->unsigned()->index();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->boolean('unlisted')->default(false);
+            $table->integer('order')->unsigned()->default(2147483647);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('site_id')->references('id')->on('sites');
