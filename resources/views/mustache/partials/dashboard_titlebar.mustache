@@ -1,0 +1,13 @@
+<div class="dropdown pull-right hidden editTools" style="margin-left:15px;margin-top: 8px;">
+    <button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Widgets
+        <span class="caret"></span>
+    </button>
+    <ul id="sortableList" class="dropdown-menu list-group" aria-labelledby="dLabel">
+        <li data-type="Image"><a href="javascript:addWidget('Image');">Image</a></li>
+        <li data-type="Content"><a href="javascript:addWidget('Content');">Content</a></li>
+        <li data-type="uApp"><a href="javascript:addWidget('uApp');">Apps</a></li>
+    </ul>
+</div>
+<div class="btn btn-primary pull-right" id="startEditing" style="margin-top: 8px;" onclick="load(false);"><i class="fa fa-pencil"></i> Edit</div>
+<div class="btn btn-danger pull-right hidden editTools" style="margin-top: 8px;" id="doneEditing" onclick="load(true);"><i class="fa fa-times"></i> Done</div>

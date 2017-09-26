@@ -108,7 +108,7 @@ class AppInstanceController extends Controller
                 }
             }
 
-            return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
+            return view('timtest', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'uapp'=>$myApp,'data'=>$data]);
         }
         abort(404,'App not found');
     }

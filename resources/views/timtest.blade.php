@@ -1,10 +1,11 @@
 <?php
 
-$m = new Mustache_Engine([
-    'loader' => new Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/renderers'),
-    'partials_loader' => new Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials'),
-]);
-
+// Build $data object
+$links = $links->toArray();
+foreach($links as $index => $link) {
+    $links[$index]['group_id'] = $link['id'];
+    $links[$index]['group_slug'] = $link['slug'];    
+}
 $data = [
     'site' => config('app.site'),
     'topbar_enabled' => Request::get('topbar') !== 'false',
@@ -19,10 +20,28 @@ $data = [
         'admin' => url ('/admin/groups'),
         'login' => url ('/login'),
     ],
-    'apps' => $apps,
-    'links' => $links->toArray(),
+    'apps' => $apps->toArray(),
+    'links' => $links,
 ];
-// dd($links[0]->app_instances);
-// dd($links);
+if (isset($uapp)) {
+    $data['app'] = $uapp->toArray();
+    $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
+    $data['data_json'] = json_encode($data);
+    $data['app_mode'] = true;
+    $data['dashboard_mode'] = false;
+} else {
+    $data['app_mode'] = false;
+    $data['dashboard_mode'] = true; 
+    $data['slug'] = $slug; 
+    $data['name'] = $name;
+    $data['config_json'] = json_encode($config);
+    $data['apps_json'] = json_encode($apps);
+}
+
+// Render Template
+$m = new Mustache_Engine([
+    'loader' => new Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/renderers'),
+    'partials_loader' => new Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials'),
+]);
 $tpl = $m->loadTemplate('app');
 echo $tpl->render($data);
