@@ -51,6 +51,9 @@ function App() {
 		
 		redraw: redraw.bind(this),
 		refresh: refresh.bind(this),
+		refetch: function(){
+			this.app.trigger('refetch');
+		}.bind(this),
 		update: update.bind(this),
 		click: click.bind(this),
 		
@@ -129,6 +132,10 @@ berryAppEngine = function(options) {
 
 	this.get = function(){
 		return this.data;
+	}
+
+	this.optionsupdated = function(){
+		this.app.trigger('options');
 	}
 
 	this.load();

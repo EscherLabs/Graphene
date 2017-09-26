@@ -56,6 +56,7 @@
           data: {'options': this.toJSON()},
           success:function(data){
             bae.app.update({user:{options:data.options}});
+            bae.optionsupdated();
             this.trigger('close');
             toastr.success('', 'Options Updated Successfully');
           }.bind(this),
@@ -82,9 +83,20 @@
   var refetch = function(data){
     bae.destroy();
     delete bae;
-    bae = new berryAppEngine(opts);
-    bae.app.on('refetch', refetch) 
-    // console.log('fetch')
+    $.ajax({
+      type: 'GET',
+      url:'/api/fetch/{{ $app->id }}',
+      success:function(data){
+        opts.data = data;
+        bae = new berryAppEngine(opts);
+        bae.app.on('refetch', refetch)
+        toastr.success('', 'App Updated Successfully');
+        this.trigger('close');
+      }.bind(this),
+      error:function(data){
+          toastr.error(data.statusText, 'An error occured updating App')
+      }
+    })
   }
   bae.app.on('refetch', refetch) 
 

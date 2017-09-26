@@ -97,7 +97,7 @@ class AppInstanceController extends Controller
             } else { 
                 $data['user']->options = $myApp->user_options->options;
             }
-
+            
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
             if(!is_null($myApp->app->code) && count($myApp->app->code->sources) > 0){
@@ -192,7 +192,6 @@ class AppInstanceController extends Controller
         // Derive and Map URL with Mustache
         $m = new \Mustache_Engine;
         $url = $m->render($endpoint->config->url . $resource_info->path, $all_data);
-
         // Fetch Data based on Endpoint Type
         if ($endpoint->type == 'http_no_auth') {
             $data = $this->http_fetch($url,$verb,$all_data['request']);
@@ -207,7 +206,17 @@ class AppInstanceController extends Controller
             $data = array_map("str_getcsv", explode("\n", $data));
         } else if ($resource_info->modifier == 'xml') {
             $data = json_decode(json_encode(simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA)),true);
+        } else {
+            try{
+                if(is_string($data)){
+                    $try_decode = json_decode($data);
+                    if($try_decode){
+                        $data = $try_decode;
+                    }
+                }
+            }catch(Exception $e){}
         }
+        
         return $data;
     }
 
@@ -231,10 +240,10 @@ class AppInstanceController extends Controller
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
+        
         if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);
         } 
-
         $configuration = $app_instance->configuration;
         $resources = $app_instance->resources;
 
@@ -264,10 +273,18 @@ class AppInstanceController extends Controller
         $endpoint = Endpoint::find((int)$resource_info->endpoint);
         
         // Merge App Configuration with User Preferences, User Info, and `request` data
+
         $all_data = ['configuration'=>$configuration,
-                     'user_options'=>[], 'user'=>[],
+                     'user'=>Auth::user()->toArray(),
                      'request'=>$request->has('request')?$request->input('request'):[]];
 
+        $user_prefs = $app_instance->user_options()->where('user_id','=',Auth::user()->id)->first();
+        if(isset($user_prefs['options'])){
+            $all_data['user']['options'] = $user_prefs['options'];
+        }else{
+            $all_data['user']['options'] = [];
+        }
+        
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
             $data = $this->http_endpoint($endpoint, $resource_info, $verb, $all_data);
         } else if ($endpoint->type == 'google_sheets') {
