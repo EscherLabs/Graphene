@@ -99,6 +99,9 @@ berryAppEngine = function(options) {
 			this.data = this.options.data;
 		}
 
+		this.data.options = $.extend({}, this.data.options);
+
+		$.extend(true, this.data.options,  this.data.user.options);
 		$.extend(this.data, this.data.options);
 
     if(typeof this.app == 'undefined'){
