@@ -13,7 +13,7 @@ $data = [
     'logged_in' => Auth::check(),
     'user' => Auth::user(),
     'user_md5_email' => md5(Auth::user()->email),
-    'is_admin' => Auth::user()->can('visit_admin'),
+    'is_admin' => Auth::user()->can('visit_admin','App\User'),
     'url' => [
         'root' => url('/'),
         'logout' => url('/logout'),
@@ -23,10 +23,11 @@ $data = [
     'apps' => $apps->toArray(),
     'links' => $links,
 ];
+
 if (isset($uapp)) {
     $data['app'] = $uapp->toArray();
     $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
-    $data['data_json'] = json_encode($data);
+    $data['data_json'] = json_encode($data2);
     $data['app_mode'] = true;
     $data['dashboard_mode'] = false;
 } else {

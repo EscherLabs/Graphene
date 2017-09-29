@@ -12,6 +12,7 @@ class PortalMigration extends Seeder
     public function run()
     {
         $site_id = 1;
+        $user_ids = [1,2];
 
         $groups_db = DB::connection('mysql-portal')->table('groups')->get();
         $groups_index = [];
@@ -102,6 +103,15 @@ class PortalMigration extends Seeder
                 $app->save();
                 $apps_index[$app_db->id] = $app;
                 $apps_index_db[$app_db->id] = $app_db;
+
+                foreach($user_ids as $user_id) {
+                    $app_developer = new \App\AppDeveloper;
+                    $app_developer->app_id = $app->id;
+                    $app_developer->user_id = $user_id;
+                    $app_developer->status = 1;
+                    $app_developer->save();
+                }
+
             } catch (Exception $e) {
                 echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
@@ -142,7 +152,7 @@ class PortalMigration extends Seeder
                                 'enable_min'=>0,'limit'=>0,
                             ];
                             $app_instance = new \App\AppInstance;
-                            $app_instance->name = $apps_index[$page_widget_db->microapp]->name;
+                            $app_instance->name = $apps_index[$page_widget_db->microapp]->name.' - Page: '.$page_db->name;
                             $app_instance->slug = preg_replace("/(\W)+/","",strtolower($apps_index[$page_widget_db->microapp]->name));
                             $app_instance->group_id = $groups_index[$page_db->group_id]->id;
                             $app_instance->app_id = $apps_index[$page_widget_db->microapp]->id;
@@ -176,6 +186,7 @@ class PortalMigration extends Seeder
                             $app_instance->resources = $resources;
                             $app_instance->save();
                             $page_widgets_index[$page_widget_db->guid] = $page_widget_db;
+
                         } catch (Exception $e) {
                             echo 'Caught exception: ',  $e->getMessage(), "\n";
                             // dd((array)$page_widget_db);
