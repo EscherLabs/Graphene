@@ -109,12 +109,12 @@
         {{#links}}
           <li><a data-toggle="collapse" href="#collapse{{ id }}">{{ name }}</a></li>
           <ul class="collapse"  id="collapse{{ id }}">
-          {{#app_instances}}
-                    <li><a href="/app/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-          {{/app_instances}}
           {{#pages}}
-                    <li><a href="/page/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+              <li><a href="/page/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}file{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
           {{/pages}}
+          {{#app_instances}}
+              <li><a href="/app/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+          {{/app_instances}}
           </ul>
         {{/links}}
       </ul>

@@ -83,8 +83,14 @@ class PageController extends Controller
             }else{
                 $config = $myPage->content;
             }
-            return view('dashboard',['links'=>$links, 'apps'=>$apps, 'name'=>$myPage->name, 'slug'=>$myPage->slug, 'config'=>$config, 'id'=>$myPage->id]);
-
+            return view('timtest',[
+                'links'=>$links, 
+                'apps'=>$apps, 
+                'name'=>$myPage->name, 
+                'slug'=>$myPage->slug, 
+                'config'=>$config, 
+                'id'=>$myPage->id
+            ]);
         }
         abort(404,'App not found');
     }

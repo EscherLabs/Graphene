@@ -12,8 +12,8 @@ $data = [
     'sidemenu_enabled' => Request::get('sidemenu') !== 'false',
     'logged_in' => Auth::check(),
     'user' => Auth::user(),
-    'user_md5_email' => md5(Auth::user()->email),
-    'is_admin' => Auth::user()->can('visit_admin','App\User'),
+    'user_md5_email' => (null !== Auth::user())?md5(Auth::user()->email):'',
+    'is_admin' => (null !== Auth::user())?Auth::user()->can('visit_admin','App\User'):false,
     'url' => [
         'root' => url('/'),
         'logout' => url('/logout'),

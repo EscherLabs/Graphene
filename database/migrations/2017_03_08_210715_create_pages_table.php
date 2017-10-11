@@ -21,7 +21,7 @@ class CreatePagesTable extends Migration
             $table->string('icon')->nullable()->default(null);
 			$table->json('content')->nullable();
             $table->integer('order')->unsigned()->default(2147483647);
-            $table->tinyInteger('device')->unsigned();
+            $table->tinyInteger('device')->unsigned()->nullable();
 			$table->json('mobile_order')->nullable();
             $table->boolean('unlisted')->default(false);
 			$table->boolean('public')->default(false);

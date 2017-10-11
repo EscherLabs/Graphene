@@ -88,12 +88,13 @@ class AppInstanceController extends Controller
         }
 
         if($myApp != null) {
+            // dd($myApp->toArray());
             // Create data object that will be used by the app
-            $data = ['user'=>$current_user,'options'=>$myApp->configuration];
+            $data = ['user'=>$current_user,'options'=>$myApp->options];
             
 
             if(!Auth::check() || !isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
-                $data['user']->options = json_decode('{}');
+                $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
             } else { 
                 $data['user']->options = $myApp->user_options->options;
             }
@@ -131,15 +132,15 @@ class AppInstanceController extends Controller
             // Create data object that will be used by the app
             $data = [
                 'user'=>$current_user,
-                'options'=>$myApp->configuration
+                'options'=>$myApp->options
             ];
             if(!is_null($myApp->user_options)) {
                 $data['user']->options = $myApp->user_options->options;
                 if(is_null($data['user']->options)){
-                    $data['user']->options = [];
+                    $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
                 }
             }else{
-                $data['user']->options = [];
+                $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
             }
             // Get each source
             // TODO: add conditionals for types and "autofetch", etc
@@ -245,7 +246,8 @@ class AppInstanceController extends Controller
         if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);
         } 
-        $configuration = $app_instance->configuration;
+        $options = $app_instance->options;
+        $user_options_default = $app_instance->user_options_default;
         $resources = $app_instance->resources;
 
         $verb = 'GET'; // Default Verb
@@ -273,9 +275,9 @@ class AppInstanceController extends Controller
         // Lookup Endpoint
         $endpoint = Endpoint::find((int)$resource_info->endpoint);
         
-        // Merge App Configuration with User Preferences, User Info, and `request` data
+        // Merge App Options with User Preferences, User Info, and `request` data
 
-        $all_data = ['configuration'=>$configuration,
+        $all_data = ['options'=>$options,
                      'user'=>Auth::user()->toArray(),
                      'request'=>$request->has('request')?$request->input('request'):[]];
 
@@ -283,7 +285,7 @@ class AppInstanceController extends Controller
         if(isset($user_prefs['options'])){
             $all_data['user']['options'] = $user_prefs['options'];
         }else{
-            $all_data['user']['options'] = [];
+            $all_data['user']['options'] = $user_options_default;
         }
         
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {

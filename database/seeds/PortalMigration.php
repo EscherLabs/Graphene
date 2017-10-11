@@ -26,6 +26,14 @@ class PortalMigration extends Seeder
                 $group->unlisted = !($group_db->community_flag);
                 $group->save();
                 $groups_index[$group_db->id] = $group;
+
+                if ($group->name == 'Campus Life') {
+                    foreach($user_ids as $user_id) {
+                        $current_user = \App\User::find($user_id);
+                        $group->add_admin($current_user, 1);
+                        $group->add_member($current_user, 1);
+                    }
+                }
             } catch (Exception $e) {
                 echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
@@ -119,30 +127,42 @@ class PortalMigration extends Seeder
 
         $pages_db = DB::connection('mysql-portal')->table('community_pages')->get();
         $pages_index = [];
-        foreach($pages_db as $index => $page_db) {
-            try {
-                $page = new \App\Page;
-                $page->name = $page_db->name;
-                $page->slug = $page_db->slug;
-                $page->public = $page_db->public;
-                $page->unlisted = $page_db->unlist;
-                $page->order = $page_db->order;
-                $page->device = $page_db->device;
-                $page->content = json_decode($page_db->content);
-                $page->mobile_order = json_decode($page_db->mobile_order);
-                $page->group_id = $groups_index[$page_db->group_id]->id;
-                $page->save();
-                $pages_index[$page_db->id] = $page;
-            } catch (Exception $e) {
-                echo 'Caught exception: ',  $e->getMessage(), "\n";
-            }
-        }
+        // foreach($pages_db as $index => $page_db) {
+        //     try {
+        //         $page = new \App\Page;
+        //         $page->name = $page_db->name;
+        //         $page->slug = $page_db->slug;
+        //         $page->public = $page_db->public;
+        //         $page->unlisted = $page_db->unlist;
+        //         $page->order = $page_db->order;
+        //         $page->device = $page_db->device;
+        //         $page->content = json_decode($page_db->content);
+        //         $page->mobile_order = json_decode($page_db->mobile_order);
+        //         $page->group_id = $groups_index[$page_db->group_id]->id;
+        //         $page->save();
+        //         $pages_index[$page_db->id] = $page;
+        //     } catch (Exception $e) {
+        //         echo 'Caught exception: ',  $e->getMessage(), "\n";
+        //     }
+        // }
 
         // Handle App Instances
         $page_widgets_index = [];
         foreach($pages_db as $index => $page_db) {
+            $page = new \App\Page;
+            $page->name = $page_db->name;
+            $page->slug = $page_db->slug;
+            $page->public = $page_db->public;
+            $page->unlisted = $page_db->unlist;
+            $page->order = $page_db->order;
+            $page->device = $page_db->device;
+            $page->mobile_order = [];
+            $page->group_id = $groups_index[$page_db->group_id]->id;
+            $page_content_array = ['sections'=>[]];
+
             $page_dev_db = json_decode($page_db->content,false);
-            foreach($page_dev_db as $page_column_db) {
+            foreach($page_dev_db as $page_column_num => $page_column_db) {
+                $page_content_array['sections'][$page_column_num] = [];
                 foreach($page_column_db as $page_widget_db) {
                     if ($page_widget_db->widgetType=='Microapp') {
                         try {
@@ -157,7 +177,8 @@ class PortalMigration extends Seeder
                             $app_instance->group_id = $groups_index[$page_db->group_id]->id;
                             $app_instance->app_id = $apps_index[$page_widget_db->microapp]->id;
                             $app_instance->public = $apps_index_db[$page_widget_db->microapp]->public;
-                            $app_instance->configuration = array_diff_key((array)$page_widget_db,$known_config);
+                            $app_instance->options = array_diff_key((array)$page_widget_db,$known_config);
+                            $app_instance->user_options_default = array_diff_key((array)$page_widget_db,$known_config);
                             $app_instance->app_version_id = 1;
                             $resources = json_decode($apps_index_db[$page_widget_db->microapp]->sources);
                             foreach($resources as $index => $resource) {
@@ -187,13 +208,23 @@ class PortalMigration extends Seeder
                             $app_instance->save();
                             $page_widgets_index[$page_widget_db->guid] = $page_widget_db;
 
+
                         } catch (Exception $e) {
                             echo 'Caught exception: ',  $e->getMessage(), "\n";
                             // dd((array)$page_widget_db);
                         }
+// dd($page);
+                        $page_content_array['sections'][$page_column_num][] = [
+                            'widgetType' => 'uApp',
+                            'app_id' => $app_instance->id,
+                            'title' => $page_widget_db->title,
+                        ];
                     }
                 }
             }
+            $page->content = $page_content_array;
+            $page->save();
+            $pages_index[$page_db->id] = $page;
         }
     }
 }

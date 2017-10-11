@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppInstance extends Model
 {
-    protected $fillable = ['name', 'slug', 'public', 'configuration', 'resources','icon'];
+    protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon'];
 
-    protected $casts = ['configuration' => 'object', 'resources' => 'object'];
+    protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object'];
 
     public function group() {
       return $this->belongsTo(Group::class);

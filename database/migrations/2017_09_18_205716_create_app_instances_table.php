@@ -22,7 +22,8 @@ class CreateAppInstancesTable extends Migration
             $table->string('icon')->nullable()->default(null);
             $table->boolean('public')->default(false);
             $table->boolean('unlist')->default(false);
-            $table->json('configuration')->nullable();
+            $table->json('options')->nullable();
+            $table->json('user_options_default')->nullable();
             $table->json('resources')->nullable();
             $table->timestamps();
             $table->foreign('app_id')->references('id')->on('apps');

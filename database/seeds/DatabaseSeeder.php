@@ -72,7 +72,6 @@ class DatabaseSeeder extends Seeder
         $app_version->stable = true;
         $app_version->code = [
             "css" => "",
-            "form"=>json_decode('{"fields":[{"label":"Test","name":"test"}]}'),
             "forms"=>[
                 ["name"=>"Options","content"=>"{\"fields\":[{\"label\": \"admin_option\"}]}"],
                 ["name"=>"User Options","content"=>"{\"fields\":[{\"label\": \"user_option\"}]}"]
@@ -188,7 +187,8 @@ class DatabaseSeeder extends Seeder
         $app_instance->slug = 'my_app_instance';
         $app_instance->app_id = $app->id;
         $app_instance->group_id = $group->id;
-        $app_instance->configuration = ["test"=>"hello_world"];
+        $app_instance->options = ["admin_option"=>"this is ny admin default option"];
+        $app_instance->user_options_default = ["user_option"=>"this is my user default option"];        
         $app_instance->resources = [
             ['name'=>'echo','endpoint'=>1,'modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/echo/'],
             ['name'=>'whoami','endpoint'=>1,'modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/whoami/'],

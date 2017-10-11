@@ -177,17 +177,20 @@ initializers['app_instance'] = function() {
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
     <li role="presentation"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
-		<li role="presentation"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
+	<li role="presentation"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
+	<li role="presentation"><a href="#user_options_default" aria-controls="profile" role="tab" data-toggle="tab">User Default Options</a></li>	
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-  <div class="col-sm-3"></div></div></div>
-    <div role="tabpanel" class="tab-pane" id="options" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-  <div class="col-sm-3"></div></div></div>
+  	<div class="col-sm-3"></div></div></div>
     <div role="tabpanel" class="tab-pane" id="resources" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-  <div class="col-sm-3"></div></div></div>
+	<div class="col-sm-3"></div></div></div>
+	<div role="tabpanel" class="tab-pane" id="options" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+  	<div class="col-sm-3"></div></div></div>
+	<div role="tabpanel" class="tab-pane" id="user_options_default" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+  	<div class="col-sm-3"></div></div></div>
   </div>
 
 </div>
@@ -205,7 +208,8 @@ initializers['app_instance'] = function() {
 				],attributes:data, actions:false, name:'main'})
 				$('#save').on('click',function(){
 					var item = Berries.main.toJSON();
-					item.configuration = Berries.options.toJSON();
+					item.options = Berries.options.toJSON();
+					item.user_options_default = Berries.user_options_default.toJSON();
 					item.resources = Berries.resources.toJSON().resources;
 
 					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', data: item, success:function(){
@@ -217,15 +221,18 @@ initializers['app_instance'] = function() {
 					});
 
 				})
+
 				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
-
-				// options.attributes = JSON.parse(model.attributes.configuration)|| {};
-				options.attributes = data.configuration || {};
-
+				options.attributes = data.options || {};
 				options.attributes.id = data.id;
-				// options.fields.push({name: 'id', type:'hidden'});
 				options.name = 'options';
 				$('#options .col-sm-9').berry(options);
+
+				var user_options_default = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[1].content)) 
+				user_options_default.attributes = data.user_options_default || {};
+				user_options_default.attributes.id = data.id;
+				user_options_default.name = 'user_options_default';
+				$('#user_options_default .col-sm-9').berry(user_options_default);
 				
 				if(data.app.code.sources[0].name !== '') {	
 					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
@@ -276,7 +283,7 @@ initializers['pages'] = function(){
 					{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
-        			{label: 'Unlisted', name:'unlist', type: 'checkbox',truestate:1,falsestate:0 },
+        			{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{name: 'id', type:'hidden'}
 				];
