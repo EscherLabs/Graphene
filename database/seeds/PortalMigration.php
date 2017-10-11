@@ -81,13 +81,24 @@ class PortalMigration extends Seeder
                 $app->name = $app_db->name;
                 $app->site_id = $site_id;
                 $app_options_db = json_decode($app_db->options,true);
-                $app_user_options = [];
+                $app_db->options = [];
+                $app_db->user_options = [];
+                $user_form_fields_to_replace = [];
                 if (isset($app_options_db['fields'])) {
                     foreach($app_options_db['fields'] as $app_option_db) {
                         if (isset($app_option_db['userEdit']) && $app_option_db['userEdit']==true) {
-                            $app_user_options[] = $app_option_db;
+                            $app_db->user_options[] = $app_option_db;
+                            $user_form_fields_to_replace[] = $app_option_db['name'];
+                        } else {
+                            $app_db->options[] = $app_option_db;
                         }
                     }
+                }
+                // dd($app_db);
+                foreach($user_form_fields_to_replace as $user_form_field_to_replace) {
+                    $app_db->sources = str_replace('options.'.$user_form_field_to_replace,'user.options.'.$user_form_field_to_replace,$app_db->sources);
+                    $app_db->script = str_replace('options.'.$user_form_field_to_replace,'user.options.'.$user_form_field_to_replace,$app_db->script);
+                    $app_db->template = str_replace('options.'.$user_form_field_to_replace,'user.options.'.$user_form_field_to_replace,$app_db->template);                    
                 }
                 $app_sources_db = json_decode($app_db->sources,true);
                 $app_sources = [];
@@ -104,8 +115,8 @@ class PortalMigration extends Seeder
                     'sources'=>$app_sources,
                     'templates'=>json_decode($app_db->template),
                     'forms'=>[
-                        ["name"=>"Options", "content"=>$app_db->options],
-                        ["name"=>"User Options", "content"=>json_encode(['fields'=>$app_user_options])]
+                        ["name"=>"Options", "content"=>json_encode(['fields'=>$app_db->options])],
+                        ["name"=>"User Options", "content"=>json_encode(['fields'=>$app_db->user_options])]
                     ]
                 ];
                 $app->save();
@@ -171,14 +182,31 @@ class PortalMigration extends Seeder
                                 'container'=>0,'custom_options'=>0,'group'=>0,'device'=>0,
                                 'enable_min'=>0,'limit'=>0,
                             ];
+                            $app_instance_all_options = array_diff_key((array)$page_widget_db,$known_config);
+                            $app_instance_options = [];
+                            $app_instance_user_options = [];
+                            foreach($app_instance_all_options as $app_instance_option_name => $app_instance_option_val) {
+                                foreach($apps_index_db[$page_widget_db->microapp]->options as $option) {
+                                    if ($app_instance_option_name == $option['name']) {
+                                        $app_instance_options[$app_instance_option_name] = $app_instance_option_val;
+                                    }
+                                }
+                                foreach($apps_index_db[$page_widget_db->microapp]->user_options as $user_option) {
+                                    // dd($user_option);
+                                    if ($app_instance_option_name == $user_option['name']) {
+                                        $app_instance_user_options[$app_instance_option_name] = $app_instance_option_val;
+                                    }
+                                }
+                            }
+
                             $app_instance = new \App\AppInstance;
                             $app_instance->name = $apps_index[$page_widget_db->microapp]->name.' - Page: '.$page_db->name;
                             $app_instance->slug = preg_replace("/(\W)+/","",strtolower($apps_index[$page_widget_db->microapp]->name));
                             $app_instance->group_id = $groups_index[$page_db->group_id]->id;
                             $app_instance->app_id = $apps_index[$page_widget_db->microapp]->id;
                             $app_instance->public = $apps_index_db[$page_widget_db->microapp]->public;
-                            $app_instance->options = array_diff_key((array)$page_widget_db,$known_config);
-                            $app_instance->user_options_default = array_diff_key((array)$page_widget_db,$known_config);
+                            $app_instance->options = $app_instance_options;
+                            $app_instance->user_options_default = $app_instance_user_options;
                             $app_instance->app_version_id = 1;
                             $resources = json_decode($apps_index_db[$page_widget_db->microapp]->sources);
                             foreach($resources as $index => $resource) {
