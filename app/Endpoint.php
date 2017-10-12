@@ -18,10 +18,12 @@ class Endpoint extends Model
 
     public function setConfigAttribute($config)
     {
-      if (isset($config['secret']) && $config['secret'] != '*****') { 
-        $config['secret'] = Crypt::encryptString($config['secret']); 
-      } else {
-        $config['secret'] = $this->getSecret();
+      if (isset($config['secret'])) { 
+        if ($config['secret'] === '*****') {
+          $config['secret'] = Crypt::encryptString($this->getSecret());
+        } else {
+          $config['secret'] = Crypt::encryptString($config['secret']);
+        }
       }
       $this->attributes['config'] = json_encode($config);
     }
