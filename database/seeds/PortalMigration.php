@@ -13,6 +13,7 @@ class PortalMigration extends Seeder
     {
         $site_id = 1;
         $user_ids = [1,2];
+        $group_memberships = ['Campus Life','Academic Services'];
         $key = env('APP_KEY_PORTAL');
 
         $groups_db = DB::connection('mysql-portal')->table('groups')->get();
@@ -28,7 +29,7 @@ class PortalMigration extends Seeder
                 $group->save();
                 $groups_index[$group_db->id] = $group;
 
-                if ($group->name == 'Campus Life') {
+                if (in_array($group->name,$group_memberships)) {
                     foreach($user_ids as $user_id) {
                         $current_user = \App\User::find($user_id);
                         $group->add_admin($current_user, 1);

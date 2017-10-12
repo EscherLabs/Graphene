@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         $site->domain = 'graphenedev.local';
         $site->name = 'LocalDev';
         $site->theme = ['css' => '','icon'=>'file'];
-        $site->auth = 'basic';
+        $site->auth = 'CAS';
         $site->auth_config = [
             'cas_hostname'        => 'securetest.binghamton.edu',
             'cas_real_hosts'      => 'securetest.binghamton.edu',
@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
         $user1->last_name = 'Cortesi';
         $user1->email = 'tcortesi@gmail.com';
         $user1->password = '$2y$10$/7lJmdRUSwPT5O4FWZk6X.yUPs08KG78DeRh7g9PCzDefD71.JLCS';
+        $user1->unique_id = 'B00505893';
         $user1->site_admin = 1;
         $user1->developer = 1;
         $user1->save();
@@ -54,6 +55,7 @@ class DatabaseSeeder extends Seeder
         $user2->last_name = 'Smallcomb';
         $user2->email = 'atsmallcomb@gmail.com';
         $user2->password = '$2y$10$56dR5caUtFNoRV/Kl96t8uIYKhL6Dh4.87wRnWO7uwO90k.Uw82g6';
+        $user2->unique_id = 'B00573562';
         $user2->site_admin = 1;
         $user2->developer = 1;
         $user2->save();
