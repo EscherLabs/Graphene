@@ -198,7 +198,7 @@ class AppInstanceController extends Controller
             $data = $this->http_fetch($url,$verb,$all_data['request']);
         } else if ($endpoint->type == 'http_basic_auth') {
             $data = $this->http_fetch($url,$verb,$all_data['request'],
-                    $endpoint->config->username, $endpoint->config->password);
+                    $endpoint->config->username, $endpoint->getSecret());
         } else {
             abort(505,'Authentication Type Not Supported');
         }
@@ -225,10 +225,10 @@ class AppInstanceController extends Controller
     private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         $googleClient = new \PulkitJalan\Google\Client(config('google'));
         $client = $googleClient->getClient();
-        $client->setAccessToken($endpoint->config->accessToken);
+        $client->setAccessToken($endpoint->getSecret());
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $endpoint->config->accessToken = $client->getAccessToken();
+            $endpoint->config->secret = $client->getAccessToken();
             $endpoint->save();
         }
         $service = new \Google_Service_Sheets($client);

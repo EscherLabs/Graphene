@@ -314,7 +314,7 @@ initializers['endpoints'] = function() {
 						{label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
 						{label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
 						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-						{label:'Password', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+						{label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
 					]},
 					{name: 'id', type:'hidden'}
 				];

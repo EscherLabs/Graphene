@@ -13,6 +13,7 @@ class PortalMigration extends Seeder
     {
         $site_id = 1;
         $user_ids = [1,2];
+        $key = env('APP_KEY_PORTAL');
 
         $groups_db = DB::connection('mysql-portal')->table('groups')->get();
         $groups_index = [];
@@ -58,10 +59,17 @@ class PortalMigration extends Seeder
                 $endpoint = new \App\Endpoint;
                 $endpoint->site_id = $site_id;
                 $endpoint->name = $endpoint_db->name;
+
+                // Decrypt Existing Password
+                $payload = json_decode(base64_decode($endpoint_db->password), true);
+                $value = base64_decode($payload['value']);
+                $iv = base64_decode($payload['iv']);
+                $password = unserialize(mcrypt_decrypt(MCRYPT_RIJNDAEL_128,$key,$value,MCRYPT_MODE_CBC,$iv));
+
                 $endpoint->config = [
                     'url'=>$endpoint_db->target,
                     'username'=>$endpoint_db->username,
-                    'password'=>$endpoint_db->password
+                    'secret'=>Crypt::encryptString($password),
                 ];
                 $endpoint->type = 'http_basic_auth';
                 $endpoint->group_id = $groups_index[$endpoint_db->group_id]->id;

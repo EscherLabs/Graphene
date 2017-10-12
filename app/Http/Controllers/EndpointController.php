@@ -61,7 +61,7 @@ class EndpointController extends Controller
         $endpoint = Endpoint::find($state['endpoint_id']);
         $googleClient = new \PulkitJalan\Google\Client(config('google'));
         $client = $googleClient->getClient();
-        $endpoint->config->accessToken = $client->fetchAccessTokenWithAuthCode($request->code);
+        $endpoint->config->secret = $client->fetchAccessTokenWithAuthCode($request->code);
         $endpoint->config->google_redirect = 'Successfully Configured';
         $endpoint->save();
     }
