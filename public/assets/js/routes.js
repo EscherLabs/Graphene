@@ -71,6 +71,7 @@ initializers['apps'] = function() {
 						window.location.href = '/admin/apps/'+model.attributes.id+'/developers'
 					}}
 				]
+				tableConfig.name = "apps";
 				tableConfig.data = data;
 				bt = new berryTable(tableConfig)
 			}
@@ -152,6 +153,8 @@ initializers['appinstances'] = function() {
 				// 		}
 				// 	}}
 				// ]
+				tableConfig.name = "appinstances";
+
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -268,6 +271,8 @@ initializers['sites'] = function() {
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.data = data;
+				tableConfig.name = "sites";
+
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -290,6 +295,8 @@ initializers['pages'] = function(){
 				tableConfig.click = function(model){window.location.href = '/page/'+model.attributes.group_id+'/'+model.attributes.slug};
 
 				tableConfig.data = data;
+				tableConfig.name = "pages";
+
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -319,6 +326,8 @@ initializers['endpoints'] = function() {
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.data = data;
+				tableConfig.name = "endpoints";
+
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -362,6 +371,8 @@ initializers['groups'] = function() {
 					}}
 				]
 				tableConfig.data = data;
+				tableConfig.name = "groups";
+
 				bt = new berryTable(tableConfig)
 			}
 		});
