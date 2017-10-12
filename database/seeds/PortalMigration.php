@@ -69,7 +69,7 @@ class PortalMigration extends Seeder
                 $endpoint->config = [
                     'url'=>$endpoint_db->target,
                     'username'=>$endpoint_db->username,
-                    'secret'=>Crypt::encryptString($password),
+                    'secret'=>$password,
                 ];
                 $endpoint->type = 'http_basic_auth';
                 $endpoint->group_id = $groups_index[$endpoint_db->group_id]->id;
