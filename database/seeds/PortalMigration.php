@@ -114,7 +114,11 @@ class PortalMigration extends Seeder
                 $app_db->template = str_replace('user.bnum','user.params.bnum',$app_db->template);  
                 $app_db->sources = str_replace('user.pidm','user.params.pidm',$app_db->sources);
                 $app_db->script = str_replace('user.pidm','user.params.pidm',$app_db->script);
-                $app_db->template = str_replace('user.pidm','user.params.pidm',$app_db->template);                   
+                $app_db->template = str_replace('user.pidm','user.params.pidm',$app_db->template); 
+                $app_db->sources = str_replace('user.pods','user.params.pods',$app_db->sources);
+                $app_db->script = str_replace('user.pods','user.params.pods',$app_db->script);
+                $app_db->template = str_replace('user.pods','user.params.pods',$app_db->template);                   
+                  
 
                 $app_sources_db = json_decode($app_db->sources,true);
                 $app_sources = [];

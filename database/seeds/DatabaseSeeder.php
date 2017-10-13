@@ -24,11 +24,26 @@ class DatabaseSeeder extends Seeder
             'cas_login_url'       => '',
             'cas_logout_url'      => '',
             'cas_enable_saml'     => true,
-            'cas_saml_map'        => [
-                'unique_id' => 'UDC_IDENTIFIER', 'first_name' => 'firstname', 
-                'last_name' => 'lastname', 'email' => 'mail'
+            'cas_data_map'        => [
+                "default"=> [
+                    "email"=> "{{mail}}", 
+                    "last_name"=> "{{lastname}}", 
+                    "unique_id"=> "{{UDC_IDENTIFIER}}", 
+                    "first_name"=> "{{firstname}}",
+                ],
+                "additional"=> [
+                    "bnum"=> "{{UDC_IDENTIFIER}}",
+                    "pidm"=> "{{pidm}}", 
+                    "pods"=> "{{cn}}"
+                ]
+            ],
+            "external_user_lookup" => [
+                "url" => "https://www.escherlabs.com/pidm.php", 
+                "verb" => "GET", 
+                "enabled" => true
             ]
         ];
+
         $site->save();
 
         $group = new \App\Group;

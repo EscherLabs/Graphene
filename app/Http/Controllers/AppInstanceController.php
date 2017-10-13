@@ -10,6 +10,7 @@ use App\UserPreference;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Libraries\HTTPHelper;
 
 class AppInstanceController extends Controller
 {
@@ -162,52 +163,17 @@ class AppInstanceController extends Controller
         }
         abort(404,'App not found');
     }
-    
-    private function http_fetch($url, $verb='GET', $request_data=[],$username=null,$password=null) {
-        // Build HTTP Request
-        $request_config = [];
-        $request_config['method'] = $verb;
-        $request_config['header'] = 'Content-type: application/x-www-form-urlencoded';
-        if (!is_null($username)) {
-            $request_config['header'] .= "\r\nAuthorization: Basic ".base64_encode($username.':'.$password);
-        }
-        if ($verb == 'GET') {
-            $url_parts = parse_url($url);
-            $url_parts_query = [];
-            if(array_key_exists('query', $url_parts)){
-                parse_str($url_parts['query'],$url_parts_query);
-            }
-            $url = $url_parts['scheme'].'://'.$url_parts['host'].
-                    $url_parts['path'].'?'.
-                    http_build_query(array_merge($request_data,$url_parts_query));
-        } else {
-            $request_config['content'] = http_build_query($request_data);
-        }
-        $context = stream_context_create(['http' =>$request_config]);
-        $response = @file_get_contents($url, false, $context);
-        if ($response === FALSE) {
-            return error_get_last();
-        }
-
-        // Check if the data we got back was JSON Formatted
-        foreach($http_response_header as $header) {
-            if (stristr($header, 'Content-Type: application/json')) {
-                $response = json_decode($response,true);
-                break;
-            }
-        }
-        return $response;
-    }
 
     private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
         // Derive and Map URL with Mustache
         $m = new \Mustache_Engine;
         $url = $m->render($endpoint->config->url . $resource_info->path, $all_data);
         // Fetch Data based on Endpoint Type
+        $httpHelper = new HTTPHelper();
         if ($endpoint->type == 'http_no_auth') {
-            $data = $this->http_fetch($url,$verb,$all_data['request']);
+            $data = $httpHelper->http_fetch($url,$verb,$all_data['request']);
         } else if ($endpoint->type == 'http_basic_auth') {
-            $data = $this->http_fetch($url,$verb,$all_data['request'],
+            $data = $httpHelper->http_fetch($url,$verb,$all_data['request'],
                     $endpoint->config->username, $endpoint->getSecret());
         } else {
             abort(505,'Authentication Type Not Supported');
