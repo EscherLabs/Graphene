@@ -56,12 +56,19 @@ Cobler.types.uApp = function(container){
             this.bae = new berryAppEngine(opts);
             
             var refetch = function(data){
-              this.bae.destroy();
-              delete bae;
-              this.bae = new berryAppEngine(opts);
-              this.bae.app.on('refetch', refetch) 
+              $.ajax({
+                type: 'GET',
+                url:'/api/fetch/'+this.get().app_id,
+                success:function(data){
+                  this.bae.app.update(data);
+                  toastr.success('', 'Data refetch Successfully');
+                }.bind(this),
+                error:function(data){
+                    toastr.error(data.statusText, 'An error occured updating App')
+                }
+              })
             }.bind(this)
-            this.bae.app.on('refetch', refetch) 
+            this.bae.app.on('refetch', refetch);
           }.bind(this)
       })
 		}

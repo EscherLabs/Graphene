@@ -24,20 +24,24 @@ $data = [
     'links' => $links,
 ];
 
-if (isset($uapp)) {
-    $data['app'] = $uapp->toArray();
-    $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
-    $data['data_json'] = json_encode($data2);
-    $data['app_mode'] = true;
-    $data['dashboard_mode'] = false;
-} else {
-    $data['app_mode'] = false;
+// if (isset($uapp)) {
+//     $data['app'] = $uapp->toArray();
+//     $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
+//     $data['data_json'] = json_encode($data2);
+//     $data['app_mode'] = true;
+//     $data['dashboard_mode'] = false;
+// } else {
+    $data['app_mode'] = isset($uapp);
     $data['dashboard_mode'] = true; 
     $data['slug'] = $slug; 
     $data['name'] = $name;
     $data['config_json'] = json_encode($config);
     $data['apps_json'] = json_encode($apps);
-}
+    if(isset($id)) {
+        $data['id'] = $id;
+    }
+    
+// }
 
 // Render Template
 $m = new Mustache_Engine([

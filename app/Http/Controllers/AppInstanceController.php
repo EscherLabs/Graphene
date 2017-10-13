@@ -109,7 +109,17 @@ class AppInstanceController extends Controller
                 }
             }
             // return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
-            return view('timtest', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'uapp'=>$myApp,'data2'=>$data]);
+            return view('timtest', [
+                'links'=>$links, 
+                'apps'=>$current_user_apps,
+                'name'=>$myApp->name,
+                'slug'=>$myApp->slug,
+                'uapp'=>$myApp, 
+                'data2'=>$data,
+                'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}')
+                ]);
+
+
         }
         abort(404,'App not found');
     }

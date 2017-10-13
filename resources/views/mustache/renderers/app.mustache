@@ -35,7 +35,7 @@
   <body class="
   {{#topbar_enabled}}
   topbar
-  {{/topbar_enabled}}  
+  {{/topbar_enabled}}
   {{#sidemenu_enabled}}
   sidemenu
   {{/sidemenu_enabled}}
@@ -98,7 +98,7 @@
             <input type="text" class="form-control" placeholder="Search...">
           </form-->
           {{#app_mode}}{{> app_titlebar}}{{/app_mode}}
-          {{#dashboard_mode}}{{> dashboard_titlebar}}{{/dashboard_mode}}
+          {{^app_mode}}{{> dashboard_titlebar}}{{/app_mode}}
         </div>
       </div>
     </nav>
@@ -123,14 +123,18 @@
     <div class="container-fluid" id="main-container">
       <div class="row">
         <div class="col-sm-12 main">
-          {{#app_mode}}{{> app_content}}{{/app_mode}}
-          {{#dashboard_mode}}{{> dashboard_content}}{{/dashboard_mode}}
+
+
+              <div class="row " id="page_layout">
+
+              </div>
+
         </div>
       </div>
 
     </div>
     <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="footer">&copy; 2017 Escher Labs, Inc.</div>-->
-        <script src='/assets/js/vendor/moment.js'></script> 
+        <script src='/assets/js/vendor/moment.js'></script>
 
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -140,7 +144,7 @@
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
-    <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
+    <script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script>
     <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
     <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/bootstrap.cobler.js'></script> 
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>

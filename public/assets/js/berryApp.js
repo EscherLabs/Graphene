@@ -1,3 +1,4 @@
+groupID=0;
 function App() {
 	function router(verb, name, data, callback){
 		var callback = callback || function(data){
@@ -19,13 +20,13 @@ function App() {
 		}
 		this.$el.off('click');
 		this.app.trigger('teardown')
-		this.view.teardown();
+		this.ractive.teardown();
 		this.draw();
 	}
 	function refresh() {
 		this.$el.off('click');
 		this.app.trigger('teardown')
-		this.view.teardown();
+		this.ractive.teardown();
 
 		this.config = $.extend(true, {}, this.options.config);
 		this.load();
@@ -33,7 +34,7 @@ function App() {
 	}
 	function update(newData) {
 		$.extend(true, this.data, newData || {});
-		this.view.set(this.data);
+		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
@@ -42,7 +43,6 @@ function App() {
 	}
 	this.events = {initialize: []};
 	this.addSub = Berry.prototype.addSub;
- 
 	return {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
@@ -53,17 +53,25 @@ function App() {
 		refresh: refresh.bind(this),
 		refetch: function(){
 			this.app.trigger('refetch');
+		}.bind(this),		
+		reload: function(){
+			this.app.trigger('reload');
 		}.bind(this),
 		update: update.bind(this),
 		click: click.bind(this),
 		
 		on: Berry.prototype.on.bind(this),
 		off: Berry.prototype.off.bind(this),
-		trigger: Berry.prototype.trigger.bind(this)
+		trigger: Berry.prototype.trigger.bind(this),
+		$el:this.$el
 	}
 }
  
 berryAppEngine = function(options) {
+		var item = {
+		user_edit: false,
+		loaded:false
+	};
   this.load = function() {
 		// var parsed_template = this.config.templates;
 		this.partials = {};
@@ -104,15 +112,15 @@ berryAppEngine = function(options) {
 		$.extend(true, this.data.options,  this.data.user.options);
 		$.extend(this.data, this.data.options);
 
+    this.$el = this.options.$el;
     if(typeof this.app == 'undefined'){
       this.app = App.call(this)
     }
-    this.$el = this.options.$el;
     this.draw()
   }
  
   this.draw = function() {
-    this.view = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'main'] || this.partials['main'], data: this.data, partials: this.partials});
+    this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'main'] || this.partials['main'], data: this.data, partials: this.partials});
     if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
       this.methods[this.options.initializer].call(this);
       this.app.on('call', function(name, args){
@@ -126,7 +134,7 @@ berryAppEngine = function(options) {
 	this.destroy = function(){
 			this.$el.off('click');
 			this.app.trigger('teardown')
-			this.view.teardown();
+			this.ractive.teardown();
 	}
 	this.options = $.extend(true, {}, options);
 	this.options.initializer = this.options.initializer || 'callback'
