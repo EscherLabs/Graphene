@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Site;
+use App\SiteMember;
 use Illuminate\Http\Request;
 
 class SiteController extends Controller
@@ -15,17 +16,14 @@ class SiteController extends Controller
     
     public function index()
     {
-        if (config('app.master_site')==request()->server('SERVER_NAME')) {
-            return Site::all();
-        } else {
-            return [config('app.site')];
-        }
+        return Site::whereHas('members', function($q){
+            $q->where('user_id','=',Auth::user()->id)->where('site_admin','=',1);
+        })->get();
     }
 
     public function admin(Site $site) {
         return view('admin', ['resource'=>'site','id'=>$site->id]);
-       }
-   
+    }
 
     public function show(Site $site)
     {

@@ -3,7 +3,7 @@
 return [
 
     /* Master CrazyStairs Site */
-    'master_site' => 'crazystairs.escherlabs.com',
+    'master_site' => 'graphene.escherlabs.com',
 
     /*
     |--------------------------------------------------------------------------
