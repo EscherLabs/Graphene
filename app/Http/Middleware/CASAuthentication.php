@@ -45,7 +45,7 @@ class CASAuthentication
     }
 
     private function fetch_external_user_attributes($user_attributes) {
-        if (config('cas.external_user_lookup')->enabled === true) {
+        if (config('cas.external_user_lookup')->enabled === true || config('cas.external_user_lookup')->enabled === "true") {
             $m = new \Mustache_Engine;                            
             $url = $m->render(config('cas.external_user_lookup')->url, $user_attributes);
             $username = null; $password = null;
@@ -93,7 +93,7 @@ class CASAuthentication
         $external_attributes = $this->fetch_external_user_attributes($default_attributes);
         $user_attributes = array_merge($external_attributes,$default_attributes);        
         $user = User::where('unique_id', '=', cas()->user())->first();
-        if ($user === null && config('cas.external_user_lookup')->enabled ===false) {
+        if ($user === null && (config('cas.external_user_lookup')->enabled ===false || config('cas.external_user_lookup')->enabled ==="false")) {
             return response('Error: This account does not exist', 401);
         } else if ($user === null)  {
             $user_exists = false;
@@ -123,7 +123,7 @@ class CASAuthentication
                 if( $this->cas->isAuthenticated() )
                 {
                     $m = new \Mustache_Engine;                    
-                    if (config('cas.cas_enable_saml')) {
+                    if (config('cas.cas_enable_saml') === true || config('cas.cas_enable_saml') === "true") {
                         $this->handle_saml();
                     } else {
                         $this->handle_generic();

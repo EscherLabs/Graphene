@@ -22,6 +22,11 @@ class SiteController extends Controller
         }
     }
 
+    public function admin(Site $site) {
+        return view('admin', ['resource'=>'site','id'=>$site->id]);
+       }
+   
+
     public function show(Site $site)
     {
         return $site;

@@ -31,7 +31,7 @@ Route::get('/admin/groups/{group}/members', 'AdminController@members')->middlewa
 Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
 Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
 Route::get('/admin/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
-
+Route::get('/admin/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
 
 /***** APPS *****/
 // List all apps

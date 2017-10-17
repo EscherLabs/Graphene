@@ -9,7 +9,7 @@ class Site extends Model
 {
     use SoftDeletes;
     protected $dates = ['deleted_at'];
-    protected $fillable = ['domain','theme','auth'];
+    protected $fillable = ['domain','name','theme','auth','auth_config'];
     protected $casts = ['theme' => 'object','auth_config' => 'object'];
 
     public function members() {
