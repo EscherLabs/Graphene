@@ -332,7 +332,7 @@ initializers['site'] = function() {
 
 			$('#save').on('click',function(){
 				var item = Berries.main.toJSON();
-				item.options = Berries.theme.toJSON();
+				item.theme = Berries.theme.toJSON();
 				item.auth_config = Berries.cas_config.toJSON();
 				item.auth_config.cas_data_map = {};
 				item.auth_config.cas_data_map.default = Berries.cas_data_map_default.toJSON();
