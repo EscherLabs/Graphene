@@ -45,7 +45,7 @@
 
 
 @section('end_body_scripts_bottom')
-<script src='http://unpkg.com/ractive/ractive.min.js'></script>    
+<script src='//unpkg.com/ractive/ractive.min.js'></script>    
 
 <script>var loaded = {!! $app !!};
 
