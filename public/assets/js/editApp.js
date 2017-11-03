@@ -59,7 +59,7 @@ var paged = function(selector, options){
   options.hasextra  = (typeof options.extra == 'function');
   options.u_id =  Berry.getUID();
   options.items = _.map(options.items, function(item) {
-    item.key = options.u_id+item.name.toLowerCase().replace(/ /g,"_");
+    item.key = options.u_id+item.name.replace(/ /g,"_");
     return item;
   })
   options.fields = _.map(options.items, function(item) {
@@ -98,7 +98,7 @@ var paged = function(selector, options){
         if($(e.currentTarget).hasClass('pages_new')){
           $().berry({name:'page_name', legend: 'New Section',fields: {'Name': {}}}).on('save', function(){
             var name = Berries.page_name.toJSON().name;
-            var key = this.options.u_id+name.toLowerCase().replace(/ /g,"_");
+            var key = this.options.u_id+name.replace(/ /g,"_");
 
             this.options.items.push({name: name,key:key, content:""})
             this.active = key;
