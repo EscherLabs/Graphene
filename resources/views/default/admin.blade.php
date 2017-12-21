@@ -134,9 +134,11 @@
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.2/hogan.min.js'></script>
     <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		
-    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>
+    <!--<script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>-->
+    <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
-    <script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> 
+    <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
+    <script src='/assets/js/vendor/berrytables.full.js'></script> 
     <script src='/assets/js/routes.js'></script> 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'></script> 

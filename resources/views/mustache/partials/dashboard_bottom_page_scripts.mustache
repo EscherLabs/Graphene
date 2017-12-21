@@ -10,12 +10,14 @@
 		<script type='text/javascript' src='/assets/js/templates/widget.js'></script>
 	    <script src='/assets/js/lib.js'></script> 
 
-		<script type='text/template' name="itemContainer">
-			<div class="cobler-li-content"></div>
-			<div class="btn-group parent-hover">
-				<span class="remove-item btn btn-danger fa fa-trash-o" data-title="Remove"></span>
-				<span class="duplicate-item btn btn-default fa fa-copy" data-title="Duplicate"></span>
-				<span class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+		<script type='text/template' name="widgets_container">
+			<div style="position:relative">
+				<div class="cobler-li-content widget"></div>
+				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
+					<span class="remove-item btn btn-danger fa fa-trash-o" data-title="Remove"></span>
+					<span class="duplicate-item btn btn-default fa fa-copy" data-title="Duplicate"></span>
+					<span class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+				</div>			
 			</div>
 		</script>
 
@@ -85,56 +87,30 @@ layouts = [
 	];
 
 			function layout(){
-debugger;
-// $().berry()
-
-	// templates['layout'] = Hogan.compile('<i class="{{classes}}"></i>');
-		//$('.layout-area').find('[name="layout"]').html(templates['layout'].render(widget_factory.prototype.layouts[pageLayout]));
-		var berry = $().berry({
-			// name: 'layout',
-			legend: 'Change Layout', 
-			// renderer: 'popins', 
-			inline:false,
-
-			fields:[
-				{
-					// defaultClass: 'btn-white',
-					// template:'layout',
-					// hideLabel: true,
-					// type:'custom_radio',
-					label:'Layout',
-					name:'layout',
-					label_key:'title',
-					classes: layouts[config.layout||0].classes, 
-					choices: layouts, 
-					value: config.layout
-				}
-			]
-		}).on('change:layout', function() {
-			// this.fields.layout.classes = this.fields.layout.choices[this.fields.layout.value].classes;
-		}).on('updated',function(){
-			// pageLayout = this.toJSON().layout;
-			// // wf.load(wf.data, pageLayout);
-			// $.ajax(
-			// 	{
-			// 		url: '/community_pages/'+ groupID + '/' + pageID, 
-			// 		data: {'layout': pageLayout},
-			// 		method: 'PUT'
-			// });
-			// renderPage();
-			// this.trigger('saved');
-		}).on('save',function(){
-			// console.log(this.toJSON().layout)
-			$.ajax({
-							url:'/api/pages/{{id}}',
-							data:{content: $.extend({}, config,{layout:parseInt(this.toJSON().layout)})},
-							method:'PUT',
-							success: function(data){
-								config = data.content;
-								location.reload()
-							}
-						})
-		});
+				var berry = $().berry({
+					legend: 'Change Layout', 
+					inline:false,
+					fields:[
+						{
+							label:'Layout',
+							name:'layout',
+							label_key:'title',
+							classes: layouts[config.layout||0].classes, 
+							choices: layouts, 
+							value: config.layout
+						}
+					]
+				}).on('save',function(){
+					$.ajax({
+						url:'/api/pages/{{id}}',
+						data:{content: $.extend({}, config,{layout:parseInt(this.toJSON().layout)})},
+						method:'PUT',
+						success: function(data) {
+							config = data.content;
+							location.reload()
+						}
+					})
+				});
 			}
 			function load(status){
 				$('body').toggleClass('editor', !status)
@@ -142,12 +118,12 @@ debugger;
 					cb.destroy();
 					delete cb;
 				}
-				templates['itemContainer'] = Hogan.compile(document.getElementsByName('itemContainer')[0].innerHTML);
+				templates['widgets_container'] = Hogan.compile(document.getElementsByName('widgets_container')[0].innerHTML);
 				var template = 'widgets_container'
 				var target = 'widget';
 				if(!status){
 					target ='';
-					template = 'itemContainer';
+					template = 'widgets_container';
 				}
 				
 				var data = config.sections || [[]];// [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
