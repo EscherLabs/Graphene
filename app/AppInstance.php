@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppInstance extends Model
 {
-    protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon'];
+    protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon', 'app_version_id'];
 
     protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object'];
 
