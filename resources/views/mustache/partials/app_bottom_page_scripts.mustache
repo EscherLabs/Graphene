@@ -27,16 +27,17 @@
   //   opts.data.user.options =  (Lockr.get('/api/apps/instances/{{ app.id }}/user_options') || {options:{}}).options;
   // }
   $('#edit_instance').on('click', function(){
-    $().berry($.extend(true, {legend:'Edit Options', attributes: bae.data.user.options},JSON.parse(opts.config.forms[1].content))).on('save', function(){
+    debugger;
+    $().berry($.extend(true, {legend:'Edit Options', attributes: cb.collections[0].getItems()[0].bae.data.user.options},JSON.parse(_.find(cb.collections[0].getItems()[0].bae.options.config.forms,{name:'User Options'}).content))).on('save', function(){
       var url = '/api/apps/instances/{{ app.id }}/user_options';
-      if(typeof opts.data.user.id !== 'undefined') { // what is this??
+      if(typeof cb.collections[0].getItems()[0].bae.data.user.id !== 'undefined') { // what is this??
         $.ajax({
           type: 'POST',
           url:url,
           data: {'options': this.toJSON()},
           success:function(data){
-            bae.app.update({user:{options:data.options}});
-            bae.optionsupdated();
+            cb.collections[0].getItems()[0].bae.app.update({user:{options:data.options}});
+            cb.collections[0].getItems()[0].bae.optionsupdated();
             this.trigger('close');
             toastr.success('', 'Options Updated Successfully');
           }.bind(this),
@@ -45,7 +46,7 @@
           }
         })
       }else{
-        bae.app.update({user:{options:this.toJSON()}});
+        cb.collections[0].getItems()[0].bae.app.update({user:{options:this.toJSON()}});
         Lockr.set(url, {'options': this.toJSON()})
         this.trigger('close');
         toastr.success('', 'Options Updated Successfully');

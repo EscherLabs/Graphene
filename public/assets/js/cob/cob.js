@@ -233,7 +233,8 @@ function Cobler(options) {
 			owner: cob,
 			init: init,
 			indexOf: indexOf,
-			elementOf: elementOf
+			elementOf: elementOf,
+			getItems: function(){return items}.bind(this),
 		}
 	}
 
