@@ -6,6 +6,7 @@ use App\AppInstance;
 use App\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Libraries\Templater;
 
 class UserDashboardController extends Controller
 {
@@ -26,7 +27,16 @@ class UserDashboardController extends Controller
             $q->select('group_id','id', 'name', 'slug');
         }))->whereIn('id',Auth::user()->groups)->get();
         
-        return view('timtest',[
+        // return view('timtest',[
+        //     'links'=>Group::links()->get(),
+        //     'name'=>"Dashboard",
+        //     'slug'=>'',
+        //     'apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(), 
+        //     'config'=>$config, 
+        //     'id'=>Auth::user()->id
+        // ]);
+        $template = new Templater();
+        return $template->render('timtest',[
             'links'=>Group::links()->get(),
             'name'=>"Dashboard",
             'slug'=>'',

@@ -11,6 +11,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
+use App\Libraries\Templater;
 
 class AppInstanceController extends Controller
 {
@@ -110,7 +111,9 @@ class AppInstanceController extends Controller
                 }
             }
             // return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
-            return view('timtest', [
+            
+            $template = new Templater();
+            return $template->render('timtest',[
                 'links'=>$links, 
                 'apps'=>$current_user_apps,
                 'name'=>$myApp->name,
@@ -118,7 +121,18 @@ class AppInstanceController extends Controller
                 'uapp'=>$myApp, 
                 'data2'=>$data,
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}')
-                ]);
+            ]);
+
+            
+            // return view('timtest', [
+            //     'links'=>$links, 
+            //     'apps'=>$current_user_apps,
+            //     'name'=>$myApp->name,
+            //     'slug'=>$myApp->slug,
+            //     'uapp'=>$myApp, 
+            //     'data2'=>$data,
+            //     'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}')
+            //     ]);
 
 
         }

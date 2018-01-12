@@ -9,6 +9,7 @@ use App\Group;
 
 use App\AppInstance;
 use Illuminate\Http\Request;
+use App\Libraries\Templater;
 
 class PageController extends Controller
 {
@@ -83,7 +84,8 @@ class PageController extends Controller
             }else{
                 $config = $myPage->content;
             }
-            return view('timtest',[
+            $template = new Templater();
+            return $template->render('timtest',[
                 'links'=>$links, 
                 'apps'=>$apps, 
                 'name'=>$myPage->name, 
@@ -91,6 +93,14 @@ class PageController extends Controller
                 'config'=>$config, 
                 'id'=>$myPage->id
             ]);
+            // return view('timtest',[
+            //     'links'=>$links, 
+            //     'apps'=>$apps, 
+            //     'name'=>$myPage->name, 
+            //     'slug'=>$myPage->slug, 
+            //     'config'=>$config, 
+            //     'id'=>$myPage->id
+            // ]);
         }
         abort(404,'App not found');
     }
