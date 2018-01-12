@@ -26,8 +26,8 @@
   // if(typeof opts.data.user.id === 'undefined') {
   //   opts.data.user.options =  (Lockr.get('/api/apps/instances/{{ app.id }}/user_options') || {options:{}}).options;
   // }
+  appMode = true;
   $('#edit_instance').on('click', function(){
-    debugger;
     $().berry($.extend(true, {legend:'Edit Options', attributes: cb.collections[0].getItems()[0].bae.data.user.options},JSON.parse(_.find(cb.collections[0].getItems()[0].bae.options.config.forms,{name:'User Options'}).content))).on('save', function(){
       var url = '/api/apps/instances/{{ app.id }}/user_options';
       if(typeof cb.collections[0].getItems()[0].bae.data.user.id !== 'undefined') { // what is this??

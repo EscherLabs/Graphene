@@ -14,13 +14,25 @@
 			<div style="position:relative">
 				<div class="cobler-li-content widget"></div>
 				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
+					<span class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+				</div>			
+			</div>
+		</script>
+		<script type='text/template' name="widgets_container_edit">
+			<div style="position:relative">
+				<div class="cobler-li-content widget"></div>
+				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
 					<span class="remove-item btn btn-danger fa fa-trash-o" data-title="Remove"></span>
 					<span class="duplicate-item btn btn-default fa fa-copy" data-title="Duplicate"></span>
 					<span class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
 				</div>			
 			</div>
 		</script>
-
+		<script type='text/template' name="widgets_container_app">
+			<div style="position:relative">
+				<div class="cobler-li-content widget"></div>		
+			</div>
+		</script>
 		<script type='text/javascript' >
       _.findWhere = _.find;
 	  _.where = _.filter;
@@ -86,7 +98,7 @@ layouts = [
 		},
 	];
 
-			function layout(){
+			function layout() {
 				var berry = $().berry({
 					legend: 'Change Layout', 
 					inline:false,
@@ -112,20 +124,25 @@ layouts = [
 					})
 				});
 			}
+				if(typeof appMode !== 'undefined'){
+					templates['widgets_container_app'] = Hogan.compile(document.getElementsByName('widgets_container_app')[0].innerHTML);
+				}else{
+					templates['widgets_container'] = Hogan.compile(document.getElementsByName('widgets_container')[0].innerHTML);
+				}
+				templates['widgets_container_edit'] = Hogan.compile(document.getElementsByName('widgets_container_edit')[0].innerHTML);
 			function load(status){
 				$('body').toggleClass('editor', !status)
 				if(typeof cb !== 'undefined'){
 					cb.destroy();
 					delete cb;
 				}
-				templates['widgets_container'] = Hogan.compile(document.getElementsByName('widgets_container')[0].innerHTML);
 				var template = 'widgets_container'
 				var target = 'widget';
 				if(!status){
-					target ='';
-					template = 'widgets_container';
+					template = 'widgets_container_edit';
 				}
-				
+
+
 				var data = config.sections || [[]];// [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
 				$('#page_layout').html(layouts[config.layout || 0].template);
 
