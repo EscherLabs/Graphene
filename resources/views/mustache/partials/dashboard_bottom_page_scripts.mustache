@@ -14,20 +14,26 @@
 			<div style="position:relative">
 				<div class="cobler-li-content widget"></div>
 				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
-					<span class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+						{{#enable_min}}<span class="btn btn-default btn-sm ti-toggle wf-min" data-event="min" title="Minimize"></span>{{/enable_min}}
+						{{#user_edit}}<span class="btn btn-default btn-sm fa fa-pencil wf-edit edit-item" data-event="user_edit"  title="Edit"></span>{{/user_edit}}
 				</div>			
 			</div>
 		</script>
+		
 		<script type='text/template' name="widgets_container_edit">
 			<div style="position:relative">
 				<div class="cobler-li-content widget"></div>
 				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
-					<span class="remove-item btn btn-danger fa fa-trash-o" data-title="Remove"></span>
-					<span class="duplicate-item btn btn-default fa fa-copy" data-title="Duplicate"></span>
-					<span class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+					<span class="btn btn-default btn-sm fa-pencil fa edit-item" title="Edit&nbsp;Settings"></span>
+					<span class="btn btn-default btn-sm fa-eye fa" data-event="manage" title="Visibility&nbsp;Settings"></span>
+					{{#enable_min}}<span class="btn btn-sm btn-default btn-sm ti-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+					<!-- 	<span class="btn btn-default btn-sm fa fa-resize hidden-xs" data-event="full" title="Full Page"></span>
+					<span class="duplicate-item btn btn-sm btn-default fa fa-copy" data-title="Duplicate"></span>-->
+					<span class="btn btn-danger btn-sm fa fa-times remove-item" title="Remove"></span>
 				</div>			
 			</div>
 		</script>
+
 		<script type='text/template' name="widgets_container_app">
 			<div style="position:relative">
 				<div class="cobler-li-content widget"></div>		
@@ -169,6 +175,41 @@ layouts = [
 					cb.on('reorder', save);
 					cb.on('remove', save);
 					cb.on('change',save);
+
+
+
+					
+		cb.on('manage',function(item){
+				$().berry({name: 'modal', attributes: item.get(), legend: 'Visibility',flatten:true, fields:[
+					{label: 'Device', name: 'device', type: 'select', value:'widget', choices: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
+					{label: 'Allow Minimization', name: 'enable_min', type: 'checkbox', show:!item.no_minimize},
+					// {label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  {test: function(){return composites.length >0;}} },
+					// {legend: 'Groups', 'show': {
+					// 		matches: {
+					// 			name: 'limit',
+					// 			value: true
+					// 		}
+					// 	},fields:[
+					// {label: false, multiple:{duplicate:true}, toArray:true, name: 'group', fields:[
+					// 		{label: false, name: 'ids', type: 'select', choices: composites, key: 'name', reference: 'group_id'}
+					// 	]
+					// }]}
+				]})
+				.on('save',function(){
+					// this.set(Berries.modal.toJSON());
+					// this.container.update(Berries.modal.toJSON(), this);
+					this.set(Berries.modal.toJSON())
+					Berries.modal.trigger('saved');
+					save();
+				},item)
+				// .on('change:ids', function(){
+				// 	this.fields.limit.trigger('change');
+				// })
+				// .fields.limit.trigger('change');
+			})
+
+
+
 				}
 			}
 
