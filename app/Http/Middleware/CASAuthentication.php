@@ -129,10 +129,9 @@ class CASAuthentication
                         $this->handle_generic();
                     }
                 } else {
-                    if ($request->ajax() || $request->wantsJson()) {
-                        return response('Unauthorized.', 401);
+                    if (!$request->has('nologin') && !$request->is('api/*')) {
+                        $this->cas->authenticate();
                     }
-                    $this->cas->authenticate();
                 }
             }
         }     

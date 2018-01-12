@@ -267,11 +267,17 @@ class AppInstanceController extends Controller
         
         // Merge App Options with User Preferences, User Info, and `request` data
 
+        if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+        } else { /* User is not Authenticated */
+            $current_user = new User;
+        }
+
         $all_data = ['options'=>$options,
-                     'user'=>Auth::user()->toArray(),
+                     'user'=>$current_user->toArray(),
                      'request'=>$request->has('request')?$request->input('request'):[]];
 
-        $user_prefs = $app_instance->user_options()->where('user_id','=',Auth::user()->id)->first();
+        $user_prefs = $app_instance->user_options()->where('user_id','=',$current_user->id)->first();
         if(isset($user_prefs['options'])){
             $all_data['user']['options'] = $user_prefs['options'];
         }else{
