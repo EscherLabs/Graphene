@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
         $site->domain = 'graphenedev.local';
         $site->name = 'LocalDev';
         $site->theme = ['css' => '','icon'=>'file'];
+        $site->templates = ['main'=>(object)[],'partials'=>(object)[
+            'footer'=>'Custom Footer: Developed by Escher Labs, Inc'
+        ]];
         $site->auth = 'CAS';
         $site->auth_config = [
             'cas_hostname'        => 'securetest.binghamton.edu',

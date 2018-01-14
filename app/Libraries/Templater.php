@@ -23,7 +23,12 @@ class Templater {
         ];
     }
 
+    private function get_site_templates() {
+        // dd((array)Auth::user()->site->templates->main);
+    }
+
     public function render($template,$data) {
+        $this->get_site_templates();
         $this->set_defaults($data);
         // Build $data object
         $links = $data['links']->toArray();
@@ -46,10 +51,19 @@ class Templater {
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
             
+        $loader = new \Mustache_Loader_CascadingLoader(array(
+            new \Mustache_Loader_ArrayLoader((array)Auth::user()->site->templates->main),
+            new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/renderers')
+        ));
+        $partials_loader = new \Mustache_Loader_CascadingLoader(array(
+            new \Mustache_Loader_ArrayLoader((array)Auth::user()->site->templates->partials),
+            new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
+        ));
+
         // Render Template
         $m = new \Mustache_Engine([
-            'loader' => new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/renderers'),
-            'partials_loader' => new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials'),
+            'loader' => $loader,
+            'partials_loader' => $partials_loader,
         ]);
         $tpl = $m->loadTemplate('app');
         return $tpl->render($data);
