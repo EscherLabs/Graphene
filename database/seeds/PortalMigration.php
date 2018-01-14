@@ -266,6 +266,7 @@ class PortalMigration extends Seeder
                             'widgetType' => 'uApp',
                             'app_id' => $app_instance->id,
                             'title' => $page_widget_db->title,
+                            'container' => $page_widget_db->container,
                         ];
                     }
                 }
