@@ -7,7 +7,8 @@ Cobler.types.uApp = function(container){
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/appinstances'},
-    'Container':{type:'checkbox'}
+    'Container':{type:'checkbox'},
+    'User Options':{name:'user_edit',type:'checkbox'}
 		// 'Template': {}
 	}
 	return {
@@ -54,9 +55,7 @@ Cobler.types.uApp = function(container){
             opts.config = _.find(apps, {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_instance_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');
-
             this.bae = new berryAppEngine(opts);
-            
             var refetch = function(data){
               $.ajax({
                 type: 'GET',

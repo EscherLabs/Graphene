@@ -34,6 +34,12 @@ function App() {
 	}
 	function update(newData) {
 		$.extend(true, this.data, newData || {});
+
+
+		$.extend(true, this.data.options,  this.data.user.options);
+		$.extend(this.data, this.data.options);
+
+
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
