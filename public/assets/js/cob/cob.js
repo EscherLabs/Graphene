@@ -314,7 +314,8 @@ berryEditor = function(container){
 			formConfig.actions = false;
 			events = 'change';
 		}	
-		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)).find('.panel-body'));
+		debugger;
+		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)).find('.collapsible.panel-body'));
 		myBerry.on(events, function(){
 		 	container.update(myBerry.toJSON(), this);
 		 	container.deactivate();

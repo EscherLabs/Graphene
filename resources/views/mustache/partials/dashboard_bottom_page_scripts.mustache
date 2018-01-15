@@ -10,35 +10,9 @@
 		<script type='text/javascript' src='/assets/js/templates/widget.js'></script>
 	    <script src='/assets/js/lib.js'></script> 
 
-		<script type='text/template' name="widgets_container">
-			<div style="position:relative">
-				<div class="cobler-li-content widget"></div>
-				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
-						{{#enable_min}}<span class="btn btn-default btn-sm ti-toggle wf-min" data-event="min" title="Minimize"></span>{{/enable_min}}
-						{{#user_edit}}<span class="btn btn-default btn-sm fa fa-pencil wf-edit edit-item" data-event="user_edit"  title="Edit"></span>{{/user_edit}}
-				</div>			
-			</div>
-		</script>
-		
-		<script type='text/template' name="widgets_container_edit">
-			<div style="position:relative">
-				<div class="cobler-li-content widget"></div>
-				<div class="btn-group parent-hover" style="position:absolute;top:5px;right:5px">
-					<span class="btn btn-default btn-sm fa-pencil fa edit-item" title="Edit&nbsp;Settings"></span>
-					<span class="btn btn-default btn-sm fa-eye fa" data-event="manage" title="Visibility&nbsp;Settings"></span>
-					{{#enable_min}}<span class="btn btn-sm btn-default btn-sm ti-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-					<!-- 	<span class="btn btn-default btn-sm fa fa-resize hidden-xs" data-event="full" title="Full Page"></span>
-					<span class="duplicate-item btn btn-sm btn-default fa fa-copy" data-title="Duplicate"></span>-->
-					<span class="btn btn-danger btn-sm fa fa-times remove-item" title="Remove"></span>
-				</div>			
-			</div>
-		</script>
 
-		<script type='text/template' name="widgets_container_app">
-			<div style="position:relative">
-				<div class="cobler-li-content widget"></div>		
-			</div>
-		</script>
+
+
 		<script type='text/javascript' >
       _.findWhere = _.find;
 	  _.where = _.filter;
@@ -130,12 +104,11 @@ layouts = [
 					})
 				});
 			}
-				if(typeof appMode !== 'undefined'){
-					templates['widgets_container_app'] = Hogan.compile(document.getElementsByName('widgets_container_app')[0].innerHTML);
-				}else{
-					templates['widgets_container'] = Hogan.compile(document.getElementsByName('widgets_container')[0].innerHTML);
-				}
-				templates['widgets_container_edit'] = Hogan.compile(document.getElementsByName('widgets_container_edit')[0].innerHTML);
+
+
+					// templates['widgets_container'] = Hogan.compile(document.getElementsByName('widgets_container')[0].innerHTML);
+
+				// templates['widgets_edit'] = Hogan.compile(document.getElementsByName('widgets_container_edit')[0].innerHTML);
 			function load(status){
 				$('body').toggleClass('editor', !status)
 				if(typeof cb !== 'undefined'){
@@ -145,7 +118,7 @@ layouts = [
 				var template = 'widgets_container'
 				var target = 'widget';
 				if(!status){
-					template = 'widgets_container_edit';
+					template = 'widgets_edit_container';
 				}
 
 
@@ -196,9 +169,7 @@ layouts = [
 					// }]}
 				]})
 				.on('save',function(){
-					// this.set(Berries.modal.toJSON());
-					// this.container.update(Berries.modal.toJSON(), this);
-					this.set(Berries.modal.toJSON())
+					this.container.update(Berries.modal.toJSON(),this)
 					Berries.modal.trigger('saved');
 					save();
 				},item)
@@ -210,7 +181,27 @@ layouts = [
 
 
 
+			cb.on('min', function(item){
+				item.container.update({collapsed:!item.get().collapsed},item)
+				save();
+			})
+
+
+
+
+
+
+				}else{
+
+			cb.on('min', function(item){
+				item.container.update({collapsed:!item.get().collapsed},item)
+				save();
+			})
+
 				}
+
+
+
 			}
 
 			function addWidget(e) { cb.collections[0].addItem(e); }

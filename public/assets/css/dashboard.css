@@ -248,3 +248,14 @@ body{
     min-height: 100px;
     outline: dashed 1px #aaa;
 }
+
+.widget > .parent-hover{
+
+      z-index: 1;
+}
+.fa-toggle:before {
+  content: "\f068";
+}
+.item-collapsed .fa-toggle:before {
+  content: "\f067";
+}

@@ -20,6 +20,7 @@ Cobler.types.Content = function(container){
 		b: {name:'text',type: 'ace', label: false, show:{matches:{name:'editor',value:false}},parsable:'show',mode: 'ace/mode/handlebars'}
 	}
 	return {
+	    container:container,
 		fields: fields,
 		render: render,
 		toJSON: get,
@@ -99,6 +100,7 @@ Cobler.types.Image = function(container){
 		]}
 	}
 	return {
+	    container:container,
 		fields: fields,
 		render: render,
 		toJSON: toJSON,
@@ -142,6 +144,8 @@ Cobler.types.Html = function(container){
 			HTML: {type: 'ace', label:false}
 	}
 	return {
+
+	    container:container,
 		fields: fields,
 		render: render,
 		toJSON: toJSON,

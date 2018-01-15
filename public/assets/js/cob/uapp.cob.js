@@ -11,6 +11,7 @@ Cobler.types.uApp = function(container){
 		// 'Template': {}
 	}
 	return {
+    container:container,
 		fields: fields,
 		render: function() {
 			return templates['widgets_microapp'].render(get(), templates);
