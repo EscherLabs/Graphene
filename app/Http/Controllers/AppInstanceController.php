@@ -73,18 +73,18 @@ class AppInstanceController extends Controller
             $current_user = Auth::user();
             $myApp = AppInstance::with('app')->with(['user_options'=>function($query){
                 $query->where('user_id','=', Auth::user()->id);
-            }])->where('group_id','=', $group)->where('slug', '=', $slug)->first();
+            }])->where('group_id','=', $group)->where('slug', '=', $slug)->with('app')->first();
             $this->authorize('fetch' ,$myApp);
-            $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
+            // $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
             $links = Group::links()->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
 
             $myApp = AppInstance::with('app')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
             if (is_null($myApp)) { abort(403); }
-            $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
-                $q->where('site_id', '=', config('app.site')->id);
-            })->with('app')->get();
+            // $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
+            //     $q->where('site_id', '=', config('app.site')->id);
+            // })->with('app')->get();
             $links = Group::publicLinks()->get();
 
         }
@@ -92,34 +92,34 @@ class AppInstanceController extends Controller
         if($myApp != null) {
             // dd($myApp->toArray());
             // Create data object that will be used by the app
-            $data = ['user'=>$current_user,'options'=>$myApp->options];
+            // $data = ['user'=>$current_user,'options'=>$myApp->options];
             
 
-            if(!Auth::check() || !isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
-                $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
-            } else { 
-                $data['user']->options = $myApp->user_options->options;
-            }
+            // if(!Auth::check() || !isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
+            //     $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
+            // } else { 
+            //     $data['user']->options = $myApp->user_options->options;
+            // }
             
-            // Get each source
-            // TODO: add conditionals for types and "autofetch", etc
-            if(!is_null($myApp->app->code) && count($myApp->app->code->sources) > 0){
-                foreach($myApp->app->code->sources as $source){
-                    if($source->name !== ''){
-                        $data[$source->name] = $this->get_data($myApp, $source->name, $request);
-                    }
-                }
-            }
+            // // Get each source
+            // // TODO: add conditionals for types and "autofetch", etc
+            // if(!is_null($myApp->app->code) && count($myApp->app->code->sources) > 0){
+            //     foreach($myApp->app->code->sources as $source){
+            //         if($source->name !== ''){
+            //             $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+            //         }
+            //     }
+            // }
             // return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
             
             $template = new Templater();
             return $template->render('timtest',[
                 'links'=>$links, 
-                'apps'=>$current_user_apps,
+                // 'apps'=>$current_user_apps,
                 'name'=>$myApp->name,
                 'slug'=>$myApp->slug,
                 'uapp'=>$myApp, 
-                'data2'=>$data,
+                // 'data2'=>$data,
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}')
             ]);
 

@@ -61,6 +61,16 @@ class PageController extends Controller
         
         $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
 
+        // Get a list of all the micro app instances on the page
+        $uapp_instances = [];
+        foreach($myPage->content->sections as $column_index => $column) {
+            foreach($column as $widget) {
+                if ($widget->widgetType === 'uApp') {
+                    $uapp_instances[] = $widget->app_id;
+                }
+            }
+        }
+
         if($myPage->public == 0) {
             if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
                 abort(403, 'Access denied');
@@ -69,15 +79,14 @@ class PageController extends Controller
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $apps = AppInstance::whereIn('group_id', $current_user->groups)->with('app')->get();
+            $apps = AppInstance::whereIn('id', $uapp_instances)->with('app')->get();
             $links = Group::links()->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            $apps = AppInstance::where('public', '=', 1)->with('app')->get();
+            $apps = AppInstance::whereIn('id', $uapp_instances)->where('public', '=', 1)->with('app')->get();
             $links = Group::publicLinks()->get();
         }
 
-        
         if($myPage != null) {
             if(!isset($myPage->content)){
                 $config = '""';
