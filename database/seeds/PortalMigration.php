@@ -189,7 +189,7 @@ class PortalMigration extends Seeder
             $page->device = $page_db->device;
             $page->mobile_order = [];
             $page->group_id = $groups_index[$page_db->group_id]->id;
-            $page_content_array = ['sections'=>[]];
+            $page_content_array = ['layout'=>(string)$page_db->layout,'sections'=>[]];
 
             $page_dev_db = json_decode($page_db->content,false);
             foreach($page_dev_db as $page_column_num => $page_column_db) {
