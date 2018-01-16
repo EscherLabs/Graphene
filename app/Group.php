@@ -83,10 +83,10 @@ class Group extends Model
     public function scopePublicLinks($query)
     {
         return $query->with(['app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlist');
             $q->where('public','=','1');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'public');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted');
             $q->where('public','=','1');
 
         }])
@@ -102,9 +102,9 @@ class Group extends Model
     public function scopeLinks($query)
     {
         return $query->with(array('app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlist');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted');
         }))->whereIn('id', Auth::user()->groups);
     }
 

@@ -53,13 +53,21 @@ class PageController extends Controller
         }
     }
 
-    public function run($group, $slug, Request $request) {
+    public function run($group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
 			$groupObj = Group::where('slug','=',$group)->first();
 			$group = $groupObj->id;
-		}
-        
-        $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
+		}else{
+			$groupObj = Group::where('id','=',$group)->first();
+        }
+        if(isset($slug)){
+            $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
+        }else{
+            $myPage = Page::where('group_id','=', $group)->first();
+            if($myPage == null){
+             $myPage = Page::first();   
+            }
+        }
 
         // Get a list of all the micro app instances on the page
         $uapp_instances = [];
@@ -94,13 +102,14 @@ class PageController extends Controller
                 $config = $myPage->content;
             }
             $template = new Templater();
-            return $template->render('timtest',[
+            return $template->render([
                 'links'=>$links, 
                 'apps'=>$apps, 
                 'name'=>$myPage->name, 
                 'slug'=>$myPage->slug, 
                 'config'=>$config, 
-                'id'=>$myPage->id
+                'id'=>$myPage->id,
+                'group'=>$groupObj
             ]);
             // return view('timtest',[
             //     'links'=>$links, 

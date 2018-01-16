@@ -22,9 +22,9 @@ class UserDashboardController extends Controller
             $config = $user_dashboard->config;
         }
         $links = Group::with(array('app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug');
+            $q->select('group_id','id', 'name', 'slug', 'unlisted');
         }))->whereIn('id',Auth::user()->groups)->get();
         
         // return view('timtest',[
@@ -36,7 +36,7 @@ class UserDashboardController extends Controller
         //     'id'=>Auth::user()->id
         // ]);
         $template = new Templater();
-        return $template->render('timtest',[
+        return $template->render([
             'links'=>Group::links()->get(),
             'name'=>"Dashboard",
             'slug'=>'',

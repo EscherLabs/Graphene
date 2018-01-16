@@ -240,6 +240,7 @@ initializers['site'] = function() {
 <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
 <li role="presentation"><a href="#theme" aria-controls="theme" role="tab" data-toggle="tab">Theme</a></li>
 <li role="presentation"><a href="#cas_config" aria-controls="cas_config" role="tab" data-toggle="tab">CAS</a></li>
+<li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab">Templates</a></li>
 </ul>
 
 <!-- Tab panes -->
@@ -258,7 +259,9 @@ initializers['site'] = function() {
 			</div>
 			<div class="col-sm-3"></div>
 		</div>
-	</div>
+	</div>	
+	<div role="tabpanel" class="tab-pane" id="templates" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
+	<div class="col-sm-3"></div></div></div>
 </div>
 
 </div>
@@ -331,6 +334,21 @@ initializers['site'] = function() {
 				}},
 			],attributes:{additional:arr}, actions:false, name:'cas_data_map_additional'})
 
+
+			data.templates.partials = _.map(data.templates.partials,function(item, key){
+				return {name:key,content:item||'',disabled:false}
+			})
+			if(typeof _.findWhere(data.templates.partials,{name:'main'}) == 'undefined'){
+				data.templates.partials.unshift({name:'main',content:'', disabled: true});
+			}
+			// data.partials.unshift({name:'main',content:data.templates.main, disabled: true})
+
+  		templatePage = new paged('#templates',{items:data.templates.partials||[]});
+
+
+
+
+
 			$('#save').on('click',function(){
 				var item = Berries.main.toJSON();
 				item.theme = Berries.theme.toJSON();
@@ -340,7 +358,30 @@ initializers['site'] = function() {
 				item.auth_config.cas_data_map.additional = 
 					_.object(_.map(Berries.cas_data_map_additional.toJSON().additional, function(x){return [x.name, x.value]}))
 				item.auth_config.external_user_lookup = Berries.external_user_lookup.toJSON();
-				
+				var partials = templatePage.toJSON();
+  // var successCompile = false;
+  // try{
+  //   _.each(partials, function(partial){
+  //     Ractive.parse(partial.content);
+  //   })
+  //   // if(!this.resourcesForm.validate()){
+  //   //   toastr.error(e.message, e.name);
+  //   //   return false;
+  //   // }
+  // }catch(e) {
+  //     toastr.error(e.message, e.name);
+  //     return false;
+  // }
+var partials = _.indexBy(partials, 'name')
+for(var i in partials){
+	partials[i] = partials[i].content;
+}
+				item.templates = {partials:partials}
+				if(!item.templates.partials.main.length){
+				 delete item.templates.partials.main;
+				}
+				// item.templates.partials = partials;
+
 				$.ajax({url: '/api/sites/'+item.id, type: 'PUT', data: item, success:function(){
 						toastr.success('', 'Successfully updated App Instance')
 					}.bind(this),
@@ -362,8 +403,8 @@ initializers['pages'] = function(){
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
-        			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{name: 'id', type:'hidden'}
@@ -372,7 +413,7 @@ initializers['pages'] = function(){
 
 				tableConfig.data = data;
 				tableConfig.name = "pages";
-
+				tableConfig.multiEdit = ['unlisted', 'public', 'group_id'],
 				bt = new berryTable(tableConfig)
 			}
 		});

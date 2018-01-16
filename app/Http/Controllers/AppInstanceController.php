@@ -67,7 +67,9 @@ class AppInstanceController extends Controller
         if(!is_numeric($group)) {
 			$groupObj = Group::where('slug','=',$group)->first();
 			$group = $groupObj->id;
-		}
+		}else{
+			$groupObj = Group::where('id','=',$group)->first();
+        }
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
@@ -113,14 +115,15 @@ class AppInstanceController extends Controller
             // return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
             
             $template = new Templater();
-            return $template->render('timtest',[
+            return $template->render([
                 'links'=>$links, 
                 // 'apps'=>$current_user_apps,
                 'name'=>$myApp->name,
                 'slug'=>$myApp->slug,
                 'uapp'=>$myApp, 
                 // 'data2'=>$data,
-                'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}')
+                'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}'),
+                'group'=>$groupObj
             ]);
 
             

@@ -27,36 +27,42 @@ class Templater {
         // dd((array)Auth::user()->site->templates->main);
     }
 
-    public function render($template,$data) {
+    public function render($data) {
         $this->get_site_templates();
         $this->set_defaults($data);
+
         // Build $data object
-        $links = $data['links']->toArray();
-        foreach($links as $index => $link) {
-            $links[$index]['group_id'] = $link['id'];
-            $links[$index]['group_slug'] = $link['slug'];    
+        if (isset($data['group'])) {
+            $data['group'] = $data['group']->toArray();
+            $data['group']['links'] = $data['links']->where('id','=',$data['group']['id'])->first()->toArray();
+            $data['group']['links']['group_id'] = $data['group']['id'];
+            $data['group']['links']['group_slug'] = $data['group']['slug'];    
+        }
+
+        $data['links'] = $data['links']->toArray();
+
+        foreach($data['links'] as $index => $link) {
+            $data['links'][$index]['group_id'] = $link['id'];
+            $data['links'][$index]['group_slug'] = $link['slug'];    
         }
         if (isset($data['apps']) && is_array($data['apps'])) {
             $data['apps'] = $data['apps']->toArray();
         }
-        $data['links'] = $links;
-        $data['app_mode'] = $data['dashboard_mode'] = false;
 
         if (isset($data['uapp'])) {
             $data['apps'] = [$data['uapp']];
             $data['app'] = $data['uapp']->toArray();
             $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
-            // $data['data_json'] = json_encode($data['data2']);
             $data['app_mode'] = true;
         } 
 
-        $data['dashboard_mode'] = true; 
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
         
+        // dd($data);
         $loader = new \Mustache_Loader_CascadingLoader(array(
-            new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->main),
-            new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/renderers')
+            new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->partials),
+            new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
         ));
         $partials_loader = new \Mustache_Loader_CascadingLoader(array(
             new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->partials),
@@ -68,7 +74,7 @@ class Templater {
             'loader' => $loader,
             'partials_loader' => $partials_loader,
         ]);
-        $tpl = $m->loadTemplate('app');
+        $tpl = $m->loadTemplate('main');
         return $tpl->render($data);
     }
 }

@@ -19,7 +19,7 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
-Route::get('/page/{group}/{slug}', 'PageController@run');
+Route::get('/page/{group}/{slug?}', 'PageController@run');
 
 /***** Dashboard  *****/
 Route::post('/api/dashboard','UserDashboardController@update');
