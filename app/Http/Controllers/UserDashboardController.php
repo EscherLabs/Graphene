@@ -22,7 +22,7 @@ class UserDashboardController extends Controller
             $config = $user_dashboard->config;
         }
         $links = Group::with(array('app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlist');
         },'pages'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'unlisted');
         }))->whereIn('id',Auth::user()->groups)->get();
