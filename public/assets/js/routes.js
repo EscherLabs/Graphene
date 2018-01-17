@@ -147,6 +147,7 @@ initializers['app_instance'] = function() {
         			{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{name: 'app', type:'hidden'},
@@ -405,7 +406,8 @@ initializers['pages'] = function(){
 					{label: 'Slug', name:'slug', required: true},
 					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },				
+					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{name: 'id', type:'hidden'}
 				];
