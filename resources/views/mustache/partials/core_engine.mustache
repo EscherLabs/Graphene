@@ -240,4 +240,28 @@
 				break;
 		}
 	});
+
+
+	// Automatically cancel unfinished ajax requests 
+	// when the user navigates elsewhere.
+	(function($) {
+		var xhrPool = [];
+		$(document).ajaxSend(function(e, jqXHR, options){
+			xhrPool.push(jqXHR);
+		});
+		$(document).ajaxComplete(function(e, jqXHR, options) {
+			xhrPool = $.grep(xhrPool, function(x){return x!=jqXHR});
+		});
+		var abort = function() {
+			$.each(xhrPool, function(idx, jqXHR) {
+				jqXHR.abort();
+			});
+		};
+
+		var oldbeforeunload = window.onbeforeunload;
+		window.onbeforeunload = function() {
+			abort();
+			return oldbeforeunload ? oldbeforeunload() : undefined;
+		}
+	})(jQuery);
 </script>

@@ -143,6 +143,7 @@ class AppInstanceController extends Controller
     }
     
     public function fetch($ai_id, Request $request) {
+       session_write_close();
        if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $myApp = AppInstance::with(['user_options'=>function($query){
