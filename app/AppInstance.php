@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class AppInstance extends Model
 {
     protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon', 'app_version_id', 'unlisted'];
-
     protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object'];
+    protected $appends = ['visible_xs', 'visible_sm', 'visible_md', 'visible_lg'];
 
     public function group() {
       return $this->belongsTo(Group::class);
@@ -29,5 +29,21 @@ class AppInstance extends Model
         }
         return UserOption::updateOrCreate(['app_instance_id'=>$this->id, 'user_id'=>$user->id],
           ['options'=>$user_options]);
-    }    
+    }   
+    public function getVisibleXsAttribute()
+    {
+        return ($this->device === 0 || $this->device === 3 || $this->device === 4);  
+    }
+    public function getVisibleSmAttribute()
+    {
+        return ($this->device === 0 || $this->device === 3 || $this->device === 4);  
+    }
+    public function getVisibleMdAttribute()
+    {
+        return ($this->device === 0 || $this->device === 2 || $this->device === 3);  
+    }
+    public function getVisibleLgAttribute()
+    {
+        return ($this->device === 0 || $this->device === 1 || $this->device === 2);  
+    } 
 }

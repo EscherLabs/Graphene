@@ -229,6 +229,7 @@ class PortalMigration extends Seeder
                             $app_instance->user_options_default = $app_instance_user_options;
                             $app_instance->app_version_id = 1;
                             $app_instance->unlisted = 1;
+                            $app_instance->device = 0;
                             $resources = json_decode($apps_index_db[$page_widget_db->microapp]->sources);
                             foreach($resources as $index => $resource) {
                                 if ($resource->endpoint != 'External') {
