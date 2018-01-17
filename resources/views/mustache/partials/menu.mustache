@@ -4,10 +4,14 @@
       <li><a data-toggle="collapse" href="#collapse{{ id }}">{{ name }}</a></li>
       <ul class="collapse"  id="collapse{{ id }}">
       {{#pages}}
+        {{^unlisted}}
           <li><a href="/page/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}file{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+        {{/unlisted}}
       {{/pages}}
       {{#app_instances}}
+        {{^unlisted}}
           <li><a href="/app/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+        {{/unlisted}}
       {{/app_instances}}
       </ul>
     {{/links}}
