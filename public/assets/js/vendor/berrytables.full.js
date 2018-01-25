@@ -1,5 +1,5 @@
 function berryTable(options) {
-
+	this.version = '0.1.0';
 	options = $.extend(true, {filter: true, sort: true, search: true, download: true, upload: true, columns: true, id:Berry.getUID()}, options);
 	var loaded = false;
 	if (window.localStorage && options.name) {
@@ -148,7 +148,7 @@ function berryTable(options) {
 
 	var options = $.extend({count: options.count || 25, page: 1, sort: 'createdAt', reverse: false}, options);
 	self = this;
-	options.schema = _.map(
+	options.schema = //_.map(
 		_.map(options.schema, function(item){
 		return Berry.processOpts(item,{update:function(options){
 			this.item.choices = options.choices; 
@@ -162,11 +162,11 @@ function berryTable(options) {
 
 		}.bind({item:item,self:self}) });
 	} )
-		, function(item){
-		item.value = item.value || item.default;
-		delete item.default;
-		return item;
-	});
+	// 	, function(item){
+	// 	item.value = item.value || item.default;
+	// 	delete item.default;
+	// 	return item;
+	// });
 
 	if(typeof options.filters !== 'undefined'){
 		options.filters = _.map(options.filters, Berry.processOpts)
@@ -491,7 +491,6 @@ function berryTable(options) {
 
 
 		if($el.find('.filter').length) {
-      debugger;
 			this.filter = $el.find('.filter').berry({name:'filter'+this.options.id,renderer: 'inline' ,disableMath: true, suppress: true, fields: options.filterFields }).on('change', function(){
 				this.$el.find('[name="search"]').val('');
 				this.filterValues = this.filter.toJSON();
@@ -572,22 +571,28 @@ function berryTable(options) {
 			this.getCSV();
 		}.bind(this));
 		this.$el.find('[data-event="add"]').on('click', function(){
-			$().berry($.extend(true,{},{name:'modal', legend: '<i class="fa fa-pencil-square-o"></i> Create New', fields: options.schema}, options.berry || {} )).on('save', function() {
-				if(Berries.modal.validate()){
-					var newModel = new tableModel(this, Berries.modal.toJSON()).on('check', function() {
-						this.updateCount(_.where(this.models, {checked: true}).length);
-						this.$el.find('[name="events"]').html(templates['events'].render(this.summary, templates));
-					}.bind(this));
-					this.models.push(newModel);
-					Berries.modal.trigger('saved');
-					this.draw();
-					this.updateCount(this.summary.checked_count);
-					
-					if(typeof this.options.add == 'function') {
-						this.options.add(newModel);
+			var event = _.findWhere(this.options.events, {name:'add'});
+
+			if(typeof event !== 'undefined' && typeof event.callback == 'function'){
+				event.callback.call(this);
+			}else{
+				$().berry($.extend(true,{},{name:'modal', legend: '<i class="fa fa-pencil-square-o"></i> Create New', fields: options.schema}, options.berry || {} )).on('save', function() {
+					if(Berries.modal.validate()){
+						var newModel = new tableModel(this, Berries.modal.toJSON()).on('check', function() {
+							this.updateCount(_.where(this.models, {checked: true}).length);
+							this.$el.find('[name="events"]').html(templates['events'].render(this.summary, templates));
+						}.bind(this));
+						this.models.push(newModel);
+						Berries.modal.trigger('saved');
+						this.draw();
+						this.updateCount(this.summary.checked_count);
+						
+						if(typeof this.options.add == 'function') {
+							this.options.add(newModel);
+						}
 					}
-				}
-			}, this)
+				}, this)
+			}
 		}.bind(this));
 		this.draw();
 	}
@@ -603,6 +608,8 @@ function berryTable(options) {
 		tempForm.destroy();
 		return status
 	}
+
+
 	this.add = function(item){
 		var newModel = new tableModel(this, item).on('check', function(){
 			this.owner.updateCount(_.where(this.owner.models, {checked: true}).length);
@@ -612,7 +619,8 @@ function berryTable(options) {
 		if(tempForm.validate()) {
 			this.models.push(newModel);
 			this.draw();
-			
+			this.updateCount(this.summary.checked_count);
+
 			if(typeof this.options.add == 'function'){
 				this.options.add(newModel);
 			}
@@ -891,6 +899,7 @@ csvify = function(data, columns, title){
   },this)
   .join('\n') 
   .replace(/(^\[)|(\]$)/mg, '')
+  .split('\"').join("")
 
   var link = document.createElement("a");
   link.setAttribute("href", 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));

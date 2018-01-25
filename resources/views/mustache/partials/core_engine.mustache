@@ -1,7 +1,7 @@
 <script src='/assets/js/berryApp.js'></script> 
 <script src='/assets/js/vendor/moment.js'></script>
 
-<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.2/hogan.min.js'></script>
 <!--/*<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		*/-->
@@ -26,6 +26,7 @@
 <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
 <!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
 <script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>`
+<script type='text/javascript' src='/assets/js/vendor/summernote.min.js'></script>
 <script type='text/javascript' src='/assets/js/templates/widget.js'></script>
 <script src='/assets/js/lib.js'></script> 
 
@@ -154,7 +155,8 @@
 		if(!status){
 			cb.addSource(document.getElementById('sortableList'));
 			if('{{name}}' == 'Dashboard'){
-				var save = function(){$.post('/api/dashboard',{"config":{"sections":cb.toJSON({editor: true})} },function(data){
+				var save = function(){
+					$.post('/api/dashboard',{"config":JSON.stringify({"sections":cb.toJSON({editor: true})}) },function(data){
 					// config = JSON.parse(data.config);
 					config = data.config;
 				})}
@@ -264,4 +266,8 @@
 			return oldbeforeunload ? oldbeforeunload() : undefined;
 		}
 	})(jQuery);
+
+
+
+
 </script>

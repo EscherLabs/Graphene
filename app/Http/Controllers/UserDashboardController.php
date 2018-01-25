@@ -51,7 +51,7 @@ class UserDashboardController extends Controller
     public function update(Request $request) {
         return UserDashboard::updateOrCreate(
             ['user_id'=>Auth::user()->id, 'site_id'=>Auth::user()->site->id], 
-            ['config'=>$request->config]);
+            ['config'=>json_decode($request->config)]);
     }
 
 }
