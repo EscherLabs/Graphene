@@ -56,16 +56,24 @@ class PageController extends Controller
     public function run($group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
 			$groupObj = Group::where('slug','=',$group)->first();
-			$group = $groupObj->id;
+            $group = $groupObj->id;
 		}else{
 			$groupObj = Group::where('id','=',$group)->first();
         }
         if(isset($slug)){
             $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
         }else{
+            // Redirect to first page or first app in this group
             $myPage = Page::where('group_id','=', $group)->first();
-            if($myPage == null){
-             $myPage = Page::first();   
+            if(!is_null($myPage)){
+                return redirect('/page/'.$groupObj->slug.'/'.$myPage->slug);
+            } else {
+                $myAppInstance = AppInstance::where('group_id','=', $group)->first();
+                if(!is_null($myAppInstance)){
+                    return redirect('/app/'.$groupObj->slug.'/'.$myAppInstance->slug);
+                } else {
+                    abort(404);
+                }
             }
         }
 
