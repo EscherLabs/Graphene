@@ -42,7 +42,9 @@ class PageController extends Controller
 
     public function update(Request $request, Page $page)
     {
-        $page->update($request->all());
+        $data = $request->all();
+        $data['content'] = json_decode($data['content']);
+        $page->update($data);
         return $page;
     }
 

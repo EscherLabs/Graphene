@@ -163,7 +163,7 @@
 			}else{
 				var save = function(){$.ajax({
 					url:'/api/pages/{{id}}',
-					data:{"content":{"sections":cb.toJSON({editor: true}),"layout":config.layout} },
+					data:{"content": JSON.stringify( {"sections":cb.toJSON({editor: true})  ,"layout":config.layout})} ,
 					method:'PUT',
 					success: function(data){
 						config = data.content;
@@ -210,7 +210,6 @@
 						url:url,
 						data: {'options': this.toJSON()},
 						success:function(data){
-							debugger;
 							item.bae.app.update({user:{options:data.options}});
 							item.bae.optionsupdated();
 							this.trigger('close');

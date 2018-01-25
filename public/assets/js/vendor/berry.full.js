@@ -1162,7 +1162,6 @@ Berry.processOpts = function(item, object) {
 						type: 'get',
 						success: function(data) {
 							Berry.collection.on(item.optionPath,function(item){
-                debugger;
 								item.waiting = false;
 								this.update({choices: Berry.collection.get(item.optionPath),options: Berry.collection.get(item.optionPath)});//,value: Berry.search(object.owner.options.attributes, object.getPath())});
 
