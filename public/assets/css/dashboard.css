@@ -259,3 +259,9 @@ body{
 .item-collapsed .fa-toggle:before {
   content: "\f067";
 }
+#layout{
+  display:none;
+}
+.editor #layout{
+  display:initial;
+}

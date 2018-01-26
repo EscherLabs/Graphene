@@ -36,7 +36,8 @@ class Templater {
             $data['group'] = $data['group']->toArray();
             $data['group']['links'] = $data['links']->where('id','=',$data['group']['id'])->first()->toArray();
             $data['group']['links']['group_id'] = $data['group']['id'];
-            $data['group']['links']['group_slug'] = $data['group']['slug'];    
+            $data['group']['links']['group_slug'] = $data['group']['slug'];   
+            $data['group']['admin'] = in_array ($data['group']['id'], $data['user']['admin_groups']);   
         }
 
         $data['links'] = $data['links']->toArray();
