@@ -55,11 +55,13 @@ class Templater {
             $data['app'] = $data['uapp']->toArray();
             $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
             $data['app_mode'] = true;
+            $data['app']['developer'] = in_array ($data['app']['app_id'], $data['user']->developer_apps);   
+
         } 
 
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
-        
+
         // dd($data);
         $loader = new \Mustache_Loader_CascadingLoader(array(
             new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->partials),

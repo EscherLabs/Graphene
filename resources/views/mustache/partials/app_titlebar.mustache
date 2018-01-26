@@ -1,6 +1,7 @@
-{{#app.app.code.forms.1.content}}
-    <div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;"><i class="fa fa-gears"></i> Options</div>
-{{/app.app.code.forms.1.content}}
+<div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;display:none;"><i class="fa fa-gears"></i> Options</div>
+
 {{#logged_in}}
+{{#app.developer}}
     <a class="btn btn-default pull-right" style="margin-top: 8px;margin-right:15px" href="/admin/apps/{{app.app_id}}"><i class="fa fa-pencil"></i> Edit App</a>
+{{/app.developer}}
 {{/logged_in}}

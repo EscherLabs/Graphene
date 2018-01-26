@@ -31,6 +31,8 @@
 <script src='/assets/js/lib.js'></script> 
 
 <script type='text/javascript' >
+	var config = {{{config_json}}};
+	var apps = {{{apps_json}}};
 	_.findWhere = _.find;
 	_.where = _.filter;
 
@@ -39,9 +41,13 @@
 	//	$('[href$="/{{ $app->slug }}"]').parent().addClass('active').parent().addClass('in');
 		$('[href$="{{slug}}"]').parent().addClass('active').parent().addClass('in');
 
-		$('#edit_instance').on('click', function(){
-			editUserOptions(cb.collections[0].getItems()[0])    
-		})
+		if(JSON.parse(apps[0].app.code.forms[1].content).fields.length){
+			$('#edit_instance').show();
+			$('#edit_instance').on('click', function(){
+				editUserOptions(cb.collections[0].getItems()[0])    
+			})
+		}
+
 	{{/app_mode}}
 
 	layouts = [
@@ -191,11 +197,13 @@
 				item.container.update({collapsed:!item.get().collapsed},item)
 				save();
 			})
+
 		}else{
 			cb.on('min', function(item){
 				item.container.update({collapsed:!item.get().collapsed},item)
 				save();
 			})
+   
 			cb.on('user_edit', editUserOptions)
 		}
 	}
@@ -229,8 +237,7 @@
 		}
 	}
 	function addWidget(e) { cb.collections[0].addItem(e); }
-	var config = {{{config_json}}};
-	var apps = {{{apps_json}}};
+
 
 	load(true);
 
