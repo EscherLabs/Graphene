@@ -28,4 +28,7 @@ class AdminController extends Controller
     public function composites(Group $group) {
      return view('admin', ['resource'=>'composites','id'=>$group->id]);
     }
+    public function summary(Group $group) {
+        return view('admin', ['resource'=>'group','id'=>$group->id]);
+    }
 }

@@ -21,18 +21,42 @@ class Group extends Model
     public function endpoints() {
       return $this->hasMany(Endpoint::class);
     }
+
+	public function endpointsCount()
+	{
+	  return $this->hasOne(Endpoint::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('Group_id');
+	}
+
     public function app_instances() {
       return $this->hasMany(AppInstance::class);
     }
     public function pages() {
       return $this->hasMany(Page::class);
     }
+    
     public function members() {
       return $this->hasMany(GroupMember::class);
     }
+
+    public function membersCount()
+	{
+	  return $this->hasOne(GroupMember::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('Group_id');
+	}
+
     public function admins() {
       return $this->hasMany(GroupAdmin::class);
     }
+
+	public function adminsCount()
+	{
+	  return $this->hasOne(GroupAdmin::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('Group_id');
+	}
     public function list_admins()
     {
         return $this->admins()->with('user')->get();

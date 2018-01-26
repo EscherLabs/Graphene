@@ -26,6 +26,11 @@ Route::post('/api/dashboard','UserDashboardController@update');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
+
+
+
+Route::get('/admin/groups/{group}/', 'AdminController@summary')->middleware('can:list_admins,group');
+
 Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');
 Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');
 Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
@@ -130,7 +135,10 @@ Route::delete('/api/pages/{page}','PageController@destroy')->middleware('can:del
 // List all groups
 Route::get('/api/groups','GroupController@index')->middleware('can:get_all,App\Group');
 // Lookup specific group by group_id
+Route::get('/api/groups/{group}/summary','GroupController@summary')->middleware('can:get,group');
 Route::get('/api/groups/{group}','GroupController@show')->middleware('can:get,group');
+
+
 // Create a new group
 Route::post('/api/groups','GroupController@create')->middleware('can:create,App\Group');
 // Update an existing group by group_id

@@ -31,6 +31,35 @@ class GroupController extends Controller
         return $group;
     }
 
+    public function summary(Group $group)
+    {
+
+
+
+        return Group::with(
+            array('composites'=>function($query){
+                $query->with(array('composite'=>function($query){
+                        $query->select('slug', 'id'); 
+                    })
+                );
+            })
+        )	
+        // ->with('tags')
+        ->with(array('pages'=>function($query){
+            $query->select('id','group_id', 'name', 'slug', 'public');
+        }))
+        ->with(array('app_instances'=>function($query){
+            $query->select('id','group_id', 'name', 'public');
+        }))
+        ->with('membersCount')
+        ->with('adminsCount')
+        // ->with('imagesCount')
+        // ->with('pollsCount')
+        // ->with('formsCount')
+        ->with('endpointsCount')
+        ->find($group->id);
+    }
+
     public function create(Request $request)
     {
         $this->validate($request,['name'=>['required'],'slug'=>['required']]);
