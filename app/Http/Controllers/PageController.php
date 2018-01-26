@@ -81,13 +81,16 @@ class PageController extends Controller
 
         // Get a list of all the micro app instances on the page
         $uapp_instances = [];
+        if(isset($myPage->content)){
         foreach($myPage->content->sections as $column_index => $column) {
             foreach($column as $widget) {
                 if ($widget->widgetType === 'uApp') {
-                    $uapp_instances[] = $widget->app_id;
+                    if(isset($widget->app_id)) {
+                        $uapp_instances[] = $widget->app_id;
+                    }
                 }
             }
-        }
+        }}
 
         if($myPage->public == 0) {
             if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
