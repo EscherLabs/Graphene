@@ -126,7 +126,7 @@
 		}).on('save',function(){
 			$.ajax({
 				url:'/api/pages/{{id}}',
-				data:{content: $.extend({}, config,{layout:parseInt(this.toJSON().layout)})},
+				data:{"content": JSON.stringify($.extend({}, config,{layout:parseInt(this.toJSON().layout)}))} ,
 				method:'PUT',
 				success: function(data) {
 					config = data.content;
