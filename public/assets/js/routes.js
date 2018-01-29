@@ -57,11 +57,13 @@ $('#content').html('<div class="row "><div class="col-sm-12"><div id="table" sty
 initializers = {};
 
 initializers['group'] = function() {
-		$('.navbar-header .nav a h4').html('<a href="/admin/groups">Groups</a> - Group Summary');
+		$('.navbar-header li').html('<a href="/admin/groups" style="display:inline-block"><h4 style="margin:0">Groups</h4></a>');
+		// $('.navbar-header .nav a h4').html('<a href="/admin/groups">Groups</a> - Group Summary');
 		$.ajax({
 			url: '/api/'+route+'s/'+resource_id+'/summary',
 			success: function(data) {
- $('#table').html(templates.group_summary.render(data,templates));
+			data.group_slug = data.slug;
+ 			$('#table').html(templates.group_summary.render(data,templates));
 
 				// tableConfig.schema = [
 				// 	{label: 'Name', name:'name', required: true},
@@ -750,18 +752,18 @@ templates['pages'] = Hogan.compile(
 					<div class="col-md-6">
 
 						<div class="panel panel-default">
-				      <div class="panel-heading"><a href="/admin/groups/{{id}}/pages"><strong><span class="fa fa-files-o"></span> Pages</strong></a></div>
+				      <div class="panel-heading"><a href="/admin/pages"><strong><span class="fa fa-files-o"></span> Pages</strong></a></div>
 				      <ul class="list-group">
 				      	{{#pages}}
-				   				<a target="_blank" href="/community{{path}}{{slug}}"  class="list-group-item">{{name}}</a>
+				   				<a target="_blank" href="/page/{{group_slug}}/{{slug}}"  class="list-group-item">{{name}}</a>
 				        {{/pages}}
 				      </ul>
 				    </div>
 				    <div class="panel panel-default">
-				      <div class="panel-heading"><a href="/admin/groups/{{id}}/app_instances"><strong><span class="fa fa-cubes"></span> App Instances</strong></a></div>
+				      <div class="panel-heading"><a href="/admin/appinstances"><strong><span class="fa fa-cubes"></span> App Instances</strong></a></div>
 				      <ul class="list-group">
 				      	{{#app_instances}}
-				              <a href="/admin/app_instances/{{id}}" class="list-group-item">{{name}}</a>
+				              <a href="/app/{{group_slug}}/{{slug}}" class="list-group-item">{{name}}</a>
 				        {{/app_instances}}
 				      </ul>
 				    </div>
@@ -801,19 +803,19 @@ templates['pages'] = Hogan.compile(
 						<div class="row">
 							<div class="col-xs-3">
 
-								<a href="/admin/groups/{{id}}/admins" class="btn btn-success" >
+								<a href="/admin/groups/{{id}}/members" class="btn btn-success" >
 									<i class="fa fa-user"></i> Members <span class="badge">{{members_count.aggregate}}{{^members_count}}0{{/members_count}}</span>
 								</a>
 							</div>
 							<div class="col-xs-3">
 								<a href="/admin/groups/{{id}}/admins" class="btn btn-danger" >
-									<i class="fa fa-settings"></i> Admins <span class="badge">{{admins_count.aggregate}}{{^admins_count}}0{{/admins_count}}</span>
+									<i class="fa fa-cogs"></i> Admins <span class="badge">{{admins_count.aggregate}}{{^admins_count}}0{{/admins_count}}</span>
 								</a>
 							</div>
 
 							<div class="col-xs-3">
 								<a href="/admin/groups/{{id}}/endpoints" class="btn btn-info" >
-									<i class="fa fa-target"></i> Endpoints <span class="badge">{{endpoints_count.aggregate}}{{^endpoints_count}}0{{/endpoints_count}}</span>
+									<i class="fa fa-crosshairs"></i> Endpoints <span class="badge">{{endpoints_count.aggregate}}{{^endpoints_count}}0{{/endpoints_count}}</span>
 								</a>
 							</div>
 

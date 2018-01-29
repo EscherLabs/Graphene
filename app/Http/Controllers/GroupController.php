@@ -49,7 +49,7 @@ class GroupController extends Controller
             $query->select('id','group_id', 'name', 'slug', 'public');
         }))
         ->with(array('app_instances'=>function($query){
-            $query->select('id','group_id', 'name', 'public');
+            $query->select('id','group_id', 'name', 'public', 'slug');
         }))
         ->with('membersCount')
         ->with('adminsCount')

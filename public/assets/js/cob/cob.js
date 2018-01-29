@@ -10,6 +10,12 @@ function Cobler(options) {
 	this.options.active = this.options.active || 'widget_active';
 	this.options.itemContainer = this.options.itemContainer || 'itemContainer';
 	this.options.itemTarget = this.options.itemTarget || 'cobler-li-content';
+	if(typeof options.fallback !== 'undefined'){
+		this.options.fallback = options.fallback;
+	}else{
+		this.options.fallback = true;
+	}
+
 
   options.removed = false;
 	//simple event bus with the topics object bound
@@ -27,7 +33,13 @@ function Cobler(options) {
   //initialize collections array and then create a collection for each target
 	var collections = [];
 	for(var i=0; i<options.targets.length; i++){
-		addCollection.call(this, options.targets[i], options.items[i]);
+		var items = options.items[i];
+		if(i == options.targets.length-1 && options.items.length>options.targets.length){
+			for(var j= i+1; j<options.items.length; j++){
+				items = items.concat(options.items[j])
+			}
+		}
+		addCollection.call(this, options.targets[i], items);
 	}
 
 	function collection(target, items, cob){
