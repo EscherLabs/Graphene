@@ -36,8 +36,10 @@ class Templater {
             $data['group'] = $data['group']->toArray();
             $data['group']['links'] = $data['links']->where('id','=',$data['group']['id'])->first()->toArray();
             $data['group']['links']['group_id'] = $data['group']['id'];
-            $data['group']['links']['group_slug'] = $data['group']['slug'];   
-            $data['group']['admin'] = in_array ($data['group']['id'], $data['user']['admin_groups']);   
+            $data['group']['links']['group_slug'] = $data['group']['slug'];
+            if(isset($data['user']) && isset($data['user']['admin_groups'])){
+                $data['group']['admin'] = in_array ($data['group']['id'], $data['user']['admin_groups']);   
+            }
         }
 
         $data['links'] = $data['links']->toArray();
@@ -55,7 +57,9 @@ class Templater {
             $data['app'] = $data['uapp']->toArray();
             $data['app']['app']['code_json'] = json_encode($data['app']['app']['code']);
             $data['app_mode'] = true;
-            $data['app']['developer'] = in_array ($data['app']['app_id'], $data['user']->developer_apps);   
+            if(isset($data['user']) && isset($data['user']->developer_apps)){
+                $data['app']['developer'] = in_array ($data['app']['app_id'], $data['user']->developer_apps);   
+            }
 
         } 
 

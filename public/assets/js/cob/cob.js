@@ -58,6 +58,9 @@ function Cobler(options) {
 					forceFallback: !!cob.options.fallback,
 					group: cob.options.group || 'cb',
 					animation: 50,
+					// delay: 200,
+					preventOnFilter: false,
+					filter: ".widget_active, input, textarea",
 					onSort: function (/**Event*/evt) {
 						if(cob.options.remove) {
 								cob.options.removed = items.splice(parseInt(evt.item.dataset.start, 10), 1)[0];

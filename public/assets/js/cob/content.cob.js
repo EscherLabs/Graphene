@@ -15,9 +15,9 @@ Cobler.types.Content = function(container){
 	}
 	var fields = {
 		Title: {},
-		Editor: {type: 'checkbox'},
-		a: {name:'text',type: 'contenteditable', label: false, show:{matches:{name:'editor',value:true}},parsable:'show'},
-		b: {name:'text',type: 'ace', label: false, show:{matches:{name:'editor',value:false}},parsable:'show',mode: 'ace/mode/handlebars'}
+		// Editor: {type: 'checkbox'},
+		a: {name:'text',type: 'contenteditable', label: false}//, show:{matches:{name:'editor',value:true}},parsable:'show'},
+		// b: {name:'text',type: 'ace', label: false, show:{matches:{name:'editor',value:false}},parsable:'show',mode: 'ace/mode/handlebars'}
 	}
 	return {
 	    container:container,

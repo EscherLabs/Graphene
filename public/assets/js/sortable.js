@@ -301,7 +301,7 @@
 				});
 
 				if (filter) {
-					evt.preventDefault();
+					// evt.preventDefault();
 					return; // cancel dnd
 				}
 			}
