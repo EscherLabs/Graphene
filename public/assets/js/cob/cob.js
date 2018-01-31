@@ -119,7 +119,7 @@ function Cobler(options) {
 		function eventManager(e){
 			if(typeof e.target.dataset.event !== 'undefined'){
 				var referenceNode = e.target.parentElement;
-				while(referenceNode !== null && !referenceNode.classList.contains('slice') && !referenceNode.classList.contains('widget')){
+				while(referenceNode !== null && !referenceNode.classList.contains('slice')){
 					referenceNode = referenceNode.parentElement;
 				}
 				cob.publish(e.target.dataset.event, items[getNodeIndex(referenceNode)])

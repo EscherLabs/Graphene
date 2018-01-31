@@ -1,9 +1,28 @@
+{{#container}}
 <div class="panel panel-default">
-	{{>widgets__header}}
-	<div class="collapsible panel-body">
-		{{#image}}
-			<img alt="{{text}}" src="{{image}}" style="max-width:100%;margin-bottom:20px">
-		{{/image}}
-		{{^image}}Click Here to choose an Image{{/image}}
-	</div>
+{{>widgets__header}}
+{{/container}}
+		<div class="collapsible panel-body">
+		{{#images.1.image}}
+		<div class="slider-wrapper theme-default">
+			<div class="ribbon"></div>
+			<div class="slider" class="nivoSlider">
+				{{#images}}
+					{{#url}}<a href="{{url}}" {{#window}}target="_blank"{{/window}}>{{/url}}<img src="{{image}}" alt="{{text}}" title="{{&overlay}}"/>{{#url}}</a>{{/url}}
+				{{/images}}
+			</div>
+		</div>
+		{{/images.1.image}}
+		{{^images.1.image}}
+		{{#images}}
+			{{#url}}<a href="{{url}}" {{#window}}target="_blank"{{/window}}>{{/url}}<img style="max-width: 100%;" src="{{image}}" alt="{{text}}" title="{{&overlay}}"/>{{#url}}</a>{{/url}}
+		{{/images}}
+		{{^images}}Click Here to choose an Image{{/images}}
+		{{/images.1.image}}
+		</div>
+{{#container}}
 </div>
+{{/container}}
+
+
+

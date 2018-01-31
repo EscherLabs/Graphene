@@ -7,7 +7,8 @@ Cobler.types.uApp = function(container){
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/appinstances'},
-    'Container':{type:'checkbox'},
+		"Container?":{name:'container', type: 'checkbox'},
+
     'User Options':{name:'user_edit',type:'checkbox'}
 		// 'Template': {}
 	}

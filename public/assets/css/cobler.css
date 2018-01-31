@@ -43,3 +43,12 @@
                                   not supported by any browser */
 }
 /*.ace_editor{height:500px}*/
+
+.dupable{padding-left:60px;}
+.dupable hr{
+margin:5px 0px 5px -60px
+}
+.dupable .actions{
+    position: absolute;
+    left: 0;
+}
