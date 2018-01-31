@@ -316,7 +316,7 @@ Cobler.types = {};
 berryEditor = function(container){
 	return function(){
 		var formConfig = $.extend(true, {}, {
-			renderer: 'tabs', 
+			// renderer: 'tabs', 
 			attributes: this.get(), 
 			fields: this.fields,
 			autoDestroy: true,
@@ -331,9 +331,11 @@ berryEditor = function(container){
 		}	
 		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)).find('.collapsible.panel-body'));
 		myBerry.on(events, function(){
+			if(myBerry.validate()){
 		 	container.update(myBerry.toJSON(), this);
 		 	container.deactivate();
 		 	myBerry.trigger('saved');
+			}
 		}, this);
 		myBerry.on('cancel',function(){
 		 	container.update(this.get(), this)

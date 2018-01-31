@@ -15,9 +15,7 @@ Cobler.types.Content = function(container){
 	}
 	var fields = {
 		Title: {},
-		// Editor: {type: 'checkbox'},
-		a: {name:'text',type: 'contenteditable', label: false}//, show:{matches:{name:'editor',value:true}},parsable:'show'},
-		// b: {name:'text',type: 'ace', label: false, show:{matches:{name:'editor',value:false}},parsable:'show',mode: 'ace/mode/handlebars'}
+		Text: {type: 'contenteditable', label: false}//, show:{matches:{name:'editor',value:true}},parsable:'show'},
 	}
 	return {
 	    container:container,
@@ -111,54 +109,6 @@ Cobler.types.Image = function(container){
 	}
 }
 
-
-Cobler.types.Html = function(container){
-	function render() {
-		var temp = get();//$.extend(true, {}, get());
-		temp.html = temp.html.replace(/<\\\/script>/g, "</script>");
-		if(item.container){
-			return templates['widgets_html_container'].render(temp, templates);
-		}else{
-			return templates['widgets_html'].render(temp, templates);
-		}
-	}
-	function get() {
-		item.widgetType = 'Html';
-		item.html = item.html.replace(/<\/script>/g, "<\\/script>");
-
-		return item;
-	}
-	function toJSON(){
-		return get();
-	}
-	function set(newItem) {
-		$.extend(item, newItem);
-		item.html =  item.html.replace(/<\\\/script>/g, "</script>");
-	}
-	var item = {
-		html: ''
-	}
-	var fields = {
-			Container: {label: "Container?", type: 'checkbox'},
-			Title: {},
-			HTML: {type: 'ace', label:false}
-	}
-	return {
-
-	    container:container,
-		fields: fields,
-		render: render,
-		toJSON: toJSON,
-		edit: berryEditor.call(this, container),
-		get: get,
-		set: set,
-		initialize: function(el){
-				$(el).html($(el).html())
-				$(el).find('[data-toggle="tooltip"]').tooltip();
-	    	$(el).find('[data-toggle="popover"]').popover();
-		}
-	}
-}
 
 
 Berry.btn.submit= {

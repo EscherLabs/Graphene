@@ -133,6 +133,6 @@ class PageController extends Controller
             //     'id'=>$myPage->id
             // ]);
         }
-        abort(404,'App not found');
+        abort(404,'Page not found');
     }
 }
