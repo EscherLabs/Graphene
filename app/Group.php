@@ -21,7 +21,12 @@ class Group extends Model
     public function endpoints() {
       return $this->hasMany(Endpoint::class);
     }
-
+    public function group_links() {
+        return $this->hasMany(GroupLink::class);
+    }  
+    public function images() {
+        return $this->hasMany(Image::class);
+    }
 	public function endpointsCount()
 	{
 	  return $this->hasOne(Endpoint::class)

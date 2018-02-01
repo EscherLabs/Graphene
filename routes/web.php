@@ -95,6 +95,26 @@ Route::delete('/api/endpoints/{endpoint}','EndpointController@destroy')->middlew
 // Perform Google Callback for Endpoint
 Route::get('/api/endpoints/google_callback','EndpointController@google_callback');
 
+/***** Links *****/
+// List all links
+Route::get('/api/links','LinkController@index')->middleware('can:get_all,App\GroupLink');
+// Create a new link for group group_id
+Route::post('/api/links','LinkController@create')->middleware('can:create,App\GroupLink');
+// Update an existing link by link_id
+Route::put('/api/links/{link}','LinkController@update')->middleware('can:update,link');
+// Delete an existing link by link_id
+Route::delete('/api/links/{link}','LinkController@destroy')->middleware('can:delete,link');
+
+/***** Images *****/
+// List all images
+Route::get('/api/images','ImageController@index')->middleware('can:get_all,App\Image');
+// Create a new image for group group_id
+Route::post('/api/images','ImageController@create')->middleware('can:create,App\Image');
+// Update an existing image by image_id
+Route::put('/api/images/{image}','ImageController@update')->middleware('can:update,image');
+// Delete an existing image by image_id
+Route::delete('/api/images/{image}','ImageController@destroy')->middleware('can:delete,image');
+
 /***** SITES *****/
 // List all sites
 Route::get('/api/sites','SiteController@index')->middleware('can:get_all,App\Site');
