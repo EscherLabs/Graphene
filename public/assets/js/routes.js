@@ -134,7 +134,7 @@ initializers['app_instance'] = function() {
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
-    <li role="presentation"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
+    <li id="resoucestab" role="presentation" style="display:none"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
 		<li id="optionstab" role="presentation" style="display:none"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
 		<li id="useroptionstab" role="presentation" style="display:none"><a href="#user_options_default" aria-controls="profile" role="tab" data-toggle="tab">User Default Options</a></li>	
   </ul>
@@ -180,23 +180,25 @@ initializers['app_instance'] = function() {
 					});
 
 				})
-if(data.app.code.forms[0].content){
-				$('#optionstab').show();
-				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
-				options.attributes = data.options || {};
-				options.attributes.id = data.id;
-				options.name = 'options';
-				$('#options .col-sm-9').berry(options);
-}
-if(data.app.code.forms[1].content){
-				$('#useroptionstab').show();
-				var user_options_default = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[1].content)) 
-				user_options_default.attributes = data.user_options_default || {};
-				user_options_default.attributes.id = data.id;
-				user_options_default.name = 'user_options_default';
-				$('#user_options_default .col-sm-9').berry(user_options_default);
-}
+				if(data.app.code.forms[0].content){
+					$('#optionstab').show();
+					var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
+					options.attributes = data.options || {};
+					options.attributes.id = data.id;
+					options.name = 'options';
+					$('#options .col-sm-9').berry(options);
+				}
+				if(data.app.code.forms[1].content){
+					$('#useroptionstab').show();
+					var user_options_default = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[1].content)) 
+					user_options_default.attributes = data.user_options_default || {};
+					user_options_default.attributes.id = data.id;
+					user_options_default.name = 'user_options_default';
+					$('#user_options_default .col-sm-9').berry(user_options_default);
+				}
 				if(data.app.code.sources[0].name !== '') {	
+					$('#resoucestab').show();
+
 					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
 					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
 						{name:'container', label: false,  type: 'fieldset', fields:[

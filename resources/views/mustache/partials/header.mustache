@@ -13,8 +13,9 @@
         {{/site.theme.icon}}
         &nbsp;{{site.name}}
       </a>
+      
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li><a href="#"><h4 style="margin:0">{{ $name}}</h4></a></li>
+        <li><a href="#"><h4 style="margin:0">{{name}}</h4></a></li>
       </ul>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
@@ -22,7 +23,7 @@
         <li class="dropdown">
           {{#logged_in}}
           <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
-            <img class="gravatar" src="https://www.gravatar.com/avatar/{{user_md5_email}})?d=mm" /> 
+            <img alt="{user.first_name}} {{user.last_name}}" class="gravatar" src="https://www.gravatar.com/avatar/{{user_md5_email}})?d=mm" /> 
             {{user.first_name}} {{user.last_name}} 
             <span class="caret"></span>
           </a>
