@@ -76,7 +76,7 @@
               <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
             @endcan   
             @can('view_in_admin','App\App')
-              <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; Apps</a></li>
+              <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
             @endcan
             @can('get_all','App\AppInstance')
               <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
@@ -106,7 +106,7 @@
           <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
         @endcan   
         @can('view_in_admin','App\App')
-          <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; Apps</a></li>
+          <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
         @endcan
         @can('get_all','App\AppInstance')
           <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>

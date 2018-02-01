@@ -53,7 +53,7 @@ Cobler.types.uApp = function(container){
               }
             }
             opts.data = data;
-            opts.config = (_.find(apps, {id: parseInt(this.get().app_id,10)}) || _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)})).app.code;
+            opts.config = (_.find(apps, {id: parseInt(this.get().app_id,10)}) || _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)})).app.code || {};
             // opts.config = _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_instance_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');

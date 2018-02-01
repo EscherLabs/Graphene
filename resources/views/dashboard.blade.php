@@ -9,7 +9,7 @@
 							<ul id="sortableList" class="dropdown-menu list-group" aria-labelledby="dLabel">
 								<li data-type="Image"><a href="javascript:addWidget('Image');">Image</a></li>
 								<li data-type="Content"><a href="javascript:addWidget('Content');">Content</a></li>
-								<li data-type="uApp"><a href="javascript:addWidget('uApp');">Apps</a></li>
+								<li data-type="uApp"><a href="javascript:addWidget('uApp');">MicroApp</a></li>
 							</ul>
 						</div>
 						<div class="btn btn-primary pull-right" id="startEditing" style="margin-top: 8px;" onclick="load(false);"><i class="fa fa-pencil"></i> Edit</div>

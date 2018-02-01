@@ -2,13 +2,15 @@ var paged = function(selector, options){
   this.$el = $(selector);
   options.hasextra  = (typeof options.extra == 'function');
   options.u_id =  Berry.getUID();
+  options.label = options.label || 'Section';
   options.items = _.map(options.items, function(item) {
-    item.key = options.u_id+item.name.replace(/ /g,"_");
+    item.key = options.u_id+item.name.toLowerCase().replace(/ /g,"_").split('.').join('_');
     return item;
   })
   options.fields = _.map(options.items, function(item) {
         return {fieldset:item.key,name:item.key};        
   })  
+  options.actions = false;
   options.attributes  = {};
   _.map(options.items, function(item) {
     if(typeof item.content == 'object'){
@@ -17,7 +19,7 @@ var paged = function(selector, options){
     options.attributes[item.key] = item.content; 
   })
   options.default ={label: false,type:'ace',mode:options.mode || 'ace/mode/handlebars'}
-  this.options = $.extend(true,{editable: true},options);
+  this.options = $.extend(true,{editable: true,},options);
   $(selector).html(templates.pages.render(this.options,templates));
   this.berry = $(selector+' .dummyTarget').berry(this.options);
 
@@ -33,16 +35,16 @@ var paged = function(selector, options){
       this.render();
     }else{
       if($(e.currentTarget).hasClass('pages_edit') && !currentItem.disabled){
-        $().berry({name:'page_name', legend: 'Edit Section', attributes: {name: currentItem.name},fields: {'Name': {}}}).on('save', function(){
+        $().berry({name:'page_name', legend: 'Edit '+options.label, attributes: {name: currentItem.name},fields: {'Name': {}}}).on('save', function(){
           _.findWhere(this.options.items, {key:this.active}).name = Berries.page_name.toJSON().name;
           this.render();
           Berries.page_name.trigger('close');
         }, this);
       }else{
         if($(e.currentTarget).hasClass('pages_new')){
-          $().berry({name:'page_name', legend: 'New Section',fields: {'Name': {}}}).on('save', function(){
+          $().berry({name:'page_name', legend: 'New '+options.label,fields: {'Name': {}}}).on('save', function(){
             var name = Berries.page_name.toJSON().name;
-            var key = this.options.u_id+name.replace(/ /g,"_");
+            var key = this.options.u_id+name.toLowerCase().replace(/ /g,"_").split('.').join('_');;
 
             this.options.items.push({name: name,key:key, content:""})
             this.active = key;
@@ -55,6 +57,10 @@ var paged = function(selector, options){
         }else{
           if($(e.currentTarget).hasClass('pages_extra')) {
             this.options.extra.call(this, currentItem);
+          }else{
+          	if(currentItem.disabled){
+          		toastr.error('This action is disabled for this item','Disabled')
+          	}
           }
         }
       }
@@ -65,10 +71,16 @@ var paged = function(selector, options){
     $(e.currentTarget).parent().find('.list-group-item').removeClass('active');
     $(e.currentTarget).addClass('active');
     this.active = $(e.currentTarget).attr('aria-controls');
-    this.berry.fields[this.active].editor.clearSelection();
- this.berry.fields[this.active].focus();
+		$(e.currentTarget).parent().parent().find('button.dropdown-toggle').prop('disabled', 
+			_.findWhere(this.options.items, {key: this.active}).disabled || false
+		);
+    this.berry.fields[this.active].editor.clearSelection();//.instances[0]
+ 		this.berry.fields[this.active].focus();
   }.bind(this))
   $(selector).find('.list-group-item.tab').first().click();
+  this.getCurrent = function(){
+      return _.findWhere(this.options.items, {key: this.active});
+  }
 
   return {
     toJSON:function(){
@@ -84,18 +96,35 @@ var paged = function(selector, options){
       });
       return _.filter(temp, function(item){return item;});
     }.bind(this),
-    getCurrent:function(){
-      return _.findWhere(this.options.items, {key: this.active});
-    }.bind(this),
+    getCurrent:this.getCurrent.bind(this),
     update:function(key,value){
       this.berry.fields[key].setValue(value)
-    }.bind(this)
-  //  setCurrent: function(value){
-  //   //  return currentItem;
-  //   //  return _.findWhere(this.options.items, {key: this.active});
-  //   // debugger;
-  //   this.berry.fields[this.active].setValue(value)
+    }.bind(this),
+    errors: function(){
+    	// var errors = 0;
+    	var errors = [];
+    	_.each(this.options.items, function(item){
+    		var items = _.where(this.berry.fields[item.key].editor.session.getAnnotations(), {type:"error"});
+    		for(var i in items){
+    			items[i].name = item.name;
+    		}
+				errors = errors.concat(items);
+    		// var count = _.where(this.berry.fields[item.key].editor.session.getAnnotations(), {type:"error"}).length;
+    		// errors+=items.length;
 
-  //   }.bind(this)
+    		var content = item.name;
+
+    		if(items.length){
+    			content = '<span class="badge badge-danger">'+items.length+ '</span> '+ item.name;
+				}
+    		if(item.disabled){
+    			content = '<i class="fa fa-ban"></i> ' +content;
+    		}
+				this.$el.find('.list-group-item.tab[name="'+item.key+'"]').html(content);
+    		// console.log(_.where(this.berry.fields[item.key].editor.session.getAnnotations(), {type:"error"}).length)
+    	}.bind(this))
+
+    	return errors;
+    }.bind(this)
   }
 }

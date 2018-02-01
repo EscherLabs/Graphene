@@ -11,7 +11,7 @@ class GroupComposite extends Model
     public $incrementing = false;
 
     public function group() {
-      return $this->belongsTo(Group::class);
+      return $this->belongsTo(Group::class,'composite_group_id');
     }
 
 }

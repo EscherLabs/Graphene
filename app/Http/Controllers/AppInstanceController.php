@@ -171,10 +171,12 @@ class AppInstanceController extends Controller
             }else{
                 $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
             }
-            // Get each source
-            // TODO: add conditionals for types and "autofetch", etc
-            foreach($myApp->app->code->sources as $source){
-                $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+            if($myApp->app->code){
+                // Get each source
+                // TODO: add conditionals for types and "autofetch", etc
+                foreach($myApp->app->code->sources as $source){
+                    $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+                }
             }
 
             return $data;

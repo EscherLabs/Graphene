@@ -38,12 +38,13 @@ class GroupController extends Controller
 
         return Group::with(
             array('composites'=>function($query){
-                $query->with(array('composite'=>function($query){
+                $query->with(array('group'=>function($query){
                         $query->select('slug', 'id'); 
                     })
                 );
             })
-        )	
+        )
+        // return Group::with('composites')	
         // ->with('tags')
         ->with(array('pages'=>function($query){
             $query->select('id','group_id', 'name', 'slug', 'public');

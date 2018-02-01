@@ -62,30 +62,14 @@ initializers['group'] = function() {
 		$.ajax({
 			url: '/api/'+route+'s/'+resource_id+'/summary',
 			success: function(data) {
-			data.group_slug = data.slug;
- 			$('#table').html(templates.group_summary.render(data,templates));
-
-				// tableConfig.schema = [
-				// 	{label: 'Name', name:'name', required: true},
-				// 	{name: 'id', type:'hidden'}
-				// ];
-				// tableConfig.click = function(model){window.location.href = '/admin/'+route+'/'+model.attributes.id},
-				// tableConfig.events = [
-				// 	{'name': 'config', 'label': '<i class="fa fa-code"></i> Developers', callback: function(model){
-				// 		window.location.href = '/admin/apps/'+model.attributes.id+'/developers'
-				// 	}}
-				// ]
-				// tableConfig.name = "apps";
-				// tableConfig.data = data;
-				// bt = new berryTable(tableConfig)
-
-
+				data.group_slug = data.slug;
+				$('#table').html(templates.group_summary.render(data,templates));
 			}
 		});
 }
 
 initializers['apps'] = function() {
-		$('.navbar-header .nav a h4').html('Apps');
+		$('.navbar-header .nav a h4').html('MicroApps');
 		$.ajax({
 			url: '/api/'+route,
 			success: function(data) {
@@ -151,8 +135,8 @@ initializers['app_instance'] = function() {
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
     <li role="presentation"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
-	<li role="presentation"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
-	<li role="presentation"><a href="#user_options_default" aria-controls="profile" role="tab" data-toggle="tab">User Default Options</a></li>	
+		<li id="optionstab" role="presentation" style="display:none"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
+		<li id="useroptionstab" role="presentation" style="display:none"><a href="#user_options_default" aria-controls="profile" role="tab" data-toggle="tab">User Default Options</a></li>	
   </ul>
 
   <!-- Tab panes -->
@@ -196,19 +180,22 @@ initializers['app_instance'] = function() {
 					});
 
 				})
-
+if(data.app.code.forms[0].content){
+				$('#optionstab').show();
 				var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
 				options.attributes = data.options || {};
 				options.attributes.id = data.id;
 				options.name = 'options';
 				$('#options .col-sm-9').berry(options);
-
+}
+if(data.app.code.forms[1].content){
+				$('#useroptionstab').show();
 				var user_options_default = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[1].content)) 
 				user_options_default.attributes = data.user_options_default || {};
 				user_options_default.attributes.id = data.id;
 				user_options_default.name = 'user_options_default';
 				$('#user_options_default .col-sm-9').berry(user_options_default);
-				
+}
 				if(data.app.code.sources[0].name !== '') {	
 					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
 					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
@@ -702,42 +689,42 @@ initializers[route]();
 }
 
 templates['pages_tabpanel'] =Hogan.compile(`<div role="tabpanel" class="tab-pane {{key}}" id="{{key}}"></div>`);
-templates['pages_listgroupitem'] =Hogan.compile(`{{#items}}{{^removed}}<a class="list-group-item tab" href="#{{key}}" aria-controls="{{key}}" data-toggle="tab">{{name}}</a>{{/removed}}{{/items}}`);
+templates['pages_listgroupitem'] =Hogan.compile(`{{#items}}{{^removed}}<a class="list-group-item tab" href="#{{key}}" name="{{key}}" aria-controls="{{key}}" data-toggle="tab">{{#disabled}}<i class="fa fa-ban"></i>{{/disabled}} {{name}}</a>{{/removed}}{{/items}}`);
 templates['pages'] = Hogan.compile(
   `<div class="row">
-  <div class="col-sm-9">
-  <div class="tab-content">
-    {{#items}}
-	{{>pages_tabpanel}}
-    {{/items}}
-  </div></div>
-  <div class="col-sm-3" style="padding-top: 5px;">
-  {{#editable}}
-    	{{#hasextra}}<a href="javascript:void(0);" class="pages_extra btn btn-default pull-right" ><i class="fa fa-gears"></i></a>{{/hasextra}}
+		  <div class="col-sm-9">
+		  <div class="tab-content">
+		    {{#items}}
+			{{>pages_tabpanel}}
+		    {{/items}}
+		  </div></div>
+		  <div class="col-sm-3" style="padding-top: 5px;">
+		  {{#editable}}
+		    	{{#hasextra}}<a href="javascript:void(0);" class="pages_extra btn btn-default pull-right" ><i class="fa fa-gears"></i></a>{{/hasextra}}
 
-		<div class="actions" style="height:40px">
-		
-		<div class="btn-group">
-						<button type="button" class="btn  btn-info go pages_new">New <span class="">Section</span></button>
-						<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span class="caret"></span>
-							<span class="sr-only">Toggle Dropdown</span>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-right">
-							<li><a href="javascript:void(0);" class="pages_edit" ><i class="fa fa-pencil"></i> Edit Name</a></li>
-							<li><a href="javascript:void(0);" class="pages_delete" ><i class="fa fa-times"></i> Delete</a></li>
-						</ul>
-					</div>
-		</div>
+				<div class="actions" style="height:40px">
+				
+				<div class="btn-group">
+								<button type="button" class="btn  btn-info go pages_new">New <span class="">{{label}}</span></button>
+								<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu dropdown-menu-right">
+									<li><a href="javascript:void(0);" class="pages_edit" ><i class="fa fa-pencil"></i> Edit Name</a></li>
+									<li><a href="javascript:void(0);" class="pages_delete" ><i class="fa fa-times"></i> Delete</a></li>
+								</ul>
+							</div>
+				</div>
 
-		  {{/editable}}
+				  {{/editable}}
 
-  <div class="list-group">
-	{{>pages_listgroupitem}}
-  </div>
-  </div>
-  <div class="dummyTarget"></div>
-  </div>`);
+		  <div class="list-group" style="margin-right: 15px;">
+			{{>pages_listgroupitem}}
+		  </div>
+		  </div>
+		  <div class="dummyTarget"></div>
+		</div>`);
 
 	templates['group_summary'] = Hogan.compile(`<div class="panel-page">
 	<section class="panel panel-default">
@@ -778,7 +765,7 @@ templates['pages'] = Hogan.compile(
 						      <div class="panel-heading"><a href="/admin/groups/{{id}}/composites"><strong><span class="fa fa-puzzle-piece sort"></span> Composites</strong></a></div>
 						      {{#composites.length}}<div class="panel-body">
 										{{#composites}}
-										<span class="label label-success" style="margin-bottom:5px;float:left">{{composite.slug}}</span><div style="float:left" class="space"></div>
+										<a class="label label-success" style="margin-bottom:5px;float:left" href="/admin/groups/{{group.id}}">{{group.slug}}</a><div style="float:left" class="space"></div>
 										{{/composites}}
 									</div>
 									{{/composites.length}}

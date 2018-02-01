@@ -88,11 +88,15 @@ $('.sources').berry({
   templatePage = new paged('.templates',{items:attributes.code.templates});
   scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
   formPage = new paged('.forms',{items:attributes.code.forms, mode:'ace/mode/javascript',extra: function(item){
-    if (!_.some(JSON.parse(formPage.getCurrent().content).fields, function(o) { return _.has(o, "fields"); })) {
+
+    item.content = this.berry.fields[this.active].toJSON();
+    if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
 
       modalForm(item.content, item.name, function(){
+
         var old = formPage.getCurrent();
-        formPage.update(old.key, JSON.stringify($.extend(true, {}, JSON.parse(old.content),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
+        
+        formPage.update(old.key, JSON.stringify($.extend(true, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
       });
     }else{
       toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Supported');
@@ -102,9 +106,10 @@ $('.sources').berry({
 
 
 function modalForm(form, name, onSave){
+
   if(typeof cb === 'undefined'){
     if(typeof form === 'string'){
-      form = JSON.parse(form);
+      form = JSON.parse(form || '{}');
     }
     form = form || {};
     $('#myModal').remove();

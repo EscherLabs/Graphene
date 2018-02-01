@@ -10,11 +10,11 @@ function Cobler(options) {
 	this.options.active = this.options.active || 'widget_active';
 	this.options.itemContainer = this.options.itemContainer || 'itemContainer';
 	this.options.itemTarget = this.options.itemTarget || 'cobler-li-content';
-	if(typeof options.fallback !== 'undefined'){
-		this.options.fallback = options.fallback;
-	}else{
-		this.options.fallback = true;
-	}
+	// if(typeof options.fallback !== 'undefined'){
+	// 	this.options.fallback = options.fallback;
+	// }else{
+	// 	this.options.fallback = true;
+	// }
 
 
   options.removed = false;
@@ -329,7 +329,7 @@ berryEditor = function(container){
 			formConfig.actions = false;
 			events = 'change';
 		}	
-		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)).find('.collapsible.panel-body'));
+		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)));
 		myBerry.on(events, function(){
 			if(myBerry.validate()){
 		 	container.update(myBerry.toJSON(), this);
