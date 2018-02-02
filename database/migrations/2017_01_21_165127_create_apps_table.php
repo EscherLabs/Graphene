@@ -17,7 +17,7 @@ class CreateAppsTable extends Migration
             $table->integer('site_id')->unsigned()->index();
             $table->string('name');
             // Move Code to App Versions
-            $table->json('code')->nullable();
+            // $table->json('code')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('site_id')->references('id')->on('sites');

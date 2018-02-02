@@ -16,7 +16,8 @@ class CreateAppVersionsTable extends Migration
         Schema::create('app_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('app_id')->unsigned()->index();
-            $table->string('summary');
+            $table->string('summary')->default('');
+            $table->string('description')->default('');
             $table->boolean('stable')->default(false);
             $table->json('code')->nullable();
             $table->timestamps();

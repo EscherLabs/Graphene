@@ -185,7 +185,7 @@ class DatabaseSeeder extends Seeder
 
         // Save code in app, even though this should be in the version
         // Will be deprecated in next version
-        $app->code = $app_version->code;
+        // $app->code = $app_version->code;
         $app->save();
 
         $app->add_developer($user1,true);

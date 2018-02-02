@@ -142,7 +142,16 @@ class PortalMigration extends Seeder
                         }
                     }
                 }
-                $app->code = [
+                $app->save();
+                $apps_index[$app_db->id] = $app;
+                $apps_index_db[$app_db->id] = $app_db;
+
+                $app_version = new \App\AppVersion;
+                $app_version->stable = 1;
+                $app_version->app_id = $app->id;
+                $app_version->summary = 'Initial Version';
+                $app_version->description = 'This is the initial version which was migrated from myBinghamton';
+                $app_version->code = [
                     'css'=>$app_db->css,
                     'scripts'=>json_decode($app_db->script),
                     'resources'=>array_values($app_sources),
@@ -152,9 +161,9 @@ class PortalMigration extends Seeder
                         ["name"=>"User Options", "content"=>json_encode(['fields'=>$app_db->user_options])]
                     ]
                 ];
-                $app->save();
-                $apps_index[$app_db->id] = $app;
-                $apps_index_db[$app_db->id] = $app_db;
+                $app_version->save();
+
+                $app_versions_index[$app->id] = $app_version;
 
                 foreach($user_ids as $user_id) {
                     $app_developer = new \App\AppDeveloper;
@@ -237,6 +246,7 @@ class PortalMigration extends Seeder
                             $app_instance->group_id = $groups_index[$page_db->group_id]->id;
                             $app_instance->app_id = $apps_index[$page_widget_db->microapp]->id;
                             $app_instance->public = $apps_index_db[$page_widget_db->microapp]->public;
+                            $app_instance->app_version_id = $app_versions_index[$apps_index[$page_widget_db->microapp]->id]->id;
                             $app_instance->options = $app_instance_options;
                             $app_instance->user_options_default = $app_instance_user_options;
                             $app_instance->app_version_id = 1;
