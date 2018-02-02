@@ -55,6 +55,60 @@ $('#save').on('click',function() {
 })
 
 
+$('#import').on('click',function() {
+
+    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
+      $.ajax({
+        url: '/api/apps/'+attributes.id,
+        data: $.extend({force: true, updated_at:''}, JSON.parse(Berries.update.toJSON().descriptor)),
+        method: 'PUT',
+        success: function(){
+          Berries.update.trigger('close');
+          window.location.reload();
+        }
+      })
+  });
+
+
+  // var data = $.extend(true, {}, attributes, Berries.app.toJSON());
+  // data.code.resources = Berries.app.toJSON().code.resources;
+  // data.code.templates = templatePage.toJSON();
+  // // var successCompile = false;
+  // try{
+  //   _.each(data.code.templates, function(partial){
+  //     Ractive.parse(partial.content);
+  //   })
+  //   // if(!this.resourcesForm.validate()){
+  //   //   toastr.error(e.message, e.name);
+  //   //   return false;
+  //   // }
+  // }catch(e) {
+  //     toastr.error(e.message, e.name);
+  //     return false;
+  // }
+
+
+
+  // data.code.scripts = scriptPage.toJSON();
+  // var temp = formPage.toJSON();
+  // data.code.forms = formPage.toJSON();
+
+  // // data.code.form = temp[0].content;
+  // // data.code.user_options_form = temp[1].content;
+  // $.ajax({
+  //   url: '/api/apps/'+attributes.id,
+  //   method: 'put',
+  //   data: data,
+  //   success:function() {
+  //     toastr.success('', 'Successfully Saved')
+  //   },
+  //   error:function(e) {
+  //     toastr.error(e.statusText, 'ERROR');
+  //   }
+  // })
+})
+
+
 
 
 $(document).keydown(function(e) {
