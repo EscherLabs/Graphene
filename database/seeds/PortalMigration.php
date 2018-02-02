@@ -249,7 +249,6 @@ class PortalMigration extends Seeder
                             $app_instance->app_version_id = $app_versions_index[$apps_index[$page_widget_db->microapp]->id]->id;
                             $app_instance->options = $app_instance_options;
                             $app_instance->user_options_default = $app_instance_user_options;
-                            $app_instance->app_version_id = 1;
                             $app_instance->unlisted = 1;
                             $app_instance->device = 0;
                             $resources = json_decode($apps_index_db[$page_widget_db->microapp]->sources);
