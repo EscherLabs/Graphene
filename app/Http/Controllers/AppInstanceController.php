@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AppInstance;
 use App\App;
+use App\AppVersion;
 use App\Endpoint;
 use App\Group;
 use App\UserPreference;
@@ -90,6 +91,10 @@ class AppInstanceController extends Controller
             $links = Group::publicLinks()->get();
 
         }
+        /* Maybe there's a better way to do this -- appending app version code to app */
+        $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
+        $myApp->app->code = $myAppVersion->code;
+
 
         if($myApp != null) {
             // dd($myApp->toArray());
@@ -154,8 +159,10 @@ class AppInstanceController extends Controller
             $current_user = new User;
             $myApp = AppInstance::where('id', '=', $ai_id)->first();
             if (is_null($myApp)) { abort(403); }
-
         }
+        /* Maybe there's a better way to do this -- appending app version code to app */
+        $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
+        $myApp->app->code = $myAppVersion->code;
 
         if($myApp != null){
             // Create data object that will be used by the app
@@ -238,7 +245,10 @@ class AppInstanceController extends Controller
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
-        
+        /* Maybe there's a better way to do this -- appending app version code to app */
+        $myAppVersion = AppVersion::where('id','=',$app_instance->app_version_id)->first();
+        $app_instance->app->code = $myAppVersion->code;
+
         if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);
         } 

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Page;
 use App\User;
 use App\Group;
-
+use App\AppVersion;
 use App\AppInstance;
 use Illuminate\Http\Request;
 use App\Libraries\Templater;
@@ -107,6 +107,12 @@ class PageController extends Controller
             $apps = AppInstance::whereIn('id', $uapp_instances)->where('public', '=', 1)->with('app')->get();
             $links = Group::publicLinks()->get();
         }
+        /* This should probably be fixed -- we're looping through all the apps to find the correct app version code */
+        foreach($apps as $key => $app) {
+            $myAppVersion = AppVersion::where('id','=',$app->app_version_id)->first();
+            $apps[$key]->app->code = $myAppVersion->code;
+        }
+
 
         if($myPage != null) {
             if(!isset($myPage->content)){

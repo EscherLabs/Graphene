@@ -10,7 +10,6 @@ class App extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = ['name'];
-    protected $casts = ['code' => 'object'];
 
     public function site() {
       return $this->belongsTo(Site::class);
