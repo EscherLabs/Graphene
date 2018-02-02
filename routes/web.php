@@ -47,6 +47,9 @@ Route::get('/api/apps/{app}','AppController@show')->middleware('can:get,app');
 Route::post('/api/apps','AppController@create')->middleware('can:create,App\App');
 // Update an existing app by app_id
 Route::put('/api/apps/{app}','AppController@update')->middleware('can:update,app');
+Route::put('/api/apps/{app}/code','AppController@code')->middleware('can:update,app');
+Route::put('/api/apps/{app}/version','AppController@version')->middleware('can:update,app');
+
 // Delete an existing app by app_id
 Route::delete('/api/apps/{app}','AppController@destroy')->middleware('can:delete,app');
 

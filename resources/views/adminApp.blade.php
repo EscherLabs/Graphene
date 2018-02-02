@@ -11,10 +11,10 @@
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu">
-    <li><a href="#">Export</a></li>
-    <li><a href="#">Import</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#">Visit</a></li>
+    <li><a href="/api/apps/{!! $app->app_id !!}" target="_blank">Export</a></li>
+    <li><a href="#" id="import">Import</a></li>
+    <!--<li role="separator" class="divider"></li>
+    <li><a href="#">Visit</a></li>-->
   </ul>
 </div>
   <!-- Nav tabs -->

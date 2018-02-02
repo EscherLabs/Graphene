@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\App;
 use App\User;
+use App\AppVersion;
 use App\AppDevelopers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -25,7 +26,8 @@ class AppController extends Controller
     }
 
     public function show(App $app) {
-        return $app;
+        // return $app;
+        return AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
     }
 
     public function create(Request $request) {
@@ -34,11 +36,31 @@ class AppController extends Controller
         $app->site_id = Auth::user()->site->id;
         $app->save();
         $app->add_developer(Auth::user(),true);
+        $app_version = new AppVersion($request->all());
+        $app_version->app_id = $app->id;
         return $app;
     }
 
+    public function code(Request $request, App $app) { 
+        $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
+        if($app_version->stable){
+            $app_version = new AppVersion();
+            $app_version->app_id = $app->id;
+        }
+        $app_version->code = $request->code;
+        $app_version->save();
+        return $app_version;
+    }
+    public function version(Request $request, App $app) { 
+        $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
+        $app_version->summary = $request->summary;
+        $app_version->description = $request->description;
+        $app_version->stable = true;
+        $app_version->save();
+        return $app_version;
+    }
     public function update(Request $request, App $app) {  
-        $app->code = $request->code;
+        // $app->code = $request->code;
         $app->name = $request->name;
         $app->save();
         return $app;
@@ -50,7 +72,9 @@ class AppController extends Controller
         }
     }
     public function admin(App $app) {
-        return view('adminApp', ['app'=>$app]);
+                // return ;
+
+        return view('adminApp', ['app'=>AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first()]);
     }
     public function list_members(Group $group)
     {

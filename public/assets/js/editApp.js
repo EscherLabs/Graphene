@@ -42,7 +42,7 @@ $('#save').on('click',function() {
   // data.code.form = temp[0].content;
   // data.code.user_options_form = temp[1].content;
   $.ajax({
-    url: '/api/apps/'+attributes.id,
+    url: '/api/apps/'+attributes.app_id+'/code',
     method: 'put',
     data: data,
     success:function() {
@@ -59,7 +59,7 @@ $('#import').on('click',function() {
 
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
       $.ajax({
-        url: '/api/apps/'+attributes.id,
+        url: '/api/apps/'+attributes.app_id+'/code',
         data: $.extend({force: true, updated_at:''}, JSON.parse(Berries.update.toJSON().descriptor)),
         method: 'PUT',
         success: function(){
@@ -68,44 +68,6 @@ $('#import').on('click',function() {
         }
       })
   });
-
-
-  // var data = $.extend(true, {}, attributes, Berries.app.toJSON());
-  // data.code.resources = Berries.app.toJSON().code.resources;
-  // data.code.templates = templatePage.toJSON();
-  // // var successCompile = false;
-  // try{
-  //   _.each(data.code.templates, function(partial){
-  //     Ractive.parse(partial.content);
-  //   })
-  //   // if(!this.resourcesForm.validate()){
-  //   //   toastr.error(e.message, e.name);
-  //   //   return false;
-  //   // }
-  // }catch(e) {
-  //     toastr.error(e.message, e.name);
-  //     return false;
-  // }
-
-
-
-  // data.code.scripts = scriptPage.toJSON();
-  // var temp = formPage.toJSON();
-  // data.code.forms = formPage.toJSON();
-
-  // // data.code.form = temp[0].content;
-  // // data.code.user_options_form = temp[1].content;
-  // $.ajax({
-  //   url: '/api/apps/'+attributes.id,
-  //   method: 'put',
-  //   data: data,
-  //   success:function() {
-  //     toastr.success('', 'Successfully Saved')
-  //   },
-  //   error:function(e) {
-  //     toastr.error(e.statusText, 'ERROR');
-  //   }
-  // })
 })
 
 
@@ -145,9 +107,9 @@ $('.sources').berry({
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;// - (88+ this.options.autoSize) +'px');
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
-  templatePage = new paged('.templates',{items:attributes.code.templates});
-  scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript'});
-  formPage = new paged('.forms',{items:attributes.code.forms, mode:'ace/mode/javascript',extra: function(item){
+  templatePage = new paged('.templates',{items:attributes.code.templates, label:'Template'});
+  scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
+  formPage = new paged('.forms',{items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
     item.content = this.berry.fields[this.active].toJSON();
     if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
