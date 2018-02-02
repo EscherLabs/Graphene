@@ -124,28 +124,28 @@ class PortalMigration extends Seeder
                 $app_sources_db = json_decode($app_db->sources,true);
                 $app_sources = [];
                 if (is_array($app_sources_db)) {
-                    foreach($app_sources_db as $app_source_db) {
+                    foreach($app_sources_db as $index => $app_source_db) {
                         if (isset($app_source_db['name'])){
-                            $app_sources[] = ["name"=>$app_source_db['name']];
+                            $app_sources[$index]['name'] = $app_source_db['name'];
                         }
                         if (isset($app_source_db['modifier'])){
-                            $app_sources[] = ["modifier"=>$app_source_db['modifier']];
+                            $app_sources[$index]['modifier'] = $app_source_db['modifier'];
                         }
                         if (isset($app_source_db['cache'])){
-                            $app_sources[] = ["cache"=>$app_source_db['cache']];
+                            $app_sources[$index]['cache'] = $app_source_db['cache'];
                         }
                         if (isset($app_source_db['fetch'])){
-                            $app_sources[] = ["fetch"=>$app_source_db['fetch']];
+                            $app_sources[$index]['fetch'] = $app_source_db['fetch'];
                         }
                         if (isset($app_source_db['path'])){
-                            $app_sources[] = ["path"=>$app_source_db['path']];
+                            $app_sources[$index]['path'] = $app_source_db['path'];
                         }
                     }
                 }
                 $app->code = [
                     'css'=>$app_db->css,
                     'scripts'=>json_decode($app_db->script),
-                    'resources'=>$app_sources,
+                    'resources'=>array_values($app_sources),
                     'templates'=>json_decode($app_db->template),
                     'forms'=>[
                         ["name"=>"Options", "content"=>json_encode(['fields'=>$app_db->options])],
