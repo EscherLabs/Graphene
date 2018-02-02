@@ -5,6 +5,7 @@ use Illuminate\Database\Seeder;
 class PortalMigration extends Seeder
 {
     /**
+     *
      * Run the database seeds.
      *
      * @return void
@@ -127,12 +128,24 @@ class PortalMigration extends Seeder
                         if (isset($app_source_db['name'])){
                             $app_sources[] = ["name"=>$app_source_db['name']];
                         }
+                        if (isset($app_source_db['modifier'])){
+                            $app_sources[] = ["modifier"=>$app_source_db['modifier']];
+                        }
+                        if (isset($app_source_db['cache'])){
+                            $app_sources[] = ["cache"=>$app_source_db['cache']];
+                        }
+                        if (isset($app_source_db['fetch'])){
+                            $app_sources[] = ["fetch"=>$app_source_db['fetch']];
+                        }
+                        if (isset($app_source_db['path'])){
+                            $app_sources[] = ["path"=>$app_source_db['path']];
+                        }
                     }
                 }
                 $app->code = [
                     'css'=>$app_db->css,
                     'scripts'=>json_decode($app_db->script),
-                    'sources'=>$app_sources,
+                    'resources'=>$app_sources,
                     'templates'=>json_decode($app_db->template),
                     'forms'=>[
                         ["name"=>"Options", "content"=>json_encode(['fields'=>$app_db->options])],
@@ -212,7 +225,6 @@ class PortalMigration extends Seeder
                                     }
                                 }
                                 foreach($apps_index_db[$page_widget_db->microapp]->user_options as $user_option) {
-                                    // dd($user_option);
                                     if ($app_instance_option_name == $user_option['name']) {
                                         $app_instance_user_options[$app_instance_option_name] = $app_instance_option_val;
                                     }
@@ -231,30 +243,33 @@ class PortalMigration extends Seeder
                             $app_instance->unlisted = 1;
                             $app_instance->device = 0;
                             $resources = json_decode($apps_index_db[$page_widget_db->microapp]->sources);
+                            $new_resources = [];
                             foreach($resources as $index => $resource) {
-                                if ($resource->endpoint != 'External') {
-                                    $resources[$index]->endpoint = $endpoints_index[$resource->endpoint]->id;
-                                } else {
-                                    try {
-                                        $endpoint = \App\Endpoint::where('group_id','=',$groups_index[$page_db->group_id]->id)->
-                                            where('config->url','=','')->first();
-                                        if ($endpoint === null) {
-                                            $endpoint = new \App\Endpoint;
-                                            $endpoint->site_id = $site_id;
-                                            $endpoint->name = $apps_index[$page_widget_db->microapp]->name.' Endpoint';
-                                            $endpoint->config = ['url'=>''];
-                                            $endpoint->type = 'http_no_auth';
-                                            $endpoint->group_id = $groups_index[$page_db->group_id]->id;
-                                            $endpoint->save();
-                                            $endpoints_index[$endpoint_db->id] = $endpoint;
+                                if ($resource->name != '') {
+                                    if ($resource->endpoint != 'External') {
+                                        $new_resources[] = ['name'=>$resource->name,'endpoint'=>$endpoints_index[$resource->endpoint]->id];
+                                    } else {
+                                        try {
+                                            $endpoint = \App\Endpoint::where('group_id','=',$groups_index[$page_db->group_id]->id)->
+                                                where('config->url','=','')->first();
+                                            if ($endpoint === null) {
+                                                $endpoint = new \App\Endpoint;
+                                                $endpoint->site_id = $site_id;
+                                                $endpoint->name = $apps_index[$page_widget_db->microapp]->name.' Endpoint';
+                                                $endpoint->config = ['url'=>''];
+                                                $endpoint->type = 'http_no_auth';
+                                                $endpoint->group_id = $groups_index[$page_db->group_id]->id;
+                                                $endpoint->save();
+                                                $endpoints_index[$endpoint_db->id] = $endpoint;
+                                            }
+                                        } catch (Exception $e) {
+                                            echo 'Caught exception: ',  $e->getMessage(), "\n";
                                         }
-                                    } catch (Exception $e) {
-                                        echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                        $new_resources[] = ['name'=>$resource->name,'endpoint'=>$endpoint->id];
                                     }
-                                    $resources[$index]->endpoint = $endpoint->id;
                                 }
                             }
-                            $app_instance->resources = $resources;
+                            $app_instance->resources = $new_resources;
                             $app_instance->save();
                             $page_widgets_index[$page_widget_db->guid] = $page_widget_db;
 

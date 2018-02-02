@@ -139,9 +139,9 @@ class DatabaseSeeder extends Seeder
                 ",
             ],
             ],
-            "sources" => [
-                ["name" => "whoami"],
-                ["name" => "echo"],
+            "resources" => [
+                ['name'=>'echo','modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/echo/'],
+                ['name'=>'whoami','modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/whoami/']
             ],
             "templates" => [
             [
@@ -210,8 +210,8 @@ class DatabaseSeeder extends Seeder
         $app_instance->options = ["admin_option"=>"this is ny admin default option"];
         $app_instance->user_options_default = ["user_option"=>"this is my user default option"];        
         $app_instance->resources = [
-            ['name'=>'echo','endpoint'=>1,'modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/echo/'],
-            ['name'=>'whoami','endpoint'=>1,'modifier'=>'none','cache'=>false,'fetch'=>true,'path'=>'/info/whoami/'],
+            ['name'=>'echo','endpoint'=>1],
+            ['name'=>'whoami','endpoint'=>1],
         ];
         $app_instance->public = 0;
         $app_instance->save();
