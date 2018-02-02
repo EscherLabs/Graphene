@@ -174,7 +174,7 @@ class AppInstanceController extends Controller
             if($myApp->app->code){
                 // Get each source
                 // TODO: add conditionals for types and "autofetch", etc
-                foreach($myApp->app->code->sources as $source){
+                foreach($myApp->app->code->resources as $source){
                     $data[$source->name] = $this->get_data($myApp, $source->name, $request);
                 }
             }
@@ -289,7 +289,7 @@ class AppInstanceController extends Controller
         }else{
             $all_data['user']['options'] = $user_options_default;
         }
-        
+
         $resource_found = false;
         foreach($app_instance->app->code->resources as $resource_app) {
             if ($endpoint_name == $resource_app->name) {
