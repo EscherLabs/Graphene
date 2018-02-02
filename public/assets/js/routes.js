@@ -204,12 +204,8 @@ initializers['app_instance'] = function() {
 						{name:'container', label: false,  type: 'fieldset', fields:[
 
 							{"multiple": {"duplicate": false},label: '<hr>', name: 'resources', type: 'fieldset', fields:[
-								{label: 'Name', enabled:false},
-								{label: 'Fetch', type: 'checkbox'},
-								{label: 'Endpoint', type: 'select', choices: '/api/endpoints'},
-								{label: 'Path'},
-								{label: 'Cache', type: 'checkbox'},
-								{label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]},
+								{label: 'Name',columns:6, enabled:false},
+								{label: 'Endpoint',columns:6, type: 'select', choices: '/api/endpoints'}
 							]}
 						]},
 					]} )

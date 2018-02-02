@@ -259,8 +259,8 @@ class AppInstanceController extends Controller
         }
         // Lookup Resource by Name
         $endpoint_found = false;
-        foreach($resources as $resource_info) {
-            if ($endpoint_name == $resource_info->name) {
+        foreach($resources as $resource_endpoint) {
+            if ($endpoint_name == $resource_endpoint->name) {
                 $endpoint_found = true; break;
             }
         }
@@ -269,7 +269,7 @@ class AppInstanceController extends Controller
         }
 
         // Lookup Endpoint
-        $endpoint = Endpoint::find((int)$resource_info->endpoint);
+        $endpoint = Endpoint::find((int)$resource_endpoint->endpoint);
         
         // Merge App Options with User Preferences, User Info, and `request` data
 
@@ -290,10 +290,21 @@ class AppInstanceController extends Controller
             $all_data['user']['options'] = $user_options_default;
         }
         
+        $resource_found = false;
+        foreach($app_instance->app->code->resources as $resource_app) {
+            if ($endpoint_name == $resource_app->name) {
+                $resource_found = true; break;
+            }
+        }
+        if (!$resource_found) {
+            abort(505,'Resource Not Found');
+        }
+        $resource_app->endpoint = $resource_endpoint->endpoint;
+
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
-            $data = $this->http_endpoint($endpoint, $resource_info, $verb, $all_data);
+            $data = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data);
         } else if ($endpoint->type == 'google_sheets') {
-            $data = $this->google_endpoint($endpoint, $resource_info, $verb, $all_data);
+            $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
         }
         return $data;
     }

@@ -1,4 +1,4 @@
-groupID=0;
+// groupID=0;
 function App() {
 	function router(verb, name, data, callback){
 		var callback = callback || function(data){
@@ -15,6 +15,7 @@ function App() {
 		(this.options[verb] || _.partial(this.options.crud, _, _, _, verb) || function(){}).call(this, name, data, callback.bind(this))
 	}
 	function redraw() {
+		this.events = {initialize: []};
 		if(typeof this.inline == 'object' && this.inline instanceof Berry) {
 			this.inline.destroy();
 		}
@@ -24,7 +25,9 @@ function App() {
 		this.draw();
 	}
 	function refresh() {
-		this.$el.off('click');
+		this.$el.off('click');		
+		this.events = {initialize: []};
+
 		this.app.trigger('teardown')
 		this.ractive.teardown();
 
@@ -44,7 +47,7 @@ function App() {
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
-		// this.$el.off('click', selector, callback.bind(this));
+		this.$el.off('click', selector, callback.bind(this));
 		this.$el.on('click', selector, callback.bind(this));
 	}
 	this.events = {initialize: []};
@@ -94,7 +97,7 @@ berryAppEngine = function(options) {
 		}
 		var mountResult = (function(data, script) {
 		try{
-			eval('function mount(){'+script+';return this;}');
+			eval('function mount(){var context = this;'+script+';return this;}');
 			return mount.call({data:data});
 		}catch(e) {
 			console.log(e);
@@ -128,14 +131,19 @@ berryAppEngine = function(options) {
   this.draw = function() {
     this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
     if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
-      this.methods[this.options.initializer].call(this);
+	
+      this.methods[this.options.initializer].call(this,this);
       this.app.on('call', function(name, args){
-        if(typeof this.methods[args.name] !== 'undefined'){this.methods[args.name].call(this,args.args)}
+        if(typeof this.methods[name] !== 'undefined'){this.methods[name].call(this,args.args)}
       })
       this.app.on('apply', function(name, args){
-        if(typeof this.methods[args.name] !== 'undefined'){this.methods[args.name].apply(this, args.args)}
+        if(typeof this.methods[name] !== 'undefined'){this.methods[name].apply(this, args.args)}
       }) 
     }
+  }
+  this.call = function(method, args){
+        this.app.trigger('call',method,args);
+
   }
 	this.destroy = function(){
 			this.$el.off('click');

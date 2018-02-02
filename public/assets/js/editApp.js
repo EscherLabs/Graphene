@@ -17,7 +17,7 @@ $('.navbar-header .nav a h4').on('click',function(){
 })
 $('#save').on('click',function() {
   var data = $.extend(true, {}, attributes, Berries.app.toJSON());
-  data.code.sources = Berries.app.toJSON().code.sources;
+  data.code.resources = Berries.app.toJSON().code.resources;
   data.code.templates = templatePage.toJSON();
   // var successCompile = false;
   try{
@@ -77,7 +77,13 @@ $('.sources').berry({
     // {label: 'Name', name:'name', required: true, fieldset:"app_name"},
     {name:'code', label: false,  type: 'fieldset', fields:[
       {label:false, name:'css', fieldset: 'styles', type:'ace', mode:'ace/mode/css'},
-      {fieldset:'sources',"multiple": {"duplicate": true},label: false, name: 'sources', type: 'fieldset', fields:[{label: 'Name',name: 'name'}]},
+      {fieldset:'resources',"multiple": {"duplicate": true},label: false, name: 'resources', type: 'fieldset', fields:[
+          {label: 'Name',name: 'name'},
+          {label: 'Fetch', type: 'checkbox'},
+          {label: 'Path'},
+          {label: 'Cache', type: 'checkbox'},
+          {label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
+      ]},
       // {fieldset:'forms',label: 'Configuration Form',type:'ace', name:'form', mode:'ace/mode/javascript'},        
       // {fieldset:'forms',label: 'User Preferences Form',type:'ace', name:'user_preference_form', mode:'ace/mode/javascript'}
     ]}
