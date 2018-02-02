@@ -130,7 +130,33 @@ berryAppEngine = function(options) {
  
   this.draw = function() {
     this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
-    if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
+    
+		// fields.Microapp.enabled = false;
+// debugger;
+		this.$el.find('[data-toggle="tooltip"]').tooltip();
+		this.$el.find('[data-toggle="popover"]').popover();
+
+		if(this.$el.find('[data-inline]').length && this.options.config.forms[1].content.length){//} > 0 && this.userEdit.length > 0){
+			this.inline = this.$el.berry({attributes:item,renderer:'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit '+this.type}).on('save',function() {
+
+				this.app.update(this.inline.toJSON());
+				this.app.trigger('options')
+
+				// this.ractive.set($.extend(true, {}, this.get().loaded.data, {options: this.inline.toJSON()} ));
+				// save();
+			},this);
+			this.$el.find('form').on('submit', $.proxy(function(e){
+				e.preventDefault();
+			}, this) );
+
+			this.$el.find('[data-inline="submit"]').on('click', $.proxy(function(){
+				this.inline.trigger('save');
+			}, this) );
+		}
+
+
+
+		if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
 	
       this.methods[this.options.initializer].call(this,this);
       this.app.on('call', function(name, args){
