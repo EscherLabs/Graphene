@@ -1,0 +1,30 @@
+
+	<div class="col-md-12">
+		<ul class="nav nav-boxed nav-justified">
+		{{#group}}
+	{{#links}}
+	{{#pages}}
+    {{^unlisted}}
+
+    	<li class="page_{{id}} {{device_class}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
+    	    <a href="/page/{{group_slug}}/{{slug}}" data-page="{{id}}">{{name}}</a>	
+    	</li>
+    {{/unlisted}}
+
+	{{/pages}}
+	
+	
+	{{#app_instances}}
+    {{^unlisted}}
+    	<li class="page_{{id}} {{device_class}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
+    	    <a href="/app/{{group_slug}}/{{slug}}" data-page="{{id}}">{{name}}</a>	
+    	</li>
+    {{/unlisted}}
+
+	{{/app_instances}}
+	
+	
+	{{/links}}
+		{{/group}}
+		</ul>
+	</div>

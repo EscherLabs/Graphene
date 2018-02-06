@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{> core_head}}
+  </head>
+  <body id="page" class="app">
+      {{#topbar_enabled}}{{> bing_header}}{{/topbar_enabled}}
+
+	<div class="main-container">
+        {{#topbar_enabled}}{{>bing_menu}}{{/topbar_enabled}}
+        {{#topbar_enabled}}
+            <div class="row page-menu" style="margin:95px -15px -20px">
+			    {{> bing_submenu }}
+		    </div>
+		 {{/topbar_enabled}}
+		<br>
+    	<div id="content" class="content-container">
+            {{> core_container}}
+        </div>
+    </div>
+    {{> core_engine}}
+  </body>
+</html>
