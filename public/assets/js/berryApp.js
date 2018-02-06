@@ -36,11 +36,11 @@ function App() {
 		this.app.trigger('refreshed')
 	}
 	function update(newData) {
-		$.extend(true, this.data, newData || {});
+		$.extend(this.data, newData || {});
 
 
-		$.extend(true, this.data.options,  this.data.user.options);
-		$.extend(this.data, this.data.options);
+		$.extend(true, this.data, this.data.options,  this.data.user.options);
+		// $.extend(, this.data.options);
 
 
 		this.ractive.set(this.data);
@@ -130,20 +130,30 @@ berryAppEngine = function(options) {
  
   this.draw = function() {
     this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
-    
-		// fields.Microapp.enabled = false;
-// debugger;
+
 		this.$el.find('[data-toggle="tooltip"]').tooltip();
 		this.$el.find('[data-toggle="popover"]').popover();
 
 		if(this.$el.find('[data-inline]').length && this.options.config.forms[1].content.length){//} > 0 && this.userEdit.length > 0){
-			this.inline = this.$el.berry({attributes:item,renderer:'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit '+this.type}).on('save',function() {
+			this.inline = this.$el.berry({attributes:this.options.data.user.options,renderer:'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit '+this.type}).on('save',function() {
 
-				this.app.update(this.inline.toJSON());
-				this.app.trigger('options')
+				this.app.update({user:{options:this.inline.toJSON()}});
+				var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
 
-				// this.ractive.set($.extend(true, {}, this.get().loaded.data, {options: this.inline.toJSON()} ));
-				// save();
+					$.ajax({
+						type: 'POST',
+						url:url,
+						data: {'options': this.inline.toJSON()},
+						success:function(data){
+							this.app.update({user:{options:data.options}});
+							this.optionsupdated();
+							toastr.success('', 'Options Updated Successfully');
+						}.bind(this),
+						error:function(data){
+								toastr.error(data.statusText, 'An error occured updating options')
+						}
+					})
+
 			},this);
 			this.$el.find('form').on('submit', $.proxy(function(e){
 				e.preventDefault();
