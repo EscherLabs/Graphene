@@ -15,7 +15,7 @@ class PortalMigration extends Seeder
         try {
             $site_id = 1;
             $user_ids = [1,2];
-            $group_memberships = ['Campus Life','Academic Services'];
+            $group_memberships = ['Campus Life','Academic Services','ITS','Main','News / Events'];
             $key = env('APP_KEY_PORTAL');
 
             $groups_db = DB::connection('mysql-portal')->table('groups')->get();
@@ -211,7 +211,74 @@ class PortalMigration extends Seeder
                     foreach($page_dev_db as $page_column_num => $page_column_db) {
                         $page_content_array['sections'][$page_column_num] = [];
                         foreach($page_column_db as $page_widget_db) {
-                            if ($page_widget_db->widgetType=='Microapp') {
+                            if ($page_widget_db->widgetType=='LinkCollection') {
+                                // Add links to specified composite groups
+                                if (isset($page_widget_db->group) && isset($page_widget_db->group->ids) && count($page_widget_db->group->ids)>0 && $page_widget_db->group->ids[0] != '') {
+                                    foreach($page_widget_db->group->ids as $link_widget_group_id) {
+                                        foreach($page_widget_db->links as $index => $link_db) {
+                                            if (isset($link_db->link)) {
+                                                $link = new \App\GroupLink;
+                                                $link->link = $link_db->link;
+                                                $link->title = $link_db->title;
+                                                $link->image = $link_db->image;
+                                                $link->color = $link_db->color;
+                                                if (stristr($link_db->icon,'fa ')) {
+                                                    $link->icon = $link_db->icon;
+                                                }
+                                                $link->group_id = $groups_index[$link_widget_group_id]->id;
+                                                $link->save();
+                                            }
+                                        }
+                                    }//PIZZA
+                                // Add links to current group
+                                } else {
+                                    foreach($page_widget_db->links as $index => $link_db) {
+                                        if (isset($link_db->link)) {
+                                            $link = new \App\GroupLink;
+                                            $link->link = $link_db->link;
+                                            $link->title = $link_db->title;
+                                            $link->image = $link_db->image;
+                                            $link->color = $link_db->color;
+                                            if (stristr($link_db->icon,'fa ')) {
+                                                $link->icon = $link_db->icon;
+                                            }
+                                        $link->group_id = $page->group_id;
+                                            $link->save();
+                                        }
+                                    }
+                                }
+                            } if ($page_widget_db->widgetType=='Html' || $page_widget_db->widgetType=='Content') {
+                                if (isset($page_widget_db->text)) {
+                                    $text = $page_widget_db->text;
+                                } else if (isset($page_widget_db->html)) {
+                                    $text = $page_widget_db->html;
+                                } else {
+                                    $text = '';
+                                }
+                                $page_content_array['sections'][$page_column_num][] = [
+                                    'widgetType' => 'Content',
+                                    'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
+                                    'text' => $text,
+                                    'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
+                                    'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
+                                ];
+                            } if ($page_widget_db->widgetType=='Slider') {
+                                $page_content_array['sections'][$page_column_num][] = [
+                                    'widgetType' => 'Image',
+                                    'images' => $page_widget_db->images,
+                                    'title' => isset($page_widget_db->title)?$page_widget_db->title:'Slideshow',
+                                    'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
+                                    'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
+                                ];
+                            } if ($page_widget_db->widgetType=='Image') {
+                                $page_content_array['sections'][$page_column_num][] = [
+                                    'widgetType' => 'Image',
+                                    'images' => ['image'=>$page_widget_db->image,'text'=>$page_widget_db->text],
+                                    'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
+                                    'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
+                                    'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
+                                ];
+                            } if ($page_widget_db->widgetType=='Microapp') {
                                 try {
                                     $known_config = [
                                         'user_edit'=>0, 'widgetType'=>0,'guid'=>0,'microapp'=>0,'title'=>0,
@@ -293,8 +360,9 @@ class PortalMigration extends Seeder
                                 $page_content_array['sections'][$page_column_num][] = [
                                     'widgetType' => 'uApp',
                                     'app_id' => $app_instance->id,
-                                    'title' => $page_widget_db->title,
-                                    'container' => $page_widget_db->container,
+                                    'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
+                                    'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
+                                    'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
                                 ];
                             }
                         }
