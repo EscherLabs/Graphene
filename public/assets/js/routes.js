@@ -473,9 +473,9 @@ initializers['links'] = function() {
 			tableConfig.schema = [
 				{label: 'Title', name:'title', required: true},
 				{label: 'Link', name:'link', required: true},
-				{label: 'Icon', name:'icon', required: false},
+				{label: 'Icon', name:'icon', required: false,template:'<i class="{{value}}"></i>'},
 				{label: 'Image', name:'image', required: false},
-				{label: 'Color', name:'color', required: false},
+				{label: 'Color', name:'color', required: false,template:'<div style="background-color:{{value}};width:30px;height:18px;"></div>'},
 				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 				{name: 'id', type:'hidden'}
 			];
