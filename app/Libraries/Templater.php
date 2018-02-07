@@ -34,19 +34,19 @@ class Templater {
         // Build $data object
         if (isset($data['group'])) {
             $data['group'] = $data['group']->toArray();
-            $data['group']['links'] = $data['links']->where('id','=',$data['group']['id'])->first()->toArray();
-            $data['group']['links']['group_id'] = $data['group']['id'];
-            $data['group']['links']['group_slug'] = $data['group']['slug'];
+            $data['group']['apps_pages'] = $data['apps_pages']->where('id','=',$data['group']['id'])->first()->toArray();
+            $data['group']['apps_pages']['group_id'] = $data['group']['id'];
+            $data['group']['apps_pages']['group_slug'] = $data['group']['slug'];
             if(isset($data['user']) && isset($data['user']['admin_groups'])){
                 $data['group']['admin'] = in_array ($data['group']['id'], $data['user']['admin_groups']);   
             }
         }
 
-        $data['links'] = $data['links']->toArray();
+        $data['apps_pages'] = $data['apps_pages']->toArray();
 
-        foreach($data['links'] as $index => $link) {
-            $data['links'][$index]['group_id'] = $link['id'];
-            $data['links'][$index]['group_slug'] = $link['slug'];    
+        foreach($data['apps_pages'] as $index => $link) {
+            $data['apps_pages'][$index]['group_id'] = $link['id'];
+            $data['apps_pages'][$index]['group_slug'] = $link['slug'];    
         }
         if (isset($data['apps']) && is_array($data['apps'])) {
             $data['apps'] = $data['apps']->toArray();

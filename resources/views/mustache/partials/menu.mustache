@@ -1,6 +1,6 @@
 <div class="col-sm-3 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
-    {{#links}}
+    {{#apps_pages}}
       <li><a data-toggle="collapse" href="#collapse{{ id }}">{{ name }}</a></li>
       <ul class="collapse"  id="collapse{{ id }}">
       {{#pages}}
@@ -24,6 +24,6 @@
         {{/unlisted}}
       {{/app_instances}}
       </ul>
-    {{/links}}
+    {{/apps_pages}}
   </ul>
 </div>

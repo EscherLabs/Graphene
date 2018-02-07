@@ -101,11 +101,11 @@ class PageController extends Controller
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $apps = AppInstance::whereIn('id', $uapp_instances)->with('app')->get();
-            $links = Group::links()->get();
+            $links = Group::AppsPages()->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
             $apps = AppInstance::whereIn('id', $uapp_instances)->where('public', '=', 1)->with('app')->get();
-            $links = Group::publicLinks()->get();
+            $links = Group::publicAppsPages()->get();
         }
         /* This should probably be fixed -- we're looping through all the apps to find the correct app version code */
         foreach($apps as $key => $app) {
@@ -122,7 +122,7 @@ class PageController extends Controller
             }
             $template = new Templater();
             return $template->render([
-                'links'=>$links, 
+                'apps_pages'=>$links, 
                 'apps'=>$apps, 
                 'name'=>$myPage->name, 
                 'slug'=>$myPage->slug, 

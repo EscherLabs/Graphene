@@ -28,7 +28,7 @@ class UserDashboardController extends Controller
         }))->whereIn('id',Auth::user()->groups)->get();
         
         // Redirect to first Page or first App
-        $group_links = Group::links()->get();
+        $group_links = Group::AppsPages()->get();
         if (isset($group_links[0])) {
             if (isset($group_links[0]->pages[0])) {
                 return redirect('/page/'.$group_links[0]->slug.'/'.$group_links[0]->pages[0]->slug);
@@ -39,7 +39,7 @@ class UserDashboardController extends Controller
         
         $template = new Templater();
         return $template->render([
-            'links'=>$group_links,
+            'apps_pages'=>$group_links,
             'name'=>"Dashboard",
             'slug'=>'',
             'apps'=>AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get(), 

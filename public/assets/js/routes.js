@@ -465,6 +465,28 @@ initializers['endpoints'] = function() {
 		});
 }
 
+initializers['links'] = function() {
+	$('.navbar-header .nav a h4').html('Links');
+	$.ajax({
+		url: '/api/'+route,
+		success: function(data){
+			tableConfig.schema = [
+				{label: 'Title', name:'title', required: true},
+				{label: 'Link', name:'link', required: true},
+				{label: 'Icon', name:'icon', required: false},
+				{label: 'Image', name:'image', required: false},
+				{label: 'Color', name:'color', required: false},
+				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+				{name: 'id', type:'hidden'}
+			];
+			tableConfig.data = data;
+			tableConfig.name = "links";
+			bt = new berryTable(tableConfig)
+		}
+	});
+}
+
+
 initializers['users'] = function() {
 	$('.navbar-header .nav a h4').html('Users');
 	$.ajax({

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-use App\GroupLink;
+use App\Link;
 use App\User;
 use App\Group;
 
@@ -18,26 +18,31 @@ class LinkController extends Controller
     
     public function index()
     {
-        return GroupLink::whereHas('group', function($q){
+        return Link::whereHas('group', function($q){
             $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups);
         })->get();
     }
 
+    public function user_index()
+    {
+        return Link::whereIn('group_id',Auth::user()->groups)->get();
+    }
+
     public function create(Request $request)
     {
-        $link = new GroupLink($request->all());
+        $link = new Link($request->all());
         $link->save();
         return $link;
     }
 
-    public function update(Request $request, GroupLink $link)
+    public function update(Request $request, Link $link)
     {
         $data = $request->all();
         $link->update($data);
         return $link;
     }
 
-    public function destroy(GroupLink $link)
+    public function destroy(Link $link)
     {
         if ($link->delete()) {
             return 1;

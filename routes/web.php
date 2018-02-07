@@ -100,9 +100,11 @@ Route::get('/api/endpoints/google_callback','EndpointController@google_callback'
 
 /***** Links *****/
 // List all links
-Route::get('/api/links','LinkController@index')->middleware('can:get_all,App\GroupLink');
+Route::get('/api/links','LinkController@index')->middleware('can:get_all,App\Link');
+// List all links for the current user
+Route::get('/api/user_links','LinkController@user_index');
 // Create a new link for group group_id
-Route::post('/api/links','LinkController@create')->middleware('can:create,App\GroupLink');
+Route::post('/api/links','LinkController@create')->middleware('can:create,App\Link');
 // Update an existing link by link_id
 Route::put('/api/links/{link}','LinkController@update')->middleware('can:update,link');
 // Delete an existing link by link_id

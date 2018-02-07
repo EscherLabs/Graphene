@@ -21,8 +21,8 @@ class Group extends Model
     public function endpoints() {
       return $this->hasMany(Endpoint::class);
     }
-    public function group_links() {
-        return $this->hasMany(GroupLink::class);
+    public function links() {
+        return $this->hasMany(Link::class);
     }  
     public function images() {
         return $this->hasMany(Image::class);
@@ -109,7 +109,7 @@ class Group extends Model
         GroupComposite::where('group_id',$this->id)->where('composite_group_id',$group->id)->delete();
     }
 
-    public function scopePublicLinks($query)
+    public function scopePublicAppsPages($query)
     {
         return $query->with(['app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device');
@@ -128,7 +128,7 @@ class Group extends Model
             $q->where('site_id','=',config('app.site')->id);
         });
     }
-    public function scopeLinks($query)
+    public function scopeAppsPages($query)
     {
         return $query->with(array('app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device');
