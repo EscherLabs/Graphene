@@ -1,0 +1,19 @@
+{{>widgets__limited_actions}}
+{{#container}}
+<div class="panel panel-default">
+<div class="panel-heading" style="position:relative">
+	<h3 class="panel-title">{{title}}{{^title}}{{loaded.name}}{{^loaded.name}}{{{widgetType}}}{{/loaded.name}}{{/title}}</h3>
+</div>
+{{/container}}
+    <div id="{{title}}{{id}}" class="panel-collapse {{#collapse}}collapse{{/collapse}}{{^collapse}}in{{/collapse}}" role="tabpanel" aria-labelledby="{{title}}{{id}}">
+      <div class="panel-body" style="padding:0">
+        <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".link_collection" name="filter" placeholder="Filter...">
+
+      	<div class="list-group link_collection" style="margin-bottom:0;min-height:30px" data-title="link_filter">
+					{{>widgets_links}}
+				</div>
+      </div>
+    </div>
+{{#container}}
+</div>
+{{/container}}

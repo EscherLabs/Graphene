@@ -473,9 +473,11 @@ initializers['links'] = function() {
 			tableConfig.schema = [
 				{label: 'Title', name:'title', required: true},
 				{label: 'Link', name:'link', required: true},
-				{label: 'Icon', name:'icon', required: false,template:'<i class="{{value}}"></i>'},
-				{label: 'Image', name:'image', required: false,template:'<img src="{{value}}" style="height:18px;">'},
-				{label: 'Color', name:'color', required: false,template:'<div style="background-color:{{value}};width:30px;height:18px;"></div>'},
+				{label: 'Image', name:'image', required: false,template:'<img src="{{value}}" style="height:18px;">',showColumn: false},
+				{label: 'Icon', name:'icon', 
+				type:'select', choices:'/assets/data/icons.json',
+				required: false,template:'{{#attributes.image}}<img src="{{attributes.image}}" style="height:18px;">{{/attributes.image}}{{^attributes.image}}<i class="{{value}}" style="color:{{attributes.color}}"></i>{{/attributes.image}}'},
+				{label: 'Color', name:'color', required: false,template:'<div style="background-color:{{value}};width:30px;height:18px;"></div>',showColumn: false},
 				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 				{name: 'id', type:'hidden'}
 			];

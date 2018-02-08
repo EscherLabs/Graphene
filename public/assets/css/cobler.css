@@ -62,3 +62,4 @@ margin:5px 0px 5px -60px
     left: 200px;
 }
 .sortable-ghost{padding:10px;color:#666;font-size:16px}
+.nodisplay{display: none;}

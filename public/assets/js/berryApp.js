@@ -37,12 +37,7 @@ function App() {
 	}
 	function update(newData) {
 		$.extend(this.data, newData || {});
-
-
 		$.extend(true, this.data, this.data.options,  this.data.user.options);
-		// $.extend(, this.data.options);
-
-
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
@@ -57,7 +52,12 @@ function App() {
 		get:_.partial(router, 'GET').bind(this),
 		put:_.partial(router, 'PUT').bind(this),
 		delete:_.partial(router, 'DELETE').bind(this),
-		
+		find:function(selectors){
+			return this.$el[0].querySelectorAll(selectors)
+		}.bind(this),
+		render:function(template,data){
+			return Hogan.compile(this.partials[template]).render(data);
+		}.bind(this),
 		redraw: redraw.bind(this),
 		refresh: refresh.bind(this),
 		refetch: function(){
@@ -68,7 +68,6 @@ function App() {
 		}.bind(this),
 		update: update.bind(this),
 		click: click.bind(this),
-		
 		on: Berry.prototype.on.bind(this),
 		off: Berry.prototype.off.bind(this),
 		trigger: Berry.prototype.trigger.bind(this),
@@ -162,6 +161,7 @@ berryAppEngine = function(options) {
 			this.$el.find('[data-inline="submit"]').on('click', $.proxy(function(){
 				this.inline.trigger('save');
 			}, this) );
+
 		}
 
 
