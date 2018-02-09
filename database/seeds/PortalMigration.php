@@ -217,7 +217,7 @@ class PortalMigration extends Seeder
                                     foreach($page_widget_db->group->ids as $link_widget_group_id) {
                                         foreach($page_widget_db->links as $index => $link_db) {
                                             if (isset($link_db->link)) {
-                                                $link = new \App\GroupLink;
+                                                $link = new \App\Link;
                                                 $link->link = $link_db->link;
                                                 $link->title = $link_db->title;
                                                 $link->image = $link_db->image;
@@ -234,7 +234,7 @@ class PortalMigration extends Seeder
                                 } else {
                                     foreach($page_widget_db->links as $index => $link_db) {
                                         if (isset($link_db->link)) {
-                                            $link = new \App\GroupLink;
+                                            $link = new \App\Link;
                                             $link->link = $link_db->link;
                                             $link->title = $link_db->title;
                                             $link->image = $link_db->image;

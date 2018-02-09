@@ -32,8 +32,8 @@ Cobler.types.Links = function(container){
 					type: 'GET',
 
 					success  : function(el,data){
-						this.set({links:data})
-						$(el).find('.link_collection').html(templates['widgets_links'].render(this.get(), templates))
+						// this.set({links:data})
+						$(el).find('.link_collection').html(templates['widgets_links'].render($.extend(this.get(),{links:data}), templates))
 						}.bind(this,el)
       })
 		}
