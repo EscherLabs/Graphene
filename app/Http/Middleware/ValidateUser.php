@@ -14,6 +14,7 @@ use App\SiteMember;
 use App\GroupAdmin;
 use App\Group;
 use App\GroupComposite;
+use App\Tag;
 
 class ValidateUser
 {
@@ -58,6 +59,12 @@ class ValidateUser
         Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
         })->pluck('id')->toArray();
+
+        Auth::user()->tags_array = Tag::whereIn('group_id',Auth::user()->groups)->get(['name','value'])->toArray();
+        Auth::user()->tags = [];
+        foreach(Auth::user()->tags_array as $tag) {
+            Auth::user()->tags[$tag['name']] = $tag['value'];
+        }
 
         Auth::user()->site = $current_site;
         Auth::user()->site_admin = $user_site->site_admin;

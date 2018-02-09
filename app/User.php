@@ -11,12 +11,14 @@ class User extends Authenticatable
 
     protected $fillable = ['first_name', 'last_name', 'email', 'password'];
     protected $hidden = ['password', 'remember_token','created_at','updated_at'];
-    protected $appends = ['options','groups','admin_groups','site_admin','developer'];
+    protected $appends = ['options','groups','admin_groups','site_admin','developer','tags','tags_array'];
 
     /* Transient Properties not saved in the database */
     public $developer_apps = [];
     public $groups = [];
     public $admin_groups = [];
+    public $tags = [];
+    public $tags_array = [];
     public $site_admin = false;
     public $developer = false;
     public $site = null;
@@ -54,4 +56,11 @@ class User extends Authenticatable
     public function getDeveloperAttribute() {
         return ($this->developer == 1);
     }
+    public function getTagsAttribute() {
+      return $this->tags;
+    }
+    public function getTagsArrayAttribute() {
+      return $this->tags_array;
+    }
+
 }

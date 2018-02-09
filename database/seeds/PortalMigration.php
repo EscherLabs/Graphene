@@ -21,27 +21,33 @@ class PortalMigration extends Seeder
             $groups_db = DB::connection('mysql-portal')->table('groups')->get();
             $groups_index = [];
             foreach($groups_db as $index => $group_db) {
-                try {
-                    $group = new \App\Group;
-                    $group->site_id = $site_id;
-                    $group->name = $group_db->name;
-                    $group->slug = $group_db->slug;
-                    $group->order = $group_db->order;
-                    $group->unlisted = !($group_db->community_flag);
-                    $group->save();
-                    $groups_index[$group_db->id] = $group;
+                $group = new \App\Group;
+                $group->site_id = $site_id;
+                $group->name = $group_db->name;
+                $group->slug = $group_db->slug;
+                $group->order = $group_db->order;
+                $group->unlisted = !($group_db->community_flag);
+                $group->save();
+                $groups_index[$group_db->id] = $group;
 
-                    if (in_array($group->name,$group_memberships)) {
-                        foreach($user_ids as $user_id) {
-                            $current_user = \App\User::find($user_id);
-                            $group->add_admin($current_user, 1);
-                            $group->add_member($current_user, 1);
-                        }
+                if (in_array($group->name,$group_memberships)) {
+                    foreach($user_ids as $user_id) {
+                        $current_user = \App\User::find($user_id);
+                        $group->add_admin($current_user, 1);
+                        $group->add_member($current_user, 1);
                     }
-                } catch (Exception $e) {
-                    echo 'Caught exception: ',  $e->getMessage(), "\n";
-                    echo "The exception was created on line: " . $e->getLine(). "\n";
                 }
+            }
+
+            $tags_db = DB::connection('mysql-portal')->table('group_keys')->get();
+            $tags_index = [];
+            foreach($tags_db as $index => $tag_db) {
+                $tag = new \App\Tag;
+                $tag->group_id = $tag_db->group_id;
+                $tag->name = $tag_db->name;
+                $tag->value = $tag_db->value;
+                $tag->save();
+                $tags_index[$tag_db->id] = $tag;
             }
 
             $group_composites_db = DB::connection('mysql-portal')->table('group_composites')->get();
@@ -128,8 +134,10 @@ class PortalMigration extends Seeder
                     $app_db->template = str_replace('user.pidm','user.params.pidm',$app_db->template); 
                     $app_db->sources = str_replace('user.pods','user.params.pods',$app_db->sources);
                     $app_db->script = str_replace('user.pods','user.params.pods',$app_db->script);
-                    $app_db->template = str_replace('user.pods','user.params.pods',$app_db->template);                   
-                    
+                    $app_db->template = str_replace('user.pods','user.params.pods',$app_db->template);
+                    $app_db->sources = str_replace('tags.','user.tags.',$app_db->sources);
+                    $app_db->script = str_replace('tags.','user.tags.',$app_db->script);
+                    $app_db->template = str_replace('tags.','user.tags.',$app_db->template);                   
 
                     $app_sources_db = json_decode($app_db->sources,true);
                     $app_sources = [];
