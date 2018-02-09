@@ -117,10 +117,13 @@ class Group extends Model
         return $query->with(['app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device');
             $q->where('public','=','1');
+            $q->where('unlisted','=',0);
+            $q->orderBy('order');
         },'pages'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device');
             $q->where('public','=','1');
-
+            $q->where('unlisted','=',0);
+            $q->orderBy('order');
         }])
         ->whereHas('app_instances', function($q) {
             $q->where('public','=','1');
@@ -135,8 +138,12 @@ class Group extends Model
     {
         return $query->with(array('app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device');
+            $q->where('unlisted','=',0);
+            $q->orderBy('order');
         },'pages'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device');
+            $q->where('unlisted','=',0);
+            $q->orderBy('order');
         }))->whereIn('id', Auth::user()->groups);
     }
 

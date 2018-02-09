@@ -21,14 +21,14 @@ class UserDashboardController extends Controller
         }else{
             $config = $user_dashboard->config;
         }
-        $links = Group::with(array('app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted');
-        },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'unlisted');
-        }))->whereIn('id',Auth::user()->groups)->get();
+        // $links = Group::with(array('app_instances'=>function($q){
+        //     $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted');
+        // },'pages'=>function($q){
+        //     $q->select('group_id','id', 'name', 'slug', 'unlisted');
+        // }))->whereIn('id',Auth::user()->groups)->get();
         
         // Redirect to first Page or first App
-        $group_links = Group::AppsPages()->get();
+        $group_links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         if (isset($group_links[0])) {
             if (isset($group_links[0]->pages[0])) {
                 return redirect('/page/'.$group_links[0]->slug.'/'.$group_links[0]->pages[0]->slug);

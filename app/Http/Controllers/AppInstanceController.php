@@ -79,7 +79,7 @@ class AppInstanceController extends Controller
             }])->where('group_id','=', $group)->where('slug', '=', $slug)->with('app')->first();
             $this->authorize('fetch' ,$myApp);
             // $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
-            $links = Group::AppsPages()->get();
+            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
 
@@ -88,7 +88,7 @@ class AppInstanceController extends Controller
             // $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
             //     $q->where('site_id', '=', config('app.site')->id);
             // })->with('app')->get();
-            $links = Group::publicAppsPages()->get();
+            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
 
         }
         /* Maybe there's a better way to do this -- appending app version code to app */
