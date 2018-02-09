@@ -2,6 +2,7 @@
 	<div class="col-md-12">
 		<ul class="nav nav-boxed nav-justified">
 		{{#group}}
+		{{^unlisted}}
 	{{#apps_pages}}
 	{{#pages}}
     {{^unlisted}}
@@ -22,9 +23,10 @@
     {{/unlisted}}
 
 	{{/app_instances}}
-	
-	
+
+
 	{{/apps_pages}}
+		{{/unlisted}}
 		{{/group}}
 		</ul>
 	</div>

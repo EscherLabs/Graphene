@@ -15,7 +15,7 @@ class PortalMigration extends Seeder
         try {
             $site_id = 1;
             $user_ids = [1,2];
-            $group_memberships = ['Campus Life','Academic Services','ITS','Main','News / Events'];
+            $group_memberships = ['Students','Staff','ITS Blog Admins'];
             $key = env('APP_KEY_PORTAL');
 
             $groups_db = DB::connection('mysql-portal')->table('groups')->get();
