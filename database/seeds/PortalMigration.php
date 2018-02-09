@@ -229,7 +229,7 @@ class PortalMigration extends Seeder
                                                 $link->save();
                                             }
                                         }
-                                    }//PIZZA
+                                    }
                                 // Add links to current group
                                 } else {
                                     foreach($page_widget_db->links as $index => $link_db) {
@@ -246,6 +246,14 @@ class PortalMigration extends Seeder
                                             $link->save();
                                         }
                                     }
+                                }
+                                $last_widget = end($page_content_array['sections'][$page_column_num]);
+                                if (!is_array($last_widget) || (is_array($last_widget) && $last_widget['widgetType']!='Links')) {
+                                    $page_content_array['sections'][$page_column_num][] = [
+                                        'widgetType' => 'Links',
+                                        'title' => 'Useful Links',
+                                        'container' => true,
+                                    ];
                                 }
                             } if ($page_widget_db->widgetType=='Html' || $page_widget_db->widgetType=='Content') {
                                 if (isset($page_widget_db->text)) {

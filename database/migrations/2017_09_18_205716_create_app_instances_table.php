@@ -15,8 +15,8 @@ class CreateAppInstancesTable extends Migration
         Schema::create('app_instances', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('app_id')->unsigned()->index();
-            $table->integer('app_version_id')->unsigned()->index();
             $table->integer('group_id')->unsigned()->index();
+            $table->integer('app_version_id')->unsigned()->nullable()->default(null);
             $table->string('name');
             $table->string('slug');
             $table->string('icon')->nullable()->default(null);
@@ -29,7 +29,6 @@ class CreateAppInstancesTable extends Migration
             $table->json('resources')->nullable();
             $table->timestamps();
             $table->foreign('app_id')->references('id')->on('apps');
-            $table->foreign('app_version_id')->references('id')->on('app_versions');
             $table->foreign('group_id')->references('id')->on('groups');
         });
 
