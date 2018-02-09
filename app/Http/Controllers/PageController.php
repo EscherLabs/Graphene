@@ -57,10 +57,10 @@ class PageController extends Controller
 
     public function run($group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
-			$groupObj = Group::where('slug','=',$group)->first();
+			$groupObj = Group::with('composites')->where('slug','=',$group)->first();
             $group = $groupObj->id;
 		}else{
-			$groupObj = Group::where('id','=',$group)->first();
+			$groupObj = Group::with('composites')->where('id','=',$group)->first();
         }
         if(isset($slug)){
             $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();

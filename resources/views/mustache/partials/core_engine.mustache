@@ -284,3 +284,44 @@
 
 
 </script>
+
+		<style>
+{{#group.composites}}
+			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
+			.group_ {{ composite_group_id }} .widget.group_all,.group_ {{ composite_group_id }} .widget.group_{{ composite_group_id }}{display: block;}
+			.group_ {{ composite_group_id }} .page-menu ul li.group_all,.group_ {{ composite_group_id }} .page-menu ul li.group_ {{ composite_group_id }} {display: block}
+
+@media (min-width: 768px) {
+			.group_ {{ composite_group_id }} .page-menu ul li.group_all,.group_ {{ composite_group_id }} .page-menu ul li.group_ {{ composite_group_id }} {display: table-cell}
+}
+			.view-as.group_ {{ composite_group_id }} i{display: none;}
+			.group_ {{ composite_group_id }} .view-as.group_ {{ composite_group_id }} i{ display:inline;}
+
+{{/group.composites}}
+
+		</style>
+
+		<script>
+			window.onload = function(){
+				$('.page-menu ul li').each(function(my, item){
+						var groups =($(item).data('groups')+"").split(',')
+						for(var i in groups){
+							$(item).addClass('group_'+groups[i]);
+						}
+					
+				})
+				groups = [{{#user.groups}},{{/user.groups}}];
+				for(var i in groups){
+					$('.group_'+groups[i]).click();
+				}
+								
+
+				$('.view-as').on('click', function(e){
+					if($(e.currentTarget).data('group') !== 'all'){
+						if(window.getComputedStyle($(".page-menu .page_"+pageID)[0]).display == 'none'){
+							modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})
+						}
+					}
+				})
+			}
+		</script>

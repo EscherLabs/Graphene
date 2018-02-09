@@ -57,8 +57,8 @@ class PortalMigration extends Seeder
                 try {
                     if (isset($groups_index[$group_composite_db->group_id])) { // Make sure the group actually exists
                         $group_composite = new \App\GroupComposite;
-                        $group_composite->composite_group_id = $groups_index[$group_composite_db->group_id]->id;
-                        $group_composite->group_id = $groups_index[$group_composite_db->composite_id]->id;
+                        $group_composite->composite_group_id = $groups_index[$group_composite_db->composite_id]->id;
+                        $group_composite->group_id = $groups_index[$group_composite_db->group_id]->id;
                         $group_composite->save();
                     }
                 } catch (Exception $e) {

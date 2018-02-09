@@ -18,6 +18,9 @@ class Group extends Model
     public function composites() {
       return $this->hasMany(GroupComposite::class);
     }
+    public function owners() {
+      return $this->hasMany(GroupComposite::class,'composite_group_id');
+    }
     public function endpoints() {
       return $this->hasMany(Endpoint::class);
     }

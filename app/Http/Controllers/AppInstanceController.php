@@ -66,10 +66,10 @@ class AppInstanceController extends Controller
 
     public function run($group, $slug, Request $request) {
         if(!is_numeric($group)) {
-			$groupObj = Group::where('slug','=',$group)->first();
+			$groupObj = Group::with('composites')->where('slug','=',$group)->first();
 			$group = $groupObj->id;
 		}else{
-			$groupObj = Group::where('id','=',$group)->first();
+			$groupObj = Group::with('composites')->where('id','=',$group)->first();
         }
 
         if (Auth::check()) { /* User is Authenticated */
