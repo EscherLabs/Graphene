@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         $site->name = 'LocalDev';
         $site->theme = ['css' => '','icon'=>'file'];
         $site->templates = ['main'=>(object)[],'partials'=>(object)[
-            'footer'=>'Custom Footer: Developed by Escher Labs, Inc'
+            'footer'=>''
         ]];
         $site->auth = 'CAS';
         $site->auth_config = [

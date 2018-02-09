@@ -20,12 +20,12 @@ class LinkController extends Controller
     {
         return Link::whereHas('group', function($q){
             $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups);
-        })->get();
+        })->orderBy('title')->get();
     }
 
     public function user_index()
     {
-        return Link::whereIn('group_id',Auth::user()->groups)->get();
+        return Link::whereIn('group_id',Auth::user()->groups)->orderBy('title')->get();
     }
 
     public function create(Request $request)
