@@ -15,8 +15,6 @@ Cobler.types.Links = function(container){
 	var fields = {
 		Title: {},
 		"Container?":{name:'container', type: 'checkbox'},
-
-		// Text: {type: 'contenteditable', label: false}//, show:{matches:{name:'editor',value:true}},parsable:'show'},
 	}
 	return {
 	  container:container,
@@ -25,17 +23,16 @@ Cobler.types.Links = function(container){
 		toJSON: get,
 		edit: berryEditor.call(this, container),
 		get: get,
-		set: set,		initialize: function(el){
-			 $.ajax({
-          url: '/api/user_links',
-          dataType : 'json',
-					type: 'GET',
-
-					success  : function(el,data){
-						// this.set({links:data})
-						$(el).find('.link_collection').html(templates['widgets_links'].render($.extend(this.get(),{links:data}), templates))
-						}.bind(this,el)
-      })
+		set: set,		
+		initialize: function(el){
+			$.ajax({
+			url: '/api/user_links',
+			dataType : 'json',
+				type: 'GET',
+				success  : function(el,data){
+					$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:data}), templates))
+				}.bind(this,el)
+			})
 		}
 	}
 }
