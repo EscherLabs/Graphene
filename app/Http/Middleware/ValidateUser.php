@@ -63,7 +63,7 @@ class ValidateUser
         Auth::user()->tags_array = Tag::whereIn('group_id',Auth::user()->groups)->get(['name','value'])->toArray();
         Auth::user()->tags = [];
         foreach(Auth::user()->tags_array as $tag) {
-            Auth::user()->tags[$tag['name']] = $tag['value'];
+            Auth::user()->tags[$tag['name']][] = $tag['value'];
         }
 
         Auth::user()->site = $current_site;

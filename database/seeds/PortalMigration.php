@@ -42,12 +42,14 @@ class PortalMigration extends Seeder
             $tags_db = DB::connection('mysql-portal')->table('group_keys')->get();
             $tags_index = [];
             foreach($tags_db as $index => $tag_db) {
-                $tag = new \App\Tag;
-                $tag->group_id = $tag_db->group_id;
-                $tag->name = $tag_db->name;
-                $tag->value = $tag_db->value;
-                $tag->save();
-                $tags_index[$tag_db->id] = $tag;
+                if (isset($groups_index[$tag_db->group_id])) {
+                    $tag = new \App\Tag;
+                    $tag->group_id = $groups_index[$tag_db->group_id]->id;
+                    $tag->name = $tag_db->name;
+                    $tag->value = $tag_db->value;
+                    $tag->save();
+                    $tags_index[$tag_db->id] = $tag;
+                }
             }
 
             $group_composites_db = DB::connection('mysql-portal')->table('group_composites')->get();
@@ -137,7 +139,11 @@ class PortalMigration extends Seeder
                     $app_db->template = str_replace('user.pods','user.params.pods',$app_db->template);
                     $app_db->sources = str_replace('tags.','user.tags.',$app_db->sources);
                     $app_db->script = str_replace('tags.','user.tags.',$app_db->script);
-                    $app_db->template = str_replace('tags.','user.tags.',$app_db->template);                   
+                    $app_db->template = str_replace('tags.','user.tags.',$app_db->template);  
+                    
+                    $app_db->script = str_replace('_.findWhere','_.find',$app_db->script);
+                    $app_db->script = str_replace('_.filter','_.where',$app_db->script);
+                    $app_db->script = str_replace('_.pluck','_.map',$app_db->script);
 
                     $app_sources_db = json_decode($app_db->sources,true);
                     $app_sources = [];
