@@ -32,7 +32,7 @@
 /*berryTables*/
 [data-popins]{ border-bottom: 1px dotted;}
 [data-popins]{cursor: pointer; }
-[data-inline] .form-group{margin-bottom:0;}
+/*[data-inline] .form-group{margin-bottom:0;}  */
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none;   /* Chrome/Safari/Opera */
