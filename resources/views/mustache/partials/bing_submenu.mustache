@@ -7,7 +7,7 @@
 	{{#pages}}
     {{^unlisted}}
 
-    	<li class="page_{{id}} {{device_class}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
+    	<li class="{{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}} page_{{id}} {{device_class}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
     	    <a href="/page/{{group_slug}}/{{slug}}" data-page="{{id}}">{{name}}</a>	
     	</li>
     {{/unlisted}}
@@ -17,7 +17,7 @@
 	
 	{{#app_instances}}
     {{^unlisted}}
-    	<li class="page_{{id}} {{device_class}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
+    	<li class="{{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}} page_{{id}} {{device_class}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
     	    <a href="/app/{{group_slug}}/{{slug}}" data-page="{{id}}">{{name}}</a>	
     	</li>
     {{/unlisted}}
