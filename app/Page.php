@@ -31,7 +31,7 @@ class Page extends Model
     }
     public function getHiddenMdAttribute()
     {
-        return ($this->device === 1 || $this->device === 4);  
+        return ($this->device === 3 || $this->device === 4);  
     }
     public function getHiddenLgAttribute()
     {
