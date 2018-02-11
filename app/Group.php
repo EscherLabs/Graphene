@@ -147,6 +147,11 @@ class Group extends Model
         }))->whereIn('id', Auth::user()->groups);
     }
 
+    public function scopePublicLinks($query)
+    {
+        return $query;
+    }
+
 
 
 }
