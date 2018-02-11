@@ -48,6 +48,11 @@ class Templater {
             $data['apps_pages'][$index]['group_id'] = $link['id'];
             $data['apps_pages'][$index]['group_slug'] = $link['slug'];    
         }
+
+        // TJC -- 2/10/18 -- Should make slide size configurable at the site level
+        $slice_size = 5;
+        $data['apps_pages'] = [array_slice($data['apps_pages'],0,$slice_size),array_slice($data['apps_pages'],$slice_size)];
+
         if (isset($data['apps']) && is_array($data['apps'])) {
             $data['apps'] = $data['apps']->toArray();
         }

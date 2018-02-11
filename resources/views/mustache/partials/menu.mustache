@@ -1,21 +1,23 @@
 <div class="col-sm-3 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
     {{#apps_pages}}
-      {{^unlisted}}
-        <li><a data-toggle="collapse" href="#collapse{{ id }}">{{ name }}</a></li>
-        <ul class="collapse"  id="collapse{{ id }}">
-        {{#pages}}
-          {{^unlisted}}
-            <li class="{{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/page/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}file{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-          {{/unlisted}}
-        {{/pages}}
-        {{#app_instances}}
-          {{^unlisted}}
-            <li class="{{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/app/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-          {{/unlisted}}
-        {{/app_instances}}
-        </ul>
-      {{/unlisted}}
+      {{#.}}
+        {{^unlisted}}
+          <li><a data-toggle="collapse" href="#collapse{{ id }}">{{ name }}</a></li>
+          <ul class="collapse"  id="collapse{{ id }}">
+          {{#pages}}
+            {{^unlisted}}
+              <li class="{{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/page/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}file{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+            {{/unlisted}}
+          {{/pages}}
+          {{#app_instances}}
+            {{^unlisted}}
+              <li class="{{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/app/{{group_slug}}/{{ slug }}{{^topbar_enabled}}?topbar=false{{/topbar_enabled}}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+            {{/unlisted}}
+          {{/app_instances}}
+          </ul>
+        {{/unlisted}}
+      {{/.}}
     {{/apps_pages}}
   </ul>
 </div>
