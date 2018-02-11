@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'cas_uri'             => '/cas',
             'cas_login_url'       => '',
             'cas_logout_url'      => '',
-            'cas_enable_saml'     => true,
+            'cas_enable_saml'     => 'true',
             'cas_data_map'        => [
                 "default"=> [
                     "email"=> "{{mail}}", 
@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
             "external_user_lookup" => [
                 "url" => "https://www.escherlabs.com/pidm.php", 
                 "verb" => "GET", 
-                "enabled" => true
+                "enabled" => 'true'
             ]
         ];
 
