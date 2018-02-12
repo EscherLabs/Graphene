@@ -39,8 +39,13 @@ class CASAuthentication
         // Map Additional Parameters
         $attributes = [];
         foreach(config('cas.cas_data_map')->additional as $attribute_name => $attribute_value) {
-            $attributes[$attribute_name] = $m->render($attribute_value, $user_attributes);
+            $value = $m->render($attribute_value, $user_attributes);
+            if ($value != '') { /* Only Update Non-Empty Attributes */
+                $attributes[$attribute_name] = $value;
+            }
         }
+        /* Merge with existing attributes */
+        $attributes = array_merge((array)$user->params,$attributes);
         $user->params = $attributes;
     }
 
