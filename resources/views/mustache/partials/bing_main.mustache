@@ -2,6 +2,9 @@
 <html lang="en">
   <head>
     {{> core_head}}
+        <style>
+      {{> bing_css}}
+    </style>
   </head>
   <body id="page" class="app">
       {{#topbar_enabled}}{{> bing_header}}{{/topbar_enabled}}
@@ -19,8 +22,6 @@
         </div>
     </div>
     {{> core_engine}}
-    <style>
-      {{> bing_css}}
-    </style>
+
   </body>
 </html>

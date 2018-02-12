@@ -51,7 +51,7 @@ class LoginController extends Controller
             $q->where('site_id', '=', config('app.site')->id);
         })->with('app')->get();
 
-        return view('auth.login', ['apps'=>$current_user_apps, 'links'=>Group::publicLinks()->get()]);
+        return view('auth.login', ['apps'=>$current_user_apps, 'links'=>Group::publicAppsPages()->get()]);
 
         //return view('auth.login');
     }

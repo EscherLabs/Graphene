@@ -146,12 +146,4 @@ class Group extends Model
             $q->orderBy('order');
         }))->whereIn('id', Auth::user()->groups);
     }
-
-    public function scopePublicLinks($query)
-    {
-        return $query;
-    }
-
-
-
 }
