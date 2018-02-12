@@ -108,6 +108,8 @@ return [
 
     'migrations' => 'migrations',
 
+    'full_seed' => env('FULL_SEED',false), /* Run Portal DB seed in full/abridged mode -- faster but less complete */
+
     /*
     |--------------------------------------------------------------------------
     | Redis Databases

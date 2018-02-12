@@ -1,9 +1,11 @@
 <?php
+ini_set('memory_limit','1024M');
 
 use Illuminate\Database\Seeder;
 
 class PortalMigration extends Seeder
 {
+
     /**
      *
      * Run the database seeds.
@@ -12,12 +14,17 @@ class PortalMigration extends Seeder
      */
     public function run()
     {
+        if (!config('database.full_seed')) {
+            Echo "Running in abridged mode.  To pull in all users, add 'FULL_SEED=true' to the .env file\n";
+        }
         try {
             $site_id = 1;
-            $user_ids = [1,2];
-            $group_memberships = ['Students','Staff','ITS Blog Admins'];
+            // $user_ids = [1,2]; -- No longer assigning app developers TJC 2/11/18
+            $user_bnums = ['B00573562','B00505893'];
             $key = env('APP_KEY_PORTAL');
+            $site = \App\Site::where('id',$site_id)->first();
 
+            /* Begin Import Groups */
             $groups_db = DB::connection('mysql-portal')->table('groups')->get();
             $groups_index = [];
             foreach($groups_db as $index => $group_db) {
@@ -30,15 +37,17 @@ class PortalMigration extends Seeder
                 $group->save();
                 $groups_index[$group_db->id] = $group;
 
-                if (in_array($group->name,$group_memberships)) {
-                    foreach($user_ids as $user_id) {
-                        $current_user = \App\User::find($user_id);
-                        $group->add_admin($current_user, 1);
-                        $group->add_member($current_user, 1);
-                    }
-                }
+                // if (in_array($group->name,$group_memberships)) {
+                //     foreach($user_ids as $user_id) {
+                //         $current_user = \App\User::find($user_id);
+                //         $group->add_admin($current_user, 1);
+                //         $group->add_member($current_user, 1);
+                //     }
+                // }
             }
+            /* End Import Groups */
 
+            /* Begin Import Tags */
             $tags_db = DB::connection('mysql-portal')->table('group_keys')->get();
             $tags_index = [];
             foreach($tags_db as $index => $tag_db) {
@@ -51,22 +60,74 @@ class PortalMigration extends Seeder
                     $tags_index[$tag_db->id] = $tag;
                 }
             }
+            /* End Import Tags */
 
+            /* Begin Import Composites */
             $group_composites_db = DB::connection('mysql-portal')->table('group_composites')->get();
             foreach($group_composites_db as $index => $group_composite_db) {
-                try {
-                    if (isset($groups_index[$group_composite_db->group_id])) { // Make sure the group actually exists
-                        $group_composite = new \App\GroupComposite;
-                        $group_composite->composite_group_id = $groups_index[$group_composite_db->composite_id]->id;
-                        $group_composite->group_id = $groups_index[$group_composite_db->group_id]->id;
-                        $group_composite->save();
-                    }
-                } catch (Exception $e) {
-                    echo 'Caught exception: ',  $e->getMessage(), "\n";
-                    echo "The exception was created on line: " . $e->getLine(). "\n";
+                if (isset($groups_index[$group_composite_db->group_id])) { // Make sure the group actually exists
+                    $group_composite = new \App\GroupComposite;
+                    $group_composite->composite_group_id = $groups_index[$group_composite_db->composite_id]->id;
+                    $group_composite->group_id = $groups_index[$group_composite_db->group_id]->id;
+                    $group_composite->save();
                 }
             }
+            /* End Import Composites */
 
+            /* Begin Import Users */
+            echo "Importing Users (this takes a while) ...\n";
+            $users_db = DB::connection('mysql-portal')->table('users')->get();
+            $users_index = [];
+            foreach($users_db as $index => $user_db) {
+                if (config('database.full_seed') || in_array($user_db->bnum,$user_bnums)) {
+                    $user = new \App\User;
+                    $user->first_name = $user_db->first_name;
+                    $user->last_name = $user_db->last_name;
+                    $user->email = ($user_db->email=='')?NULL:$user_db->email;
+                    $user->unique_id = ($user_db->bnum=='')?NULL:$user_db->bnum;
+                    $user->params = ['pidm'=>$user_db->pidm,'bnum'=>$user_db->bnum,'pods'=>explode('@',$user_db->email)[0]];
+                    try {
+                        $user->save();
+                        $users_index[$user_db->pidm] = $user;
+                        $site->add_member($user,0,0);
+                    } catch (Exception $e) {
+                        echo "Error Creating User: ".$e->getMessage()."\n";
+                        echo "... continuing anyway ...\n";
+                    }
+                }
+            }
+            /* End Import Users */
+
+            /* Begin Group Memberships */
+            echo "Importing Group Memberships ...\n";
+            $group_members_db = DB::connection('mysql-portal')->table('group_members')->get();
+            foreach($group_members_db as $index => $group_member_db) {
+                if (isset($groups_index[$group_member_db->group_id]) && isset($users_index[$group_member_db->pidm])) { // Make sure the group actually exists
+                    $group_member = new \App\GroupMember;
+                    $group_member->user_id = $users_index[$group_member_db->pidm]->id;
+                    $group_member->group_id = $groups_index[$group_member_db->group_id]->id;
+                    $group_member->status = 1;
+                    $group_member->save();
+                }
+            }
+            /* End Group Memberships */
+
+            /* Begin Group Admins */
+            echo "Importing Group Admins ...\n";
+            $group_admins_db = DB::connection('mysql-portal')->table('group_admins')->get();
+            foreach($group_admins_db as $index => $group_admin_db) {
+                if (isset($groups_index[$group_admin_db->group_id]) && isset($users_index[$group_admin_db->pidm])) { // Make sure the group actually exists
+                    $group_admin = new \App\GroupAdmin;
+                    $group_admin->user_id = $users_index[$group_admin_db->pidm]->id;
+                    $group_admin->group_id = $groups_index[$group_admin_db->group_id]->id;
+                    $group_admin->status = 1;
+                    $group_admin->save();
+                }
+            }
+            /* End Group Admins */
+
+
+            echo "Importing Endpoints...\n";
             $endpoints_db = DB::connection('mysql-portal')->table('endpoints')->get();
             $endpoints_index = [];
             foreach($endpoints_db as $index => $endpoint_db) {
@@ -189,13 +250,13 @@ class PortalMigration extends Seeder
 
                     $app_versions_index[$app->id] = $app_version;
 
-                    foreach($user_ids as $user_id) {
-                        $app_developer = new \App\AppDeveloper;
-                        $app_developer->app_id = $app->id;
-                        $app_developer->user_id = $user_id;
-                        $app_developer->status = 1;
-                        $app_developer->save();
-                    }
+                    // foreach($user_ids as $user_id) {
+                    //     $app_developer = new \App\AppDeveloper;
+                    //     $app_developer->app_id = $app->id;
+                    //     $app_developer->user_id = $user_id;
+                    //     $app_developer->status = 1;
+                    //     $app_developer->save();
+                    // }
 
                 } catch (Exception $e) {
                     echo 'Caught exception: ',  $e->getMessage(), "\n";
