@@ -48,6 +48,7 @@ class PortalMigration extends Seeder
             /* End Import Groups */
 
             /* Begin Import Tags */
+            echo "Importing Tags ...\n";
             $tags_db = DB::connection('mysql-portal')->table('group_keys')->get();
             $tags_index = [];
             foreach($tags_db as $index => $tag_db) {
@@ -61,6 +62,25 @@ class PortalMigration extends Seeder
                 }
             }
             /* End Import Tags */
+
+            /* Begin Import Images */
+            echo "Importing Images ...\n";
+            $images_db = DB::connection('mysql-portal')->table('images')->get();
+            $images_index = [];
+            foreach($images_db as $index => $image_db) {
+                if (isset($groups_index[$image_db->group_id])) {
+                    $image = new \App\Image;
+                    $image->group_id = $groups_index[$image_db->group_id]->id;
+                    $image->name = $image_db->name;
+                    $image->ext = $image_db->ext;
+                    // $file_path = explode('/',urldecode($image_db->image_filename));
+                    // $image->filename = $file_path[count($file_path)-1];
+                    $image->filename = $image_db->image_filename;
+                    $image->save();
+                    $images_index[$image_db->image_filename] = $image;
+                }
+            }
+            /* End Import Images */
 
             /* Begin Import Composites */
             $group_composites_db = DB::connection('mysql-portal')->table('group_composites')->get();
@@ -346,6 +366,12 @@ class PortalMigration extends Seeder
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
                                 ];
                             } if ($page_widget_db->widgetType=='Slider') {
+                                foreach($page_widget_db->images as $index => $image) {
+                                    // dd($image->image);
+                                    if (isset($images_index[$image->image])) {
+                                        $page_widget_db->images[$index]->image = 'images/'.$images_index[$image->image]->id.'.'.$images_index[$image->image]->ext;
+                                    }
+                                }
                                 $page_content_array['sections'][$page_column_num][] = [
                                     'widgetType' => 'Image',
                                     'images' => $page_widget_db->images,
@@ -354,9 +380,14 @@ class PortalMigration extends Seeder
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
                                 ];
                             } if ($page_widget_db->widgetType=='Image') {
+                                if (isset($images_index[$page_widget_db->image])) {
+                                    $image_path = 'images/'.$images_index[$page_widget_db->image]->id.'.'.$images_index[$page_widget_db->image]->ext;
+                                } else {
+                                    $image_path = $page_widget_db->image;
+                                }
                                 $page_content_array['sections'][$page_column_num][] = [
                                     'widgetType' => 'Image',
-                                    'images' => ['image'=>$page_widget_db->image,'text'=>$page_widget_db->text],
+                                    'images' => ['image'=>$image_path,'text'=>$page_widget_db->text],
                                     'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:false,

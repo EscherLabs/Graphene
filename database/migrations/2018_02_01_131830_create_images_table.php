@@ -18,7 +18,7 @@ class CreateImagesTable extends Migration
             $table->integer('group_id')->unsigned()->index();
 			$table->string('name')->default('');
 			$table->string('ext')->default('');
-			$table->string('image_filename')->default('');
+			$table->string('filename')->default('');
             $table->timestamps();
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
