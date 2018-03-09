@@ -17,7 +17,7 @@ $('.navbar-header .nav a h4').on('click',function(){
 })
 $('#save').on('click',function() {
   var data = {code:{}};
-  data.style = Berries.style.toJSON();
+  data.style = Berries.style.toJSON().style;
   data.code.resources = _.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
   // var successCompile = false;

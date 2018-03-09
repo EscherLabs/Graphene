@@ -34,7 +34,22 @@ class AppInstanceController extends Controller
     }
 
     public function show(AppInstance $app_instance) {
-        return AppInstance::with('app')->where('id', '=', $app_instance->id)->first();
+
+        $myApp = AppInstance::with('app')->where('id', '=', $app_instance->id)->first();
+        $myAppVersion;
+        
+        if(is_null($myApp->app_version_id)){
+            $myAppVersion = AppVersion::orderBy('created_at', 'desc')->first();
+        }else if($myApp->app_version_id == 0){
+            $myAppVersion = AppVersion::where('stable','=',1)->orderBy('created_at', 'desc')->first();
+        }else{
+            $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
+        }
+        
+        // $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
+        $myApp->app->code = $myAppVersion->code;
+        $myApp->app->version = $myAppVersion->id;
+        return $myApp;
     }
 
     public function create(Request $request) {
@@ -49,8 +64,10 @@ class AppInstanceController extends Controller
     }
 
     public function update(Request $request, AppInstance $app_instance) {
-        $app_instance->update($request->all());
-        return $app_instance;
+        $data = $request->all();
+        if($request->app_version_id == -1){$data['app_version_id'] = null;}
+        $app_instance->update($data);
+        return AppInstance::with('app')->where('id', '=',$app_instance->id)->first();
     }
 
     public function destroy(AppInstance $app_instance){
@@ -92,9 +109,16 @@ class AppInstanceController extends Controller
 
         }
         /* Maybe there's a better way to do this -- appending app version code to app */
-        $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
+        $myAppVersion;
+        if(is_null($myApp->app_version_id)){
+            $myAppVersion = AppVersion::orderBy('created_at', 'desc')->first();
+        }else if($myApp->app_version_id == 0){
+            $myAppVersion = AppVersion::where('stable','=',1)->orderBy('created_at', 'desc')->first();
+        }else{
+            $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
+        }
         $myApp->app->code = $myAppVersion->code;
-
+        $myApp->app->version = $myAppVersion->id;
 
         if($myApp != null) {
             // dd($myApp->toArray());

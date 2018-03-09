@@ -58,6 +58,10 @@ class AppController extends Controller
         $app_version->stable = true;
         $app_version->save();
         return $app_version;
+    }    
+    public function versions(Request $request, App $app) { 
+        $app_version = AppVersion::where('app_id','=',$app->id)->where('stable','=',1)->orderBy('created_at', 'desc')->get();
+        return $app_version;
     }
     public function update(Request $request, App $app) {  
         // $app->code = $request->code;

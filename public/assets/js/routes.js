@@ -102,13 +102,39 @@ initializers['appinstances'] = function() {
         			{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
-					{label: 'Version', name:'app_version_id', required:true, type:'number'},
+					{label: 'Version', name:'app_version_id', required:true, type:'hidden'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/admin/appinstances/'+model.attributes.id};
 				tableConfig.data = data;
 				tableConfig.name = "appinstances";
+				tableConfig.events = [
+					{'name': 'version', 'label': '<i class="fa fa-cogs"></i> Version', callback: function(model){
+						$.ajax({
+							url: '/api/apps/'+model.attributes.app_id+'/versions',
+							success: function(data) {
+								console.log(data);
+								data.unshift({id:0,summary:'Latest Stable'})
+								data.unshift({id:-1,summary:'Latest (working or stable)'})
+								$().berry({attributes:model.attributes,m:model,legend:'Select Version',fields:[
+										{label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'summary'},
+								]}).on('save',function(){
+									// model.attributes.app_version_id = this.toJSON().version;
+									// debugger;
+									var temp = $.extend(true,{},this.options.m.attributes,this.toJSON());
+									// temp.app_version_id = parseInt(temp.app_version_id);
+																		debugger;
+
+									this.options.m.set(temp)
+									this.options.m.owner.options.edit(this.options.m)
+									this.options.m.owner.draw();
+									this.trigger('close');
+								})
+							}
+						})
+					}}
+				],
 
 				bt = new berryTable(tableConfig)
 			}
@@ -196,10 +222,10 @@ initializers['app_instance'] = function() {
 					user_options_default.name = 'user_options_default';
 					$('#user_options_default .col-sm-9').berry(user_options_default);
 				}
-				if(data.app.code.sources[0].name !== '') {	
+				if(data.app.code.resources[0].name !== '') {	
 					$('#resoucestab').show();
 
-					var attributes = $.extend(true, [],data.app.code.sources, data.resources);
+					var attributes = $.extend(true, [],data.app.code.resources, data.resources);
 					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
 						{name:'container', label: false,  type: 'fieldset', fields:[
 
