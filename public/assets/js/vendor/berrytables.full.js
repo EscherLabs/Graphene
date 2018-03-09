@@ -894,8 +894,9 @@ csvify = function(data, columns, title){
 
   var csv = '"'+_.pluck(columns,'label').join('","')+'"\n';
   this.labels = _.pluck(columns,'name')
+	var empty = _.object(this.labels, _.map(this.labels, function() { return '';}))
   csv += _.map(data,function(d){
-      return JSON.stringify(_.values(_.pick(d,this.labels)))
+      return JSON.stringify(_.values(_.extend(empty,_.pick(d,this.labels))))
   },this)
   .join('\n') 
   .replace(/(^\[)|(\]$)/mg, '')

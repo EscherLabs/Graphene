@@ -21,6 +21,10 @@ class App extends Model
     {
       return $this->hasMany(AppDeveloper::class);
     }
+    public function versions()
+    {
+      return $this->hasMany(AppVersion::class);
+    }
     public function list_developers()
     {
         return $this->developers()->get();

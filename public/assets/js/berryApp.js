@@ -15,19 +15,22 @@ function App() {
 		(this.options[verb] || _.partial(this.options.crud, _, _, _, verb) || function(){}).call(this, name, data, callback.bind(this))
 	}
 	function redraw() {
+		this.$el.off('click');
 		this.events = {initialize: []};
 		if(typeof this.inline == 'object' && this.inline instanceof Berry) {
 			this.inline.destroy();
 		}
-		this.$el.off('click');
 		this.app.trigger('teardown')
 		this.ractive.teardown();
+
 		this.draw();
 	}
 	function refresh() {
 		this.$el.off('click');		
 		this.events = {initialize: []};
-
+		if(typeof this.inline == 'object' && this.inline instanceof Berry) {
+			this.inline.destroy();
+		}
 		this.app.trigger('teardown')
 		this.ractive.teardown();
 
@@ -52,26 +55,45 @@ function App() {
 		get:_.partial(router, 'GET').bind(this),
 		put:_.partial(router, 'PUT').bind(this),
 		delete:_.partial(router, 'DELETE').bind(this),
-		find:function(selectors){
-			return this.$el[0].querySelectorAll(selectors)
-		}.bind(this),
-		render:function(template,data){
-			return Hogan.compile(this.partials[template]).render(data);
-		}.bind(this),
+		
 		redraw: redraw.bind(this),
 		refresh: refresh.bind(this),
+
 		refetch: function(){
 			this.app.trigger('refetch');
 		}.bind(this),		
 		reload: function(){
 			this.app.trigger('reload');
 		}.bind(this),
+
 		update: update.bind(this),
+
 		click: click.bind(this),
+
 		on: Berry.prototype.on.bind(this),
 		off: Berry.prototype.off.bind(this),
 		trigger: Berry.prototype.trigger.bind(this),
-		$el:this.$el
+
+		$el:this.$el,
+
+		find:function(selectors){
+			return this.$el[0].querySelectorAll(selectors)
+		}.bind(this),
+		render:function(template,data){
+			return Hogan.compile(this.partials[template]).render(data);
+		}.bind(this)
+
+		//modal
+		//message
+		//dialog
+		//form
+			//alert?
+
+		//state
+		//table
+		
+		//chart
+		//use promises and local fetch?
 	}
 }
  

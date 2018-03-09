@@ -4,17 +4,18 @@
 loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
 forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
 },loaded.code)
+debugger;
 
 var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
 
-$('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
-$('.navbar-header .nav a h4').on('click',function(){
-  $().berry({legend:'Update App Name',fields:[{name:'name',label:false, value: attributes.name}]}).on('save', function(){
-      attributes.name = this.toJSON().name;
-      $('.navbar-header .nav a h4').html(attributes.name+' <i class="fa fa-pencil"></i>');
-      this.trigger('close');
-  });
-})
+$('.navbar-header .nav a h4').html(attributes.app.name);//+' <i class="fa fa-pencil"></i>');
+// $('.navbar-header .nav a h4').on('click',function(){
+//   $().berry({legend:'Update App Name',fields:[{name:'name',label:false, value: attributes.name}]}).on('save', function(){
+//       attributes.app.name = this.toJSON().name;
+//       $('.navbar-header .nav a h4').html(attributes.app.name+' <i class="fa fa-pencil"></i>');
+//       this.trigger('close');
+//   });
+// })
 $('#save').on('click',function() {
   var data = {code:{}};
   data.style = Berries.style.toJSON().style;
@@ -39,7 +40,6 @@ $('#save').on('click',function() {
   data.code.scripts = scriptPage.toJSON();
   var temp = formPage.toJSON();
   data.code.forms = formPage.toJSON();
-
   // data.code.form = temp[0].content;
   // data.code.user_options_form = temp[1].content;
   $.ajax({
@@ -57,15 +57,31 @@ $('#save').on('click',function() {
 
 
 $('#import').on('click',function() {
-
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
       $.ajax({
         url: '/api/apps/'+attributes.app_id+'/code',
-        data: $.extend({force: true, updated_at:''}, JSON.parse(Berries.update.toJSON().descriptor)),
+        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
         method: 'PUT',
         success: function(){
           Berries.update.trigger('close');
           window.location.reload();
+        }
+      })
+  });
+})
+$('#publish').on('click',function() {
+
+    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Microapp',fields: [	
+        {label: 'Summary'},
+        {label: 'Description', type: 'textarea'}
+      ]}).on('save', function(){
+      $.ajax({
+        url: '/api/apps/'+attributes.app_id+'/version',
+        data: this.toJSON(),
+        method: 'PUT',
+        success: function(){
+          Berries.update.trigger('close');
+          toastr.success('', 'Successfully Published')
         }
       })
   });

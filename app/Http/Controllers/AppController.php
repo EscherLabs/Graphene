@@ -19,9 +19,9 @@ class AppController extends Controller
 
     public function index(Request $request) {
         if (Input::has('limit') || !Auth::user()->site_admin) {
-            return App::where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+            return App::with('versions')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
         } else {
-            return App::where('site_id',config('app.site')->id)->get();
+            return App::with('versions')->where('site_id',config('app.site')->id)->get();
         }
     }
 
@@ -78,7 +78,7 @@ class AppController extends Controller
     public function admin(App $app) {
                 // return ;
 
-        return view('adminApp', ['app'=>AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first()]);
+        return view('adminApp', ['app'=>AppVersion::with('app')->where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first()]);
     }
     public function list_members(Group $group)
     {
