@@ -16,8 +16,9 @@ $('.navbar-header .nav a h4').on('click',function(){
   });
 })
 $('#save').on('click',function() {
-  var data = $.extend(true, {}, attributes, Berries.app.toJSON());
-  data.code.resources = Berries.app.toJSON().code.resources;
+  var data = {code:{}};
+  data.style = Berries.style.toJSON();
+  data.code.resources = _.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
   // var successCompile = false;
   try{
@@ -82,28 +83,46 @@ $(document).keydown(function(e) {
   return true;
 });
 
-$('.sources').berry({
+$('.styles').berry({
   actions:false,
-  name: 'app',
+  name: 'style',
   autoDestroy:false,
   attributes:attributes,
   inline:true,
   flatten:false,
   fields:[
-    // {label: 'Name', name:'name', required: true, fieldset:"app_name"},
     {name:'code', label: false,  type: 'fieldset', fields:[
-      {label:false, name:'css', fieldset: 'styles', type:'ace', mode:'ace/mode/css'},
-      {fieldset:'resources',"multiple": {"duplicate": true},label: false, name: 'resources', type: 'fieldset', fields:[
-          {label: 'Name',name: 'name'},
-          {label: 'Fetch', type: 'checkbox'},
-          {label: 'Path'},
-          {label: 'Cache', type: 'checkbox'},
-          {label: 'Modifier', type: 'select', choices:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
-      ]},
-      // {fieldset:'forms',label: 'Configuration Form',type:'ace', name:'form', mode:'ace/mode/javascript'},        
-      // {fieldset:'forms',label: 'User Preferences Form',type:'ace', name:'user_preference_form', mode:'ace/mode/javascript'}
+      {label:false, name:'css', type:'ace', mode:'ace/mode/css'},
     ]}
   ]})
+  
+
+// var api = '/api/apps'+;
+var tableConfig = {
+		entries: [25, 50, 100],
+		count: 25,
+		autoSize: -20,
+		container: '.resources',
+    edit:true,delete:true,add:true
+	}
+
+
+    		tableConfig.schema = [
+          {label: 'Name',name: 'name'},
+          {label: 'Fetch', type: 'checkbox',name:'fetch'},
+          {label: 'Path',name:'path'},
+          {label: 'Cache', type: 'checkbox',name:'cache'},
+          {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
+				];
+        // debugger;
+				tableConfig.data = attributes.code.resources;
+				// tableConfig.click = function(model){window.location.href = '/admin/sites/'+model.attributes.id};
+				bt = new berryTable(tableConfig)
+
+
+
+
+
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;// - (88+ this.options.autoSize) +'px');
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')

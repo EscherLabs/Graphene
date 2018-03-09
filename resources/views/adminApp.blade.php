@@ -19,20 +19,19 @@
 </div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-coffee"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
+    <li role="presentation" class="active"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Reresources<span></a></li>
+    <li role="presentation"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-coffee"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
     <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li>
-    <li role="presentation"><a href="#sources" aria-controls="sources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
     <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li>
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane scripts active" id="scripts"></div>
+    <div role="tabpanel" class="tab-pane scripts" id="scripts"></div>
     <div role="tabpanel" class="tab-pane templates" id="templates"></div>
-    <div role="tabpanel" class="tab-pane " id="sources">
-      <div class="row"><div class="col-md-9 sources"></div>
-  <div class="col-md-3"></div></div></div>
+    <div role="tabpanel" class="tab-pane active " id="resources">
+      <div class="row"><div class="col-md-12 resources "></div></div></div>
     <div role="tabpanel" class="tab-pane" id="styles">
        <div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div>
