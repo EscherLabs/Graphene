@@ -16,7 +16,7 @@ class CreateVisitsTable extends Migration
         Schema::create('visits', function (Blueprint $table) {
             $table->increments('id');			
 			$table->integer('user_id')->unsigned();
-            $table->string('resource_type',20)->default('page');
+            $table->enum('resource_type',['page', 'app_instance'])->default('page');
             $table->integer('resource_id')->nullable()->default(null);
             $table->integer('width')->unsigned('');
             $table->timestamp('created_at')->useCurrent();
