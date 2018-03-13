@@ -4,8 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cache extends Model
+class ResourceCache extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['key','value'];
+    protected $fillable = ['url','content'];
 }

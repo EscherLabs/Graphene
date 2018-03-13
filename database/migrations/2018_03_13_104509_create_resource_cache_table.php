@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCacheTable extends Migration
+class CreateResourceCacheTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateCacheTable extends Migration
      */
     public function up()
     {
-        Schema::create('cache', function (Blueprint $table) {
+        Schema::create('resource_cache', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('key')->unique();
-            $table->mediumText('value');
+            $table->integer('app_instance_id')->unsigned()->index();
+            $table->string('url')->unique();
+            $table->mediumText('content');
             $table->timestamp('created_at')->useCurrent();
-            $table->index('key');
+            $table->index('url');
             $table->index('created_at');
         });
     }
