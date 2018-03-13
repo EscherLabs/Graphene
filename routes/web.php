@@ -113,6 +113,16 @@ Route::put('/api/links/{link}','LinkController@update')->middleware('can:update,
 // Delete an existing link by link_id
 Route::delete('/api/links/{link}','LinkController@destroy')->middleware('can:delete,link');
 
+/***** Tags *****/
+// List all tags
+Route::get('/api/tags','TagController@index')->middleware('can:get_all,App\Tag');
+// Create a new tag for group group_id
+Route::post('/api/tags','TagController@create')->middleware('can:create,App\Tag');
+// Update an existing tag by tag_id
+Route::put('/api/tags/{tag}','TagController@update')->middleware('can:update,tag');
+// Delete an existing tag by tag_id
+Route::delete('/api/tags/{tag}','TagController@destroy')->middleware('can:delete,tag');
+
 /***** Images *****/
 // List all images
 Route::get('/api/images','ImageController@index')->middleware('can:get_all,App\Image');

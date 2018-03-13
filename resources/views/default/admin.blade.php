@@ -78,6 +78,12 @@
             @can('get_all', 'App\Link')
               <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>  
             @endcan   
+            @can('get_all', 'App\Image')
+              <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>  
+            @endcan   
+            @can('get_all', 'App\Tag')
+              <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>  
+            @endcan   
             @can('view_in_admin','App\App')
               <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
             @endcan
@@ -110,6 +116,12 @@
         @endcan   
         @can('get_all', 'App\Link')
           <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>  
+        @endcan   
+        @can('get_all', 'App\Image')
+          <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>  
+        @endcan   
+        @can('get_all', 'App\Tag')
+          <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>  
         @endcan   
         @can('view_in_admin','App\App')
           <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>

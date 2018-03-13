@@ -520,6 +520,42 @@ initializers['links'] = function() {
 	});
 }
 
+initializers['tags'] = function() {
+	$('.navbar-header .nav a h4').html('Tags');
+	$.ajax({
+		url: '/api/'+route,
+		success: function(data){
+			tableConfig.schema = [
+				{label: 'Name', name:'name', required: true},
+				{label: 'Value', name:'value', required: true},
+				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+				{name: 'id', type:'hidden'}
+			];
+			tableConfig.data = data;
+			tableConfig.name = "tags";
+			bt = new berryTable(tableConfig)
+		}
+	});
+}
+
+initializers['images'] = function() {
+	$('.navbar-header .nav a h4').html('Images');
+	$.ajax({
+		url: '/api/'+route,
+		success: function(data){
+			tableConfig.schema = [
+				{label: 'Name', name:'name', required: true},
+				{label: 'Ext', name:'ext', required: true},
+				{label: 'Filename', name:'filename', required: true},
+				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+				{name: 'id', type:'hidden'}
+			];
+			tableConfig.data = data;
+			tableConfig.name = "images";
+			bt = new berryTable(tableConfig)
+		}
+	});
+}
 
 initializers['users'] = function() {
 	$('.navbar-header .nav a h4').html('Users');
