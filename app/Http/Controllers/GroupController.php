@@ -33,9 +33,6 @@ class GroupController extends Controller
 
     public function summary(Group $group)
     {
-
-
-
         return Group::with(
             array('composites'=>function($query){
                 $query->with(array('group'=>function($query){
@@ -52,7 +49,7 @@ class GroupController extends Controller
         }))
         ->with(array('tags'=>function($query){
             $query->select('id','group_id','name', 'value');
-        })) // TJC -- 3/12/18 -- Why doesn't this work??
+        }))
         ->with('membersCount')
         ->with('adminsCount')
         ->with('imagesCount')

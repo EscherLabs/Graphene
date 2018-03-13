@@ -209,3 +209,7 @@ Route::delete('/api/groups/{group}/composites/{composite_group}','GroupControlle
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
+
+/***** Visits *****/
+// Log a visit
+Route::post('/api/visit/log_visit','VisitController@log_visit');

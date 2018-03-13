@@ -45,6 +45,7 @@
 
 	{{#app_mode}}
 		appMode = true;
+		resource_type = 'app_instance';
 	//	$('[href$="/{{ $app->slug }}"]').parent().addClass('active').parent().addClass('in');
 		$('[href$="{{slug}}"]').parent().addClass('active').parent().addClass('in');
 
@@ -54,7 +55,12 @@
 				editUserOptions(cb.collections[0].getItems()[0])    
 			})
 		}
-
+		app_instance_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
+	{{/app_mode}}
+	{{^app_mode}}
+		appMode = false;
+		resource_type = 'page';
+		page_id = {{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
 	{{/app_mode}}
 
 	layouts = [
@@ -323,5 +329,12 @@
 						}
 					}
 				})
+				if (resource_type === 'page') {resource_id = page_id;} else if (resource_type === 'app_instance') {resource_id = app_instance_id;} 
+				$.ajax({
+						url: '/api/visit/log_visit',
+						type: 'post',
+						data: {path: window.location.pathname, referrer: document.referrer, width: window.innerWidth,resource_id:resource_id,resource_type:resource_type},
+						success: function(){}
+				});
 			}
 		</script>

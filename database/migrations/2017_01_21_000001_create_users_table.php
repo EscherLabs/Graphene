@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->json('params')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->index('unique_id');
         });
     }
 
