@@ -30,11 +30,14 @@ class Group extends Model
     public function images() {
         return $this->hasMany(Image::class);
     }
+    public function tags() {
+        return $this->hasMany(Tag::class);
+    }
 	public function endpointsCount()
 	{
 	  return $this->hasOne(Endpoint::class)
 	    ->selectRaw('group_id, count(*) as aggregate')
-	    ->groupBy('Group_id');
+	    ->groupBy('group_id');
 	}
 
     public function app_instances() {
@@ -52,7 +55,14 @@ class Group extends Model
 	{
 	  return $this->hasOne(GroupMember::class)
 	    ->selectRaw('group_id, count(*) as aggregate')
-	    ->groupBy('Group_id');
+	    ->groupBy('group_id');
+    }
+    
+    public function imagesCount()
+	{
+	  return $this->hasOne(Image::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('group_id');
 	}
 
     public function admins() {

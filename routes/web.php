@@ -34,6 +34,8 @@ Route::get('/admin/groups/{group}/', 'AdminController@summary')->middleware('can
 Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');
 Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');
 Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
+Route::get('/admin/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_tags,group');
+Route::get('/admin/groups/{group}/images', 'AdminController@images')->middleware('can:list_images,group');
 Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
 Route::get('/admin/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
 Route::get('/admin/sites/{site}', 'SiteController@admin')->middleware('can:get,site');

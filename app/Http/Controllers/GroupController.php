@@ -44,19 +44,18 @@ class GroupController extends Controller
                 );
             })
         )
-        // return Group::with('composites')	
-        // ->with('tags')
         ->with(array('pages'=>function($query){
             $query->select('id','group_id', 'name', 'slug', 'public');
         }))
         ->with(array('app_instances'=>function($query){
             $query->select('id','group_id', 'name', 'public', 'slug');
         }))
+        ->with(array('tags'=>function($query){
+            $query->select('id','name', 'value');
+        })) // TJC -- 3/12/18 -- Why doesn't this work??
         ->with('membersCount')
         ->with('adminsCount')
-        // ->with('imagesCount')
-        // ->with('pollsCount')
-        // ->with('formsCount')
+        ->with('imagesCount')
         ->with('endpointsCount')
         ->find($group->id);
     }

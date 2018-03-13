@@ -14,19 +14,25 @@ class AdminController extends Controller
     }
     
     public function index($resource = null) {
-     return view('admin', ['resource'=>$resource,'id'=>'']);
+       return view('admin', ['resource'=>$resource,'id'=>'']);
     }    
     public function members(Group $group) {
-     return view('admin', ['resource'=>'members','id'=>$group->id]);
+       return view('admin', ['resource'=>'members','id'=>$group->id]);
     }
     public function admins(Group $group) {
-     return view('admin', ['resource'=>'admins','id'=>$group->id]);
+       return view('admin', ['resource'=>'admins','id'=>$group->id]);
     }
     public function developers(App $app) {
-     return view('admin', ['resource'=>'developers','id'=>$app->id]);
+       return view('admin', ['resource'=>'developers','id'=>$app->id]);
     }
     public function composites(Group $group) {
-     return view('admin', ['resource'=>'composites','id'=>$group->id]);
+        return view('admin', ['resource'=>'composites','id'=>$group->id]);
+    }
+    public function tags(Group $group) {
+        return view('admin', ['resource'=>'tags','id'=>$group->id]);
+    }
+    public function images(Group $group) {
+       return view('admin', ['resource'=>'images','id'=>$group->id]);
     }
     public function summary(Group $group) {
         return view('admin', ['resource'=>'group','id'=>$group->id]);
