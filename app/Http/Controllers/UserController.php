@@ -58,8 +58,12 @@ class UserController extends Controller
             }
         }
         arsort($ranking);
+        $matching_users_count = count($matching_users);
         $results = [];
         foreach($ranking as $user_id => $rank) {
+            if ($rank == 1 && $matching_users_count > 10) {
+                break;
+            }
             $matching_users[$user_id]['rank'] = $rank;
             $results[] = $matching_users[$user_id];
         }
