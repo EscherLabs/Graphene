@@ -32,18 +32,17 @@ class UserController extends Controller
 
     public function search($search_string) {
         if (strlen($search_string)<4) {
-            return [];
+            return ['error'=>'Searches Must Exceed Three Characters'];
         }
         $search_elements = preg_split('/[\s,]+/',$search_string);
         $matching_users = [];
         $ranking = [];
         foreach($search_elements as $element) {
             $users = User::select('id','unique_id','first_name','last_name','email','params')
-                ->where('first_name','like','%'.$element.'%')
+                ->where('unique_id','=',$element)
+                ->orWhere('first_name','like','%'.$element.'%')
                 ->orWhere('last_name','like','%'.$element.'%')
                 ->orWhere('email','like','%'.$element.'%')
-                ->orWhere('unique_id','like','%'.$element.'%')
-                // ->limit(10)
                 ->get();
             foreach($users as $user) {
                 if (isset($ranking[$user->id])) {
@@ -66,6 +65,9 @@ class UserController extends Controller
             }
             $matching_users[$user_id]['rank'] = $rank;
             $results[] = $matching_users[$user_id];
+        }
+        if ($matching_users_count > 0 && count($results) == 0) {
+            return ['error'=>'Too Many Results, Please Refine Your Search'];
         }
         return $results;
     }
