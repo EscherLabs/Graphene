@@ -42,7 +42,7 @@ class UserController extends Controller
             if ($element === '') {
                 continue;
             }
-            $search_elements = array_merge($nicknameLookup->search($element),$search_elements);
+            $search_elements = array_merge($search_elements,[$element],$nicknameLookup->search($element));
         }
 
         $matching_users = [];
@@ -68,19 +68,27 @@ class UserController extends Controller
                 } else {
                     $ranking[$user->id]=1;
                 }
+                // if (strcasecmp($user->first_name,$element)===0 || strcasecmp($user->last_name,$element)===0) {
+                //     $ranking[$user->id]++; // Extra Points for an exact match
+                // }
                 $matching_users[$user->id] = 
                     ['id'=>$user->id, 'unique_id'=>$user->unique_id,
                     'first_name'=>$user->first_name, 'last_name'=>$user->last_name, 
                     'email'=>$user->email, 'params'=>$user->params];
             }
         }
+        if (count($matching_users)===0) {
+            return [];
+        } 
         arsort($ranking);
         $matching_users_count = count($matching_users);
         $results = [];
+        $current_rank = array_values($ranking)[0];
         foreach($ranking as $user_id => $rank) {
-            if ($rank == 1 && $matching_users_count > 10) {
+            if ($rank < $current_rank && $matching_users_count > 10) { // Throw out bad results
                 break;
             }
+            $current_rank = $rank;
             $matching_users[$user_id]['rank'] = $rank;
             $results[] = $matching_users[$user_id];
         }
