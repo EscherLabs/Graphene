@@ -42,7 +42,7 @@ class UserController extends Controller
             if ($element === '') {
                 continue;
             }
-            $search_elements = array_merge($search_elements,[$element],$nicknameLookup->search($element));
+            $search_elements = array_merge($search_elements,$nicknameLookup->search($element));
         }
 
         $matching_users = [];
@@ -92,7 +92,7 @@ class UserController extends Controller
             $matching_users[$user_id]['rank'] = $rank;
             $results[] = $matching_users[$user_id];
         }
-        if ($matching_users_count > 0 && count($results) == 0) {
+        if ($matching_users_count > 0 && (count($results) == 0 || count($results) > 10)) {
             return ['error'=>'Too Many Results! Please refine your search'];
         }
         return $results;
