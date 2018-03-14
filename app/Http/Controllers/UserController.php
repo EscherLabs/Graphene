@@ -41,15 +41,20 @@ class UserController extends Controller
             if ($element === '') {
                 continue;
             }
-            if (strlen($element)<2) {
-                return ['error'=>'Search phrases must exceed 1 character'];
+            if (strlen($element)<3) {
+                // For 1-2 Character searches, perform an exact match
+                $users = User::select('id','unique_id','first_name','last_name','email','params')
+                    ->where('first_name','=',$element)
+                    ->orWhere('last_name','=',$element)
+                    ->get();
+            } else {
+                $users = User::select('id','unique_id','first_name','last_name','email','params')
+                    ->where('unique_id','=',$element)
+                    ->orWhere('first_name','like','%'.$element.'%')
+                    ->orWhere('last_name','like','%'.$element.'%')
+                    ->orWhere('email','like','%'.$element.'%')
+                    ->get();
             }
-            $users = User::select('id','unique_id','first_name','last_name','email','params')
-                ->where('unique_id','=',$element)
-                ->orWhere('first_name','like','%'.$element.'%')
-                ->orWhere('last_name','like','%'.$element.'%')
-                ->orWhere('email','like','%'.$element.'%')
-                ->get();
             foreach($users as $user) {
                 if (isset($ranking[$user->id])) {
                     $ranking[$user->id]++;
