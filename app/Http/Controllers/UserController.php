@@ -31,13 +31,16 @@ class UserController extends Controller
     }
 
     public function search($search_string) {
-        if (strlen($search_string)<4) {
-            return ['error'=>'Searches Must Exceed Three Characters'];
-        }
         $search_elements = preg_split('/[\s,]+/',$search_string);
         $matching_users = [];
         $ranking = [];
         foreach($search_elements as $element) {
+            if ($element === '') {
+                continue;
+            }
+            if (strlen($element)<4) {
+                return ['error'=>'Search phrases must exceed 3 characters'];
+            }
             $users = User::select('id','unique_id','first_name','last_name','email','params')
                 ->where('unique_id','=',$element)
                 ->orWhere('first_name','like','%'.$element.'%')
@@ -67,7 +70,7 @@ class UserController extends Controller
             $results[] = $matching_users[$user_id];
         }
         if ($matching_users_count > 0 && count($results) == 0) {
-            return ['error'=>'Too Many Results, Please Refine Your Search'];
+            return ['error'=>'Too Many Results! Please refine your search'];
         }
         return $results;
     }
