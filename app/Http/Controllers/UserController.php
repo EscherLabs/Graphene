@@ -31,6 +31,9 @@ class UserController extends Controller
     }
 
     public function search($search_string) {
+        if (strlen($element)<4) {
+            return ['error'=>'Search phrases must exceed 3 characters'];
+        }
         $search_elements = preg_split('/[\s,]+/',$search_string);
         $matching_users = [];
         $ranking = [];
@@ -38,8 +41,8 @@ class UserController extends Controller
             if ($element === '') {
                 continue;
             }
-            if (strlen($element)<4) {
-                return ['error'=>'Search phrases must exceed 3 characters'];
+            if (strlen($element)<2) {
+                return ['error'=>'Search phrases must exceed 1 character'];
             }
             $users = User::select('id','unique_id','first_name','last_name','email','params')
                 ->where('unique_id','=',$element)
