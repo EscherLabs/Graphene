@@ -31,7 +31,7 @@ class UserController extends Controller
     }
 
     public function search($search_string) {
-        if (strlen($element)<4) {
+        if (strlen($search_string)<4) {
             return ['error'=>'Search phrases must exceed 3 characters'];
         }
         $search_elements = preg_split('/[\s,]+/',$search_string);
