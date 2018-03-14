@@ -50,8 +50,8 @@ class UserController extends Controller
             } else {
                 $users = User::select('id','unique_id','first_name','last_name','email','params')
                     ->where('unique_id','=',$element)
-                    ->orWhere('first_name','like','%'.$element.'%')
-                    ->orWhere('last_name','like','%'.$element.'%')
+                    ->orWhere('first_name','like',$element.'%')
+                    ->orWhere('last_name','like',$element.'%')
                     ->orWhere('email','like',$element.'%')
                     ->get();
             }
