@@ -52,7 +52,7 @@ class UserController extends Controller
                     ->where('unique_id','=',$element)
                     ->orWhere('first_name','like','%'.$element.'%')
                     ->orWhere('last_name','like','%'.$element.'%')
-                    ->orWhere('email','like','%'.$element.'%')
+                    ->orWhere('email','like',$element.'%')
                     ->get();
             }
             foreach($users as $user) {
