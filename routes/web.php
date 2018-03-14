@@ -158,6 +158,8 @@ Route::post('/api/users','UserController@create')->middleware('can:create,App\Us
 Route::put('/api/users/{user}','UserController@update')->middleware('can:update,user');
 // Delete an existing user by user_id
 Route::delete('/api/users/{user}','UserController@destroy')->middleware('can:delete,user');
+// Search all users
+Route::get('/api/users/search/{search_string}','UserController@search')->middleware('can:get_all,App\User');
 
 /***** Pages *****/
 // List all pages
