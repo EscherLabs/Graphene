@@ -7,6 +7,7 @@ use App\User;
 use App\Site;
 use App\SiteMember;
 use Illuminate\Http\Request;
+use App\Libraries\NicknameLookup;
 
 class UserController extends Controller
 {
@@ -31,16 +32,22 @@ class UserController extends Controller
     }
 
     public function search($search_string) {
-        if (strlen($search_string)<4) {
-            return ['error'=>'Search phrases must exceed 3 characters'];
-        }
-        $search_elements = preg_split('/[\s,]+/',$search_string);
-        $matching_users = [];
-        $ranking = [];
-        foreach($search_elements as $element) {
+        // if (strlen($search_string)<4) {
+        //     return ['error'=>'Search phrases must exceed 3 characters'];
+        // }
+        $search_elements_parsed = preg_split('/[\s,]+/',strtolower($search_string));
+        $search_elements = [];
+        $nicknameLookup = new NicknameLookup();
+        foreach($search_elements_parsed as $element) {
             if ($element === '') {
                 continue;
             }
+            $search_elements = array_merge($nicknameLookup->search($element),$search_elements);
+        }
+
+        $matching_users = [];
+        $ranking = [];
+        foreach($search_elements as $element) {
             if (strlen($element)<3) {
                 // For 1-2 Character searches, perform an exact match
                 $users = User::select('id','unique_id','first_name','last_name','email','params')
