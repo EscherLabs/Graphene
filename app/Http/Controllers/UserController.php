@@ -43,7 +43,7 @@ class UserController extends Controller
                 ->orWhere('last_name','like','%'.$element.'%')
                 ->orWhere('email','like','%'.$element.'%')
                 ->orWhere('unique_id','like','%'.$element.'%')
-                ->limit(10)
+                // ->limit(10)
                 ->get();
             foreach($users as $user) {
                 if (isset($ranking[$user->id])) {
