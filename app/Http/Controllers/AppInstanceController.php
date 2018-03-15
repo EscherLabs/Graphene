@@ -9,6 +9,7 @@ use App\Endpoint;
 use App\Group;
 use App\UserPreference;
 use App\User;
+use App\ResourceCache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
@@ -216,19 +217,40 @@ class AppInstanceController extends Controller
         abort(404,'App not found');
     }
 
-    private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
+    private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data, $app_instance_id) {
         // Derive and Map URL with Mustache
         $m = new \Mustache_Engine;
         $url = $m->render($endpoint->config->url . $resource_info->path, $all_data);
-        // Fetch Data based on Endpoint Type
-        $httpHelper = new HTTPHelper();
-        if ($endpoint->type == 'http_no_auth') {
-            $data = $httpHelper->http_fetch($url,$verb,$all_data['request']);
-        } else if ($endpoint->type == 'http_basic_auth') {
-            $data = $httpHelper->http_fetch($url,$verb,$all_data['request'],
-                    $endpoint->config->username, $endpoint->getSecret());
-        } else {
-            abort(505,'Authentication Type Not Supported');
+
+        if ($resource_info->cache === true || $resource_info->cache === 'true') {
+            $cache = ResourceCache::where('app_instance_id', '=', $app_instance_id)
+                    ->where('url','=',$url)
+                    ->whereRaw('created_at >= (NOW() - INTERVAL 10 MINUTE)')
+                    ->first();
+                    // dd($cache);
+            if (!is_null($cache)) {
+                $data = unserialize($cache->content);
+            }
+        }
+        if (!isset($data)) {
+            // Fetch Data based on Endpoint Type
+            $httpHelper = new HTTPHelper();
+            if ($endpoint->type == 'http_no_auth') {
+                $data = $httpHelper->http_fetch($url,$verb,$all_data['request']);
+            } else if ($endpoint->type == 'http_basic_auth') {
+                $data = $httpHelper->http_fetch($url,$verb,$all_data['request'],
+                        $endpoint->config->username, $endpoint->getSecret());
+            } else {
+                abort(505,'Authentication Type Not Supported');
+            }
+            if ($resource_info->cache === true || $resource_info->cache === 'true') {
+                ResourceCache::where('app_instance_id', '=', $app_instance_id)->where('url','=',$url)->delete();
+                $cache = ResourceCache::create([
+                    'app_instance_id' => $app_instance_id,
+                    'url' => $url,
+                    'content' => serialize($data),
+                ]);
+            }
         }
         // Convert Data based on Modifier
         if ($resource_info->modifier == 'csv') {
@@ -337,11 +359,15 @@ class AppInstanceController extends Controller
         $resource_app->endpoint = $resource_endpoint->endpoint;
 
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
-            $data = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data);
+            $data = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
         } else if ($endpoint->type == 'google_sheets') {
             $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
         }
         return $data;
     }
+
+    // public function check_cache($endpoint, $resource_app, $verb, $all_data) {
+    //     $cache = ResourceCache::where(' ', '=', $app_instance->id)->first();
+    // }
 
 }
