@@ -20,6 +20,7 @@
     <!-- Custom styles for this template -->
     <link href="/assets/css/cobler.css" rel="stylesheet">
     <link href="/assets/css/dashboard.css" rel="stylesheet">
+    <link href="/assets/css/dropzone.css" rel="stylesheet">
     <!--@if(!empty(config('app.site')->theme->css))<style> {!! config('app.site')->theme->css !!}</style>@endif-->
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -154,6 +155,7 @@
     <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		
     <!--<script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>-->
     <script type='text/javascript' src='/assets/js/vendor/summernote.min.js'></script>
+    <script type='text/javascript' src='/assets/js/vendor/dropzone.min.js'></script>
 
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
