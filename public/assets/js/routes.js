@@ -629,7 +629,7 @@ initializers['members'] = function() {
 						model.delete();
 						model.owner.draw();
 					}
-				},
+				};
 				tableConfig.edit = false,
 				tableConfig.delete = function(model){
 						$.ajax({url: '/api/groups/'+resource_id+'/members/'+model.attributes.user_id, type: 'DELETE',
@@ -642,9 +642,37 @@ initializers['members'] = function() {
 						});
 				}
 
+				tableConfig.events = [
+					{'name': 'add', 'label': '<i class="fa fa-code"></i> Add', callback: function(model){
+					$().berry({
+						name:'user_search',
+						actions:['cancel'],
+						legend: 'User Search',
+						fields:[
+							{name:'query',label:'Search'},
+							{type:'raw',value:'',name:'results',label:false}
+						]}).delay('change:query',function(){
+							$.ajax({
+								url: '/api/users/search/'+this.toJSON().query,
+								success: function(data) {
+									this.fields.results.update({/*options:data,*/value:templates['user_list'].render({users:data})})
+								}.bind(this)
+							})
+						})
+					}}
+				]
+
+				$('body').on('click','.list-group-item.user', function(e){
+					// _.find(Berries.user_search.fields.results.options,{id:parseInt(e.currentTarget.dataset.id)})
+					bt.add({user_id:e.currentTarget.dataset.id})
+					Berries.user_search.trigger('close');
+				})
+
 				bt = new berryTable(tableConfig)
+
 			}
 		});
+
 }
 initializers['admins'] = function() {
 		$('.navbar-header .nav a h4').html('Admins');
@@ -684,6 +712,30 @@ initializers['admins'] = function() {
 							}
 						});
 				}
+				tableConfig.events = [
+					{'name': 'add', 'label': '<i class="fa fa-code"></i> Add', callback: function(model){
+					$().berry({
+						name:'user_search',
+						actions:['cancel'],
+						legend: 'User Search',
+						fields:[
+							{name:'query',label:'Search'},
+							{type:'raw',value:'',name:'results',label:false}
+						]}).delay('change:query',function(){
+							$.ajax({
+								url: '/api/users/search/'+this.toJSON().query,
+								success: function(data) {
+									this.fields.results.update({/*options:data,*/value:templates['user_list'].render({users:data})})
+								}.bind(this)
+							})
+						})
+					}}
+				]
+				$('body').on('click','.list-group-item.user', function(e){
+					bt.add({user_id:e.currentTarget.dataset.id})
+					Berries.user_search.trigger('close');
+				})
+
 				bt = new berryTable(tableConfig)
 			}
 		});
@@ -910,3 +962,4 @@ templates['pages'] = Hogan.compile(
 		</div>
 	</section>
 </div>`);
+templates['user_list'] = Hogan.compile(`<hr><div class="list-group">{{#users}}<div class="list-group-item user" data-id="{{id}}">{{first_name}} {{last_name}}</div>{{/users}}</div>`);

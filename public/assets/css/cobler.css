@@ -63,3 +63,4 @@ margin:5px 0px 5px -60px
 }
 .sortable-ghost{padding:10px;color:#666;font-size:16px}
 .nodisplay{display: none;}
+[data-event=add].custom-event-all,[data-event=edit].custom-event-all,[data-event=delete].custom-event-all{display:none}

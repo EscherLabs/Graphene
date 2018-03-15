@@ -34,7 +34,13 @@ class Templater {
         // Build $data object
         if (isset($data['group'])) {
             $data['group'] = $data['group']->toArray();
-            $data['group']['apps_pages'] = $data['apps_pages']->where('id','=',$data['group']['id'])->first()->toArray();
+            $data['group']['apps_pages'] = $data['apps_pages']->where('id','=',$data['group']['id'])->first();
+            if(!is_null($data['group']['apps_pages'])){
+              $data['group']['apps_pages'] = $data['group']['apps_pages']->toArray();   
+            }else{
+              $data['group']['apps_pages'] =[];
+            }
+            
             $data['group']['apps_pages']['group_id'] = $data['group']['id'];
             $data['group']['apps_pages']['group_slug'] = $data['group']['slug'];
             if(isset($data['user']) && isset($data['user']['admin_groups'])){
