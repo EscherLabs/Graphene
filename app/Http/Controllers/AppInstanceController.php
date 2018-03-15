@@ -37,19 +37,8 @@ class AppInstanceController extends Controller
     public function show(AppInstance $app_instance) {
 
         $myApp = AppInstance::with('app')->where('id', '=', $app_instance->id)->first();
-        $myAppVersion;
-        
-        if(is_null($myApp->app_version_id)){
-            $myAppVersion = AppVersion::orderBy('created_at', 'desc')->first();
-        }else if($myApp->app_version_id == 0){
-            $myAppVersion = AppVersion::where('stable','=',1)->orderBy('created_at', 'desc')->first();
-        }else{
-            $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
-        }
-        
-        // $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
-        $myApp->app->code = $myAppVersion->code;
-        $myApp->app->version = $myAppVersion->id;
+
+        $myApp->findVersion();
         return $myApp;
     }
 
@@ -110,17 +99,8 @@ class AppInstanceController extends Controller
 
         }
         /* Maybe there's a better way to do this -- appending app version code to app */
-        $myAppVersion;
-        if(is_null($myApp->app_version_id)){
-            $myAppVersion = AppVersion::orderBy('created_at', 'desc')->first();
-        }else if($myApp->app_version_id == 0){
-            $myAppVersion = AppVersion::where('stable','=',1)->orderBy('created_at', 'desc')->first();
-        }else{
-            $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
-        }
-        $myApp->app->code = $myAppVersion->code;
-        $myApp->app->version = $myAppVersion->id;
-
+        $myApp->findVersion();
+        
         if($myApp != null) {
             // dd($myApp->toArray());
             // Create data object that will be used by the app
@@ -186,9 +166,8 @@ class AppInstanceController extends Controller
             $myApp = AppInstance::where('id', '=', $ai_id)->first();
             if (is_null($myApp)) { abort(403); }
         }
-        /* Maybe there's a better way to do this -- appending app version code to app */
-        $myAppVersion = AppVersion::where('id','=',$myApp->app_version_id)->first();
-        $myApp->app->code = $myAppVersion->code;
+  
+        $myApp->findVersion();
 
         if($myApp != null){
             // Create data object that will be used by the app
@@ -297,8 +276,12 @@ class AppInstanceController extends Controller
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
         /* Maybe there's a better way to do this -- appending app version code to app */
-        $myAppVersion = AppVersion::where('id','=',$app_instance->app_version_id)->first();
-        $app_instance->app->code = $myAppVersion->code;
+        // $myAppVersion = AppVersion::where('id','=',$app_instance->app_version_id)->first();
+
+        /*ATS Removed this because I don't think you can get here without having ->code set if this is not true will need to check first*/
+        //$myApp->findVersion();
+
+        // $app_instance->app->code = $myAppVersion->code;
 
         if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);

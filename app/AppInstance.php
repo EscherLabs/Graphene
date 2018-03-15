@@ -45,5 +45,17 @@ class AppInstance extends Model
     public function getVisibleLgAttribute()
     {
         return ($this->device === 0 || $this->device === 1 || $this->device === 2);  
-    } 
+    }
+    public function findVersion() {
+        $myAppVersion;
+        if(is_null($this->app_version_id)){
+            $myAppVersion = AppVersion::orderBy('created_at', 'desc')->first();
+        }else if($this->app_version_id == 0){
+            $myAppVersion = AppVersion::where('stable','=',1)->orderBy('created_at', 'desc')->first();
+        }else{
+            $myAppVersion = AppVersion::where('id','=',$this->app_version_id)->first();
+        }
+        $this->app->code = $myAppVersion->code;
+        $this->app->version = $myAppVersion->id;
+    }
 }

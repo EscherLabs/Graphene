@@ -47,7 +47,7 @@ class User extends Authenticatable
     public function getGroupsAttribute() {
         return $this->groups;
     }
-  public function getAdminGroupsAttribute() {
+    public function getAdminGroupsAttribute() {
         return $this->admin_groups;
     }
     public function getSiteAdminAttribute() {
