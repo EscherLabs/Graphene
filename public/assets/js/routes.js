@@ -609,7 +609,8 @@ initializers['members'] = function() {
 			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
+					{label: 'User', name:'user_id', required: true, type:'select', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
+					// {name:'user', type:'hidden'}
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
@@ -680,7 +681,7 @@ initializers['admins'] = function() {
 			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
+					{label: 'User', name:'user_id', required: true, type:'select', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
