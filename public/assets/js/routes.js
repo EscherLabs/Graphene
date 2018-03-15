@@ -609,7 +609,7 @@ initializers['members'] = function() {
 			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'User', name:'user_id', required: true, type:'select', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
+					{label: 'User', name:'user_id', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
 					// {name:'user', type:'hidden'}
 				];
 				tableConfig.data = data;
@@ -617,6 +617,8 @@ initializers['members'] = function() {
 					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
 						$.ajax({url: '/api/groups/'+resource_id+'/members/'+model.attributes.user_id, type: 'POST', data: model.attributes,
 							success:function(data){
+								this.set(data);
+								this.owner.draw();
 								toastr.success('', 'Member successfully Added')
 							}.bind(model),
 							error:function(e){
@@ -681,13 +683,16 @@ initializers['admins'] = function() {
 			url: '/api/groups/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'User', name:'user_id', required: true, type:'select', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
+					{label: 'User', name:'user_id', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
+					// {name:'user', type:'hidden'}
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
 					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
 						$.ajax({url: '/api/groups/'+resource_id+'/admins/'+model.attributes.user_id, type: 'POST', data: model.attributes,
 							success:function(data){
+								this.set(data);
+								this.owner.draw();
 								toastr.success('', 'Admin successfully Added')
 							}.bind(model),
 							error:function(e){

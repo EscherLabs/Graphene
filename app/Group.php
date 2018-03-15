@@ -84,6 +84,7 @@ class Group extends Model
         self::remove_admin($user); // First Delete the admin from the group
         $group_admin = GroupAdmin::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
           ['status'=>$status]);
+        $group_admin->load('user');
         return $group_admin;
     }
     public function remove_admin(User $user)
@@ -99,6 +100,7 @@ class Group extends Model
         self::remove_member($user); // First Delete the member from the group
         $group_member = GroupMember::create(['group_id'=>$this->id,'user_id'=>$user->id,
           'status'=>$status]);
+        $group_member->load('user');
         return $group_member;
     }
     public function remove_member(User $user)
