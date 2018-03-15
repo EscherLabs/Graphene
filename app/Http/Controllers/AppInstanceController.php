@@ -208,7 +208,9 @@ class AppInstanceController extends Controller
                 // Get each source
                 // TODO: add conditionals for types and "autofetch", etc
                 foreach($myApp->app->code->resources as $source){
-                    $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+                    if ($source->fetch === 'true' || $source->fetch === true) {
+                        $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+                    }
                 }
             }
 
