@@ -246,7 +246,9 @@ class AppInstanceController extends Controller
                 abort(505,'Authentication Type Not Supported');
             }
             if ($resource_info->cache === true || $resource_info->cache === 'true') {
+                // Delete existing cache for that app_instance, as well as any other stale cache
                 ResourceCache::where('app_instance_id', '=', $app_instance_id)->where('url','=',$url)->delete();
+                ResourceCache::whereRaw('created_at < (NOW() - INTERVAL 10 MINUTE)')->delete();
                 $cache = ResourceCache::create([
                     'app_instance_id' => $app_instance_id,
                     'url' => $url,
