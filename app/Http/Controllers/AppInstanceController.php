@@ -100,7 +100,7 @@ class AppInstanceController extends Controller
         }
         /* Maybe there's a better way to do this -- appending app version code to app */
         $myApp->findVersion();
-        
+
         if($myApp != null) {
             // dd($myApp->toArray());
             // Create data object that will be used by the app
@@ -278,8 +278,9 @@ class AppInstanceController extends Controller
         /* Maybe there's a better way to do this -- appending app version code to app */
         // $myAppVersion = AppVersion::where('id','=',$app_instance->app_version_id)->first();
 
-        /*ATS Removed this because I don't think you can get here without having ->code set if this is not true will need to check first*/
-        //$myApp->findVersion();
+        if(!isset($app_instance->app->code)){
+            $app_instance->findVersion();
+        }
 
         // $app_instance->app->code = $myAppVersion->code;
 
