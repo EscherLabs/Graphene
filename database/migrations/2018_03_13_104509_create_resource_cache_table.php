@@ -15,7 +15,7 @@ class CreateResourceCacheTable extends Migration
     {
         Schema::create('resource_cache', function (Blueprint $table) {
             $table->integer('app_instance_id')->unsigned()->index();
-            $table->string('url')->unique();
+            $table->string('url');
             $table->mediumText('content');
             $table->timestamp('created_at')->useCurrent();
             $table->unique(['app_instance_id','url']);

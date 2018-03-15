@@ -6482,6 +6482,7 @@ class NicknameLookup {
             1 => 'jane',
             2 => 'jess',
             3 => 'janet',
+            4 => 'jessica',
             ),
             'jincy' => 
             array (
