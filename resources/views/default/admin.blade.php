@@ -156,6 +156,7 @@
     <!--<script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>-->
     <script type='text/javascript' src='/assets/js/vendor/summernote.min.js'></script>
     <script type='text/javascript' src='/assets/js/vendor/dropzone.min.js'></script>
+		<script type="text/javascript" src="/assets/js/sortable.js"></script>
 
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 

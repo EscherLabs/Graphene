@@ -64,3 +64,9 @@ margin:5px 0px 5px -60px
 .sortable-ghost{padding:10px;color:#666;font-size:16px}
 .nodisplay{display: none;}
 [data-event=add].custom-event-all,[data-event=edit].custom-event-all,[data-event=delete].custom-event-all{display:none}
+
+.list-group-item .handle{color:#aaa;width: 45px;background:#fcfdfc;text-align:center;border-right: solid 1px #eee;cursor:move;padding-top: 18px;padding-bottom: 18px;margin: -10px 20px -10px -15px;display: inline-block;font:normal normal normal 14px/1 FontAwesome;font-size:inherit;text-rendering:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.list-group-item:hover .handle{background:#f8f8f8;color:#626262;}
+.list-group-item .handle:before{
+      content: "\f0c9";
+}
