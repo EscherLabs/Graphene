@@ -17,6 +17,9 @@ class PortalMigration extends Seeder
         if (!config('database.full_seed')) {
             Echo "Running in abridged mode.  To pull in all users, add 'FULL_SEED=true' to the .env file\n";
         }
+        if (!config('database.download_images')) {
+            Echo "Not downloading images from portal S3 Bucket.  To do this, add 'DOWNLOAD_IMAGES=true' to the .env file\n";
+        }
         try {
             $site_id = 1;
             // $user_ids = [1,2]; -- No longer assigning app developers TJC 2/11/18
@@ -76,12 +79,14 @@ class PortalMigration extends Seeder
                     $image->filename = $image_db->image_filename;
                     $image->save();
 
-                    try {
-                        $image_contents = file_get_contents($image_db->image_filename);
-                        Storage::put('images/'.$image->id.'.'.$image->ext, $image_contents);
-                    } catch (Exception $e) {
-                        echo "Unable to fetch file... deleting image reference\n";
-                        $image->delete();
+                    if (config('database.download_images')) {
+                        try {
+                            $image_contents = file_get_contents($image_db->image_filename);
+                            Storage::put('images/'.$image->id.'.'.$image->ext, $image_contents);
+                        } catch (Exception $e) {
+                            echo "Unable to fetch file... deleting image reference\n";
+                            $image->delete();
+                        }
                     }
                     $images_index[$image_db->image_filename] = $image;
 
@@ -376,7 +381,7 @@ class PortalMigration extends Seeder
                                 foreach($page_widget_db->images as $index => $image) {
                                     // dd($image->image);
                                     if (isset($images_index[$image->image])) {
-                                        $page_widget_db->images[$index]->image = 'images/'.$images_index[$image->image]->id.'.'.$images_index[$image->image]->ext;
+                                        $page_widget_db->images[$index]->image = '/image/'.$images_index[$image->image]->id;
                                     }
                                 }
                                 $page_content_array['sections'][$page_column_num][] = [
@@ -388,7 +393,7 @@ class PortalMigration extends Seeder
                                 ];
                             } if ($page_widget_db->widgetType=='Image') {
                                 if (isset($images_index[$page_widget_db->image])) {
-                                    $image_path = 'images/'.$images_index[$page_widget_db->image]->id.'.'.$images_index[$page_widget_db->image]->ext;
+                                    $image_path = '/image/'.$images_index[$page_widget_db->image]->id;
                                 } else {
                                     $image_path = $page_widget_db->image;
                                 }

@@ -22,7 +22,8 @@ class ImageController extends Controller
     public function get(Image $image) {
         return Storage::download(
             $this->img_dir.'/'.$image->id.'.'.$image->ext,
-            $image->name.'.'.$image->ext
+            $image->name.'.'.$image->ext,
+            ["Cache-Control"=>"max-age=2592000","Pragma"=>"cache"]
         );
     }
     
