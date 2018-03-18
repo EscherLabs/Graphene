@@ -275,6 +275,7 @@ class AppInstanceController extends Controller
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
+        session_write_close(); // Don't keep waiting
         /* Maybe there's a better way to do this -- appending app version code to app */
         // $myAppVersion = AppVersion::where('id','=',$app_instance->app_version_id)->first();
 
