@@ -20,14 +20,13 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::get('/','UserDashboardController@index');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
+Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');
 
 /***** Dashboard  *****/
 Route::post('/api/dashboard','UserDashboardController@update');
 
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
-
-
 
 Route::get('/admin/groups/{group}/', 'AdminController@summary')->middleware('can:list_admins,group');
 

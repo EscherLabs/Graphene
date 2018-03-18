@@ -71,13 +71,20 @@ class PortalMigration extends Seeder
                 if (isset($groups_index[$image_db->group_id])) {
                     $image = new \App\Image;
                     $image->group_id = $groups_index[$image_db->group_id]->id;
-                    $image->name = $image_db->name;
+                    $image->name = pathinfo($image_db->name, PATHINFO_FILENAME);
                     $image->ext = $image_db->ext;
-                    // $file_path = explode('/',urldecode($image_db->image_filename));
-                    // $image->filename = $file_path[count($file_path)-1];
                     $image->filename = $image_db->image_filename;
                     $image->save();
+
+                    try {
+                        $image_contents = file_get_contents($image_db->image_filename);
+                        Storage::put('images/'.$image->id.'.'.$image->ext, $image_contents);
+                    } catch (Exception $e) {
+                        echo "Unable to fetch file... deleting image reference\n";
+                        $image->delete();
+                    }
                     $images_index[$image_db->image_filename] = $image;
+
                 }
             }
             /* End Import Images */

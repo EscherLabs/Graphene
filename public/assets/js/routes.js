@@ -545,7 +545,7 @@ initializers['images'] = function() {
 		success: function(data){
 			tableConfig.schema = [
 				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
-				{label: 'Image', name:'filename', required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="{{value}}"/></div>'},
+				{label: 'Image', name:'filename', required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}"/></div>'},
 				{label: 'Name', name:'name', required: true},
 				// {label: 'Ext', name:'ext', required: true},
 				{name: 'id', type:'hidden'}

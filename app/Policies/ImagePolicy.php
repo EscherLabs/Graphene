@@ -19,6 +19,13 @@ class ImagePolicy
         }
     }
 
+    public function get(User $user, Image $image) {
+        // User must be a member of the group
+        if (in_array($image->group_id,$user->groups)) {
+            return true;
+        }
+    }
+
     public function create(User $user)
     {
         // User must be admin of image group
