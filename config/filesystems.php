@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'cloud' => 's3',
+    // 'cloud' => 's3',
 
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => env('FILE_STORAGE_PATH', storage_path('app')),
         ],
 
         'public' => [
@@ -54,13 +54,13 @@ return [
             'visibility' => 'public',
         ],
 
-        's3' => [
-            'driver' => 's3',
-            'key' => 'your-key',
-            'secret' => 'your-secret',
-            'region' => 'your-region',
-            'bucket' => 'your-bucket',
-        ],
+        // 's3' => [
+        //     'driver' => 's3',
+        //     'key' => 'your-key',
+        //     'secret' => 'your-secret',
+        //     'region' => 'your-region',
+        //     'bucket' => 'your-bucket',
+        // ],
 
     ],
 
