@@ -76,7 +76,7 @@ class PortalMigration extends Seeder
                     $image->group_id = $groups_index[$image_db->group_id]->id;
                     $image->name = pathinfo($image_db->name, PATHINFO_FILENAME);
                     $image->ext = $image_db->ext;
-                    $image->filename = $image_db->image_filename;
+                    // $image->filename = $image_db->image_filename;
                     $image->save();
 
                     if (config('database.download_images')) {
