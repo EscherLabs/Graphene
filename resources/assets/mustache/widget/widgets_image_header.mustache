@@ -8,14 +8,14 @@
 			<div class="ribbon"></div>
 			<div class="slider" class="nivoSlider">
 				{{#images}}
-					{{#url}}<a href="{{url}}" {{#window}}target="_blank"{{/window}}>{{/url}}<img src="{{image}}" alt="{{text}}" title="{{&overlay}}"/>{{#url}}</a>{{/url}}
+					{{#url}}<a href="{{url}}" {{#window}}target="_blank"{{/window}}>{{/url}}<img src="/image/{{image}}" alt="{{text}}" title="{{&overlay}}"/>{{#url}}</a>{{/url}}
 				{{/images}}
 			</div>
 		</div>
 		{{/images.1.image}}
 		{{^images.1.image}}
 		{{#images}}
-			{{#url}}<a href="{{url}}" {{#window}}target="_blank"{{/window}}>{{/url}}<img style="max-width: 100%;margin-bottom: 20px;" src="{{image}}" alt="{{text}}" title="{{&overlay}}"/>{{#url}}</a>{{/url}}
+			{{#url}}<a href="{{url}}" {{#window}}target="_blank"{{/window}}>{{/url}}<img style="max-width: 100%;margin-bottom: 20px;" src="/image/{{image}}" alt="{{text}}" title="{{&overlay}}"/>{{#url}}</a>{{/url}}
 		{{/images}}
 		{{^images}}Click Here to choose an Image{{/images}}
 		{{/images.1.image}}
