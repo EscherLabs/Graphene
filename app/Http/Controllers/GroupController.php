@@ -122,4 +122,9 @@ class GroupController extends Controller
     {
         return $group->remove_composite($composite_group);
     }
+    public function list_images(Group $group)
+    {
+        return $group->list_images();
+    }
+
 }

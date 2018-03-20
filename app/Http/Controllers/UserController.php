@@ -50,6 +50,7 @@ class UserController extends Controller
         foreach($search_elements as $element) {
             if (strlen($element)<3) {
                 // For 1-2 Character searches, perform an exact match
+                // TJC -- MUST LIMIT QUERY TO ONLY CURRENT SITE!! 3/19/18
                 $users = User::select('id','unique_id','first_name','last_name','email','params')
                     ->where('first_name','=',$element)
                     ->orWhere('last_name','=',$element)

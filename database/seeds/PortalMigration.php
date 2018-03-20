@@ -381,7 +381,7 @@ class PortalMigration extends Seeder
                                 foreach($page_widget_db->images as $index => $image) {
                                     // dd($image->image);
                                     if (isset($images_index[$image->image])) {
-                                        $page_widget_db->images[$index]->image = '/image/'.$images_index[$image->image]->id;
+                                        $page_widget_db->images[$index]->image = $images_index[$image->image]->id;
                                     }
                                 }
                                 $page_content_array['sections'][$page_column_num][] = [
@@ -393,7 +393,7 @@ class PortalMigration extends Seeder
                                 ];
                             } if ($page_widget_db->widgetType=='Image') {
                                 if (isset($images_index[$page_widget_db->image])) {
-                                    $image_path = '/image/'.$images_index[$page_widget_db->image]->id;
+                                    $image_path = $images_index[$page_widget_db->image]->id;
                                 } else {
                                     $image_path = $page_widget_db->image;
                                 }

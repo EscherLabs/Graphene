@@ -27,7 +27,7 @@ Cobler.types.Image = function(container){
 			{type: 'fieldset',name:"images", label: false, multiple: {duplicate: true}, fields: [
 				// { name: 'image', type: 'image_picker', choices: '/images?group_id='+groupID, value_key: 'image_filename', label: 'Image'},
 				// { name: 'image', label: 'Image', post: '<i class="fa fa-image"></i>'},
-				{label: 'Image',type: 'image_picker', choices: '/api/images', reference: 'id', path:'/image/', value_key: 'id'},
+				{label: 'Image',type: 'image_picker', choices: '/api/groups/'+group_id+'/images', reference: 'id', path:'/image/', value_key: 'id'},
 
 				{ name: 'text', label: 'Alt Text', required: true},
 				

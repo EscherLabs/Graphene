@@ -179,7 +179,6 @@ Route::get('/api/groups','GroupController@index')->middleware('can:get_all,App\G
 Route::get('/api/groups/{group}/summary','GroupController@summary')->middleware('can:get,group');
 Route::get('/api/groups/{group}','GroupController@show')->middleware('can:get,group');
 
-
 // Create a new group
 Route::post('/api/groups','GroupController@create')->middleware('can:create,App\Group');
 // Update an existing group by group_id
@@ -206,6 +205,8 @@ Route::get('/api/groups/{group}/composites','GroupController@list_composites')->
 Route::post('/api/groups/{group}/composites/{composite_group}','GroupController@add_composite')->middleware('can:add_composite,group,composite_group');
 Route::delete('/api/groups/{group}/composites/{composite_group}','GroupController@remove_composite')->middleware('can:remove_composite,group,composite_group');
 
+// Get Images for a specified group by group_id
+Route::get('/api/groups/{group}/images','GroupController@list_images')->middleware('can:list_images,group');
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');

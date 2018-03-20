@@ -123,7 +123,10 @@ class Group extends Model
     {
         GroupComposite::where('group_id',$this->id)->where('composite_group_id',$group->id)->delete();
     }
-
+    public function list_images()
+    {
+        return $this->images()->get();
+    }
     public function scopePublicAppsPages($query)
     {
         return $query->with(['app_instances'=>function($q){
