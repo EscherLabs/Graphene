@@ -908,6 +908,30 @@ initializers['developers'] = function() {
 							}
 						});
 				}
+				tableConfig.events = [
+					{'name': 'add', 'label': '<i class="fa fa-code"></i> Add', callback: function(model){
+					$().berry({
+						name:'user_search',
+						actions:['cancel'],
+						legend: 'User Search',
+						fields:[
+							{name:'query',label:'Search'},
+							{type:'raw',value:'',name:'results',label:false}
+						]}).delay('change:query',function(){
+							$.ajax({
+								url: '/api/users/search/'+this.toJSON().query,
+								success: function(data) {
+									this.fields.results.update({/*options:data,*/value:templates['user_list'].render({users:data})})
+								}.bind(this)
+							})
+						})
+					}}
+				]
+
+				$('body').on('click','.list-group-item.user', function(e){
+					bt.add({user_id:e.currentTarget.dataset.id})
+					Berries.user_search.trigger('close');
+				})
 				bt = new berryTable(tableConfig)
 			}
 		});

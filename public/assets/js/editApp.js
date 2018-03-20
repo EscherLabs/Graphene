@@ -80,7 +80,7 @@ $('#publish').on('click',function() {
         data: this.toJSON(),
         method: 'PUT',
         success: function(){
-          Berries.update.trigger('close');
+          Berries.publish.trigger('close');
           toastr.success('', 'Successfully Published')
         }
       })
