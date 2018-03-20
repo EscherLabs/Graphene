@@ -38,6 +38,7 @@ class AppController extends Controller
         $app->add_developer(Auth::user(),true);
         $app_version = new AppVersion($request->all());
         $app_version->app_id = $app->id;
+        $app_version->save();
         return $app;
     }
 

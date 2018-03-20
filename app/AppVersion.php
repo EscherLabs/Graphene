@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppVersion extends Model
 {
-    protected $fillable = ['summary','stable'];
+    protected $fillable = ['app_id','summary','description','stable','code'];
     protected $casts = ['code' => 'object'];
 
     public function app() {
