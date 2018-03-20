@@ -52,10 +52,10 @@ class ValidateUser
         $member_groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
         })->pluck('id')->toArray();
-        // $composite_groups = GroupComposite::whereIn('composite_group_id', $member_groups)->pluck('group_id')->toArray();
+        $composite_groups = GroupComposite::whereIn('composite_group_id', $member_groups)->pluck('group_id')->toArray();
         
         // Treat Group Admin Permissions as Group Memberships as well -- TJC 2/11/18
-        Auth::user()->groups = array_unique(array_merge($member_groups/*, $composite_groups*/,Auth::user()->admin_groups));
+        Auth::user()->groups = array_unique(array_merge($member_groups, $composite_groups,Auth::user()->admin_groups));
         
         Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
