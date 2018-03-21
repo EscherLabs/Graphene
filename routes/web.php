@@ -181,6 +181,8 @@ Route::get('/api/groups/{group}','GroupController@show')->middleware('can:get,gr
 
 // Create a new group
 Route::post('/api/groups','GroupController@create')->middleware('can:create,App\Group');
+//ATS check permissions
+Route::post('/api/groups/order','GroupController@order')->middleware('can:create,App\Group');
 // Update an existing group by group_id
 Route::put('/api/groups/{group}','GroupController@update')->middleware('can:update,group');
 // Delete an existing group by group_id

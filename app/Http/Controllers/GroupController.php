@@ -127,4 +127,14 @@ class GroupController extends Controller
         return $group->list_images();
     }
 
+    public function order()
+	{
+        $order = Input::get('order');
+        foreach($order as $item){
+            $group = Group::find($item['id']);
+            $group->order = (int) $item['index'];
+            $group->save();
+        }
+	}
+
 }
