@@ -1535,7 +1535,7 @@ Berry.conditions = {
 		).lastToken;
 	},
 	multiMatch: function(Berry, args, func) {
-		berry.on('change:' + _.pluck(args, 'name').join(' change:'), $.proxy(function(args, local, topic) {
+		Berry.on('change:' + _.map(args, 'name').join(' change:'), $.proxy(function(args, local, topic) {
 			func.call(this, function(args,form){
 				var status = false;
 				for(var i in args) {
@@ -1550,7 +1550,7 @@ Berry.conditions = {
 					if(!status)break;
 				}
 				return status;
-			}(args, berry), 'mm');
+			}(args, Berry), 'mm');
 		}, this, args))
 		return 'mm';
 	}

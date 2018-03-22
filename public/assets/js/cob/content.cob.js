@@ -16,8 +16,9 @@ Cobler.types.Content = function(container){
 	var fields = {
 		Title: {},
 		"Container?":{name:'container', type: 'checkbox'},
-
-		Text: {type: 'contenteditable', label: false}//, show:{matches:{name:'editor',value:true}},parsable:'show'},
+		"Editor":{name:'editor', type:'radio',value:'contenteditable', options:[{'label':'WYSIWYG Editor',value:'contenteditable'},{'label':'HTML',value:'ace'}]},
+		Text: {name:'text',type: 'ace', mode:'ace/mode/html', label: false,show:false},// show:{multiMatch:[{name:'editor',value:'raw'}]},parsable:'show'},
+		// contenteditable: {name:'text', type: 'contenteditable', label: false},// show:{multiMatch:[{name:'editor',value:'html'}]},parsable:'show'},
 	}
 	return {
 	    container:container,
@@ -27,6 +28,13 @@ Cobler.types.Content = function(container){
 		edit: berryEditor.call(this, container),
 		get: get,
 		set: set,
+		initialize: function(el){
+			if(typeof this.get().editor !== 'undefined') {
+				this.fields.Editor.show = false;
+				this.fields.Text.show = true;
+				this.fields.Text.type = this.get().editor;
+			}
+		}
 	}
 }
 

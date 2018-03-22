@@ -8,7 +8,6 @@ Cobler.types.uApp = function(container){
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/appinstances'},
 		"Container?":{name:'container', type: 'checkbox'},
-
     'User Options':{name:'user_edit',type:'checkbox'}
 		// 'Template': {}
 	}
@@ -26,6 +25,8 @@ Cobler.types.uApp = function(container){
 		},
 		initialize: function(el){
     if(typeof this.get().app_id == 'undefined'){return false;};
+      this.fields['App ID'].enabled = false;
+
       $.ajax({
           url: '/api/fetch/'+this.get().app_id,
           dataType : 'json',
