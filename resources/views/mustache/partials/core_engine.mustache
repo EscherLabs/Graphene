@@ -123,6 +123,8 @@
 			},
 		];
 
+
+
 	function layout() {
 		var berry = $().berry({
 			legend: 'Change Layout', 
@@ -207,20 +209,91 @@
 				},item)
 			})
 
-			cb.on('min', function(item){
-				item.container.update({collapsed:!item.get().collapsed},item)
-				save();
-			})
+			// cb.on('min', function(item){
+			// 	item.container.update({collapsed:!item.get().collapsed},item)
+			// 	save();
+			// })
 
 		}else{
 			cb.on('min', function(item){
-				item.container.update({collapsed:!item.get().collapsed},item)
-				save();
+				$(item.container.elementOf(item)).find('.collapsible').toggle(400 , $.proxy(function() {
+					item.set({collapsed: $(item.container.elementOf(item)).find('.widget').toggleClass('cob-collapsed').hasClass('cob-collapsed') });
+					Lockr.set('app_'+item.get().app_id,{collapsed:item.get().collapsed});
+				},item) );
 			})
-   
 			cb.on('user_edit', editUserOptions)
 		}
 	}
+
+function editMobileOrder(){
+	templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item">{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
+	var tempdata = [].concat.apply([],config.sections || [[]])
+	if(typeof mobile_order !== 'undefined'){
+		tempdata = _.sortBy(tempdata, function(o) {
+			return mobile_order.indexOf(o.guid);
+		})
+	}
+
+
+
+		function render(template, data){
+			if(typeof templates[template] === 'undefined'){
+				templates[template] =  Hogan.compile($('#'+template).html());
+			}
+		return templates[template].render(data, templates);
+		}
+		modal = function(options) {
+			$('#myModal').remove();
+			this.ref = $(render('modal', options));
+
+			options.legendTarget = this.ref.find('.modal-title');
+			options.actionTarget = this.ref.find('.modal-footer');
+
+			$(this.ref).appendTo('body');
+
+			if(options.content) {
+				$('.modal-body').html(options.content);
+				options.legendTarget.html(options.legend);
+			}else{
+				options.autoDestroy = true;
+				var myform = this.ref.find('.modal-body').berry(options).on('destroy', $.proxy(function(){
+					this.ref.modal('hide');
+				},this));
+
+				this.ref.on('shown.bs.modal', $.proxy(function () {
+					this.$el.find('.form-control:first').focus();
+				},myform));
+			}
+			if(options.onshow){
+				this.ref.on('shown.bs.modal', options.onshow);
+			}  
+			this.ref.modal();
+			return this;
+		};
+
+
+
+
+
+	mymodal = modal({title: "Mobile Layout", content: templates.listing.render({widgets:tempdata} ), footer: '<div class="btn btn-success save-mobile">Save</div>'})
+
+	Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'})
+		
+	$('.save-mobile').on('click', function(e){
+		new_mobile_order = _.map($(mymodal.ref).find('.modal-content ol').find('li'), function(item){return item.dataset.guid});
+		$.ajax(
+			{
+				url: '/community_pages/' + groupID +'/' + pageID, 
+				data: {'mobile_order': JSON.stringify(new_mobile_order)},
+				method: 'PUT',
+				success: function(e){
+					mobile_order = new_mobile_order;
+					mymodal.ref.modal('hide');
+				}
+		});
+	})
+}
+
 
 	function editUserOptions(item){
 		if(typeof item.bae !== 'undefined'){
@@ -250,7 +323,12 @@
 			})
 		}
 	}
-	function addWidget(e) { cb.collections[0].addItem(e); }
+	function addWidget(e) { 
+		
+		cb.collections[0].addItem(e); 
+		// cb.collections[0].addItem({widgetType: e, guid: generateUUID()});
+	
+	}
 
 
 	load(true);

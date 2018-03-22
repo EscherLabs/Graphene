@@ -70,3 +70,10 @@ margin:5px 0px 5px -60px
 .list-group-item .handle:before{
       content: "\f0c9";
 }
+
+
+.cob-collapsed .collapsible{display:none;}
+
+.on-collapse{display:none;}
+.editing .on-collapse, .cob-collapsed .on-collapse{display:block;}
+

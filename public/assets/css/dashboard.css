@@ -256,7 +256,7 @@ body{
 .fa-toggle:before {
   content: "\f068";
 }
-.item-collapsed .fa-toggle:before {
+.cob-collapsed .fa-toggle:before {
   content: "\f067";
 }
 #layout{

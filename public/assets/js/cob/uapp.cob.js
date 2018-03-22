@@ -8,7 +8,8 @@ Cobler.types.uApp = function(container){
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/appinstances'},
 		"Container?":{name:'container', type: 'checkbox'},
-    'User Options':{name:'user_edit',type:'checkbox'}
+    'User Options':{name:'user_edit',type:'checkbox'},
+    'Start Collapsed':{name:'collapsed',type:'checkbox'}
 		// 'Template': {}
 	}
 	return {
@@ -26,6 +27,12 @@ Cobler.types.uApp = function(container){
 		initialize: function(el){
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
+      if(this.container.owner.options.disabled){
+          var collapsed = (Lockr.get('app_'+this.get().app_id) || {}).collapsed;
+	  		  this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+          $(el).find('.collapsible').toggle(!collapsed)
+      }
 
       $.ajax({
           url: '/api/fetch/'+this.get().app_id,

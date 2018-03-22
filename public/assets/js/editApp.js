@@ -57,6 +57,95 @@ $('#save').on('click',function() {
 })
 
 
+
+
+
+
+				// $('#save').on('click', function(){
+				// 		template_errors = templatePage.errors();
+				// 		script_errors =scriptPage.errors();
+				// 		// debugger;
+				// 		css_errors = [];
+				// 		if(cssPage.toJSON()[0].content.length>0){
+				// 			css_errors =cssPage.errors();
+				// 		}
+				// 		console.log(css_errors);
+
+				// 		// var compilefail = false;
+				// 		// var errors = [];
+				// 		_.each(templatePage.toJSON(), function(partial) {
+				// 			try{
+				// 				Ractive.parse(partial.content);
+				// 			}catch(e){
+				// 				template_errors.push({
+				// 					type: e.name,
+				// 					name: partial.name,
+				// 					message: e.message
+				// 				});
+				// 			}
+				// 		})
+				// 		// template_errors+=errors.length;
+				// 		var errorCount = template_errors.length+ script_errors.length+ css_errors.length
+
+				// 										// modal({headerClass:'danger' ,title: e.name+': '+partial.name,content:$('<div>').html(e.message).html()})
+
+
+				// 		if(!errorCount){
+				// 			this.model.sources = _.map(bt.models, function(item){return item.attributes});
+				// 			this.model.template =  JSON.stringify(templatePage.toJSON());
+				// 			this.model.script = JSON.stringify(scriptPage.toJSON());
+				// 			this.model.css = cssPage.toJSON()[0].content;
+				// 			this.model.options = {fields: cb.toJSON({})[0]} ;
+				// 			// this.model.updated_at = model.updated_at;
+
+				// 			$.ajax({
+				// 				url:'/microapps/{{$id}}',
+				// 				data: this.model,
+				// 				method:'PUT',
+				// 				success: function(model){
+				// 					this.model = model;
+				// 					original = JSON.stringify(_.pick(model, 'sources', 'template', 'script', 'css', 'options', 'updated_at' ))
+
+				// 					toastr.success(model.name +' has been successfully saved.', 'Success!')
+
+				// 				}.bind(this),
+				// 				error: function(e){
+				// 					toastr.error(e, 'Error on save')
+				// 				},
+				// 				statusCode: {
+				// 			    404: function() {
+				// 						toastr.error('You are no longer logged in', 'Logged Out')
+				// 			    },
+				// 			    409: function(error) {
+				// 			    	// debugger;
+				// 			    	test = JSON.parse(JSON.parse(error.responseText).error.message);
+				// 						toastr.warning('conflict detected', 'NOT SAVED')
+
+
+				// 						conflictResults = {};
+
+				// 						conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
+				// 						conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
+				// 						conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
+				// 						conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
+				// 						conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
+
+				// 						modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+
+				// 			    }.bind(this),
+				// 			    401: function() {
+				// 						toastr.error('You are not authorized to perform this action', 'Not Authorized')
+				// 			    }
+				// 			  }
+				// 			})
+				// 		}else{
+				// 			toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
+				// 			modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors, css: css_errors})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+				// 		}
+				// 	}.bind(this))
+
+
+
 $('#import').on('click',function() {
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
       $.ajax({
