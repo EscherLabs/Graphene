@@ -9,6 +9,7 @@ use App\AppVersion;
 use App\AppDevelopers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use \Carbon\Carbon;
 
 class AppController extends Controller
 {
@@ -44,10 +45,21 @@ class AppController extends Controller
 
     public function code(Request $request, App $app) { 
         $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
+        $post_data = Input::all();
+        if(!isset($post_data['updated_at']) && !isset($post_data['force']) ){
+            abort(403, $app_version);
+        }
+
+        $first = Carbon::parse($post_data['updated_at']);
+        $second = Carbon::parse($app_version->updated_at);
+
         if($app_version->stable){
             $app_version = new AppVersion();
             $app_version->app_id = $app->id;
+        }else if(!($first->gte($second) || isset($post_data['force']))){
+            abort(409, $app_version);
         }
+
         $app_version->code = $request->code;
         $app_version->save();
         return $app_version;

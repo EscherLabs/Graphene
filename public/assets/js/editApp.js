@@ -4,7 +4,6 @@
 loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
 forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
 },loaded.code)
-debugger;
 
 var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
 
@@ -18,7 +17,7 @@ $('.navbar-header .nav a h4').html(attributes.app.name);//+' <i class="fa fa-pen
 // })
 $('#save').on('click',function() {
   var data = {code:{}};
-  data.style = Berries.style.toJSON().style;
+  data.code.css = Berries.style.toJSON().code.css;
   data.code.resources = _.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
   // var successCompile = false;
@@ -40,13 +39,15 @@ $('#save').on('click',function() {
   data.code.scripts = scriptPage.toJSON();
   var temp = formPage.toJSON();
   data.code.forms = formPage.toJSON();
+  data.updated_at = attributes.updated_at;
   // data.code.form = temp[0].content;
   // data.code.user_options_form = temp[1].content;
   $.ajax({
     url: '/api/apps/'+attributes.app_id+'/code',
     method: 'put',
     data: data,
-    success:function() {
+    success:function(e) {
+      attributes.updated_at = e.updated_at;
       toastr.success('', 'Successfully Saved')
     },
     error:function(e) {
