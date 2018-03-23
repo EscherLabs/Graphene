@@ -215,8 +215,13 @@ Route::delete('/api/groups/{group}/composites/{composite_group}','GroupControlle
 Route::get('/api/groups/{group}/images','GroupController@list_images')->middleware('can:list_images,group');
 // Get Pages for a specified group by group_id
 Route::get('/api/groups/{group}/pages','GroupController@list_pages')->middleware('can:list_pages,group');
+// Update the order of pages in a group
+Route::post('/api/pages/order/{group}','GroupController@pages_order')->middleware('can:update,group');
 // Get App Instances for a specified group by group_id
 Route::get('/api/groups/{group}/appinstances','GroupController@list_appinstances')->middleware('can:list_appinstances,group');
+// Update the order of appinstances in a group
+Route::post('/api/appinstances/order/{group}','GroupController@appinstances_order')->middleware('can:update,group');
+
 // Get Endpoints for a specified group by group_id
 Route::get('/api/groups/{group}/endpoints','GroupController@list_endpoints')->middleware('can:list_endpoints,group');
 // Get Tags for a specified group by group_id

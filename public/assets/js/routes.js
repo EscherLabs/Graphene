@@ -189,18 +189,35 @@ initializers['appinstances'] = function() {
 							}
 						})
 					}}
-				// 	,{'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
 
-				// 		var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
-
-				// 		// tempdata = _.sortBy(tempdata, 'order');
-				// 		mymodal = modal({title: "Sort App Instances", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
-
-				// 		Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
-	
-
-				// 	}, global: true}
 				]
+				if(resource_id !== ''){
+					tableConfig.events.push({'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
+
+						var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
+
+						// tempdata = _.sortBy(tempdata, 'order');
+						mymodal = modal({title: "Sort App Instances", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+
+						Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
+
+
+					}, global: true})
+				}
+
+
+				$('body').on('click','.save-sort',function(){
+					$.ajax({
+						url: '/api/appinstances/order/'+resource_id,
+						type: 'POST',
+						data:{order:_.map($('#sorter').children(),function(item,index){return {id:item.dataset.id,index:index}})},
+						success: function(data) {
+							toastr.success('', 'Order successfully updated')
+							// debugger;
+							mymodal.ref.modal('hide')
+						}
+					})
+				})
 
 				tableConfig.defaultSort = 'order';
 				bt = new berryTable(tableConfig)
@@ -523,19 +540,37 @@ initializers['pages'] = function(){
 				];
 				tableConfig.click = function(model){window.location.href = '/page/'+model.attributes.group_id+'/'+model.attributes.slug};
 
-				// tableConfig.events = [
-				// 	{'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
 
-				// 		var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
+				if(resource_id !== ''){
 
-				// 		// tempdata = _.sortBy(tempdata, 'order');
-				// 		mymodal = modal({title: "Sort Pages", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+					tableConfig.events = [
+						{'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
 
-				// 		Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
-	
+							var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
 
-				// 	}, global: true}
-				// ]
+							// tempdata = _.sortBy(tempdata, 'order');
+							mymodal = modal({title: "Sort Pages", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+
+							Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
+		
+
+						}, global: true}
+					]
+				}
+
+
+				$('body').on('click','.save-sort',function(){
+					$.ajax({
+						url: '/api/pages/order/'+resource_id,
+						type: 'POST',
+						data:{order:_.map($('#sorter').children(),function(item,index){return {id:item.dataset.id,index:index}})},
+						success: function(data) {
+							toastr.success('', 'Order successfully updated')
+							// debugger;
+							mymodal.ref.modal('hide')
+						}
+					})
+				})
 				tableConfig.defaultSort = 'order';
 
 				tableConfig.data = data;

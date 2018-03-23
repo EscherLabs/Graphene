@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Group;
 use App\User;
+use App\Page;
 use App\GroupAdmins;
 use App\GroupMembers;
+use App\AppInstance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -152,4 +154,23 @@ class GroupController extends Controller
         }
 	}
 
+    public function pages_order(Group $group)
+	{
+        $order = Input::get('order');
+        foreach($order as $item){
+            $page = Page::find($item['id']);
+            $page->order = (int) $item['index'];
+            $page->save();
+        }
+	}
+
+    public function appinstances_order(Group $group)
+	{
+        $order = Input::get('order');
+        foreach($order as $item){
+            $ai = AppInstance::find($item['id']);
+            $ai->order = (int) $item['index'];
+            $ai->save();
+        }
+	}
 }
