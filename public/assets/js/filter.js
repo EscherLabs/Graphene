@@ -76,6 +76,7 @@ $('body').on('keyup','[name=filter]', function(event){  debugger;
 	}
 });
 
+	templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
 
 
 // function processSearch() {

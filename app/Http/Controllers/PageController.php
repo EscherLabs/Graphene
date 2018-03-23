@@ -43,7 +43,12 @@ class PageController extends Controller
     public function update(Request $request, Page $page)
     {
         $data = $request->all();
-        $data['content'] = json_decode($data['content']);
+        if(isset($data['content'])){
+            $data['content'] = json_decode($data['content']);
+        }        
+        if(isset($data['mobile_order'])){
+            $data['mobile_order'] = json_decode($data['mobile_order']);
+        }
         $page->update($data);
         return $page;
     }
@@ -128,6 +133,7 @@ class PageController extends Controller
                 'name'=>$myPage->name, 
                 'slug'=>$myPage->slug, 
                 'config'=>$config, 
+                'data'=>$myPage->mobile_order, 
                 'id'=>$myPage->id,
                 'group'=>$groupObj
             ]);

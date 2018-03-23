@@ -59,6 +59,12 @@ class Templater {
         $slice_size = 5;
         $data['apps_pages'] = [array_slice($data['apps_pages'],0,$slice_size),array_slice($data['apps_pages'],$slice_size)];
 
+        if (!isset($data['data'])) {
+            $data['data'] = '';
+        }else{
+            $data['data'] = json_encode($data['data']);
+        }
+
         if (isset($data['apps']) && is_array($data['apps'])) {
             $data['apps'] = $data['apps']->toArray();
         }

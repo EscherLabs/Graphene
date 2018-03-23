@@ -1,3 +1,5 @@
+<div class="hidden-xs"> </div>
+
 <script src='/assets/js/berryApp.js'></script> 
 <script src='/assets/js/vendor/moment.js'></script>
 
@@ -39,6 +41,7 @@
 
 <script type='text/javascript' >
 	var config = {{{config_json}}};
+	var mobile_order = {{{data}}};
 	var apps = {{{apps_json}}};
 	_.findWhere = _.find;
 	_.where = _.filter;
@@ -170,7 +173,22 @@
 
 
 		var data = config.sections || [[]];// [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
-		$('#page_layout').html(layouts[config.layout || 0].template);
+
+		if(window.getComputedStyle($('.hidden-xs')[0]).display == 'none'){
+				tempdata = [].concat.apply([],config.sections || [[]])
+
+				if(typeof mobile_order !== 'undefined'){
+					tempdata = _.sortBy(tempdata, function(o) {
+						return mobile_order.indexOf(o.guid);
+					})
+				}
+				data = [tempdata];
+				$('#page_layout').html(layouts[4].template);
+
+		}else{
+			$('#page_layout').html(layouts[config.layout || 0].template);
+
+		}
 
 		cb = new Cobler({ disabled: status, targets: document.getElementsByClassName('cobler_container'),itemContainer: template,itemTarget:target, items:data})
 
@@ -226,7 +244,6 @@
 	}
 
 function editMobileOrder(){
-	templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item">{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
 	var tempdata = [].concat.apply([],config.sections || [[]])
 	if(typeof mobile_order !== 'undefined'){
 		tempdata = _.sortBy(tempdata, function(o) {
@@ -281,9 +298,10 @@ function editMobileOrder(){
 		
 	$('.save-mobile').on('click', function(e){
 		new_mobile_order = _.map($(mymodal.ref).find('.modal-content ol').find('li'), function(item){return item.dataset.guid});
+		// debugger;
 		$.ajax(
 			{
-				url: '/community_pages/' + groupID +'/' + pageID, 
+				url: '/api/pages/' + page_id, 
 				data: {'mobile_order': JSON.stringify(new_mobile_order)},
 				method: 'PUT',
 				success: function(e){
