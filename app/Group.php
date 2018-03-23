@@ -139,6 +139,10 @@ class Group extends Model
     {
         return $this->endpoints()->get();
     } 
+    public function list_tags()
+    {
+        return $this->tags()->get();
+    } 
     public function scopePublicAppsPages($query)
     {
         return $query->with(['app_instances'=>function($q){

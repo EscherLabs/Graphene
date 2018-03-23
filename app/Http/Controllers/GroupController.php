@@ -138,7 +138,10 @@ class GroupController extends Controller
     {
         return $group->list_endpoints();
     }
-
+    public function list_tags(Group $group)
+    {
+        return $group->list_tags();
+    }
     public function order()
 	{
         $order = Input::get('order');

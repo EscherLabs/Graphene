@@ -219,7 +219,8 @@ Route::get('/api/groups/{group}/pages','GroupController@list_pages')->middleware
 Route::get('/api/groups/{group}/appinstances','GroupController@list_appinstances')->middleware('can:list_appinstances,group');
 // Get Endpoints for a specified group by group_id
 Route::get('/api/groups/{group}/endpoints','GroupController@list_endpoints')->middleware('can:list_endpoints,group');
-
+// Get Tags for a specified group by group_id
+Route::get('/api/groups/{group}/tags','GroupController@list_tags')->middleware('can:list_tags,group');
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
