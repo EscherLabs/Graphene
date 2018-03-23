@@ -35,6 +35,10 @@ Route::get('/admin/groups/{group}/members', 'AdminController@members')->middlewa
 Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
 Route::get('/admin/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_tags,group');
 Route::get('/admin/groups/{group}/images', 'AdminController@images')->middleware('can:list_images,group');
+Route::get('/admin/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_pages,group');
+Route::get('/admin/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_appinstances,group');
+Route::get('/admin/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_endpoints,group');
+
 Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
 Route::get('/admin/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
 Route::get('/admin/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
@@ -209,6 +213,13 @@ Route::delete('/api/groups/{group}/composites/{composite_group}','GroupControlle
 
 // Get Images for a specified group by group_id
 Route::get('/api/groups/{group}/images','GroupController@list_images')->middleware('can:list_images,group');
+// Get Pages for a specified group by group_id
+Route::get('/api/groups/{group}/pages','GroupController@list_pages')->middleware('can:list_pages,group');
+// Get App Instances for a specified group by group_id
+Route::get('/api/groups/{group}/appinstances','GroupController@list_appinstances')->middleware('can:list_appinstances,group');
+// Get Endpoints for a specified group by group_id
+Route::get('/api/groups/{group}/endpoints','GroupController@list_endpoints')->middleware('can:list_endpoints,group');
+
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');

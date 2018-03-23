@@ -127,6 +127,18 @@ class Group extends Model
     {
         return $this->images()->get();
     }
+    public function list_pages()
+    {
+        return $this->pages()->get();
+    }
+    public function list_appinstances()
+    {
+        return $this->app_instances()->get();
+    }
+    public function list_endpoints()
+    {
+        return $this->endpoints()->get();
+    } 
     public function scopePublicAppsPages($query)
     {
         return $query->with(['app_instances'=>function($q){

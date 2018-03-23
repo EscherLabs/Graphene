@@ -126,6 +126,18 @@ class GroupController extends Controller
     {
         return $group->list_images();
     }
+    public function list_pages(Group $group)
+    {
+        return $group->list_pages();
+    }
+    public function list_appinstances(Group $group)
+    {
+        return $group->list_appinstances();
+    }
+    public function list_endpoints(Group $group)
+    {
+        return $group->list_endpoints();
+    }
 
     public function order()
 	{
