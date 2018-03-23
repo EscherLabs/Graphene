@@ -153,7 +153,6 @@ initializers['appinstances'] = function() {
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
 					{label: 'Version', name:'app_version_id', required:true, type:'hidden'},
 					// {label: 'Version', name:'app_version_id', required:true, type:'select', options: function(item){
-					// 	debugger;
 					// 	return _.map(_.findWhere(this.owner.fields.app_id.choices,{id:parseInt(this.owner.fields.app_id.val())}).versions,function(item){
 					// 		return {'label':item.summary,'value':item.id}
 					// 	});
@@ -176,10 +175,8 @@ initializers['appinstances'] = function() {
 										{label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'summary'},
 								]}).on('save',function(){
 									// model.attributes.app_version_id = this.toJSON().version;
-									// debugger;
 									var temp = $.extend(true,{},this.options.m.attributes,this.toJSON());
 									// temp.app_version_id = parseInt(temp.app_version_id);
-																		debugger;
 
 									this.options.m.set(temp)
 									this.options.m.owner.options.edit(this.options.m)
@@ -213,7 +210,6 @@ initializers['appinstances'] = function() {
 						data:{order:_.map($('#sorter').children(),function(item,index){return {id:item.dataset.id,index:index}})},
 						success: function(data) {
 							toastr.success('', 'Order successfully updated')
-							// debugger;
 							mymodal.ref.modal('hide')
 						}
 					})
@@ -263,7 +259,6 @@ initializers['app_instance'] = function() {
 
 </div>
 				`)
-debugger;
 				$('#main .col-sm-9').berry({fields: [
 					{label: 'Name', name:'name', required: true},
         			{label: 'Slug', name:'slug', required: true},
@@ -566,7 +561,6 @@ initializers['pages'] = function(){
 						data:{order:_.map($('#sorter').children(),function(item,index){return {id:item.dataset.id,index:index}})},
 						success: function(data) {
 							toastr.success('', 'Order successfully updated')
-							// debugger;
 							mymodal.ref.modal('hide')
 						}
 					})
@@ -685,7 +679,6 @@ initializers['images'] = function() {
 								{label: 'Group', name:'group_id', type: 'select', choices: '/api/groups?limit=true', required: true, default: {label:"Choose a group", value:'-'}},
 								{show:{"not_matches": {"name": "group_id","value": "-"}},type: 'upload', label: false, path: '/api/images?group_id=', name: 'image_filename'}]}).on('uploaded:image_filename', $.proxy(function(){
 										var temp = Berries.newimage.fields.image_filename.value;
-										// debugger;
 										// temp.group = _.findWhere(this.groups,{id:parseInt(Berries.newimage.fields.image_filename.value.group_id, 10)}).name;
 										bt.add(temp);
 										Berries.newimage.trigger('close');
@@ -766,7 +759,6 @@ initializers['groups'] = function() {
 				data:{order:_.map($('#sorter').children(),function(item,index){return {id:item.dataset.id,index:index}})},
 				success: function(data) {
 					toastr.success('', 'Order successfully updated')
-					// debugger;
 					mymodal.ref.modal('hide')
 				}
 			})

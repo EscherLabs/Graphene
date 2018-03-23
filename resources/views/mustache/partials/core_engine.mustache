@@ -298,7 +298,6 @@ function editMobileOrder(){
 		
 	$('.save-mobile').on('click', function(e){
 		new_mobile_order = _.map($(mymodal.ref).find('.modal-content ol').find('li'), function(item){return item.dataset.guid});
-		// debugger;
 		$.ajax(
 			{
 				url: '/api/pages/' + page_id, 

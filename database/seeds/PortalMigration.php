@@ -333,7 +333,7 @@ class PortalMigration extends Seeder
                                                     $link->icon = $link_db->icon;
                                                 }
                                                 $link->group_id = $groups_index[$link_widget_group_id]->id;
-                                                $link->show_all = false;
+                                                // $link->show_all = false;
                                                 $link->save();
                                             }
                                         }
@@ -361,6 +361,7 @@ class PortalMigration extends Seeder
                                         'widgetType' => 'Links',
                                         'title' => 'Useful Links',
                                         'container' => true,
+                                        'show_all' => false,
                                         'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                     ];
                                 }

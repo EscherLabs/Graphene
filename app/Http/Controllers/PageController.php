@@ -125,7 +125,11 @@ class PageController extends Controller
                 $config = '""';
             }else{
                 $config = $myPage->content;
+            }            
+            if(!isset($myPage->mobile_order)){
+                $myPage->mobile_order = [];
             }
+            
             $template = new Templater();
             return $template->render([
                 'apps_pages'=>$links, 
