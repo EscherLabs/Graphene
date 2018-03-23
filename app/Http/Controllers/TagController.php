@@ -19,7 +19,7 @@ class TagController extends Controller
     public function index()
     {
         return Tag::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups);
+            $q->where('site_id','=',config('app.site')->id)->whereIn('id', Auth::user()->admin_groups);
         })->get();
     }
 

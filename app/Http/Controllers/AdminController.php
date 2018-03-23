@@ -34,6 +34,8 @@ class AdminController extends Controller
     public function images(Group $group) {
        return view('admin', ['resource'=>'images','id'=>$group->id]);
     }
+
+    
     public function pages(Group $group) {
         return view('admin', ['resource'=>'pages','id'=>$group->id]);
     }

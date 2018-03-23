@@ -135,8 +135,13 @@ initializers['apps'] = function() {
 }
 initializers['appinstances'] = function() {
 		$('.navbar-header .nav a h4').html('App Instances');
-		$.ajax({
-			url: '/api/appinstances',
+		var url = '/api/'+route;
+		if(resource_id !== ''){
+			url= '/api/groups/'+resource_id+'/'+route
+		}
+			$.ajax({
+				url: url,
+
 			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
@@ -498,8 +503,12 @@ for(var i in partials){
 }
 
 initializers['pages'] = function(){
+		var url = '/api/'+route;
+		if(resource_id !== ''){
+			url= '/api/groups/'+resource_id+'/'+route
+		}
 		$.ajax({
-			url: '/api/'+route,
+			url: url,
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Pages');
 				tableConfig.schema = [
@@ -539,8 +548,12 @@ initializers['pages'] = function(){
 
 initializers['endpoints'] = function() {
 		$('.navbar-header .nav a h4').html('Endpoints');
+		var url = '/api/'+route;
+		if(resource_id !== ''){
+			url= '/api/groups/'+resource_id+'/'+route
+		}
 		$.ajax({
-			url: '/api/'+route,
+		url: url,
 			success: function(data){
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
@@ -593,8 +606,12 @@ initializers['links'] = function() {
 
 initializers['tags'] = function() {
 	$('.navbar-header .nav a h4').html('Tags');
+	var url = '/api/'+route;
+	if(resource_id !== ''){
+		url= '/api/groups/'+resource_id+'/'+route
+	}
 	$.ajax({
-		url: '/api/'+route,
+		url: url,
 		success: function(data){
 			tableConfig.schema = [
 				{label: 'Name', name:'name', required: true},
@@ -611,8 +628,12 @@ initializers['tags'] = function() {
 
 initializers['images'] = function() {
 	$('.navbar-header .nav a h4').html('Images');
+	var url = '/api/'+route;
+	if(resource_id !== ''){
+		url= '/api/groups/'+resource_id+'/'+route
+	}
 	$.ajax({
-		url: '/api/'+route,
+		url: url,
 		success: function(data){
 			tableConfig.schema = [
 				{label: 'Group', name:'group_id', required: true,enabled:false, type:'select', choices: '/api/groups?limit=true'},
@@ -1033,7 +1054,7 @@ templates['pages'] = Hogan.compile(
 					<div class="col-md-6">
 
 						<div class="panel panel-default">
-				      <div class="panel-heading"><a href="/admin/pages"><strong><span class="fa fa-files-o"></span> Pages</strong></a></div>
+				      <div class="panel-heading"><a href="/admin/groups/{{id}}/pages"><strong><span class="fa fa-files-o"></span> Pages</strong></a></div>
 				      <ul class="list-group">
 				      	{{#pages}}
 				   				<a target="_blank" href="/page/{{group_slug}}/{{slug}}"  class="list-group-item">{{name}}</a>
@@ -1041,7 +1062,7 @@ templates['pages'] = Hogan.compile(
 				      </ul>
 				    </div>
 				    <div class="panel panel-default">
-				      <div class="panel-heading"><a href="/admin/appinstances"><strong><span class="fa fa-cubes"></span> App Instances</strong></a></div>
+				      <div class="panel-heading"><a href="/admin/groups/{{id}}/appinstances"><strong><span class="fa fa-cubes"></span> App Instances</strong></a></div>
 				      <ul class="list-group">
 				      	{{#app_instances}}
 				              <a href="/app/{{group_slug}}/{{slug}}" class="list-group-item">{{name}}</a>
