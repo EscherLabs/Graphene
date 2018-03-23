@@ -29,10 +29,16 @@ class LinkController extends Controller
         if (!is_null($group_id)) {
             $composite_groups = GroupComposite::where('group_id','=',$group_id)->pluck('composite_group_id')->toArray();
             $common_groups = array_values(array_intersect(array_merge([$group_id],$composite_groups),Auth::user()->groups));
-            return Link::whereIn('group_id',$common_groups)->orderBy('title')->get();
+            $links = Link::whereIn('group_id',$common_groups)->orderBy('title')->get();
         } else {
-            return Link::whereIn('group_id',Auth::user()->groups)->orderBy('title')->get();
+            $links = Link::whereIn('group_id',Auth::user()->groups)->orderBy('title')->get();
         }
+        $dedup_links = [];
+        $search_garbage = ['https','http',' ','/',':'];
+        foreach($links as $link) {
+            $dedup_links[str_replace($search_garbage, '',strtolower($link->link.$link->title))] = $link;
+        }
+        return array_values($dedup_links);
     }
 
     public function create(Request $request)
