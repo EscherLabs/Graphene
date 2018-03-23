@@ -333,6 +333,7 @@ class PortalMigration extends Seeder
                                                     $link->icon = $link_db->icon;
                                                 }
                                                 $link->group_id = $groups_index[$link_widget_group_id]->id;
+                                                $link->show_all = false;
                                                 $link->save();
                                             }
                                         }
