@@ -11,11 +11,12 @@ Cobler.types.Links = function(container){
 	}
 	var item = {
 		title: 'Links',
+		show_all: false
 	}
 	var fields = {
 		Title: {},
 		"Container?":{name:'container', type: 'checkbox'},
-		"Limit to Group":{name:'group_limit', type: 'checkbox'},
+		"Show All":{name:'show_all', type: 'checkbox'},
 	}
 	return {
 	  container:container,
@@ -27,7 +28,7 @@ Cobler.types.Links = function(container){
 		set: set,
 		initialize: function(el){
 			var url = '/api/user_links/'
-			if(this.get().group_limit){
+			if(!this.get().show_all){
 				url = url+group_id;
 			}
 			$.ajax({
