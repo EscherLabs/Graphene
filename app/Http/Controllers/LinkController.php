@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Link;
 use App\User;
 use App\Group;
+use App\GroupComposite;
 
 class LinkController extends Controller
 {
@@ -23,9 +24,15 @@ class LinkController extends Controller
         })->orderBy('title')->get();
     }
 
-    public function user_index()
+    public function user_index($group_id = null)
     {
-        return Link::whereIn('group_id',Auth::user()->groups)->orderBy('title')->get();
+        if (!is_null($group_id)) {
+            $composite_groups = GroupComposite::where('group_id','=',$group_id)->pluck('composite_group_id')->toArray();
+            $common_groups = array_values(array_intersect(array_merge([$group_id],$composite_groups),Auth::user()->groups));
+            return Link::whereIn('group_id',$common_groups)->orderBy('title')->get();
+        } else {
+            return Link::whereIn('group_id',Auth::user()->groups)->orderBy('title')->get();
+        }
     }
 
     public function create(Request $request)
