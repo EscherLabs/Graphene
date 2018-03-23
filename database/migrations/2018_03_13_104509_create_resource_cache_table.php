@@ -31,6 +31,6 @@ class CreateResourceCacheTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cache');
+        Schema::dropIfExists('resource_cache');
     }
 }
