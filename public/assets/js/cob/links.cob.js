@@ -15,6 +15,7 @@ Cobler.types.Links = function(container){
 	var fields = {
 		Title: {},
 		"Container?":{name:'container', type: 'checkbox'},
+		"Limit to Group":{name:'group_limit', type: 'checkbox'},
 	}
 	return {
 	  container:container,
@@ -23,10 +24,14 @@ Cobler.types.Links = function(container){
 		toJSON: get,
 		edit: berryEditor.call(this, container),
 		get: get,
-		set: set,		
+		set: set,
 		initialize: function(el){
+			var url = '/api/user_links/'
+			if(this.get().group_limit){
+				url = url+group_id;
+			}
 			$.ajax({
-			url: '/api/user_links',
+			url: url,
 			dataType : 'json',
 				type: 'GET',
 				success  : function(el,data){
