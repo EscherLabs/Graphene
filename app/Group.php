@@ -79,7 +79,7 @@ class Group extends Model
     {
         return $this->admins()->with('user')->get();
     }
-    public function add_admin(User $user,$status = 0)
+    public function add_admin(User $user,$status=null)
     {
         self::remove_admin($user); // First Delete the admin from the group
         $group_admin = GroupAdmin::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
@@ -95,7 +95,7 @@ class Group extends Model
     {
         return $this->members()->with('user')->get();
     }
-    public function add_member(User $user, $status = false)
+    public function add_member(User $user, $status = 'internal')
     {
         self::remove_member($user); // First Delete the member from the group
         $group_member = GroupMember::create(['group_id'=>$this->id,'user_id'=>$user->id,

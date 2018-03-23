@@ -138,7 +138,7 @@ class PortalMigration extends Seeder
                     $group_member = new \App\GroupMember;
                     $group_member->user_id = $users_index[$group_member_db->pidm]->id;
                     $group_member->group_id = $groups_index[$group_member_db->group_id]->id;
-                    $group_member->status = 1;
+                    $group_member->status = ($group_member_db->membership_status==='approved')?'internal':'external';
                     $group_member->save();
                 }
             }
@@ -152,7 +152,7 @@ class PortalMigration extends Seeder
                     $group_admin = new \App\GroupAdmin;
                     $group_admin->user_id = $users_index[$group_admin_db->pidm]->id;
                     $group_admin->group_id = $groups_index[$group_admin_db->group_id]->id;
-                    $group_admin->status = 1;
+                    $group_member->status = null;
                     $group_admin->save();
                 }
             }
@@ -360,6 +360,7 @@ class PortalMigration extends Seeder
                                         'widgetType' => 'Links',
                                         'title' => 'Useful Links',
                                         'container' => true,
+                                        'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                     ];
                                 }
                             } if ($page_widget_db->widgetType=='Html' || $page_widget_db->widgetType=='Content') {
@@ -376,6 +377,7 @@ class PortalMigration extends Seeder
                                     'text' => $text,
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
+                                    'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                 ];
                             } if ($page_widget_db->widgetType=='Slider') {
                                 foreach($page_widget_db->images as $index => $image) {
@@ -390,6 +392,7 @@ class PortalMigration extends Seeder
                                     'title' => isset($page_widget_db->title)?$page_widget_db->title:'Slideshow',
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
+                                    'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                 ];
                             } if ($page_widget_db->widgetType=='Image') {
                                 if (isset($images_index[$page_widget_db->image])) {
@@ -403,6 +406,7 @@ class PortalMigration extends Seeder
                                     'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
+                                    'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                 ];
                             } if ($page_widget_db->widgetType=='Microapp') {
                                 try {
@@ -489,6 +493,7 @@ class PortalMigration extends Seeder
                                     'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
+                                    'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                 ];
                             }
                         }
