@@ -220,7 +220,6 @@ var tableConfig = {
           {label: 'Cache', type: 'checkbox',name:'cache'},
           {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
 				];
-        // debugger;
 				tableConfig.data = attributes.code.resources;
 				// tableConfig.click = function(model){window.location.href = '/admin/sites/'+model.attributes.id};
 				bt = new berryTable(tableConfig)

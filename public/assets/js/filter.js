@@ -64,7 +64,7 @@ function processFilter(){
 
 
 filterTimer = null;
-$('body').on('keyup','[name=filter]', function(event){  debugger;
+$('body').on('keyup','[name=filter]', function(event){
 
 	this.currentTarget = event.currentTarget;
 	this.selector = $(this).data('selector');
