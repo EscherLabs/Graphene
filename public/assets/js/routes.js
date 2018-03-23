@@ -246,15 +246,15 @@ initializers['app_instance'] = function() {
 
 </div>
 				`)
-
+debugger;
 				$('#main .col-sm-9').berry({fields: [
 					{label: 'Name', name:'name', required: true},
         			{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					{label: 'Group', name:'group_id', required: true, type:'hidden'},
+					{label: 'App', name:'app_id', required: true, type:'hidden'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				],attributes:data, actions:false, name:'main'})
@@ -298,7 +298,7 @@ initializers['app_instance'] = function() {
 
 							{"multiple": {"duplicate": false},label: '<hr>', name: 'resources', type: 'fieldset', fields:[
 								{label: 'Name',columns:6, enabled:false},
-								{label: 'Endpoint',columns:6, type: 'select', choices: '/api/endpoints'}
+								{label: 'Endpoint',columns:6, type: 'select', choices: '/api/groups/'+data.group_id+'/endpoints'}
 							]}
 						]},
 					]} )

@@ -6,7 +6,7 @@ Cobler.types.uApp = function(container){
 	var item = {}
 	var fields = {
 		Title: {},
-		'App ID': {type: 'select', choices: '/api/appinstances'},
+		'App ID': {type: 'select', choices: '/api/groups/'+group_id+'/appinstances'},
 		"Container?":{name:'container', type: 'checkbox'},
     'User Options':{name:'user_edit',type:'checkbox'},
     'Start Collapsed':{name:'collapsed',type:'checkbox'}
@@ -61,7 +61,7 @@ Cobler.types.uApp = function(container){
               }
             }
             opts.data = data;
-            opts.config = (_.find(apps, {id: parseInt(this.get().app_id,10)}) || _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)})).app.code || {};
+            opts.config = (_.find(apps, {id: parseInt(this.get().app_id,10)}) || _.find(Berry.collection.get('/api/groups/'+group_id+'/appinstances'), {id: parseInt(this.get().app_id,10)})).app.code || {};
             // opts.config = _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_instance_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');
