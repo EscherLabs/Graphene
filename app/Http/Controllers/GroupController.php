@@ -82,7 +82,11 @@ class GroupController extends Controller
     }
     public function list_members(Group $group)
     {
-        return $group->list_members();
+        if ($group->membersCount->aggregate > 1000) {
+            return $group->members()->where('status','=','internal')->with('user')->get();
+        } else {
+            return $group->list_members();
+        }
     }
     public function add_member(Group $group, User $user, Request $request)
     {
