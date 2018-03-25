@@ -35,6 +35,7 @@ Route::get('/admin/groups/{group}/members', 'AdminController@members')->middlewa
 Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
 Route::get('/admin/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_tags,group');
 Route::get('/admin/groups/{group}/images', 'AdminController@images')->middleware('can:list_images,group');
+Route::get('/admin/groups/{group}/links', 'AdminController@links')->middleware('can:list_links,group');
 Route::get('/admin/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_pages,group');
 Route::get('/admin/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_appinstances,group');
 Route::get('/admin/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_endpoints,group');
@@ -213,6 +214,8 @@ Route::delete('/api/groups/{group}/composites/{composite_group}','GroupControlle
 
 // Get Images for a specified group by group_id
 Route::get('/api/groups/{group}/images','GroupController@list_images')->middleware('can:list_images,group');
+// Get Links for a specified group by group_id
+Route::get('/api/groups/{group}/links','GroupController@list_links')->middleware('can:list_links,group');
 // Get Pages for a specified group by group_id
 Route::get('/api/groups/{group}/pages','GroupController@list_pages')->middleware('can:list_pages,group');
 // Update the order of pages in a group

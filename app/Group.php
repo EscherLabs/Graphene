@@ -39,7 +39,24 @@ class Group extends Model
 	    ->selectRaw('group_id, count(*) as aggregate')
 	    ->groupBy('group_id');
 	}
-
+	public function pagesCount()
+	{
+	  return $this->hasOne(Page::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('group_id');
+	}
+	public function appinstancesCount()
+	{
+	  return $this->hasOne(AppInstance::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('group_id');
+	}
+	public function linksCount()
+	{
+	  return $this->hasOne(Link::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('group_id');
+	}
     public function app_instances() {
       return $this->hasMany(AppInstance::class);
     }
@@ -142,6 +159,10 @@ class Group extends Model
     public function list_tags()
     {
         return $this->tags()->get();
+    } 
+    public function list_links()
+    {
+        return $this->links()->get();
     } 
     public function scopePublicAppsPages($query)
     {

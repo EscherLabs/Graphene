@@ -44,18 +44,27 @@ class GroupController extends Controller
             })
         )
         ->with(array('pages'=>function($query){
-            $query->select('id','group_id', 'name', 'slug', 'public');
+            $query->select('id','group_id', 'name', 'slug', 'public')->orderBy('order');
         }))
         ->with(array('app_instances'=>function($query){
-            $query->select('id','group_id', 'name', 'public', 'slug');
+            $query->select('id','group_id','app_id','name', 'public', 'slug')
+            ->with(array('app'=>function($query){
+                $query->select('id','name');
+            }))->orderBy('order');
         }))
         ->with(array('tags'=>function($query){
             $query->select('id','group_id','name', 'value');
+        }))
+        ->with(array('links'=>function($query){
+            $query->select('id','group_id','title','link')->orderBy('title');
         }))
         ->with('membersCount')
         ->with('adminsCount')
         ->with('imagesCount')
         ->with('endpointsCount')
+        ->with('pagesCount')
+        ->with('appinstancesCount')
+        ->with('linksCount')
         ->find($group->id);
     }
 
@@ -147,6 +156,10 @@ class GroupController extends Controller
     public function list_tags(Group $group)
     {
         return $group->list_tags();
+    }
+    public function list_links(Group $group)
+    {
+        return $group->list_links();
     }
     public function order()
 	{

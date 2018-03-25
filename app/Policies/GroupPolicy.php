@@ -115,6 +115,14 @@ class GroupPolicy
         }
     }
 
+    public function list_links(User $user, Group $group)
+    {
+        // User must be an admin of the group or a site admin
+        if (in_array($group->id,$user->admin_groups) || $user->site_admin) {
+            return true;
+        }
+    }
+
     public function list_composites(User $user, Group $group)
     {
         // User must be an admin of the group or a site admin

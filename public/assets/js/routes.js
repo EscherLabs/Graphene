@@ -1072,7 +1072,7 @@ templates['pages'] = Hogan.compile(
 	<section class="panel panel-default">
 		<div class="panel-heading">
 			<h4 class="panel-title">
-				{{name}} <span class="text-muted">({{slug}})</span>
+				{{name}} Dashboard <span class="text-muted">({{slug}})</span>
 			</h4>
 
 		</div>
@@ -1091,14 +1091,61 @@ templates['pages'] = Hogan.compile(
 				    <div class="panel panel-default">
 				      <div class="panel-heading"><a href="/admin/groups/{{id}}/appinstances"><strong><span class="fa fa-cubes"></span> App Instances</strong></a></div>
 				      <ul class="list-group">
-				      	{{#app_instances}}
-				              <a href="/app/{{group_slug}}/{{slug}}" class="list-group-item">{{name}}</a>
-				        {{/app_instances}}
+							{{#app_instances}}
+								<div class="list-group-item">
+									<a href="/admin/apps/{{app.id}}" class="label label-primary pull-right"><i class="fa fa-cube"></i> App</a>
+									<a href="/admin/appinstances/{{id}}" class="label label-default pull-right" style="margin-right:10px;"><i class="fa fa-gear"></i> Config</a>
+									<a href="/app/{{group_slug}}/{{slug}}" target="_blank">{{name}}</a>
+								</div>
+							{{/app_instances}}
 				      </ul>
 				    </div>
 
 					</div>
-					<div class="col-md-6">			
+					<div class="col-md-6">		
+						<div class="row" style="margin-bottom:20px;">
+							<div class="col-xs-6">
+								<a href="/admin/groups/{{id}}/members" class="btn btn-success" style="width:100%">
+									<i class="fa fa-user"></i> Members <span class="badge">{{members_count.aggregate}}{{^members_count}}0{{/members_count}}</span>
+								</a>
+							</div>
+							<div class="col-xs-6">
+								<a href="/admin/groups/{{id}}/admins" class="btn btn-danger" style="width:100%">
+									<i class="fa fa-cogs"></i> Admins <span class="badge">{{admins_count.aggregate}}{{^admins_count}}0{{/admins_count}}</span>
+								</a>
+							</div>
+						</div>
+						<div class="row" style="margin-bottom:20px;">
+							<div class="col-xs-6">
+								<a href="/admin/groups/{{id}}/pages" class="btn btn-primary" style="width:100%">
+									<i class="fa fa-page"></i> Pages <span class="badge">{{pages_count.aggregate}}{{^pages_count}}0{{/pages_count}}</span>
+								</a>
+							</div>
+							<div class="col-xs-6">
+								<a href="/admin/groups/{{id}}/appinstances" class="btn btn-default" style="width:100%">
+									<i class="fa fa-cubes"></i> App Instances <span class="badge">{{appinstances_count.aggregate}}{{^appinstances_count}}0{{/appinstances_count}}</span>
+								</a>
+							</div>
+						</div>
+						<div class="row" style="margin-bottom:20px;">
+							<div class="col-xs-4">
+								<a href="/admin/groups/{{id}}/endpoints" class="btn btn-info" style="width:100%">
+									<i class="fa fa-crosshairs"></i> Endpoints <span class="badge">{{endpoints_count.aggregate}}{{^endpoints_count}}0{{/endpoints_count}}</span>
+								</a>
+							</div>
+							<div class="col-xs-4">
+								<a href="/admin/groups/{{id}}/images" class="btn btn-warning" style="width:100%">
+									<i class="fa fa-image"></i> Images <span class="badge">{{images_count.aggregate}}{{^images_count}}0{{/images_count}}</span>
+								</a>
+							</div>
+							<div class="col-xs-4">
+								<a href="/admin/groups/{{id}}/links" class="btn btn-default" style="width:100%;background-color:lightgray;border-color:gray;" >
+									<i class="fa fa-link"></i> Links <span class="badge">{{links_count.aggregate}}{{^links_count}}0{{/links_count}}</span>
+								</a>
+							</div>
+						</div>
+
+
 						<div class="row">
 							<div class="col-md-6">
 
@@ -1130,32 +1177,17 @@ templates['pages'] = Hogan.compile(
 						</div>
 
 						<div class="row">
-							<div class="col-xs-3">
-
-								<a href="/admin/groups/{{id}}/members" class="btn btn-success" >
-									<i class="fa fa-user"></i> Members <span class="badge">{{members_count.aggregate}}{{^members_count}}0{{/members_count}}</span>
-								</a>
-							</div>
-							<div class="col-xs-3">
-								<a href="/admin/groups/{{id}}/admins" class="btn btn-danger" >
-									<i class="fa fa-cogs"></i> Admins <span class="badge">{{admins_count.aggregate}}{{^admins_count}}0{{/admins_count}}</span>
-								</a>
-							</div>
-
-							<div class="col-xs-3">
-								<a href="/admin/groups/{{id}}/endpoints" class="btn btn-info" >
-									<i class="fa fa-crosshairs"></i> Endpoints <span class="badge">{{endpoints_count.aggregate}}{{^endpoints_count}}0{{/endpoints_count}}</span>
-								</a>
-							</div>
-
-							<div class="col-xs-3">
-								<a href="/admin/groups/{{id}}/images" class="btn btn-warning" >
-									<i class="fa fa-image"></i> Images <span class="badge">{{images_count.aggregate}}{{^images_count}}0{{/images_count}}</span>
-								</a>
-
+							<div class="col-md-12">
+		
+								<div class="panel panel-default">
+							<div class="panel-heading"><a href="/admin/groups/{{id}}/links"><strong><span class="fa fa-link"></span> Links</strong></a></div>
+							<ul class="list-group">
+								{{#links}}
+										<a target="_blank" href="{{link}}"  class="list-group-item">{{title}}</a>
+								{{/links}}
+							</ul>
 							</div>
 						</div>
-
 
 					</div>
 				</div>

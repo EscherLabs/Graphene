@@ -32,10 +32,11 @@ class AdminController extends Controller
         return view('admin', ['resource'=>'tags','id'=>$group->id]);
     }
     public function images(Group $group) {
-       return view('admin', ['resource'=>'images','id'=>$group->id]);
-    }
-
-    
+        return view('admin', ['resource'=>'images','id'=>$group->id]);
+     }
+     public function links(Group $group) {
+        return view('admin', ['resource'=>'links','id'=>$group->id]);
+    }  
     public function pages(Group $group) {
         return view('admin', ['resource'=>'pages','id'=>$group->id]);
     }
