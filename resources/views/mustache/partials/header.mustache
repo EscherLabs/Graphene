@@ -30,7 +30,7 @@
           <ul class="dropdown-menu">
             <li><a href="{{ url.root }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             {{#is_admin}}
-              <li><a href="{{ url.admin }}"><i class="fa fa-gear"></i> Admin</a></li>
+              <li><a href="{{ url.admin }}/{{ group.id }}"><i class="fa fa-gear"></i> Admin</a></li>
             {{/is_admin}}  
             <li><a href="{{ url.logout }}"><i class="fa fa-times-circle"></i> Logout</a></li>
           </ul>

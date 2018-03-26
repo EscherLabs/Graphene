@@ -133,6 +133,7 @@ class AppInstanceController extends Controller
                 'id'=>$myApp->id,
                 'uapp'=>$myApp, 
                 // 'data2'=>$data,
+                'data'=>array(),
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}'),
                 'group'=>$groupObj
             ]);

@@ -74,7 +74,7 @@
               <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
             @endcan
             @can('get_all', 'App\Endpoint')
-              <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
+              <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>  
             @endcan   
             @can('get_all', 'App\Link')
               <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>  
@@ -113,7 +113,7 @@
           <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
         @endcan
         @can('get_all', 'App\Endpoint')
-          <li><a href="/admin/endpoints"><i class="fa fa-server fa-fw"></i>&nbsp; Endpoints</a></li>  
+          <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>  
         @endcan   
         @can('get_all', 'App\Link')
           <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>  
@@ -157,6 +157,7 @@
     <script type='text/javascript' src='/assets/js/vendor/summernote.min.js'></script>
     <script type='text/javascript' src='/assets/js/vendor/dropzone.min.js'></script>
 		<script type="text/javascript" src="/assets/js/sortable.js"></script>
+		<script type="text/javascript" src="/assets/js/templates/admin.js"></script>
 
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 

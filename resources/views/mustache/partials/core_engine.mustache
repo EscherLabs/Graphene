@@ -219,6 +219,21 @@
 				$().berry({name: 'modal', attributes: item.get(), legend: 'Visibility',flatten:true, fields:[
 					{label: 'Device', name: 'device', type: 'select', value:'widget', choices: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
 					{label: 'Allow Minimization', name: 'enable_min', type: 'checkbox', show:!item.no_minimize},
+
+
+							{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  {test: function(){return group_composites.length >0;}} },
+
+						{legend: 'Groups', 'show': {
+									matches: {
+										name: 'limit',
+										value: true
+									}
+								},fields:[
+							{label: false, multiple:{duplicate:true}, toArray:true, name: 'group', fields:[
+									{label: false, name: 'ids', type: 'select', choices: '/api/groups/{{group.id}}/composites', key: 'name', reference: 'group_id'}
+								]
+							}]}
+
 				]})
 				.on('save',function(){
 					this.container.update(Berries.modal.toJSON(),this)
@@ -404,6 +419,13 @@ function editMobileOrder(){
 		</style>
 
 		<script>
+		var group_composites =[];
+		{{#group.composites}}
+			group_composites.push({{composite_group_id}});
+
+{{/group.composites}}
+
+
 			window.onload = function(){
 				$('.page-menu ul li').each(function(my, item){
 						var groups =($(item).data('groups')+"").split(',')

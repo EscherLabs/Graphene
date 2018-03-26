@@ -127,7 +127,7 @@ class GroupController extends Controller
     }
     public function list_composites(Group $group)
     {
-        return $group->list_composites();
+        return $group->list_composites()->pluck('group')->toArray();;
     }
     public function add_composite(Group $group, Group $composite_group)
     {

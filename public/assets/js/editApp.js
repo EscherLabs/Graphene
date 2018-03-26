@@ -1,3 +1,38 @@
+		function render(template, data){
+			if(typeof templates[template] === 'undefined'){
+				templates[template] =  Hogan.compile($('#'+template).html());
+			}
+		return templates[template].render(data, templates);
+		}
+    modal = function(options) {
+			$('#myModal').remove();
+			this.ref = $(render('modal', options));
+
+			options.legendTarget = this.ref.find('.modal-title');
+			options.actionTarget = this.ref.find('.modal-footer');
+
+			$(this.ref).appendTo('body');
+
+			if(options.content) {
+				$('.modal-body').html(options.content);
+				options.legendTarget.html(options.legend);
+			}else{
+				options.autoDestroy = true;
+				var myform = this.ref.find('.modal-body').berry(options).on('destroy', $.proxy(function(){
+					this.ref.modal('hide');
+				},this));
+
+				this.ref.on('shown.bs.modal', $.proxy(function () {
+					this.$el.find('.form-control:first').focus();
+				},myform));
+			}
+			if(options.onshow){
+				this.ref.on('shown.bs.modal', options.onshow);
+			}  
+			this.ref.modal();
+			return this;
+		};
+
 // if(loaded.code == null){loaded.code = {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
 // forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
 // };}
@@ -16,6 +51,15 @@ $('.navbar-header .nav a h4').html(attributes.app.name);//+' <i class="fa fa-pen
 //   });
 // })
 $('#save').on('click',function() {
+  template_errors = templatePage.errors();
+  script_errors =scriptPage.errors();
+  // debugger;
+  // css_errors = [];
+  // if(Berries.style.toJSON().code.css>0){
+  //   css_errors =cssPage.errors();
+  // }
+
+
   var data = {code:{}};
   data.code.css = Berries.style.toJSON().code.css;
   data.code.resources = _.map(bt.models,'attributes');
@@ -23,7 +67,15 @@ $('#save').on('click',function() {
   // var successCompile = false;
   try{
     _.each(data.code.templates, function(partial){
-      Ractive.parse(partial.content);
+      try{
+          Ractive.parse(partial.content);
+        }catch(e){
+          template_errors.push({
+            type: e.name,
+            name: partial.name,
+            message: e.message
+          });
+        }
     })
     // if(!this.resourcesForm.validate()){
     //   toastr.error(e.message, e.name);
@@ -33,27 +85,64 @@ $('#save').on('click',function() {
       toastr.error(e.message, e.name);
       return false;
   }
+  var errorCount = template_errors.length+ script_errors.length;//+ css_errors.length
+
+                  // modal({headerClass:'danger' ,title: e.name+': '+partial.name,content:$('<div>').html(e.message).html()})
+
+
+  if(!errorCount){
+    data.code.scripts = scriptPage.toJSON();
+    var temp = formPage.toJSON();
+    data.code.forms = formPage.toJSON();
+    data.updated_at = attributes.updated_at;
+    // data.code.form = temp[0].content;
+    // data.code.user_options_form = temp[1].content;
+    $.ajax({
+      url: '/api/apps/'+attributes.app_id+'/code',
+      method: 'put',
+      data: data,
+      success:function(e) {
+        attributes.updated_at = e.updated_at;
+        toastr.success('', 'Successfully Saved')
+      },
+      error:function(e) {
+        toastr.error(e.statusText, 'ERROR');
+      },
+        statusCode: {
+          404: function() {
+            toastr.error('You are no longer logged in', 'Logged Out')
+          },
+          409: function(error) {
+            // debugger;
+            test = JSON.parse(JSON.parse(error.responseText).error.message);
+            toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
+
+
+            conflictResults = {};
+
+            conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
+            conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
+            conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
+            conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
+            conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
+
+            modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+
+          }.bind(this),
+          401: function() {
+            toastr.error('You are not authorized to perform this action', 'Not Authorized')
+          }
+        }
+    })
+
+
+  }else{
+    toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
+    modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors/*, css: css_errors*/})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+  }
 
 
 
-  data.code.scripts = scriptPage.toJSON();
-  var temp = formPage.toJSON();
-  data.code.forms = formPage.toJSON();
-  data.updated_at = attributes.updated_at;
-  // data.code.form = temp[0].content;
-  // data.code.user_options_form = temp[1].content;
-  $.ajax({
-    url: '/api/apps/'+attributes.app_id+'/code',
-    method: 'put',
-    data: data,
-    success:function(e) {
-      attributes.updated_at = e.updated_at;
-      toastr.success('', 'Successfully Saved')
-    },
-    error:function(e) {
-      toastr.error(e.statusText, 'ERROR');
-    }
-  })
 })
 
 
@@ -91,53 +180,7 @@ $('#save').on('click',function() {
 
 
 				// 		if(!errorCount){
-				// 			this.model.sources = _.map(bt.models, function(item){return item.attributes});
-				// 			this.model.template =  JSON.stringify(templatePage.toJSON());
-				// 			this.model.script = JSON.stringify(scriptPage.toJSON());
-				// 			this.model.css = cssPage.toJSON()[0].content;
-				// 			this.model.options = {fields: cb.toJSON({})[0]} ;
-				// 			// this.model.updated_at = model.updated_at;
 
-				// 			$.ajax({
-				// 				url:'/microapps/{{$id}}',
-				// 				data: this.model,
-				// 				method:'PUT',
-				// 				success: function(model){
-				// 					this.model = model;
-				// 					original = JSON.stringify(_.pick(model, 'sources', 'template', 'script', 'css', 'options', 'updated_at' ))
-
-				// 					toastr.success(model.name +' has been successfully saved.', 'Success!')
-
-				// 				}.bind(this),
-				// 				error: function(e){
-				// 					toastr.error(e, 'Error on save')
-				// 				},
-				// 				statusCode: {
-				// 			    404: function() {
-				// 						toastr.error('You are no longer logged in', 'Logged Out')
-				// 			    },
-				// 			    409: function(error) {
-				// 			    	// debugger;
-				// 			    	test = JSON.parse(JSON.parse(error.responseText).error.message);
-				// 						toastr.warning('conflict detected', 'NOT SAVED')
-
-
-				// 						conflictResults = {};
-
-				// 						conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
-				// 						conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
-				// 						conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
-				// 						conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
-				// 						conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
-
-				// 						modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-
-				// 			    }.bind(this),
-				// 			    401: function() {
-				// 						toastr.error('You are not authorized to perform this action', 'Not Authorized')
-				// 			    }
-				// 			  }
-				// 			})
 				// 		}else{
 				// 			toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
 				// 			modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors, css: css_errors})})//, footer:'<div class="btn btn-danger">Force Save</div>'})

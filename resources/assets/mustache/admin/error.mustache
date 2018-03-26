@@ -1,0 +1,36 @@
+<div>
+{{#count}}
+<h4><span class="label label-danger">{{count}}</span> total error(s) found in files</h4>
+{{#script.length}}<h5><span class="label label-warning">{{script.length}}</span> error(s) found in scripts</h5>{{/script.length}}
+{{#script}}
+<div>
+<h4>{{name}} ({{type}})</h4>
+<pre>
+{{raw}}<br>On line {{row}} character {{column}}
+</pre>
+</div>
+{{/script}}
+
+
+
+{{#css.length}}<h5><span class="label label-warning">{{css.length}}</span> error(s) found in css</h5>{{/css.length}}
+{{#css}}
+<div>
+<h4>{{name}} ({{type}})</h4>
+<pre>
+{{text}}<br>On line {{row}} character {{column}}
+</pre>
+</div>
+{{/css}}
+
+{{#temp.length}}<h5><span class="label label-warning">{{temp.length}}</span> error(s) found in templates</h5>{{/temp.length}}
+
+{{#temp}}
+<div>
+<h4>{{name}} ({{type}})</h4>
+<pre>{{message}}</pre>
+</div>
+{{/temp}}
+</div>
+{{/count}}
+
