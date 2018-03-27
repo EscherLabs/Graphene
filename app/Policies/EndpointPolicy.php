@@ -13,32 +13,28 @@ class EndpointPolicy
 
     public function get_all(User $user)
     {
-        // User must be an admin of one or more groups
-        if (count($user->apps_admin_groups)>0) {
+        if ($user->group_apps_admin() || $user->site_admin) {
             return true;
         }
     }
 
     public function create(User $user)
     {
-        // User must be admin of endpoint group
-        if (in_array(request()->group_id,$user->apps_admin_groups)) {
+        if ($user->group_apps_admin(request()->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function update(User $user, Endpoint $endpoint)
     {
-        // User must be admin of endpoint group
-        if (in_array($endpoint->group_id,$user->apps_admin_groups)) {
+        if ($user->group_apps_admin($endpoint->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function delete(User $user, Endpoint $endpoint)
     {
-        // User must be admin of endpoint group
-        if (in_array($endpoint->group_id,$user->apps_admin_groups)) {
+        if ($user->group_apps_admin($endpoint->group_id) || $user->site_admin) {
             return true;
         }
     }

@@ -19,67 +19,35 @@ class AppInstancePolicy
 
     public function get(User $user, AppInstance $app_instance)
     {
-        if ($user->site_admin || in_array($app_instance->group_id,$user->apps_admin_groups)) {
+        if ($user->site_admin || $user->group_apps_admin($app_instance->group_id)) {
             return true;
         }
     }
 
     public function create(User $user)
     {
-        if ($user->site_admin || in_array(request()->group_id,$user->apps_admin_groups)) {
+        if ( $user->site_admin || ($user->group_apps_admin(request()->group_id) && $user->app_developer(requet()->app_id))) {
             return true;
         }
     }
 
     public function update(User $user, AppInstance $app_instance)
     {
-        if ($user->site_admin || in_array(request()->group_id,$user->apps_admin_groups)) {
+        if ($user->site_admin || $user->group_apps_admin($app_instance->group_id)) {
             return true;
         }
     }
 
     public function delete(User $user, AppInstance $app_instance)
     {
-        if ($user->site_admin || in_array(request()->group_id,$user->apps_admin_groups)) {
+        if ($user->site_admin || $user->group_apps_admin($app_instance->group_id)) {
             return true;
         }
     }
 
-    public function get_user_options(User $user, AppInstance $app_instance)
+    public function modify_user_options(User $user, AppInstance $app_instance)
     {
-        // User must be member or admin of app_instance group
-        if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->apps_admin_groups)) {
-            return true;
-        }
-    }
-    public function update_user_options(User $user, AppInstance $app_instance)
-    {
-        // User must be member or admin of app_instance group
-        if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->apps_admin_groups)) {
-            return true;
-        }
-    }
-    public function get_route(User $user, AppInstance $app_instance, $route_name)
-    {
-        // User must be member or admin of app_instance group
-        if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->apps_admin_groups)) {
-            return true;
-        }
-    }
-
-    public function get_data(User $user, AppInstance $app_instance)
-    {
-        // User must be member or admin of app_instance group
-        if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->apps_admin_groups)) {
-            return true;
-        }
-    }
-
-    public function fetch(User $user, AppInstance $app_instance)
-    {
-        return true;
-        // User must be member or admin of app_instance group
-        if (in_array($app_instance->group_id,$user->groups) || in_array($app_instance->group_id,$user->apps_admin_groups)) {
+        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member()) {
             return true;
         }
     }

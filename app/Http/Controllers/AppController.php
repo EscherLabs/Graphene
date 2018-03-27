@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Group;
 use App\App;
 use App\User;
 use App\AppVersion;
@@ -18,12 +19,21 @@ class AppController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request) {
-        if (Input::has('limit') || !Auth::user()->site_admin) {
-            return App::with('versions')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+    public function list_all_apps(Request $request) {
+        if (Auth::user()->site_developer || Auth::user()->site_admin) {
+            $apps = App::with('versions')->where('site_id',config('app.site')->id)->get();
         } else {
-            return App::with('versions')->where('site_id',config('app.site')->id)->get();
+            $apps = App::with('versions')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
         }
+        return $apps;
+    }
+    public function list_user_apps(Request $request) {
+        return App::with('versions')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+    }
+    public function list_user_group_apps(Request $request, $group_id) {
+        return App::whereHas('app_instances', function($query) use ($group_id) {
+            $query->where('group_id','=',$group_id);
+        })->orWhereIn('id',Auth::user()->developer_apps)->get();
     }
 
     public function show(App $app) {

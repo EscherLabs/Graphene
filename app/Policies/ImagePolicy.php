@@ -13,34 +13,34 @@ class ImagePolicy
 
     public function get_all(User $user)
     {
-        if (count($user->content_admin_groups)>0 || $user->site_admin) {
+        if ($user->group_content_admin() || $user->site_admin) {
             return true;
         }
     }
 
     public function get(User $user, Image $image) {
-        if (in_array($image->group_id,$user->groups) || $user->site_admin) {
+        if ($user->group_member($image->group_id) || $user->group_admin($image->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function create(User $user)
     {
-        if (in_array(request()->group_id,$user->content_admin_groups) || $user->site_admin) {
+        if ($user->group_content_admin(request()->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function update(User $user, Image $image)
     {
-        if (in_array($image->group_id,$user->content_admin_groups) || $user->site_admin) {
+        if ($user->group_content_admin($image->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function delete(User $user, Image $image)
     {
-        if (in_array($image->group_id,$user->content_admin_groups) || $user->site_admin) {
+        if ($user->group_content_admin($image->group_id) || $user->site_admin) {
             return true;
         }
     }

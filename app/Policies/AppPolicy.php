@@ -13,21 +13,21 @@ class AppPolicy
 
     public function view_in_admin(User $user)
     {
-        if ($user->site_developer || $user->site_admin || count($user->developer_apps)>0) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer()) {
             return true;
         }
     }
 
     public function get_all(User $user)
     {
-        if ($user->site_developer || $user->site_admin || count($user->apps_admin_groups)>0 || count($user->developer_apps)>0) {
+        if ($user->site_developer || $user->site_admin || $user->group_apps_admin() || $user->app_developer()) {
             return true;
         }
     }
 
     public function get(User $user, App $app)
     {
-        if ($user->site_developer || $user->site_admin || in_array($app->id,$user->developer_apps)) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {
             return true;
         }
     }
@@ -41,35 +41,35 @@ class AppPolicy
 
     public function update(User $user, App $app)
     {
-        if (in_array($app->id,$user->developer_apps)) {
+        if ($user->app_developer($app->id)) {
             return true;
         }
     }
 
     public function delete(User $user, App $app)
     {
-        if ($user->site_developer || $user->site_admin) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {
             return true;
         }
     }
 
     public function list_developers(User $user, App $app)
     {
-        if ($user->site_developer || $user->site_admin || in_array($app->id,$user->developer_apps)) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {
             return true;
         }
     }
 
     public function add_developer(User $user, App $app)
     {
-        if ($user->site_developer || $user->site_admin || in_array($app->id,$user->developer_apps)) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {
             return true;
         }
     }
 
     public function remove_developer(User $user, App $app)
     {
-        if ($user->site_developer || $user->site_admin || in_array($app->id,$user->developer_apps)) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {
             return true;
         }
     }

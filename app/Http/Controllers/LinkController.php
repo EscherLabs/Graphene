@@ -17,11 +17,17 @@ class LinkController extends Controller
         $this->middleware('auth');
     }
     
-    public function index()
-    {
-        return Link::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
-        })->orderBy('title')->get();
+    public function list_all_links(Request $request) {
+        if (Auth::user()->site_admin) {
+            $links = Link::whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id);
+            })->orderBy('title')->get();
+        } else {
+            $links = Link::whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
+            })->orderBy('title')->get();
+        }
+        return $links;
     }
 
     public function user_index($group_id = null)

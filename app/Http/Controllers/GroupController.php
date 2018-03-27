@@ -19,13 +19,17 @@ class GroupController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(Request $request)
+    public function list_all_groups(Request $request)
     {
-        if (Input::has('limit') || !Auth::user()->site_admin) {
-            return Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->get();
+        if (Auth::user()->site_admin) {
+            $groups = Group::where('site_id',config('app.site')->id)->get();
         } else {
-            return Group::where('site_id',config('app.site')->id)->get();
+            $groups = Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->get();
         }
+        return $groups;
+    }
+    public function list_user_groups(Request $request) {
+        return Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->get();
     }
 
     public function show(Group $group)

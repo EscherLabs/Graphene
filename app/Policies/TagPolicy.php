@@ -13,32 +13,34 @@ class TagPolicy
 
     public function get_all(User $user)
     {
-        // User must be an admin of one or more groups
-        if (count($user->apps_admin_groups)>0 || $user->site_admin) {
+        if ($user->group_content_admin() || $user->site_admin) {
+            return true;
+        }
+    }
+
+    public function get(User $user, Tag $tag) {
+        if ($user->group_member($tag->group_id) || $user->group_admin($tag->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function create(User $user)
     {
-        // User must be admin of tag group
-        if (in_array(request()->group_id,$user->apps_admin_groups) || $user->site_admin) {
+        if ($user->group_content_admin(request()->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function update(User $user, Tag $tag)
     {
-        // User must be admin of tag group
-        if (in_array($tag->group_id,$user->apps_admin_groups) || $user->site_admin) {
+        if ($user->group_content_admin($tag->group_id) || $user->site_admin) {
             return true;
         }
     }
 
     public function delete(User $user, Tag $tag)
     {
-        // User must be admin of tag group
-        if (in_array($tag->group_id,$user->apps_admin_groups) || $user->site_admin) {
+        if ($user->group_content_admin($tag->group_id) || $user->site_admin) {
             return true;
         }
     }

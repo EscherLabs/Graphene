@@ -28,17 +28,17 @@ Route::post('/api/dashboard','UserDashboardController@update');
 Route::get('/admin/{resource?}', 'AdminController@index');
 Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
 
-Route::get('/admin/groups/{group}/', 'AdminController@summary')->middleware('can:list_admins,group');
+Route::get('/admin/groups/{group}/', 'AdminController@summary')->middleware('can:list_components,group');
 
-Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_admins,group');
-Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_members,group');
-Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_composites,group');
-Route::get('/admin/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_tags,group');
-Route::get('/admin/groups/{group}/images', 'AdminController@images')->middleware('can:list_images,group');
-Route::get('/admin/groups/{group}/links', 'AdminController@links')->middleware('can:list_links,group');
-Route::get('/admin/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_pages,group');
-Route::get('/admin/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_appinstances,group');
-Route::get('/admin/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_endpoints,group');
+Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/images', 'AdminController@images')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/links', 'AdminController@links')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_components,group');
+Route::get('/admin/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_components,group');
 
 Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
 Route::get('/admin/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
@@ -46,7 +46,10 @@ Route::get('/admin/sites/{site}', 'SiteController@admin')->middleware('can:get,s
 
 /***** APPS *****/
 // List all apps
-Route::get('/api/apps','AppController@index')->middleware('can:get_all,App\App');
+Route::get('/api/apps','AppController@list_all_apps')->middleware('can:get_all,App\App');
+Route::get('/api/apps/user','AppController@list_user_apps')->middleware('can:get_all,App\App');
+Route::get('/api/apps/group/{group_id}','AppController@list_user_group_apps')->middleware('can:get_all,App\App');
+
 // Lookup specific app by app_id
 Route::get('/api/apps/{app}','AppController@show')->middleware('can:get,app');
 // Create a new app
@@ -82,18 +85,14 @@ Route::put('/api/appinstances/{app_instance}','AppInstanceController@update')->m
 Route::delete('/api/appinstances/{app_instance}','AppInstanceController@destroy')->middleware('can:delete,app_instance');
 
 // Fetch App User Options for current user by app_instance_id
-Route::get('/api/apps/instances/{app_instance}/user_options','AppInstanceController@get_user_options')->middleware('can:get_user_options,app_instance');
+Route::get('/api/apps/instances/{app_instance}/user_options','AppInstanceController@get_user_options')->middleware('can:modify_user_options,app_instance');
 // Save App User Options for current user by app_instance_id
-Route::post('/api/apps/instances/{app_instance}/user_options','AppInstanceController@save_user_options')->middleware('can:update_user_options,app_instance');
-// Call App Instance Route for current user by app_instance_id, route name
-Route::post('/api/apps/instances/{app_instance}/route/{route}','AppInstanceController@call_route')->middleware('can:get_route,app_instance,route');
-
+Route::post('/api/apps/instances/{app_instance}/user_options','AppInstanceController@save_user_options')->middleware('can:modify_user_options,app_instance');
 // Get App Instance External Resource Data by endpoint_id (POST or GET)
 Route::get('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
 Route::post('/api/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
 // Get all App Data by app_instance
-// TJC -- THIS MIDDLEWARE IS BROKEN.. NO IDEA WHY??
-Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch');//->middleware('can:fetch,app_instance');
+Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
 
 /***** ENDPOINTS *****/
 // List all endpoints
@@ -109,7 +108,7 @@ Route::get('/api/endpoints/google_callback','EndpointController@google_callback'
 
 /***** Links *****/
 // List all links
-Route::get('/api/links','LinkController@index')->middleware('can:get_all,App\Link');
+Route::get('/api/links','LinkController@list_all_links')->middleware('can:get_all,App\Link');
 // List all links for the current user
 Route::get('/api/user_links/{group_id?}','LinkController@user_index');
 // Create a new link for group group_id
@@ -131,7 +130,7 @@ Route::delete('/api/tags/{tag}','TagController@destroy')->middleware('can:delete
 
 /***** Images *****/
 // List all images
-Route::get('/api/images','ImageController@index')->middleware('can:get_all,App\Image');
+Route::get('/api/images','ImageController@list_all_images')->middleware('can:get_all,App\Image');
 // Create a new image for group group_id
 Route::post('/api/images','ImageController@create')->middleware('can:create,App\Image');
 // Update an existing image by image_id
@@ -179,7 +178,8 @@ Route::delete('/api/pages/{page}','PageController@destroy')->middleware('can:del
 
 /***** GROUPS *****/
 // List all groups
-Route::get('/api/groups','GroupController@index')->middleware('can:get_all,App\Group');
+Route::get('/api/groups','GroupController@list_all_groups')->middleware('can:get_all,App\Group');
+Route::get('/api/groups/user','GroupController@list_user_groups')->middleware('can:get_all,App\Group');
 // Lookup specific group by group_id
 Route::get('/api/groups/{group}/summary','GroupController@summary')->middleware('can:get,group');
 Route::get('/api/groups/{group}','GroupController@show')->middleware('can:get,group');
@@ -194,41 +194,41 @@ Route::put('/api/groups/{group}','GroupController@update')->middleware('can:upda
 Route::delete('/api/groups/{group}','GroupController@destroy')->middleware('can:delete,group');
 
 // List all members of a specified group by group_id
-Route::get('/api/groups/{group}/members','GroupController@list_members')->middleware('can:list_members,group');
+Route::get('/api/groups/{group}/members','GroupController@list_members')->middleware('can:list_components,group');
 // Make an existing user a member of an existing group by group_id, user_id
 Route::post('/api/groups/{group}/members/{user}','GroupController@add_member')->middleware('can:add_member,group');
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/members/{user}','GroupController@remove_member')->middleware('can:remove_member,group');
 
 // List all admins of a specified group by group_id
-Route::get('/api/groups/{group}/admins','GroupController@list_admins')->middleware('can:list_admins,group');
+Route::get('/api/groups/{group}/admins','GroupController@list_admins')->middleware('can:list_components,group');
 // Make an existing user an admin of an existing group by group_id, user_id
 Route::post('/api/groups/{group}/admins/{user}','GroupController@add_admin')->middleware('can:add_admin,group');
 // Remove an existing member from an existing group by group_id, user_id
 Route::delete('/api/groups/{group}/admins/{user}','GroupController@remove_admin')->middleware('can:remove_admin,group');
 
 // List all composites of a specified group by group_id
-Route::get('/api/groups/{group}/composites','GroupController@list_composites')->middleware('can:list_composites,group');
+Route::get('/api/groups/{group}/composites','GroupController@list_composites')->middleware('can:list_components,group');
 Route::post('/api/groups/{group}/composites/{composite_group}','GroupController@add_composite')->middleware('can:add_composite,group,composite_group');
 Route::delete('/api/groups/{group}/composites/{composite_group}','GroupController@remove_composite')->middleware('can:remove_composite,group,composite_group');
 
 // Get Images for a specified group by group_id
-Route::get('/api/groups/{group}/images','GroupController@list_images')->middleware('can:list_images,group');
+Route::get('/api/groups/{group}/images','GroupController@list_images')->middleware('can:list_components,group');
 // Get Links for a specified group by group_id
-Route::get('/api/groups/{group}/links','GroupController@list_links')->middleware('can:list_links,group');
+Route::get('/api/groups/{group}/links','GroupController@list_links')->middleware('can:list_components,group');
 // Get Pages for a specified group by group_id
-Route::get('/api/groups/{group}/pages','GroupController@list_pages')->middleware('can:list_pages,group');
+Route::get('/api/groups/{group}/pages','GroupController@list_pages')->middleware('can:list_components,group');
 // Update the order of pages in a group
 Route::post('/api/pages/order/{group}','GroupController@pages_order')->middleware('can:update,group');
 // Get App Instances for a specified group by group_id
-Route::get('/api/groups/{group}/appinstances','GroupController@list_appinstances')->middleware('can:list_appinstances,group');
+Route::get('/api/groups/{group}/appinstances','GroupController@list_appinstances')->middleware('can:list_components,group');
 // Update the order of appinstances in a group
 Route::post('/api/appinstances/order/{group}','GroupController@appinstances_order')->middleware('can:update,group');
 
 // Get Endpoints for a specified group by group_id
-Route::get('/api/groups/{group}/endpoints','GroupController@list_endpoints')->middleware('can:list_endpoints,group');
+Route::get('/api/groups/{group}/endpoints','GroupController@list_endpoints')->middleware('can:list_components,group');
 // Get Tags for a specified group by group_id
-Route::get('/api/groups/{group}/tags','GroupController@list_tags')->middleware('can:list_tags,group');
+Route::get('/api/groups/{group}/tags','GroupController@list_tags')->middleware('can:list_components,group');
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');

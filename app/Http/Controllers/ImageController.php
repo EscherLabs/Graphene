@@ -28,12 +28,17 @@ class ImageController extends Controller
             $image->name.'.'.$image->ext
         );
     }
-    
-    public function index()
-    {
-        return Image::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
-        })->get();
+    public function list_all_images(Request $request) {
+        if (Auth::user()->site_admin) {
+            $images = Image::whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id);
+            })->get();        
+        } else {
+            $images = Image::whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
+            })->get();
+        }
+        return $images;
     }
 
     public function create(Request $request)

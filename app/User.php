@@ -67,4 +67,37 @@ class User extends Authenticatable
       return $this->tags_array;
     }
 
+    /* Used for Policy Methods */
+    public function group_apps_admin($group_id=null) {
+      if (is_null($group_id)) {
+        return count($this->apps_admin_groups)>0;
+      }
+      return in_array($group_id,$this->apps_admin_groups);
+    }
+    public function group_content_admin($group_id=null) {
+      if (is_null($group_id)) {
+        return count($this->content_admin_groups)>0;
+      }
+      return in_array($group_id,$this->content_admin_groups);
+    }
+    public function group_admin($group_id=null) {
+      if (is_null($group_id)) {
+        return count($this->content_admin_groups+$this->apps_admin_groups)>0;
+      }
+      return in_array($group_id,$this->content_admin_groups) || in_array($group_id,$this->apps_admin_groups);
+    }
+    public function group_member($group_id=null) {
+      if (is_null($group_id)) {
+        return count($this->groups)>0;
+      }
+      return in_array($group_id,$this->groups);
+    }
+    public function app_developer($app_id=null) {
+      if (is_null($app_id)) {
+        return count($this->developer_apps)>0;
+      }
+      return in_array($group_id,$this->developer_apps);
+    }
+    
+
 }
