@@ -22,7 +22,7 @@ class GroupController extends Controller
     public function index(Request $request)
     {
         if (Input::has('limit') || !Auth::user()->site_admin) {
-            return Group::where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups)->get();
+            return Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->get();
         } else {
             return Group::where('site_id',config('app.site')->id)->get();
         }

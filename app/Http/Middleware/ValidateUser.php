@@ -43,10 +43,13 @@ class ValidateUser
             abort(403, 'Unauthorized action.');
         }
 
-        $developer_apps = []; $groups = []; $admin_groups = []; $is_developer = false; $is_admin = false;
+        $developer_apps = []; $groups = []; $content_admin_groups = []; $apps_admin_groups = []; $is_developer = false; $is_admin = false;
 
-        Auth::user()->admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
-            $q->where('user_id', '=',  Auth::user()->id);
+        Auth::user()->content_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
+            $q->where('user_id', '=', Auth::user()->id)->where('content_admin','=',true);
+        })->pluck('id')->toArray();
+        Auth::user()->apps_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
+            $q->where('user_id', '=', Auth::user()->id)->where('apps_admin','=',true);
         })->pluck('id')->toArray();
 
         $member_groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
@@ -55,7 +58,7 @@ class ValidateUser
         $composite_groups = GroupComposite::whereIn('composite_group_id', $member_groups)->pluck('group_id')->toArray();
         
         // Treat Group Admin Permissions as Group Memberships as well -- TJC 2/11/18
-        Auth::user()->groups = array_unique(array_merge($member_groups, $composite_groups,Auth::user()->admin_groups));
+        Auth::user()->groups = array_unique(array_merge($member_groups, $composite_groups,Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups));
         
         Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
@@ -69,12 +72,13 @@ class ValidateUser
 
         Auth::user()->site = $current_site;
         Auth::user()->site_admin = $user_site->site_admin;
-        Auth::user()->developer = $user_site->developer;
+        Auth::user()->site_developer = $user_site->site_developer;
 
         if ($request->is('admin*') && 
             !(  Auth::user()->site_admin || 
                 Auth::user()->developer ||
-                count(Auth::user()->admin_groups)>0
+                count(Auth::user()->content_admin_groups)>0 ||
+                count(Auth::user()->apps_admin_groups)>0
             )) {
             abort(403, 'Access denied');
         }

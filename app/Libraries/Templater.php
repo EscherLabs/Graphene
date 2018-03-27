@@ -43,8 +43,8 @@ class Templater {
             
             $data['group']['apps_pages']['group_id'] = $data['group']['id'];
             $data['group']['apps_pages']['group_slug'] = $data['group']['slug'];
-            if(isset($data['user']) && isset($data['user']['admin_groups'])){
-                $data['group']['admin'] = in_array ($data['group']['id'], $data['user']['admin_groups']);   
+            if(isset($data['user']) && isset($data['user']['content_admin_groups']) && isset($data['user']['apps_admin_groups'])){
+                $data['group']['admin'] = in_array($data['group']['id'], $data['user']['content_admin_groups']) || in_array($data['group']['id'], $data['user']['apps_admin_groups']);   
             }
         }
 

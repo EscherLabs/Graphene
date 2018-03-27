@@ -96,11 +96,11 @@ class Group extends Model
     {
         return $this->admins()->with('user')->get();
     }
-    public function add_admin(User $user,$status=null)
+    public function add_admin(User $user,$content_admin=false,$apps_admin=false)
     {
         self::remove_admin($user); // First Delete the admin from the group
         $group_admin = GroupAdmin::updateOrCreate(['group_id'=>$this->id,'user_id'=>$user->id],
-          ['status'=>$status]);
+          ['content_admin'=>$content_admin?1:0,'apps_admin'=>$content_admin?1:0,]);
         $group_admin->load('user');
         return $group_admin;
     }

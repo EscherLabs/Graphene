@@ -28,7 +28,7 @@ class CheckRole
                 }
                 break;
             case 'group_admin':
-                if (count($request->user()->admin_groups) === 0) {
+                if (count($request->user()->content_admin_groups)+count($request->user()->apps_admin_groups) === 0) {
                     abort(403, 'Unauthorized action.');
                 }
                 break;

@@ -17,7 +17,7 @@ class EndpointController extends Controller
     public function index()
     {
         return Endpoint::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->admin_groups);
+            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
         })->get();
     }
 

@@ -17,7 +17,7 @@ class CreateSiteMembersTable extends Migration
             $table->integer('user_id')->unsigned()->index();
             $table->integer('site_id')->unsigned()->index();
             $table->boolean('site_admin')->default(false);
-            $table->boolean('developer')->default(false);
+            $table->boolean('site_developer')->default(false);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('site_id')->references('id')->on('sites')->onDelete('cascade');

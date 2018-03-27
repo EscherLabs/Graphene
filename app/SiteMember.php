@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SiteMember extends Model
 {
-    protected $fillable = ['site_id','user_id','site_admin','developer'];
+    protected $fillable = ['site_id','user_id','site_admin','site_developer'];
     protected $primaryKey = ['user_id', 'site_id'];
     public $incrementing = false;
 

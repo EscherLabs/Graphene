@@ -152,7 +152,8 @@ class PortalMigration extends Seeder
                     $group_admin = new \App\GroupAdmin;
                     $group_admin->user_id = $users_index[$group_admin_db->pidm]->id;
                     $group_admin->group_id = $groups_index[$group_admin_db->group_id]->id;
-                    $group_member->status = null;
+                    $group_admin->content_admin = true;
+                    $group_admin->apps_admin = true;
                     $group_admin->save();
                 }
             }

@@ -24,7 +24,7 @@ class AppInstanceController extends Controller
     public function index() {
         $app_instances = AppInstance::with('app')
             ->whereHas('group', function($q){
-                $q->whereIn('id',Auth::user()->admin_groups);
+                $q->whereIn('id',Auth::user()->apps_admin_groups);
             })
             ->get();
         return $app_instances;

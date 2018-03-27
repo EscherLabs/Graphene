@@ -14,7 +14,7 @@ class PagePolicy
     public function get_all(User $user)
     {
         // User must be an admin of one or more groups
-        if (count($user->admin_groups)>0) {
+        if (count($user->content_admin_groups)>0 || $user->site_admin) {
             return true;
         }
     }
@@ -22,7 +22,7 @@ class PagePolicy
     public function get(User $user, Page $page)
     {
         // User must be admin of page group
-        if (in_array($page->group_id,$user->admin_groups)) {
+        if (in_array($page->group_id,$user->content_admin_groups) || $user->site_admin) {
             return true;
         }
     }
@@ -30,7 +30,7 @@ class PagePolicy
     public function create(User $user)
     {
         // User must be admin of page group
-        if (in_array(request()->group_id,$user->admin_groups)) {
+        if (in_array(request()->group_id,$user->content_admin_groups) || $user->site_admin) {
             return true;
         }
     }
@@ -38,7 +38,7 @@ class PagePolicy
     public function update(User $user, Page $page)
     {
         // User must be admin of page group
-        if (in_array($page->group_id,$user->admin_groups)) {
+        if (in_array($page->group_id,$user->content_admin_groups) || $user->site_admin) {
             return true;
         }
     }
@@ -46,7 +46,7 @@ class PagePolicy
     public function delete(User $user, Page $page)
     {
         // User must be admin of page group
-        if (in_array($page->group_id,$user->admin_groups)) {
+        if (in_array($page->group_id,$user->content_admin_groups) || $user->site_admin) {
             return true;
         }
     }
