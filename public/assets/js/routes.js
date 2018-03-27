@@ -119,6 +119,9 @@ initializers['apps'] = function() {
 			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
+					{label: 'Description', name:'description', required: false},
+					{label: 'Tags', name:'tags', required: false},
+					{label: 'Lead Developer', name:'user_id', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/admin/'+route+'/'+model.attributes.id},
@@ -964,12 +967,12 @@ initializers['developers'] = function() {
 			url: '/api/apps/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'User', name:'user_id', required: true, type:'select', choices: '/api/users', label_key:'email'}
+					{label: 'User', name:'user_id', required: true, type:'select', template:'{{attributes.first_name}} {{attributes.last_name}} - {{attributes.email}}'}
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
-					if(!model.owner.find({user_id:parseInt(model.attributes.user_id)}).length){
-						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.user_id, type: 'POST', data: model.attributes,
+					if(!model.owner.find({id:parseInt(model.attributes.id)}).length){
+						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'POST', data: model.attributes,
 							success:function(data){
 								toastr.success('', 'Developer successfully Added')
 							}.bind(model),

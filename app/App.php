@@ -9,13 +9,16 @@ class App extends Model
 {
     use SoftDeletes;
     protected $dates = ['deleted_at'];
-    protected $fillable = ['name'];
+    protected $fillable = ['name','description','tags','user_id'];
 
     public function site() {
       return $this->belongsTo(Site::class);
     }
     public function app_instances() {
       return $this->hasMany(AppInstance::class);
+    }
+    public function user() {
+      return $this->belongsTo(User::class);
     }
     public function developers()
     {
@@ -27,7 +30,11 @@ class App extends Model
     }
     public function list_developers()
     {
-        return $this->developers()->get();
+        $app_id = $this->id;
+        $developers = User::whereHas('app_developers', function($query) use ($app_id) {
+          $query->where('app_id','=',$app_id);
+        });
+        return $developers;
     }
     public function add_developer(User $user, $status = false)
     {

@@ -21,9 +21,9 @@ class AppController extends Controller
 
     public function list_all_apps(Request $request) {
         if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $apps = App::/*with('versions')->*/where('site_id',config('app.site')->id)->get();
+            $apps = App::with('user')->where('site_id',config('app.site')->id)->get();
         } else {
-            $apps = App::/*with('versions')->*/where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+            $apps = App::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
         }
         return $apps;
     }
@@ -103,14 +103,16 @@ class AppController extends Controller
 
         return view('adminApp', ['app'=>AppVersion::with('app')->where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first()]);
     }
-    public function list_members(Group $group)
-    {
-        return $group->list_members();
-    }
+    // public function list_members(Group $group)
+    // {
+    //     return $group->list_members();
+    // }
 
     public function list_developers(App $app)
     {
-        return $app->list_developers();
+        return User::select('unique_id','first_name','last_name','email')->whereHas('app_developers', function($query) use ($app) {
+          $query->where('app_id','=',$app->id);
+        })->get();
     }
     public function add_developer(App $app, User $user, Request $request)
     {

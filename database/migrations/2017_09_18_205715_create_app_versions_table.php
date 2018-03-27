@@ -20,8 +20,10 @@ class CreateAppVersionsTable extends Migration
             $table->string('description')->default('');
             $table->boolean('stable')->default(false);
             $table->json('code')->nullable();
+            $table->integer('user_id')->unsigned()->index()->nullable()->default(null);
             $table->timestamps();
             $table->foreign('app_id')->references('id')->on('apps')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
         });    
     }
 

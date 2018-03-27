@@ -42,6 +42,12 @@ class User extends Authenticatable
     public function app_developers() {
       return $this->hasMany(AppDeveloper::class);
     }
+    public function app_versions() {
+      return $this->hasMany(AppVersion::class);
+    }
+    public function lead_developer_apps() {
+      return $this->hasMany(App::class);
+    }
     public function getOptionsAttribute() {
         return $this->options;
     }

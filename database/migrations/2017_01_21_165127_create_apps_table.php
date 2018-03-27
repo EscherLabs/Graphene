@@ -16,11 +16,13 @@ class CreateAppsTable extends Migration
             $table->increments('id');
             $table->integer('site_id')->unsigned()->index();
             $table->string('name');
-            // Move Code to App Versions
-            // $table->json('code')->nullable();
+            $table->string('description')->default('');
+            $table->string('tags')->default('');
+            $table->integer('user_id')->unsigned()->index()->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('site_id')->references('id')->on('sites');
+            $table->foreign('user_id')->references('id')->on('users');
         });
 
     }
