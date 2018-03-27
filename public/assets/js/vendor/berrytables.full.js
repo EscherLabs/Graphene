@@ -189,6 +189,9 @@ function berryTable(options) {
 				val.type = 'select';
 			case 'select':
 				val.default = {label: 'No Filter', value: ''};
+				if(val.value_key == 'index'){
+					delete val.value_key;
+				}
 				break;
 		case 'hidden':
 				break;
@@ -666,7 +669,7 @@ function berryTable(options) {
 			for(var filter in options.search) {
 					var temp;
 					if(_.where(options.filterFields, {id:filter})[0] && typeof _.where(options.filterFields, {id:filter})[0].options == 'undefined') {
-						temp = ($.score((anyModel.attributes[this.filterMap[filter]]+'').replace(/\s+/g, " ").toLowerCase(), (options.search[filter]+'').toLowerCase() ) > 0.40);
+						temp = ($.score((anyModel.display[this.filterMap[filter]]+'').replace(/\s+/g, " ").toLowerCase(), (options.search[filter]+'').toLowerCase() ) > 0.40);
 					}else{
 						temp = (anyModel.attributes[this.filterMap[filter]]+'' == options.search[filter]+'')
 					}
@@ -695,7 +698,6 @@ function berryTable(options) {
 		if(this.filter){
 			silentPopulate.call(this.filter, this.defaults)
 		}
-
 		search = search.toLowerCase()
 		//score each model searching each field and finding a total 
 		_.map(this.models, function(model){
@@ -1031,21 +1033,26 @@ function tableModel (owner, initial) {
 	this.schema = owner.options.schema;
 	var processAtts = function() {
 		_.each(this.schema, function(item){
+
 			if(typeof item.options !== 'undefined'){
 				var option;
 				if(typeof item.value_key !== 'undefined'){
-					var search = {};
-					search[item.value_key] = this.attributes[item.name];
-					option = _.findWhere(item.options, search);
-          if($.isNumeric(this.attributes[item.name])){
-            search[item.value_key] = parseInt(this.attributes[item.name]);
-            if(typeof option === 'undefined'){
-              option = _.findWhere(item.options, search);
-            }
-            if(typeof option === 'undefined'){
-              option = _.findWhere(item.options, search);
-            }
-          }
+					if(item.value_key == 'index'){
+						option = item.options[this.attributes[item.name]]
+					}else{
+						var search = {};
+						search[item.value_key] = this.attributes[item.name];
+						option = _.findWhere(item.options, search);
+						if($.isNumeric(this.attributes[item.name])){
+							search[item.value_key] = parseInt(this.attributes[item.name]);
+							if(typeof option === 'undefined'){
+								option = _.findWhere(item.options, search);
+							}
+							if(typeof option === 'undefined'){
+								option = _.findWhere(item.options, search);
+							}
+						}
+					}
 				}else{
 					option =  _.findWhere(item.options, {value:this.attributes[item.name]});
 					if(typeof option === 'undefined'){
@@ -1066,7 +1073,11 @@ function tableModel (owner, initial) {
 					this.display[item.name] = this.attributes[item.name];
 				}
 			}else{
-				this.display[item.name] = this.attributes[item.name];
+				if(item.template){
+					this.display[item.name] = Hogan.compile(item.template).render(this);
+				}else{
+					this.display[item.name] = this.attributes[item.name];
+				}
 			}
 		}.bind(this))
 	}

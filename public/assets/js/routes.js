@@ -154,7 +154,7 @@ initializers['appinstances'] = function() {
         			{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
-					{label: 'Version', name:'app_version_id', required:true, type:'hidden'},
+					{label: 'Version', name:'app_version_id', type:'hidden'},
 					// {label: 'Version', name:'app_version_id', required:true, type:'select', options: function(item){
 					// 	return _.map(_.findWhere(this.owner.fields.app_id.choices,{id:parseInt(this.owner.fields.app_id.val())}).versions,function(item){
 					// 		return {'label':item.summary,'value':item.id}

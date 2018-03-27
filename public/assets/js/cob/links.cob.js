@@ -27,6 +27,15 @@ Cobler.types.Links = function(container){
 		get: get,
 		set: set,
 		initialize: function(el){
+			$(el).on('click','.favorites',function(e){
+				e.preventDefault();
+				_.findWhere(this.links,{id:parseInt(e.currentTarget.parentElement.dataset.guid)}).favorite = !_.findWhere(this.links,{id:parseInt(e.currentTarget.parentElement.dataset.guid)}).favorite
+				Lockr.set('links',_.map(_.where(this.links,{favorite:true}),function(item){return _.pick(item, 'id', 'favorite')}))
+				// debugger;
+				$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links}), templates))
+
+			}.bind(this))
+
 			var url = '/api/user_links/'
 			if(!this.get().show_all){
 				url = url+group_id;
@@ -36,7 +45,11 @@ Cobler.types.Links = function(container){
 			dataType : 'json',
 				type: 'GET',
 				success  : function(el,data){
-					$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:data}), templates))
+					_.each(Lockr.get('links'),function(links){
+						_.findWhere(data,{id:links.id}).favorite = links.favorite;
+					})
+					this.links = data
+					$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links}), templates))
 				}.bind(this,el)
 			})
 		}
