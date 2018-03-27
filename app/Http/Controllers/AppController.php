@@ -21,14 +21,14 @@ class AppController extends Controller
 
     public function list_all_apps(Request $request) {
         if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $apps = App::with('versions')->where('site_id',config('app.site')->id)->get();
+            $apps = App::/*with('versions')->*/where('site_id',config('app.site')->id)->get();
         } else {
-            $apps = App::with('versions')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+            $apps = App::/*with('versions')->*/where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
         }
         return $apps;
     }
     public function list_user_apps(Request $request) {
-        return App::with('versions')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+        return App::/*with('versions')->*/where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
     }
     public function list_user_group_apps(Request $request, $group_id) {
         return App::whereHas('app_instances', function($query) use ($group_id) {
