@@ -84,7 +84,9 @@ class AppInstanceController extends Controller
             $myApp = AppInstance::with('app')->with(['user_options'=>function($query){
                 $query->where('user_id','=', Auth::user()->id);
             }])->where('group_id','=', $group)->where('slug', '=', $slug)->with('app')->first();
+
             $this->authorize('fetch' ,$myApp);
+
             // $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
             $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
@@ -99,6 +101,7 @@ class AppInstanceController extends Controller
 
         }
         /* Maybe there's a better way to do this -- appending app version code to app */
+
         $myApp->findVersion();
 
         if($myApp != null) {
@@ -123,7 +126,7 @@ class AppInstanceController extends Controller
             //     }
             // }
             // return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
-            
+
             $template = new Templater();
             return $template->render([
                 'apps_pages'=>$links, 

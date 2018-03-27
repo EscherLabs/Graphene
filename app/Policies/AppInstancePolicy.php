@@ -51,4 +51,18 @@ class AppInstancePolicy
             return true;
         }
     }
+    public function get_data(User $user, AppInstance $app_instance)
+    {
+        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member()) {
+            return true;
+        }
+    }
+
+    public function fetch(User $user, AppInstance $app_instance)
+    {
+        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member()) {
+            return true;
+        }
+    }
+
 }
