@@ -119,11 +119,10 @@ class GroupController extends Controller
     }
     public function add_admin(Group $group, User $user, Request $request)
     {
-        if ($request->has('status')) {
-            return $group->add_admin($user,$request->status);
-        } else {
-            return $group->add_admin($user);
-        }
+        return $group->add_admin(
+            $user,
+            $request->has('content_admin')?$request->content_admin:false,
+            $request->has('apps_admin')?$request->apps_admin:false);
     }
     public function remove_admin(Group $group, User $user)
     {

@@ -65,6 +65,12 @@ class GroupPolicy
         if ($user->site_admin) {
             return true;
         }
+        if ($user->group_admin($group->id)) {
+            if ((request()->has('content_admin')?request()->content_admin:false == $user->group_content_admin($group->id)) && 
+                (request()->has('apps_admin')?request()->apps_admin:false == $user->group_apps_admin($group->id))) {
+                return true;
+            }
+        }
     }
 
     public function remove_admin(User $user, Group $group)
