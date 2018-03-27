@@ -96,7 +96,7 @@ class User extends Authenticatable
       if (is_null($app_id)) {
         return count($this->developer_apps)>0;
       }
-      return in_array($group_id,$this->developer_apps);
+      return in_array($app_id,$this->developer_apps);
     }
     
 
