@@ -28,7 +28,7 @@ class User extends Authenticatable
     protected $casts = ['params' => 'object'];
 
     public function site_members() {
-      return $this->belongsTo(SiteMember::class);
+      return $this->hasMany(SiteMember::class);
     }
     public function group_members() {
       return $this->hasMany(GroupMember::class);

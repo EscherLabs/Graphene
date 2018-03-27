@@ -60,6 +60,13 @@ class AppPolicy
         }
     }
 
+    public function list_all_developers(User $user)
+    {
+        if ($user->site_developer || $user->site_admin) {
+            return true;
+        }
+    }
+
     public function add_developer(User $user, App $app)
     {
         if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {

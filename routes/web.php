@@ -50,6 +50,7 @@ Route::get('/api/apps','AppController@list_all_apps')->middleware('can:get_all,A
 Route::get('/api/apps/user','AppController@list_user_apps')->middleware('can:get_all,App\App');
 Route::get('/api/apps/group/{group_id}','AppController@list_user_group_apps')->middleware('can:get_all,App\App');
 
+Route::get('/api/apps/developers','AppController@list_all_developers')->middleware('can:list_all_developers,App\App');
 // Lookup specific app by app_id
 Route::get('/api/apps/{app}','AppController@show')->middleware('can:get,app');
 // Create a new app

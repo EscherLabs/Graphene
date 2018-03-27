@@ -202,6 +202,8 @@ class PortalMigration extends Seeder
                     $app = new \App\App;
                     $app->name = $app_db->name;
                     $app->site_id = $site_id;
+                    $app->description = 'Group: '.$groups_index[$app_db->group_id]->name;
+                    $app->tags = strtolower($groups_index[$app_db->group_id]->slug).','; 
                     $app_options_db = json_decode($app_db->options,true);
                     $app_db->options = [];
                     $app_db->user_options = [];

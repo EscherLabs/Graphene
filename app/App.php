@@ -28,20 +28,20 @@ class App extends Model
     {
       return $this->hasMany(AppVersion::class);
     }
-    public function list_developers()
-    {
-        $app_id = $this->id;
-        $developers = User::whereHas('app_developers', function($query) use ($app_id) {
-          $query->where('app_id','=',$app_id);
-        });
-        return $developers;
-    }
+    // public function list_developers()
+    // {
+    //     $app_id = $this->id;
+    //     $developers = User::whereHas('app_developers', function($query) use ($app_id) {
+    //       $query->where('app_id','=',$app_id);
+    //     });
+    //     return $developers;
+    // }
     public function add_developer(User $user, $status = false)
     {
         self::remove_developer($user); // First Delete the developer from the app
         $app_developer = AppDeveloper::create(['app_id'=>$this->id,'user_id'=>$user->id,
           'status'=>$status]);
-        return $app_developer;
+        return $user;
     }
     public function remove_developer(User $user)
     {

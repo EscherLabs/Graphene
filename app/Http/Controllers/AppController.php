@@ -87,8 +87,7 @@ class AppController extends Controller
         return $app_version;
     }
     public function update(Request $request, App $app) {  
-        // $app->code = $request->code;
-        $app->name = $request->name;
+        $app->update($request->all());
         $app->save();
         return $app;
     }
@@ -99,20 +98,25 @@ class AppController extends Controller
         }
     }
     public function admin(App $app) {
-                // return ;
-
         return view('adminApp', ['app'=>AppVersion::with('app')->where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first()]);
     }
-    // public function list_members(Group $group)
-    // {
-    //     return $group->list_members();
-    // }
-
     public function list_developers(App $app)
     {
-        return User::select('unique_id','first_name','last_name','email')->whereHas('app_developers', function($query) use ($app) {
+        return User::select('id','unique_id','first_name','last_name','email')->whereHas('app_developers', function($query) use ($app) {
           $query->where('app_id','=',$app->id);
         })->get();
+    }
+    public function list_all_developers()
+    {
+        return User::select('id','unique_id','first_name','last_name','email')
+            ->has('app_developers')
+            ->orWhereHas('site_members', function($query) {
+                $query->where('site_developer','=',true);
+            })
+            ->whereHas('site_members', function($query) {
+                $query->where('site_id','=',config('app.site')->id);
+            })
+            ->get();
     }
     public function add_developer(App $app, User $user, Request $request)
     {

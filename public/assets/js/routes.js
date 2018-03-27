@@ -119,9 +119,9 @@ initializers['apps'] = function() {
 			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-					{label: 'Description', name:'description', required: false},
+					{label: 'Description', name:'description', required: false, type:'textarea'},
 					{label: 'Tags', name:'tags', required: false},
-					{label: 'Lead Developer', name:'user_id', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false},
+					{label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/admin/'+route+'/'+model.attributes.id},
@@ -967,7 +967,7 @@ initializers['developers'] = function() {
 			url: '/api/apps/'+resource_id+'/'+route,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'User', name:'user_id', required: true, type:'select', template:'{{attributes.first_name}} {{attributes.last_name}} - {{attributes.email}}'}
+					{label: 'User', name:'id', type:'select', template:'{{attributes.first_name}} {{attributes.last_name}} - {{attributes.email}}'}
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
@@ -975,6 +975,7 @@ initializers['developers'] = function() {
 						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'POST', data: model.attributes,
 							success:function(data){
 								toastr.success('', 'Developer successfully Added')
+								this.set(data);
 							}.bind(model),
 							error:function(e){
 								this.delete();
@@ -990,7 +991,7 @@ initializers['developers'] = function() {
 				},
 				tableConfig.edit = false,
 				tableConfig.delete = function(model){
-						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.user_id, type: 'DELETE',
+						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'DELETE',
 							success:function(){
 								toastr.success('', 'Developer successfully Removed')
 							},
@@ -1020,7 +1021,7 @@ initializers['developers'] = function() {
 				]
 
 				$('body').on('click','.list-group-item.user', function(e){
-					bt.add({user_id:e.currentTarget.dataset.id})
+					bt.add({id:e.currentTarget.dataset.id})
 					Berries.user_search.trigger('close');
 				})
 				bt = new berryTable(tableConfig)
