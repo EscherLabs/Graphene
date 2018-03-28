@@ -41,26 +41,28 @@ class EllucianMobileController extends Controller
         $counter = 1;
         foreach($group_apps as $group) {
             $ellucian_group_apps['mappg'.$group->id] = 
-                ['type'=>'header','name'=>$group->name,'access'=>[(string)$group->id],'hideBeforeLogin'=>false,'order'=>(string)$counter];
+                ['type'=>'header','name'=>$group->name,'access'=>[(string)$group->id],'hideBeforeLogin'=>'false','order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
             $counter++;
             foreach($group->app_instances as $app_instance) {
                 $ellucian_group_apps['mappa'.$app_instance->id] = 
                     ['type'=>'web','name'=>$app_instance->name,
                     'access'=>$app_instance->public==1?['Everyone']:[(string)$group->id],
-                    'hideBeforeLogin'=>false,
+                    'hideBeforeLogin'=>"false",
                     'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
                         (isset($app_instance->icon)?$app_instance->icon:'cube').'.png',
-                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug.'?topbar=false&sidemenu=false'],'order'=>(string)$counter];
+                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                    'useBeaconToLaunch'=>'false'];
                 $counter++;
             }
             foreach($group->pages as $page) {
                 $ellucian_group_apps['mappp'.$page->id] = 
                     ['type'=>'web','name'=>$page->name,
                     'access'=>$page->public==1?['Everyone']:[(string)$group->id],
-                    'hideBeforeLogin'=>false,
+                    'hideBeforeLogin'=>'false',
                     'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
                         (isset($page->icon)?$page->icon:'file').'.png',
-                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/page/'.$group->slug.'/'.$page->slug.'?topbar=false&sidemenu=false'],'order'=>(string)$counter];
+                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                    'useBeaconToLaunch'=>'false'];
                 $counter++;
             }
         }
@@ -69,7 +71,7 @@ class EllucianMobileController extends Controller
             'lastUpdated'=>date('c'),
             'versions'=> ['ios' => ['2.0.0'], 'android' => ['2.0.0']],
             'layout'=>[
-                'defaultMenuIcon'=>true,
+                'defaultMenuIcon'=>'true',
                 'primaryColor'=>"d85e16",
                 "headerTextColor"=> "ffffff",
                 "accentColor"=> "edf3f1",
