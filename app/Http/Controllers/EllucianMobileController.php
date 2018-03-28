@@ -41,13 +41,15 @@ class EllucianMobileController extends Controller
         $counter = 1;
         foreach($group_apps as $group) {
             $ellucian_group_apps['mappg'.$group->id] = 
-                ['type'=>'header','name'=>$group->name,'access'=>[(string)$group->id],'hideBeforeLogin'=>'false','order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
+                ['type'=>'header','name'=>$group->name,'access'=>[(string)$group->id],
+                'hideBeforeLogin'=>"false",
+                'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
             $counter++;
             foreach($group->app_instances as $app_instance) {
                 $ellucian_group_apps['mappa'.$app_instance->id] = 
                     ['type'=>'web','name'=>$app_instance->name,
                     'access'=>$app_instance->public==1?['Everyone']:[(string)$group->id],
-                    'hideBeforeLogin'=>"false",
+                    'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
                     'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
                         (isset($app_instance->icon)?$app_instance->icon:'cube').'.png',
                     'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
@@ -58,7 +60,7 @@ class EllucianMobileController extends Controller
                 $ellucian_group_apps['mappp'.$page->id] = 
                     ['type'=>'web','name'=>$page->name,
                     'access'=>$page->public==1?['Everyone']:[(string)$group->id],
-                    'hideBeforeLogin'=>'false',
+                    'hideBeforeLogin'=>($page->public==1)?"false":"true",
                     'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
                         (isset($page->icon)?$page->icon:'file').'.png',
                     'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
