@@ -203,6 +203,8 @@ initializers['appinstances'] = function() {
 
 
 					}, global: true})
+				}else{
+					tableConfig.add = false;
 				}
 
 
@@ -228,6 +230,7 @@ initializers['app_instance'] = function() {
 		$.ajax({
 			url: '/api/appinstances/'+resource_id,
 			success: function(data) {				
+				debugger;
 				$('#table').html(`
 				<div style="margin:21px">
 <div class="btn-group pull-right">
@@ -237,7 +240,7 @@ initializers['app_instance'] = function() {
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu">
-    <li><a href="/app/`+data.slug+`">Visit</a></li>
+    <li><a href="/app/`+data.group.slug+'/'+data.slug+`">Visit</a></li>
   </ul>
 </div>
   <!-- Nav tabs -->
@@ -974,8 +977,10 @@ initializers['developers'] = function() {
 					if(!model.owner.find({id:parseInt(model.attributes.id)}).length){
 						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'POST', data: model.attributes,
 							success:function(data){
+								debugger;
 								toastr.success('', 'Developer successfully Added')
 								this.set(data);
+								this.owner.draw();
 							}.bind(model),
 							error:function(e){
 								this.delete();

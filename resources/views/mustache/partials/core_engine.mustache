@@ -405,14 +405,14 @@ function editMobileOrder(){
 		<style>
 {{#group.composites}}
 			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
-			.group_ {{ composite_group_id }} .widget.group_all,.group_ {{ composite_group_id }} .widget.group_{{ composite_group_id }}{display: block;}
-			.group_ {{ composite_group_id }} .page-menu ul li.group_all,.group_ {{ composite_group_id }} .page-menu ul li.group_ {{ composite_group_id }} {display: block}
+			.group_{{ composite_group_id }} .widget.group_all,.group_{{ composite_group_id }} .widget.group_{{ composite_group_id }}{display: block;}
+			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: block}
 
 @media (min-width: 768px) {
-			.group_ {{ composite_group_id }} .page-menu ul li.group_all,.group_ {{ composite_group_id }} .page-menu ul li.group_ {{ composite_group_id }} {display: table-cell}
+			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: table-cell}
 }
-			.view-as.group_ {{ composite_group_id }} i{display: none;}
-			.group_ {{ composite_group_id }} .view-as.group_ {{ composite_group_id }} i{ display:inline;}
+			.view-as.group_{{ composite_group_id }} i{display: none;}
+			.group_{{ composite_group_id }} .view-as.group_{{ composite_group_id }} i{ display:inline;}
 
 {{/group.composites}}
 
@@ -440,13 +440,20 @@ function editMobileOrder(){
 				}
 								
 
+
 				$('.view-as').on('click', function(e){
-					if($(e.currentTarget).data('group') !== 'all'){
-						if(window.getComputedStyle($(".page-menu .page_"+pageID)[0]).display == 'none'){
-							modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})
-						}
+					if($(e.currentTarget).data('group') == 'all'){
+						$('body').attr('class','topbar sidemenu');
+					}else{
+						$('body').toggleClass('group_'+$(e.currentTarget).data('group'));
+						// if(window.getComputedStyle($(".page-menu .page_"+page_id)[0]).display == 'none'){
+						// 	// modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})
+
+						// 	$('body').attr('class','app');
+						// }
 					}
 				})
+
 				if (resource_type === 'page') {resource_id = page_id;} else if (resource_type === 'app_instance') {resource_id = app_instance_id;} 
 				$.ajax({
 						url: '/api/visit/log_visit',
@@ -456,3 +463,5 @@ function editMobileOrder(){
 				});
 			}
 		</script>
+
+		

@@ -13,13 +13,34 @@
         {{/site.theme.icon}}
         &nbsp;{{site.name}}
       </a>
-      
+
+
+
+
+
       <ul class="nav navbar-nav navbar-right hidden-xs">
         <li><a href="#"><h4 style="margin:0">{{name}}</h4></a></li>
       </ul>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
+    
       <ul class="nav navbar-nav navbar-right">
+{{#group.composites.0.group}}
+							<li class="dropdown hidden-xs">
+                  <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i><span class="sr-only">User</span> <span class="caret"></span></a>
+									<ul class="dropdown-menu with-arrow  pull-right" role="menu">
+										<li>
+											<a href="javascript:void(0);" class="view-as" data-group="all"> All</a>
+										</li>
+										{{#group.composites}}
+										<li>
+											<a href="javascript:void(0);" class="view-as group_{{ group.id }} " data-group="{{ group.id }} "><i class="fa fa-check text-success"></i> {{ group.name }} </a>
+										</li>
+										{{/group.composites}}
+									</ul>
+							</li>
+              {{/group.composites.0.group}}
+
         <li class="dropdown">
           {{#logged_in}}
           <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">

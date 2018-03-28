@@ -40,7 +40,7 @@ class AppInstanceController extends Controller
 
     public function show(AppInstance $app_instance) {
 
-        $myApp = AppInstance::with('app')->where('id', '=', $app_instance->id)->first();
+        $myApp = AppInstance::with('app')->with('group')->where('id', '=', $app_instance->id)->first();
 
         $myApp->findVersion();
         return $myApp;
@@ -78,7 +78,15 @@ class AppInstanceController extends Controller
 
     public function run($group, $slug, Request $request) {
         if(!is_numeric($group)) {
-			$groupObj = Group::with('composites')->where('slug','=',$group)->first();
+			// $groupObj = Group::with('composites')->where('slug','=',$group)->first();
+			// $group = $groupObj->id;
+
+            //ATS add this for the ID version below but make this conditional on being an admin, otherwise use above
+            $groupObj = Group::with(array('composites'=>function($query){
+				$query->with(array('group'=>function($query){
+				$query->select('name','id');
+			}))->select('group_id','composite_group_id');
+			}))->where('slug','=',$group)->first();
 			$group = $groupObj->id;
 		}else{
 			$groupObj = Group::with('composites')->where('id','=',$group)->first();
