@@ -18,11 +18,17 @@ class PageController extends Controller
         $this->middleware('auth')->except('show', 'run');
     }
     
-    public function index()
-    {
-        return Page::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
-        })->get();
+    public function list_all_pages(Request $request) {
+        if (Auth::user()->site_admin) {
+            $pages = Page::select('id','group_id','name','slug','icon','order','unlisted','device','public')->whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id);
+            })->orderBy('group_id','order')->get();
+        } else {
+            $pages = Page::select('id','group_id','name','slug','icon','order','unlisted','device','public')->whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
+            })->orderBy('group_id','order')->get();
+        }
+        return $pages;
     }
 
     public function show(Page $page)

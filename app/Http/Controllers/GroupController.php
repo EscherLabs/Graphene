@@ -22,14 +22,14 @@ class GroupController extends Controller
     public function list_all_groups(Request $request)
     {
         if (Auth::user()->site_admin) {
-            $groups = Group::where('site_id',config('app.site')->id)->get();
+            $groups = Group::where('site_id',config('app.site')->id)->orderBy('order')->get();
         } else {
-            $groups = Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->get();
+            $groups = Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->orderBy('order')->get();
         }
         return $groups;
     }
     public function list_user_groups(Request $request) {
-        return Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->get();
+        return Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->orderBy('order')->get();
     }
 
     public function show(Group $group)

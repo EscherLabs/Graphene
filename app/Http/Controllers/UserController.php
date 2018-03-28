@@ -32,9 +32,6 @@ class UserController extends Controller
     }
 
     public function search($search_string) {
-        // if (strlen($search_string)<4) {
-        //     return ['error'=>'Search phrases must exceed 3 characters'];
-        // }
         $search_elements_parsed = preg_split('/[\s,]+/',strtolower($search_string));
         $search_elements = [];
         $nicknameLookup = new NicknameLookup();
@@ -50,18 +47,23 @@ class UserController extends Controller
         foreach($search_elements as $element) {
             if (strlen($element)<3) {
                 // For 1-2 Character searches, perform an exact match
-                // TJC -- MUST LIMIT QUERY TO ONLY CURRENT SITE!! 3/19/18
                 $users = User::select('id','unique_id','first_name','last_name','email','params')
-                    ->where('first_name','=',$element)
-                    ->orWhere('last_name','=',$element)
-                    ->get();
+                    ->where(function ($query) use ($element) {
+                        $query->where('first_name','=',$element)
+                            ->orWhere('last_name','=',$element);
+                    })->whereHas('site_members', function($query) {
+                        $query->where('site_id','=',config('app.site')->id);
+                    })->get();
             } else {
                 $users = User::select('id','unique_id','first_name','last_name','email','params')
-                    ->where('unique_id','=',$element)
-                    ->orWhere('first_name','like',$element.'%')
-                    ->orWhere('last_name','like',$element.'%')
-                    ->orWhere('email','like',$element.'%')
-                    ->get();
+                    ->where(function ($query) use ($element) {
+                        $query->where('unique_id','=',$element)
+                            ->orWhere('first_name','like',$element.'%')
+                            ->orWhere('last_name','like',$element.'%')
+                            ->orWhere('email','like',$element.'%');
+                    })->whereHas('site_members', function($query) {
+                        $query->where('site_id','=',config('app.site')->id);
+                    })->get();
             }
             foreach($users as $user) {
                 if (isset($ranking[$user->id])) {

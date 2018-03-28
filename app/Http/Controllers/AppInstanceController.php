@@ -21,12 +21,16 @@ class AppInstanceController extends Controller
         $this->middleware('auth')->except('run','fetch', 'get_data');
     }
     
-    public function index() {
-        $app_instances = AppInstance::with('app')
-            ->whereHas('group', function($q){
-                $q->whereIn('id',Auth::user()->apps_admin_groups);
-            })
-            ->get();
+    public function list_all_app_instances(Request $request) {
+        if (Auth::user()->site_admin) {
+            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')->whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id);
+            })->orderBy('group_id','order')->get();
+        } else {
+            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')->whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
+            })->orderBy('group_id','order')->get();
+        }
         return $app_instances;
     }
 
@@ -47,6 +51,7 @@ class AppInstanceController extends Controller
         $app_instance = new AppInstance($request->all());
         // Add App Version
         // $app_instance->app_version_id = $request->get('app_version_id');
+        $app_instance->app_version_id = AppVersion::where('app_id','=',$request->get('app_id'))->orderBy('id','desc')->pluck('id')->first();
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
         $app_instance->save();

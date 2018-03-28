@@ -203,7 +203,7 @@ class PortalMigration extends Seeder
                     $app->name = $app_db->name;
                     $app->site_id = $site_id;
                     $app->description = 'Group: '.$groups_index[$app_db->group_id]->name;
-                    $app->tags = strtolower($groups_index[$app_db->group_id]->slug).','; 
+                    $app->tags = 'group:'.strtolower($groups_index[$app_db->group_id]->slug); 
                     $app_options_db = json_decode($app_db->options,true);
                     $app_db->options = [];
                     $app_db->user_options = [];
@@ -269,7 +269,7 @@ class PortalMigration extends Seeder
                     $app_version = new \App\AppVersion;
                     $app_version->stable = 1;
                     $app_version->app_id = $app->id;
-                    $app_version->summary = 'Initial Version';
+                    $app_version->summary = 'Imported from old myBinghamton';
                     $app_version->description = 'This is the initial version which was migrated from myBinghamton';
                     $app_version->code = [
                         'css'=>$app_db->css,
@@ -321,6 +321,14 @@ class PortalMigration extends Seeder
                     foreach($page_dev_db as $page_column_num => $page_column_db) {
                         $page_content_array['sections'][$page_column_num] = [];
                         foreach($page_column_db as $page_widget_db) {
+                            $limit_boolean = isset($page_widget_db->limit)?$page_widget_db->limit:false;
+                            $limit_groups = [];
+                            if ($limit_boolean && isset($page_widget_db->group) && isset($page_widget_db->group->ids) && is_array($page_widget_db->group->ids)) {
+                                $limit_groups['ids'] = [];
+                                foreach($page_widget_db->group->ids as $limit_group_id) {
+                                    $limit_groups['ids'][] = $groups_index[$limit_group_id]->id;
+                                }
+                            }
                             if ($page_widget_db->widgetType=='LinkCollection') {
                                 // Add links to specified composite groups
                                 if (isset($page_widget_db->group) && isset($page_widget_db->group->ids) && count($page_widget_db->group->ids)>0 && $page_widget_db->group->ids[0] != '') {
@@ -336,7 +344,6 @@ class PortalMigration extends Seeder
                                                     $link->icon = $link_db->icon;
                                                 }
                                                 $link->group_id = $groups_index[$link_widget_group_id]->id;
-                                                // $link->show_all = false;
                                                 $link->save();
                                             }
                                         }
@@ -353,7 +360,7 @@ class PortalMigration extends Seeder
                                             if (stristr($link_db->icon,'fa ')) {
                                                 $link->icon = $link_db->icon;
                                             }
-                                        $link->group_id = $page->group_id;
+                                            $link->group_id = $page->group_id;
                                             $link->save();
                                         }
                                     }
@@ -366,6 +373,8 @@ class PortalMigration extends Seeder
                                         'container' => true,
                                         'show_all' => false,
                                         'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
+                                        'limit' => $limit_boolean,
+                                        'group' => $limit_groups,
                                     ];
                                 }
                             } if ($page_widget_db->widgetType=='Html' || $page_widget_db->widgetType=='Content') {
@@ -383,6 +392,8 @@ class PortalMigration extends Seeder
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
                                     'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
+                                    'limit' => $limit_boolean,
+                                    'group' => $limit_groups,
                                 ];
                             } if ($page_widget_db->widgetType=='Slider') {
                                 foreach($page_widget_db->images as $index => $image) {
@@ -398,6 +409,8 @@ class PortalMigration extends Seeder
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
                                     'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
+                                    'limit' => $limit_boolean,
+                                    'group' => $limit_groups,
                                 ];
                             } if ($page_widget_db->widgetType=='Image') {
                                 if (isset($images_index[$page_widget_db->image])) {
@@ -412,6 +425,8 @@ class PortalMigration extends Seeder
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:false,
                                     'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
+                                    'limit' => $limit_boolean,
+                                    'group' => $limit_groups,
                                 ];
                             } if ($page_widget_db->widgetType=='Microapp') {
                                 try {
@@ -437,8 +452,10 @@ class PortalMigration extends Seeder
                                     }
 
                                     if (isset($apps_index[$page_widget_db->microapp])) { // Make sure the app actually exists
+                                        $apps_index[$page_widget_db->microapp]->tags .= ', page:'.strtolower($page_db->slug);
+                                        $apps_index[$page_widget_db->microapp]->save();
                                         $app_instance = new \App\AppInstance;
-                                        $app_instance->name = $apps_index[$page_widget_db->microapp]->name.' - Page: '.$page_db->name;
+                                        $app_instance->name = $apps_index[$page_widget_db->microapp]->name/*.' - Page: '.$page_db->name*/;
                                         $app_instance->slug = preg_replace("/(\W)+/","",strtolower($apps_index[$page_widget_db->microapp]->name));
                                         $app_instance->group_id = $groups_index[$page_db->group_id]->id;
                                         $app_instance->app_id = $apps_index[$page_widget_db->microapp]->id;
@@ -499,6 +516,8 @@ class PortalMigration extends Seeder
                                     'enable_min' => isset($page_widget_db->enable_min)?$page_widget_db->enable_min:false,
                                     'container' => isset($page_widget_db->container)?$page_widget_db->container:true,
                                     'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
+                                    'limit' => $limit_boolean,
+                                    'group' => $limit_groups,
                                 ];
                             }
                         }

@@ -21,19 +21,19 @@ class AppController extends Controller
 
     public function list_all_apps(Request $request) {
         if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $apps = App::with('user')->where('site_id',config('app.site')->id)->get();
+            $apps = App::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
         } else {
-            $apps = App::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+            $apps = App::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->orderBy('name')->get();
         }
         return $apps;
     }
     public function list_user_apps(Request $request) {
-        return App::/*with('versions')->*/where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->get();
+        return App::where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_apps)->orderBy('name')->get();
     }
     public function list_user_group_apps(Request $request, $group_id) {
         return App::whereHas('app_instances', function($query) use ($group_id) {
             $query->where('group_id','=',$group_id);
-        })->orWhereIn('id',Auth::user()->developer_apps)->get();
+        })->orWhereIn('id',Auth::user()->developer_apps)->orderBy('name')->get();
     }
 
     public function show(App $app) {
@@ -71,6 +71,7 @@ class AppController extends Controller
         }
 
         $app_version->code = $request->code;
+        $app_version->user_id = Auth::user()->id;
         $app_version->save();
         return $app_version;
     }
@@ -79,12 +80,19 @@ class AppController extends Controller
         $app_version->summary = $request->summary;
         $app_version->description = $request->description;
         $app_version->stable = true;
+        $app_version->user_id = Auth::user()->id;
         $app_version->save();
         return $app_version;
     }    
     public function versions(Request $request, App $app) { 
-        $app_version = AppVersion::where('app_id','=',$app->id)->where('stable','=',1)->orderBy('created_at', 'desc')->get();
-        return $app_version;
+        $app_versions = AppVersion::select('id','summary','created_at','user_id')
+            ->with('user')->where('app_id','=',$app->id)->where('stable','=',1)
+            ->orderBy('created_at', 'desc')->get();
+        foreach($app_versions as $i => $app_version) {
+            $last_name = ($app_version->toArray()['user']['last_name'] != '')?'('.$app_version->toArray()['user']['last_name'].')':'';
+            $app_versions[$i]->label = $app_version->created_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
+        }
+        return $app_versions;
     }
     public function update(Request $request, App $app) {  
         $app->update($request->all());
@@ -104,6 +112,8 @@ class AppController extends Controller
     {
         return User::select('id','unique_id','first_name','last_name','email')->whereHas('app_developers', function($query) use ($app) {
           $query->where('app_id','=',$app->id);
+        })->whereHas('site_members', function($query) use ($app) {
+            $query->where('site_id','=',config('app.site')->id);
         })->get();
     }
     public function list_all_developers()

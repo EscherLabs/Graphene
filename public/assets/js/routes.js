@@ -172,10 +172,10 @@ initializers['appinstances'] = function() {
 							url: '/api/apps/'+model.attributes.app_id+'/versions',
 							success: function(data) {
 								console.log(data);
-								data.unshift({id:0,summary:'Latest Stable'})
-								data.unshift({id:-1,summary:'Latest (working or stable)'})
+								data.unshift({id:0,label:'Latest Stable'})
+								data.unshift({id:-1,label:'Latest (working or stable)'})
 								$().berry({attributes:model.attributes,m:model,legend:'Select Version',fields:[
-										{label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'summary'},
+										{label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
 								]}).on('save',function(){
 									// model.attributes.app_version_id = this.toJSON().version;
 									var temp = $.extend(true,{},this.options.m.attributes,this.toJSON());

@@ -21,11 +21,11 @@ class LinkController extends Controller
         if (Auth::user()->site_admin) {
             $links = Link::whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id);
-            })->orderBy('title')->get();
+            })->orderBy('group_id','title')->get();
         } else {
             $links = Link::whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
-            })->orderBy('title')->get();
+            })->orderBy('group_id','title')->get();
         }
         return $links;
     }

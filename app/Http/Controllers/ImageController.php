@@ -32,11 +32,11 @@ class ImageController extends Controller
         if (Auth::user()->site_admin) {
             $images = Image::whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id);
-            })->get();        
+            })->orderBy('group_id','name')->get();        
         } else {
             $images = Image::whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
-            })->get();
+            })->orderBy('group_id','name')->get();
         }
         return $images;
     }

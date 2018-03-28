@@ -61,7 +61,7 @@ Route::put('/api/apps/{app}/code','AppController@code')->middleware('can:update,
 Route::put('/api/apps/{app}/version','AppController@version')->middleware('can:update,app');
 
 //ATS - check middleware
-Route::get('/api/apps/{app}/versions','AppController@versions')->middleware('can:get,app');
+Route::get('/api/apps/{app}/versions','AppController@versions')->middleware('can:get_versions,app');
 
 // Delete an existing app by app_id
 Route::delete('/api/apps/{app}','AppController@destroy')->middleware('can:delete,app');
@@ -75,7 +75,7 @@ Route::delete('/api/apps/{app}/developers/{user}','AppController@remove_develope
 
 /***** APP INSTANCES *****/
 // List all apps instances
-Route::get('/api/appinstances','AppInstanceController@index')->middleware('can:get_all,App\AppInstance');
+Route::get('/api/appinstances','AppInstanceController@list_all_app_instances')->middleware('can:get_all,App\AppInstance');
 // Lookup specific app instance by app_instance_id
 Route::get('/api/appinstances/{app_instance}','AppInstanceController@show')->middleware('can:get,app_instance');
 // Create a new app instance
@@ -97,7 +97,7 @@ Route::get('/api/fetch/{app_instance}','AppInstanceController@fetch'); // Check 
 
 /***** ENDPOINTS *****/
 // List all endpoints
-Route::get('/api/endpoints','EndpointController@index')->middleware('can:get_all,App\Endpoint');
+Route::get('/api/endpoints','EndpointController@list_all_endpoints')->middleware('can:get_all,App\Endpoint');
 // Create a new endpoint for group group_id
 Route::post('/api/endpoints','EndpointController@create')->middleware('can:create,App\Endpoint');
 // Update an existing endpoint by endpoint_id
@@ -121,7 +121,7 @@ Route::delete('/api/links/{link}','LinkController@destroy')->middleware('can:del
 
 /***** Tags *****/
 // List all tags
-Route::get('/api/tags','TagController@index')->middleware('can:get_all,App\Tag');
+Route::get('/api/tags','TagController@list_all_tags')->middleware('can:get_all,App\Tag');
 // Create a new tag for group group_id
 Route::post('/api/tags','TagController@create')->middleware('can:create,App\Tag');
 // Update an existing tag by tag_id
@@ -163,11 +163,11 @@ Route::put('/api/users/{user}','UserController@update')->middleware('can:update,
 // Delete an existing user by user_id
 Route::delete('/api/users/{user}','UserController@destroy')->middleware('can:delete,user');
 // Search all users
-Route::get('/api/users/search/{search_string}','UserController@search')->middleware('can:get_all,App\User');
+Route::get('/api/users/search/{search_string?}','UserController@search')->middleware('can:get_all,App\User');
 
 /***** Pages *****/
 // List all pages
-Route::get('/api/pages','PageController@index')->middleware('can:get_all,App\Page');
+Route::get('/api/pages','PageController@list_all_pages')->middleware('can:get_all,App\Page');
 // Lookup specific page by page id
 Route::get('/api/pages/{page}','PageController@show')->middleware('can:get,page');
 // Create a new page

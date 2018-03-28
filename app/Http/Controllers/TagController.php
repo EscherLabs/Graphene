@@ -16,11 +16,17 @@ class TagController extends Controller
         $this->middleware('auth');
     }
     
-    public function index()
-    {
-        return Tag::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id', Auth::user()->apps_admin_groups);
-        })->get();
+    public function list_all_tags(Request $request) {
+        if (Auth::user()->site_admin) {
+            $tags = Tag::whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id);
+            })->orderBy('group_id','name')->get();
+        } else {
+            $tags = Tag::whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
+            })->orderBy('group_id','name')->get();
+        }
+        return $tags;
     }
 
     public function create(Request $request)

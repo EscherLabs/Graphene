@@ -32,6 +32,14 @@ class AppPolicy
         }
     }
 
+    public function get_versions(User $user, App $app)
+    {
+        if ($user->site_developer || $user->site_admin || $user->group_apps_admin() || $user->app_developer()) {
+            return true;
+        }
+    }
+
+
     public function create(User $user)
     {
         if ($user->site_developer || $user->site_admin) {

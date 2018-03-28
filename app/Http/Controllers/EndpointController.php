@@ -14,11 +14,17 @@ class EndpointController extends Controller
         $this->middleware('auth');
     }
     
-    public function index()
-    {
-        return Endpoint::whereHas('group', function($q){
-            $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
-        })->get();
+    public function list_all_endpoints(Request $request) {
+        if (Auth::user()->site_admin) {
+            $endpoints = Endpoint::select('id','group_id','name','type')->whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id);
+            })->with('group')->orderBy('group_id','name')->get();
+        } else {
+            $endpoints = Endpoint::select('id','group_id','name','type')->whereHas('group', function($q){
+                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
+            })->with('group')->orderBy('group_id','name')->get();
+        }
+        return $endpoints;
     }
 
     public function create(Request $request)
