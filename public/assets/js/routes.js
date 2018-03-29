@@ -706,19 +706,74 @@ initializers['images'] = function() {
 
 initializers['users'] = function() {
 	$('.navbar-header .nav a h4').html('Users');
-	$.ajax({
-		url: '/api/'+route,
+
+	// $.ajax({
+	// 	url: '/api/'+route,
+	// 	success: function(data) {
+			// tableConfig.schema = [
+			// 	{label: 'First Name', name:'first_name', required: true},
+			// 	{label: 'Last Name', name:'last_name', required: true},
+			// 	{label: 'Email', name:'email', type: 'email', required: true},
+			// 	{name: 'id', type:'hidden'}
+			// ];
+			// tableConfig.events = [
+			// 	{'name': 'search', 'label': '<i class="fa fa-search"></i> Search', callback: function(collection){
+			$('#table').html('<div id="search"></div><div id="user"></div>')
+			$('#search').berry({
+						name:'user_search',
+						actions:false,
+						// legend: 'User Search',
+						label:false,
+						fields:[
+							{name:'query',label:'Search'},
+							{type:'raw',value:'',name:'results',label:false}
+						]}).on('change',function(){
+
+							if(typeof Berries.user !== 'undefined'){
+								Berries.user.destroy();
+							}
+						}).delay('change:query',function(){
+							$.ajax({
+								url: '/api/users/search/'+this.toJSON().query,
+								success: function(data) {
+									this.fields.results.update({/*options:data,*/value:templates['user_list'].render({users:data})})
+								}.bind(this)
+							})
+						})
+				$('body').on('click','.list-group-item.user', function(e){
+					// bt.add({user_id:e.currentTarget.dataset.id})
+					// debugger;
+					Berries.user_search.fields.results.update({/*options:data,*/value:templates['user_list'].render({users:[]})})
+
+					$('#user').berry({attributes:'/api/users/'+e.currentTarget.dataset.id+'/info',name:'user',fields:[
+						
+						{name:'site_admin',label:'Site Admin',type:'checkbox'},
+						{name:'site_developer',label:'Site Developer',type:'checkbox'},
+						{type:'text', name:'user_id'}
+					]}).on('save',function(){
+					$.ajax({
+		url: '/api/users/'+this.toJSON().user_id+'/info',
+				type: 'PUT',
+				data:this.toJSON(),
 		success: function(data) {
-			tableConfig.schema = [
-				{label: 'First Name', name:'first_name', required: true},
-				{label: 'Last Name', name:'last_name', required: true},
-				{label: 'Email', name:'email', type: 'email', required: true},
-				{name: 'id', type:'hidden'}
-			];
-			tableConfig.data = data;
-			bt = new berryTable(tableConfig)
-		}
-	});
+					}})
+				})
+					Berries.user_search.trigger('close');
+				})
+
+					// var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
+
+					// // tempdata = _.sortBy(tempdata, 'order');
+					// mymodal = modal({title: "Sort Groups", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+
+					// Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
+
+				// }, global: true}
+			// ]
+			// tableConfig.data = data;
+			// bt = new berryTable(tableConfig)
+	// 	}
+	// });
 }
 
 

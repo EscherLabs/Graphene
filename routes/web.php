@@ -158,12 +158,16 @@ Route::get('/api/users','UserController@index')->middleware('can:get_all,App\Use
 Route::get('/api/users/{user}','UserController@show')->middleware('can:get,user');
 // Create a new user
 Route::post('/api/users','UserController@create')->middleware('can:create,App\User');
-// Update an existing user by user_id
 Route::put('/api/users/{user}','UserController@update')->middleware('can:update,user');
 // Delete an existing user by user_id
 Route::delete('/api/users/{user}','UserController@destroy')->middleware('can:delete,user');
 // Search all users
 Route::get('/api/users/search/{search_string?}','UserController@search')->middleware('can:get_all,App\User');
+
+// Lookup specific user by user_id
+Route::get('/api/users/{user}/info','UserController@info')->middleware('can:get,user');
+// Update an existing user by user_id
+Route::put('/api/users/{user}/info','UserController@updateinfo')->middleware('can:update,user');
 
 /***** Pages *****/
 // List all pages

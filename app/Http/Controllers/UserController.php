@@ -106,6 +106,23 @@ class UserController extends Controller
         return $user;
     }
 
+    public function info(User $user)
+    {
+        $myuser = $user->load(array('site_members'=>function($query){
+            $query->where('site_id','=',config('app.site')->id);
+        }));
+        return $myuser->site_members[0];
+    }
+    public function updateinfo(Request $request,User $user)
+    {
+     $member = SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$user->id)->first();
+     $member->site_admin = $request->get('site_admin');
+     $member->site_developer = $request->get('site_developer');
+     $member->save();
+     return $member;
+    }
+    
+
     public function create(Request $request)
     {
         $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);

@@ -69,18 +69,34 @@ class PageController extends Controller
     public function run($group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
 			// $groupObj = Group::with('composites')->where('slug','=',$group)->first();
-            // $group = $groupObj->id;
+			// $group = $groupObj->id;
+            $groupObj = Group::where('slug','=',$group)->first();
 
-            //ATS add this for the ID version below but make this conditional on being an admin, otherwise use above
-            $groupObj = Group::with(array('composites'=>function($query){
-				$query->with(array('group'=>function($query){
-				$query->select('name','id');
-			}))->select('group_id','composite_group_id');
-			}))->where('slug','=',$group)->first();
+            if (Auth::user()->site_admin || Auth::user()->group_admin($groupObj->id)) {
+                $groupObj->load(array('composites'=>function($query){
+                    $query->with(array('group'=>function($query){
+                    $query->select('name','id');
+                }))->select('group_id','composite_group_id');
+                }));
+            }else{
+                $groupObj->load('composites');
+            }            
+            
 			$group = $groupObj->id;
 		}else{
-			$groupObj = Group::with('composites')->where('id','=',$group)->first();
+            if (Auth::user()->site_admin || Auth::user()->group_admin($agroup)) {
+                $groupObj = Group::with(array('composites'=>function($query){
+                    $query->with(array('group'=>function($query){
+                    $query->select('name','id');
+                }))->select('group_id','composite_group_id');
+                }))->where('id','=',$group)->first();
+                $group = $groupObj->id;
+            }else{
+    			$groupObj = Group::with('composites')->where('id','=',$group)->first();
+            }
+
         }
+
         if(isset($slug)){
             $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
         }else{
