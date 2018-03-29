@@ -1912,7 +1912,22 @@ Berry.validations = {
 	});
 })(Berry, jQuery);(function(b, $){
 	b.register({type: 'text' });
-	b.register({type: 'raw' });
+	b.register({type: 'raw' ,
+		setValue: function(value) {
+			// if(typeof value !== 'object'){
+				if(typeof this.lastSaved === 'undefined'){
+					this.lastSaved = value;
+				}
+				this.value = value;
+				if(this.item.template){
+					debugger;
+					this.value = Hogan.compile(this.item.template).render(this, templates);
+				}
+				this.render();
+			// }
+			return this.value;
+		}
+	});
 	b.register({type: 'password' });
 	b.register({type: 'date' ,
 		setValue: function(value) {		

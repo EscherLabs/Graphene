@@ -94,7 +94,6 @@ class PageController extends Controller
             }else{
     			$groupObj = Group::with('composites')->where('id','=',$group)->first();
             }
-
         }
 
         if(isset($slug)){
