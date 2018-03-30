@@ -11,7 +11,8 @@ Cobler.types.Content = function(container){
 	}
 	var item = {
 		title: 'This is the title',
-		text: 'Here is some text'
+		text: 'Here is some text',
+		guid: generateUUID()
 	}
 	var fields = {
 		Title: {},
@@ -21,7 +22,7 @@ Cobler.types.Content = function(container){
 		// contenteditable: {name:'text', type: 'contenteditable', label: false},// show:{multiMatch:[{name:'editor',value:'html'}]},parsable:'show'},
 	}
 	return {
-	    container:container,
+	  container:container,
 		fields: fields,
 		render: render,
 		toJSON: get,
@@ -34,6 +35,12 @@ Cobler.types.Content = function(container){
 				this.fields.Text.show = true;
 				this.fields.Text.type = this.get().editor;
 			}
+			if(this.container.owner.options.disabled){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
+	  		  this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+          //$(el).find('.collapsible').toggle(!collapsed)
+      }
 		}
 	}
 }

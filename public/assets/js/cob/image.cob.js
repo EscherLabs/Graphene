@@ -18,7 +18,8 @@ Cobler.types.Image = function(container){
 		$.extend(item, newItem);
 	}
 	var item = {
-		images: [{image: '' , url:'', text: '', overlay: ''}]
+		images: [{image: '' , url:'', text: '', overlay: ''}],
+		guid: generateUUID()
 	}
 	var fields = {
 		"My Images":{label: false,fields:[
@@ -38,13 +39,21 @@ Cobler.types.Image = function(container){
 		]}
 	}
 	return {
-	    container:container,
+	  container:container,
 		fields: fields,
 		render: render,
 		toJSON: toJSON,
 		edit: berryEditor.call(this, container),
 		get: get,
 		set: set,
-		initialize: function(el){$(el).find('.slider').nivoSlider({effect: 'fade'});}
+		initialize: function(el){
+			$(el).find('.slider').nivoSlider({effect: 'fade'});
+				if(this.container.owner.options.disabled){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
+	  		  this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+          //$(el).find('.collapsible').toggle(!collapsed)
+      }
+		}
 	}
 }

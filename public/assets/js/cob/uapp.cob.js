@@ -3,7 +3,8 @@ Cobler.types.uApp = function(container){
 		item.widgetType = 'uApp';
 		return item;
 	}
-	var item = {}
+	var item = {
+		guid: generateUUID()}
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/groups/'+group_id+'/appinstances'},
@@ -28,7 +29,7 @@ Cobler.types.uApp = function(container){
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
       if(this.container.owner.options.disabled){
-          var collapsed = (Lockr.get('app_'+this.get().app_id) || {collapsed:false}).collapsed;
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
           //$(el).find('.collapsible').toggle(!collapsed)

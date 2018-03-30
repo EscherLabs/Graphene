@@ -232,7 +232,8 @@
 							{label: false, multiple:{duplicate:true}, toArray:true, name: 'group', fields:[
 									{label: false, name: 'ids', type: 'select', choices: '/api/groups/{{group.id}}/composites', key: 'name', reference: 'group_id'}
 								]
-							}]}
+							}]},
+							
 
 				]})
 				.on('save',function(){
@@ -251,7 +252,7 @@
 			cb.on('min', function(item){
 				$(item.container.elementOf(item)).find('.collapsible').toggle(400 , $.proxy(function() {
 					item.set({collapsed: $(item.container.elementOf(item)).find('.widget').toggleClass('cob-collapsed').hasClass('cob-collapsed') });
-					Lockr.set('app_'+item.get().app_id,{collapsed:item.get().collapsed});
+					Lockr.set(item.get().guid,{collapsed:item.get().collapsed});
 				},item) );
 			})
 			cb.on('user_edit', editUserOptions)
@@ -265,45 +266,6 @@ function editMobileOrder(){
 			return mobile_order.indexOf(o.guid);
 		})
 	}
-
-
-
-		function render(template, data){
-			if(typeof templates[template] === 'undefined'){
-				templates[template] =  Hogan.compile($('#'+template).html());
-			}
-		return templates[template].render(data, templates);
-		}
-		modal = function(options) {
-			$('#myModal').remove();
-			this.ref = $(render('modal', options));
-
-			options.legendTarget = this.ref.find('.modal-title');
-			options.actionTarget = this.ref.find('.modal-footer');
-
-			$(this.ref).appendTo('body');
-
-			if(options.content) {
-				$('.modal-body').html(options.content);
-				options.legendTarget.html(options.legend);
-			}else{
-				options.autoDestroy = true;
-				var myform = this.ref.find('.modal-body').berry(options).on('destroy', $.proxy(function(){
-					this.ref.modal('hide');
-				},this));
-
-				this.ref.on('shown.bs.modal', $.proxy(function () {
-					this.$el.find('.form-control:first').focus();
-				},myform));
-			}
-			if(options.onshow){
-				this.ref.on('shown.bs.modal', options.onshow);
-			}  
-			this.ref.modal();
-			return this;
-		};
-
-
 
 
 
@@ -358,6 +320,7 @@ function editMobileOrder(){
 	function addWidget(e) { 
 		
 		cb.collections[0].addItem(e); 
+		// debugger;
 		// cb.collections[0].addItem({widgetType: e, guid: generateUUID()});
 	
 	}
@@ -405,11 +368,14 @@ function editMobileOrder(){
 		<style>
 {{#group.composites}}
 			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
+			.editor .widget,.editor .page-menu ul li{display: block;}
 			.group_{{ composite_group_id }} .widget.group_all,.group_{{ composite_group_id }} .widget.group_{{ composite_group_id }}{display: block;}
 			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: block}
 
 @media (min-width: 768px) {
 			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: table-cell}
+				
+
 }
 			.view-as.group_{{ composite_group_id }} i{display: none;}
 			.group_{{ composite_group_id }} .view-as.group_{{ composite_group_id }} i{ display:inline;}
@@ -426,7 +392,7 @@ function editMobileOrder(){
 {{/group.composites}}
 
 
-			window.onload = function(){
+			// window.onload = function(){
 				$('.page-menu ul li').each(function(my, item){
 						var groups =($(item).data('groups')+"").split(',')
 						for(var i in groups){
@@ -434,11 +400,9 @@ function editMobileOrder(){
 						}
 					
 				})
-				groups = [{{#user.groups}},{{/user.groups}}];
-				for(var i in groups){
-					$('.group_'+groups[i]).click();
-				}
-								
+								// debugger;
+
+	
 
 
 				$('.view-as').on('click', function(e){
@@ -453,7 +417,11 @@ function editMobileOrder(){
 						// }
 					}
 				})
-
+				groups = [{{#user.groups}}{{.}},{{/user.groups}}];
+				for(var i in groups){
+					$('.view-as.group_'+groups[i]).click();
+				}
+							
 				if (resource_type === 'page') {resource_id = page_id;} else if (resource_type === 'app_instance') {resource_id = app_instance_id;} 
 				$.ajax({
 						url: '/api/visit/log_visit',
@@ -461,7 +429,7 @@ function editMobileOrder(){
 						data: {width:window.innerWidth,resource_id:resource_id,resource_type:resource_type},
 						success: function(){}
 				});
-			}
+			// }
 		</script>
 
 		

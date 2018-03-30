@@ -94,11 +94,13 @@ class Templater {
             new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
         ));
 
+        $data['user'] = Auth::user();
         // Render Template
         $m = new \Mustache_Engine([
             'loader' => $loader,
             'partials_loader' => $partials_loader,
         ]);
+    
         $tpl = $m->loadTemplate('main');
         return $tpl->render($data);
     }

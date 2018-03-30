@@ -25,7 +25,7 @@
 
 .cobler_container{min-height: 50px;}
 
-.editor #startEditing{display:none}
+.editor .editTools{display:none}
 .editor .editTools.hidden{display:block !important;visibility: visible !important}
 
 
