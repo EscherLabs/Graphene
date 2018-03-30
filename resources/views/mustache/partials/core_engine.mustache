@@ -45,13 +45,11 @@
 	var apps = {{{apps_json}}};
 	_.findWhere = _.find;
 	_.where = _.filter;
+	group_id = {{group.id}};
 
 	{{#app_mode}}
 		appMode = true;
 		resource_type = 'app_instance';
-	//	$('[href$="/{{ $app->slug }}"]').parent().addClass('active').parent().addClass('in');
-		$('[href$="{{slug}}"]').parent().addClass('active').parent().addClass('in');
-
 		if(JSON.parse(apps[0].app.code.forms[1].content).fields.length){
 			$('#edit_instance').show();
 			$('#edit_instance').on('click', function(){
@@ -59,13 +57,15 @@
 			})
 		}
 		app_instance_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
+		$('.app'+app_id).addClass('active');
 	{{/app_mode}}
 	{{^app_mode}}
 		appMode = false;
 		resource_type = 'page';
 		page_id = {{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
+		$('.page'+page_id).addClass('active');
 	{{/app_mode}}
-	group_id = {{group.id}};
+	$('#group'+group_id).addClass('in');
 
 	layouts = [
 			{
