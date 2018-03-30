@@ -57,7 +57,7 @@
 			})
 		}
 		app_instance_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
-		$('.app'+app_id).addClass('active');
+		$('.app'+app_instance_id).addClass('active');
 	{{/app_mode}}
 	{{^app_mode}}
 		appMode = false;
