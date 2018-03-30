@@ -11,6 +11,12 @@ class GroupPolicy
 {
     use HandlesAuthorization;
 
+    public function view_in_admin(User $user) {
+        if ($user->group_admin() || $user->site_admin) {
+            return true;
+        }
+    }
+
     public function get_all(User $user)
     {
         if ($user->group_admin() || $user->site_admin) {

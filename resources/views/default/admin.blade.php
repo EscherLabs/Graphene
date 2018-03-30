@@ -67,34 +67,34 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            @can('get_all','App\Group')
+            @can('view_in_admin','App\Group')
               <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
             @endcan
             @can('view_in_admin','App\User')
               <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
             @endcan
-            @can('get_all', 'App\Endpoint')
-              <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>  
+            @can('view_in_admin', 'App\Endpoint')
+              <!-- <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>   -->
             @endcan   
-            @can('get_all', 'App\Link')
-              <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>  
+            @can('view_in_admin', 'App\Link')
+              <!-- <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>   -->
             @endcan   
-            @can('get_all', 'App\Image')
-              <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>  
+            @can('view_in_admin', 'App\Image')
+              <!-- <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>   -->
             @endcan   
-            @can('get_all', 'App\Tag')
-              <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>  
+            @can('view_in_admin', 'App\Tag')
+              <!-- <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>   -->
             @endcan   
             @can('view_in_admin','App\App')
               <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
             @endcan
-            @can('get_all','App\AppInstance')
+            @can('view_in_admin','App\AppInstance')
               <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
             @endcan
-            @can('get_all','App\Page')
+            @can('view_in_admin','App\Page')
               <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
             @endcan
-            @can('get_all', 'App\Site')
+            @can('view_in_admin', 'App\Site')
               <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
             @endcan  
           </ul>
@@ -112,28 +112,28 @@
         @can('view_in_admin','App\User')
           <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
         @endcan
-        @can('get_all', 'App\Endpoint')
-          <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>  
+        @can('view_in_admin', 'App\Endpoint')
+          <!-- <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>   -->
         @endcan   
-        @can('get_all', 'App\Link')
-          <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>  
+        @can('view_in_admin', 'App\Link')
+          <!-- <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>   -->
         @endcan   
-        @can('get_all', 'App\Image')
-          <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>  
+        @can('view_in_admin', 'App\Image')
+          <!-- <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>   -->
         @endcan   
-        @can('get_all', 'App\Tag')
-          <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>  
+        @can('view_in_admin', 'App\Tag')
+          <!-- <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>   -->
         @endcan   
         @can('view_in_admin','App\App')
           <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
         @endcan
-        @can('get_all','App\AppInstance')
+        @can('view_in_admin','App\AppInstance')
           <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
         @endcan
-        @can('get_all','App\Page')
+        @can('view_in_admin','App\Page')
           <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
         @endcan
-        @can('get_all', 'App\Site')
+        @can('view_in_admin', 'App\Site')
           <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
         @endcan  
       </ul>

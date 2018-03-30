@@ -95,7 +95,7 @@ class GroupController extends Controller
     }
     public function list_members(Group $group)
     {
-        if ($group->membersCount->aggregate > 1000) {
+        if (isset($group->membersCount) && $group->membersCount->aggregate > 1000) {
             return $group->members()->where('status','=','internal')->with('user')->get();
         } else {
             return $group->list_members();

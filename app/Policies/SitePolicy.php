@@ -12,6 +12,12 @@ class SitePolicy
 {
     use HandlesAuthorization;
 
+    public function view_in_admin(User $user) {
+        if ($user->site_admin) {
+            return true;
+        }
+    }
+
     public function get_all(User $user)
     {
         //  Current User is a site admin

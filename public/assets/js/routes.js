@@ -147,12 +147,12 @@ initializers['appinstances'] = function() {
 
 			success: function(data) {
 				tableConfig.schema = [
+					{label: 'Group', name:'group_id', required: true, type:'select',enabled:false, choices: '/api/groups?limit=true'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
 					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'Group', name:'group_id', required: true, type:'select',enabled:false, choices: '/api/groups?limit=true'},
 					{label: 'App', name:'app_id', template:'{{attributes.app.name}}',type:'raw'},
 					{label: 'Version', name:'app_version_id', type:'hidden'},
 					{name: 'app', type:'hidden'},
@@ -188,12 +188,12 @@ initializers['appinstances'] = function() {
 				]
 				if(resource_id !== ''){
 					tableConfig.schema = [
+						{label: 'Group', name:'group_id', type:'select', choices: '/api/groups?limit=true', enabled:false},
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
 						{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 						{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 						{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-						{label: 'Group', name:'group_id', value:resource_id, type:'hidden'},
 						{label: 'App', name:'app_id', type:'select', choices:'/api/apps/group/'+resource_id},
 						{label: 'Version', name:'app_version_id', type:'hidden'},
 						{name: 'app', type:'hidden'},
@@ -279,12 +279,12 @@ viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list
 						})
 					})			  
 				$('#main .col-sm-9').berry({fields: [
+					{label: 'Group', name:'group_id', required: true, type:'hidden'},
 					{label: 'Name', name:'name', required: true},
         			{label: 'Slug', name:'slug', required: true},
         			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
         			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
-					{label: 'Group', name:'group_id', required: true, type:'hidden'},
 					{label: 'App', name:'app_id', required: true, type:'hidden'},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
@@ -543,20 +543,21 @@ initializers['pages'] = function(){
 			success: function(data){
 				$('.navbar-header .nav a h4').html('Pages');
 				tableConfig.schema = [
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
 					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },				
 					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/page/'+model.attributes.group_id+'/'+model.attributes.slug};
 
 
 				if(resource_id !== ''){
-
+					tableConfig.schema[0].enabled = false;
+					tableConfig.schema[0].value = resource_id;
 					tableConfig.events = [
 						{'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
 
@@ -604,13 +605,13 @@ initializers['endpoints'] = function() {
 		url: url,
 			success: function(data){
 				tableConfig.schema = [
+					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Auth Type', name:'type', type: 'select', choices:[
 						{label:'HTTP No Auth', value:'http_no_auth'}, 
 						{label:'HTTP Basic Auth', value:'http_basic_auth'}, 
 						{label:'Google Sheets', value:'google_sheets'},
 					], required: true},
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 					{label: 'Configuration', name:'config', showColumn:false, fields:[
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
@@ -621,6 +622,10 @@ initializers['endpoints'] = function() {
 					]},
 					{name: 'id', type:'hidden'}
 				];
+				if(resource_id !== ''){
+					tableConfig.schema[0].enabled = false;
+					tableConfig.schema[0].value = resource_id;
+				}
 				tableConfig.data = data;
 				tableConfig.name = "endpoints";
 
@@ -635,6 +640,7 @@ initializers['links'] = function() {
 		url: '/api/'+route,
 		success: function(data){
 			tableConfig.schema = [
+				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 				{label: 'Title', name:'title', required: true},
 				{label: 'Link', name:'link', required: true},
 				{label: 'Image', name:'image', required: false,template:'<img src="{{value}}" style="height:18px;">',showColumn: false},
@@ -642,9 +648,12 @@ initializers['links'] = function() {
 				type:'select', choices:'/assets/data/icons.json',
 				required: false,template:'{{#attributes.image}}<img src="{{attributes.image}}" style="height:18px;">{{/attributes.image}}{{^attributes.image}}<i class="{{value}}" style="color:{{attributes.color}}"></i>{{/attributes.image}}'},
 				{label: 'Color', name:'color', required: false,template:'<div style="background-color:{{value}};width:30px;height:18px;"></div>',showColumn: false},
-				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 				{name: 'id', type:'hidden'}
 			];
+			if(resource_id !== ''){
+				tableConfig.schema[0].enabled = false;
+				tableConfig.schema[0].value = resource_id;
+			}
 			tableConfig.data = data;
 			tableConfig.name = "links";
 			bt = new berryTable(tableConfig)
@@ -662,9 +671,9 @@ initializers['tags'] = function() {
 		url: url,
 		success: function(data){
 			tableConfig.schema = [
+				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 				{label: 'Name', name:'name', required: true},
 				{label: 'Value', name:'value', required: true},
-				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 				{name: 'id', type:'hidden'}
 			];
 			tableConfig.data = data;

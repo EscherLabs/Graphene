@@ -11,6 +11,12 @@ class AppInstancePolicy
 {
     use HandlesAuthorization;
 
+    public function view_in_admin(User $user) {
+        if ($user->site_admin || $user->group_apps_admin()) {
+            return true;
+        }
+    }
+
     public function get_all(User $user)
     {
         // TJC 3/26/18 -- Need to revisit
