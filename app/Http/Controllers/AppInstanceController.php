@@ -9,6 +9,7 @@ use App\Endpoint;
 use App\Group;
 use App\UserPreference;
 use App\User;
+use App\Page;
 use App\ResourceCache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -49,6 +50,26 @@ class AppInstanceController extends Controller
         $myApp->findVersion();
         return $myApp;
     }
+	public function pages(AppInstance $app_instance)
+	{
+        $pages = Page::with('group')->where('group_id', '=',  $app_instance->group_id)->get();
+		$page_list = [];
+		foreach($pages as $page){
+			$sections = $page->content;
+			foreach($sections->sections as $section){
+				foreach($section as $widget){
+					if($widget->widgetType === 'uApp'){
+						if($widget->app_id == $app_instance->id){								
+							unset($page->content);
+							$page_list[] = $page;
+							break 2;
+						}
+					}
+				}
+			}
+		}
+		return $page_list;
+	}
 
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
@@ -80,31 +101,10 @@ class AppInstanceController extends Controller
 
     public function run($group, $slug, Request $request) {
         if(!is_numeric($group)) {
-            $groupObj = Group::where('slug','=',$group)->first();
-
-            if (Auth::user()->site_admin || Auth::user()->group_admin($groupObj->id)) {
-                $groupObj->load(array('composites'=>function($query){
-                    $query->with(array('group'=>function($query){
-                    $query->select('name','id');
-                }))->select('group_id','composite_group_id');
-                }));
-            }else{
-                $groupObj->load('composites');
-            }            
-            
+            $groupObj = Group::with('composites')->where('slug','=',$group)->first();       
 			$group = $groupObj->id;
 		}else{
-            if (Auth::user()->site_admin || Auth::user()->group_admin($agroup)) {
-                $groupObj = Group::with(array('composites'=>function($query){
-                    $query->with(array('group'=>function($query){
-                    $query->select('name','id');
-                }))->select('group_id','composite_group_id');
-                }))->where('id','=',$group)->first();
-                $group = $groupObj->id;
-            }else{
-    			$groupObj = Group::with('composites')->where('id','=',$group)->first();
-            }
-
+    		$groupObj = Group::with('composites')->where('id','=',$group)->first();
         }
 
         if (Auth::check()) { /* User is Authenticated */

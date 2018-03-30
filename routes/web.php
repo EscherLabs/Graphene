@@ -82,6 +82,7 @@ Route::get('/api/appinstances/{app_instance}','AppInstanceController@show')->mid
 Route::post('/api/appinstances','AppInstanceController@create')->middleware('can:create,App\AppInstance');
 // Update an existing app instance by app_instance_id
 Route::put('/api/appinstances/{app_instance}','AppInstanceController@update')->middleware('can:update,app_instance');
+Route::get('/api/appinstances/{app_instance}/pages','AppInstanceController@pages')->middleware('can:update,app_instance');
 // Delete an existing app instance by app_instance_id
 Route::delete('/api/appinstances/{app_instance}','AppInstanceController@destroy')->middleware('can:delete,app_instance');
 

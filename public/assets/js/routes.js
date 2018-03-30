@@ -242,6 +242,7 @@ initializers['app_instance'] = function() {
   </button>
   <ul class="dropdown-menu">
     <li><a href="/app/`+data.group.slug+'/'+data.slug+`">Visit</a></li>
+    <li><a href="javascript:void(0)" id="find">Find on Pages</a></li>
   </ul>
 </div>
   <!-- Nav tabs -->
@@ -266,6 +267,17 @@ initializers['app_instance'] = function() {
 
 </div>
 				`)
+viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
+
+					$('#find').on('click', function(){
+						$.get('/api/appinstances/'+data.id+'/pages', function(data){
+							if(data.length > 0){
+								modal({title:'This uApp was found on the following pages', content:viewTemplate.render({items:data})});
+							}else{
+								modal({title: 'No pages Found', content:'This uApp is not currently placed on any pages.'});
+							}
+						})
+					})			  
 				$('#main .col-sm-9').berry({fields: [
 					{label: 'Name', name:'name', required: true},
         			{label: 'Slug', name:'slug', required: true},

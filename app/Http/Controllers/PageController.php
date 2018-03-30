@@ -72,7 +72,7 @@ class PageController extends Controller
 			// $group = $groupObj->id;
             $groupObj = Group::where('slug','=',$group)->first();
 
-            if (Auth::user()->site_admin || Auth::user()->group_admin($groupObj->id)) {
+            if (Auth::user()->group_admin($groupObj->id)) {
                 $groupObj->load(array('composites'=>function($query){
                     $query->with(array('group'=>function($query){
                     $query->select('name','id');
@@ -84,7 +84,7 @@ class PageController extends Controller
             
 			$group = $groupObj->id;
 		}else{
-            if (Auth::user()->site_admin || Auth::user()->group_admin($agroup)) {
+            if (Auth::user()->group_admin($agroup)) {
                 $groupObj = Group::with(array('composites'=>function($query){
                     $query->with(array('group'=>function($query){
                     $query->select('name','id');
@@ -115,16 +115,37 @@ class PageController extends Controller
 
         // Get a list of all the micro app instances on the page
         $uapp_instances = [];
+
+        $user = Auth::user();
+        $groups = array_merge($user->groups,$user->content_admin_groups,$user->apps_admin_groups);
+
         if(isset($myPage->content)){
+            			$tempPage = $myPage->content;
+
         foreach($myPage->content->sections as $column_index => $column) {
-            foreach($column as $widget) {
-                if ($widget->widgetType === 'uApp') {
-                    if(isset($widget->app_id)) {
-                        $uapp_instances[] = $widget->app_id;
+            foreach($column as $widget_index => $widget) {
+                
+// $user->site_admin || $user->group_admin($myPage->group_id) || $user->group_member($group_id)
+
+
+
+// is member of group
+                if(	isset($widget->limit) && $widget->limit &&
+                    !in_array ($myPage->group_id , $user->content_admin_groups ) &&
+                    !count(array_intersect ($widget->group->ids, $groups ))
+                ) {
+                        unset($tempPage->sections[$column_index][$widget_index]);
+                }else{
+                    if ($widget->widgetType === 'uApp') {
+                        if(isset($widget->app_id)) {
+                            $uapp_instances[] = $widget->app_id;
+                        }
                     }
                 }
             }
-        }}
+        }
+        $myPage->content = $tempPage;
+        }
 
         if($myPage->public == 0) {
             // if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
