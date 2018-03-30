@@ -10,7 +10,8 @@
         <li data-type="Links"><a href="javascript:addWidget('Links');"><i class="fa fa-link"></i> Links</a></li>
     </ul>
 </div>
-{{#group.admin}}<div class="btn btn-primary pull-right" id="startEditing" style="margin-top: 8px;" onclick="load(false);"><i class="fa fa-pencil"></i> Edit</div>{{/group.admin}}
+{{#group.admin}}<div class="btn btn-primary pull-right" id="startEditing" style="margin-top: 8px;" onclick="load(false);"><i class="fa fa-pencil"></i> Edit</div>
+<div class="btn btn-warning pull-right" id="startEditing" style="margin-top: 8px;margin-right:20px" onclick="editMobileOrder();"><i class="fa fa-sort"></i> Mobile Order</div>{{/group.admin}}
 <div class="btn btn-danger pull-right hidden editTools" style="margin-top: 8px;" id="doneEditing" onclick="load(true);"><i class="fa fa-times"></i> Done</div>
 
 <div class="btn btn-info pull-right" id="layout" style="margin-top: 8px;margin-right:10px" onclick="layout()"><i class="fa fa-columns"></i> Layout</div>
