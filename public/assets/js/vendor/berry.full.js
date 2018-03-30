@@ -1920,7 +1920,6 @@ Berry.validations = {
 				}
 				this.value = value;
 				if(this.item.template){
-					debugger;
 					this.value = Hogan.compile(this.item.template).render(this, templates);
 				}
 				this.render();

@@ -706,88 +706,59 @@ initializers['images'] = function() {
 
 initializers['users'] = function() {
 	$('.navbar-header .nav a h4').html('Users');
+	$('#table').html('<div style="margin:20px"><div class="col-md-6 well" id="search"></div><div class="col-md-6" id="user"></div></div>')
+	$('#search').berry({
+				name:'user_search',
+				actions:false,
+				label:false,
+				fields:[
+					{name:'query',label:'Search'},
+					{type:'raw',value:'',name:'results',label:false}
+				]}).on('change',function(){
 
-	// $.ajax({
-	// 	url: '/api/'+route,
-	// 	success: function(data) {
-			// tableConfig.schema = [
-			// 	{label: 'First Name', name:'first_name', required: true},
-			// 	{label: 'Last Name', name:'last_name', required: true},
-			// 	{label: 'Email', name:'email', type: 'email', required: true},
-			// 	{name: 'id', type:'hidden'}
-			// ];
-			// tableConfig.events = [
-			// 	{'name': 'search', 'label': '<i class="fa fa-search"></i> Search', callback: function(collection){
-			$('#table').html('<div class="container" style="padding:20px"><div class="row"><div class="col-md-4 well" id="search"></div><div class="col-md-6" id="user"></div></div></div>')
-			$('#search').berry({
-						name:'user_search',
-						actions:false,
-						// legend: 'User Search',
-						label:false,
-						fields:[
-							{name:'query',label:'Search'},
-							{type:'raw',value:'',name:'results',label:false}
-						]}).on('change',function(){
-
-							if(typeof Berries.user !== 'undefined'){
-								Berries.user.destroy();
-							}
-						}).delay('change:query',function(){
-							$.ajax({
-								url: '/api/users/search/'+this.toJSON().query,
-								success: function(data) {
-									this.fields.results.update({value:templates['user_list'].render({users:data})})
-								}.bind(this)
-							})
-						})
-				$('body').on('click','.list-group-item.user', function(e){
 					if(typeof Berries.user !== 'undefined'){
 						Berries.user.destroy();
 					}
-					// bt.add({user_id:e.currentTarget.dataset.id})
-					// debugger;
-					// Berries.user_search.fields.results.update({/*options:data,*/value:templates['user_list'].render({users:[]})})
-					$('#user').berry({actions:['save'], flatten:true, attributes:'/api/users/'+e.currentTarget.dataset.id+'/info',name:'user',fields:[
-						
-						{name:'unique_id',label:'Unique ID',enabled:false},
-						{name:'first_name',label:'First Name',enabled:false},
-						{name:'last_name',label:'Last Name',enabled:false},
-						{name:'email',label:'Email',enabled:false},
-						{name:'site_members',label:false, type:'fieldset',multiple: {duplicate: false},fields:[
-							{name:'site_admin',label:'Site Admin',type:'custom_radio',options:[{label:'Yes',value:1},{label:'No',value:0}]},
-							{name:'site_developer',label:'Site Developer',type:'custom_radio',options:[{label:'Yes',value:1},{label:'No',value:0}]}
-						]},						
-						{name:'app_developers',label:"Apps", type:'raw',template:'{{#value}}<div>{{app.name}}</div>{{/value}}'},
-						{name:'group_admins',label:"Admin Of", type:'raw',template:'{{#value}}<div>{{group.name}}</div>{{/value}}'},
-						{name:'group_developers',label:'Member Of', type:'raw',template:'{{#value}}<div>{{group.name}}</div>{{/value}}'},
-
-						{type:'hidden', name:'id'}
-					]}).on('save',function(){
-						$.ajax({
-							url: '/api/users/'+this.toJSON().id+'/info',
-							type: 'PUT',
-							data:this.toJSON(),
-							success: function(data) {
-								// debugger;
-								this.populate(data);	
-						}.bind(this)})
+				}).delay('change:query',function(){
+					$.ajax({
+						url: '/api/users/search/'+this.toJSON().query,
+						success: function(data) {
+							this.fields.results.update({value:templates['user_list'].render({users:data})})
+						}.bind(this)
 					})
-					Berries.user_search.trigger('close');
 				})
+		$('body').on('click','.list-group-item.user', function(e){
+			if(typeof Berries.user !== 'undefined'){
+				Berries.user.destroy();
+			}
 
-					// var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
+			$('#user').berry({actions:['save'], flatten:true, attributes:'/api/users/'+e.currentTarget.dataset.id+'/info',name:'user',fields:[
+				
+				{name:'unique_id',label:'Unique ID',enabled:false},
+				{name:'first_name',label:'First Name',enabled:false},
+				{name:'last_name',label:'Last Name',enabled:false},
+				{name:'email',label:'Email', enabled:false},
+				{name:'site_members',label:false, type:'fieldset',multiple: {duplicate: false},fields:[
+					{name:'site_admin',label:'Site Admin',type:'custom_radio',options:[{label:'Yes',value:1},{label:'No',value:0}]},
+					{name:'site_developer',label:'Site Developer',type:'custom_radio',options:[{label:'Yes',value:1},{label:'No',value:0}]}
+				]},						
+				{name:'app_developers',label:"App Developer", type:'raw',template:'<div class="list-group" style="margin-bottom:0">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{app.name}}</div>{{/value}}</div>'},
+				{name:'group_admins',label:"Admin Of", type:'raw',template:'<div class="list-group" style="margin-bottom:0">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{group.name}}{{#apps_admin}}<i class="fa fa-cubes text-info" style="position:absolute;top:10px;right:10px"></i>{{/apps_admin}}{{#content_admin}}<i class="fa fa-file text-info" style="position:absolute;top:10px;right:40px"></i>{{/content_admin}}</div>{{/value}}</div>'},
+				{name:'group_members',label:'Member Of', type:'raw',template:'<div class="list-group" style="margin-bottom:0">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{group.name}}</div>{{/value}}</div>'},
 
-					// // tempdata = _.sortBy(tempdata, 'order');
-					// mymodal = modal({title: "Sort Groups", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
-
-					// Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
-
-				// }, global: true}
-			// ]
-			// tableConfig.data = data;
-			// bt = new berryTable(tableConfig)
-	// 	}
-	// });
+				{type:'hidden', name:'id'}
+			]}).on('save',function(){
+				$.ajax({
+					url: '/api/users/'+this.toJSON().id+'/info',
+					type: 'PUT',
+					data:this.toJSON(),
+					success: function(data) {
+						// debugger;
+						this.populate(data);	
+				}.bind(this)})
+			})
+			Berries.user_search.trigger('close');
+		})
 }
 
 

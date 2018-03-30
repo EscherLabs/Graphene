@@ -115,17 +115,17 @@ class UserController extends Controller
             //$query->where('site_id','=',config('app.site')->id)->with('app');;
             $query->with(array('app'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
-            }) )->select('app_id','user_id');;
+            }) )->select('app_id','user_id');
         }));
         $user->load(array('group_admins'=>function($query){
             $query->with(array('group'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }) )->select('group_id','user_id');;;
+            }) )->select('group_id','user_id','content_admin','apps_admin');
         }));
         $user->load(array('group_members'=>function($query){
             $query->with(array('group'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }))->select('group_id','user_id');;;
+            }))->select('group_id','user_id');
         }));
 
         return $user;
@@ -139,9 +139,26 @@ class UserController extends Controller
         $member->site_developer = $request->input('site_members')[0]['site_developer'];
         $member->save();
         }
-     return $user->load(array('site_members'=>function($query){
+        $user->load(array('site_members'=>function($query){
             $query->where('site_id','=',config('app.site')->id);
         }));
+        $user->load(array('app_developers'=>function($query){
+            //$query->where('site_id','=',config('app.site')->id)->with('app');;
+            $query->with(array('app'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
+            }) )->select('app_id','user_id');
+        }));
+        $user->load(array('group_admins'=>function($query){
+            $query->with(array('group'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
+            }) )->select('group_id','user_id','content_admin','apps_admin');
+        }));
+        $user->load(array('group_members'=>function($query){
+            $query->with(array('group'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
+            }))->select('group_id','user_id');
+        }));
+        return $user;
     }
     
 
