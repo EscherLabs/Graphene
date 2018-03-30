@@ -230,7 +230,7 @@
 									}
 								},fields:[
 							{label: false, multiple:{duplicate:true}, toArray:true, name: 'group', fields:[
-									{label: false, name: 'ids', type: 'select', choices: '/api/groups/{{group.id}}/composites', key: 'name', reference: 'group_id'}
+									{label: false, name: 'ids', type: 'select', options: group_composites}
 								]
 							}]},
 							
@@ -385,50 +385,50 @@ function editMobileOrder(){
 		</style>
 
 		<script>
-		var group_composites =[];
-		{{#group.composites}}
-			group_composites.push({{composite_group_id}});
 
-{{/group.composites}}
+			var group_composites =[];
 
-
-			// window.onload = function(){
-				$('.page-menu ul li').each(function(my, item){
-						var groups =($(item).data('groups')+"").split(',')
-						for(var i in groups){
-							$(item).addClass('group_'+groups[i]);
-						}
-					
-				})
-								// debugger;
-
-	
+			{{#group.composites}}
+			group_composites.push({"id": {{group.id}},'name': "{{group.name}}"  });
+			{{/group.composites}}
 
 
-				$('.view-as').on('click', function(e){
-					if($(e.currentTarget).data('group') == 'all'){
-						$('body').attr('class','topbar sidemenu');
-					}else{
-						$('body').toggleClass('group_'+$(e.currentTarget).data('group'));
-						// if(window.getComputedStyle($(".page-menu .page_"+page_id)[0]).display == 'none'){
-						// 	// modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})
-
-						// 	$('body').attr('class','app');
-						// }
+		// window.onload = function(){
+			$('.page-menu ul li').each(function(my, item){
+					var groups =($(item).data('groups')+"").split(',')
+					for(var i in groups){
+						$(item).addClass('group_'+groups[i]);
 					}
-				})
-				groups = [{{#user.groups}}{{.}},{{/user.groups}}];
-				for(var i in groups){
-					$('.view-as.group_'+groups[i]).click();
+				
+			})
+
+
+
+
+			$('.view-as').on('click', function(e){
+				if($(e.currentTarget).data('group') == 'all'){
+					$('body').attr('class','topbar sidemenu');
+				}else{
+					$('body').toggleClass('group_'+$(e.currentTarget).data('group'));
+					// if(window.getComputedStyle($(".page-menu .page_"+page_id)[0]).display == 'none'){
+					// 	// modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})
+
+					// 	$('body').attr('class','app');
+					// }
 				}
-							
-				if (resource_type === 'page') {resource_id = page_id;} else if (resource_type === 'app_instance') {resource_id = app_instance_id;} 
-				$.ajax({
-						url: '/api/visit/log_visit',
-						type: 'post',
-						data: {width:window.innerWidth,resource_id:resource_id,resource_type:resource_type},
-						success: function(){}
-				});
+			})
+			groups = [{{#user.groups}}{{.}},{{/user.groups}}];
+			for(var i in groups){
+				$('.view-as.group_'+groups[i]).click();
+			}
+						
+			if (resource_type === 'page') {resource_id = page_id;} else if (resource_type === 'app_instance') {resource_id = app_instance_id;} 
+			$.ajax({
+					url: '/api/visit/log_visit',
+					type: 'post',
+					data: {width:window.innerWidth,resource_id:resource_id,resource_type:resource_type},
+					success: function(){}
+			});
 			// }
 		</script>
 
