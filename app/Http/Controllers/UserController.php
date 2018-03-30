@@ -135,15 +135,14 @@ class UserController extends Controller
         $member = SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$user->id)->first();
 
         if (Auth::user()->site_admin) {
-        $member->site_admin = $request->input('site_members')[0]['site_admin'];
-        $member->site_developer = $request->input('site_members')[0]['site_developer'];
-        $member->save();
+            $member->site_admin = $request->input('site_members')[0]['site_admin'];
+            $member->site_developer = $request->input('site_members')[0]['site_developer'];
+            $member->save();
         }
         $user->load(array('site_members'=>function($query){
             $query->where('site_id','=',config('app.site')->id);
         }));
         $user->load(array('app_developers'=>function($query){
-            //$query->where('site_id','=',config('app.site')->id)->with('app');;
             $query->with(array('app'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
             }) )->select('app_id','user_id');

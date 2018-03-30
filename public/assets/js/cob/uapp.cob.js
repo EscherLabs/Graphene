@@ -28,10 +28,10 @@ Cobler.types.uApp = function(container){
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
       if(this.container.owner.options.disabled){
-          var collapsed = (Lockr.get('app_'+this.get().app_id) || {}).collapsed;
+          var collapsed = (Lockr.get('app_'+this.get().app_id) || {collapsed:false}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
-          $(el).find('.collapsible').toggle(!collapsed)
+          //$(el).find('.collapsible').toggle(!collapsed)
       }
 
       $.ajax({

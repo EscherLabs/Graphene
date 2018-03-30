@@ -5,5 +5,6 @@
   <script>
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
+    var user = {!! Auth::user() !!};
   </script>
 @endsection
