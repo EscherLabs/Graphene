@@ -148,18 +148,13 @@ initializers['appinstances'] = function() {
 			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Name', name:'name', required: true},
-        			{label: 'Slug', name:'slug', required: true},
-        			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-        			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
-        			{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
-					{label: 'App', name:'app_id', required: true, type:'select', choices: '/api/apps'},
+					{label: 'Slug', name:'slug', required: true},
+					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Group', name:'group_id', required: true, type:'select',enabled:false, choices: '/api/groups?limit=true'},
+					{label: 'App', name:'app_id', template:'{{attributes.app.name}}',type:'raw'},
 					{label: 'Version', name:'app_version_id', type:'hidden'},
-					// {label: 'Version', name:'app_version_id', required:true, type:'select', options: function(item){
-					// 	return _.map(_.findWhere(this.owner.fields.app_id.choices,{id:parseInt(this.owner.fields.app_id.val())}).versions,function(item){
-					// 		return {'label':item.summary,'value':item.id}
-					// 	});
-					// }},
 					{name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}
 				];
@@ -192,16 +187,23 @@ initializers['appinstances'] = function() {
 
 				]
 				if(resource_id !== ''){
+					tableConfig.schema = [
+						{label: 'Name', name:'name', required: true},
+						{label: 'Slug', name:'slug', required: true},
+						{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+						{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+						{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+						{label: 'Group', name:'group_id', value:resource_id, type:'hidden'},
+						{label: 'App', name:'app_id', type:'select', choices:'/api/apps/group/'+resource_id},
+						{label: 'Version', name:'app_version_id', type:'hidden'},
+						{name: 'app', type:'hidden'},
+						{name: 'id', type:'hidden'}
+					];
 					tableConfig.events.push({'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
-
 						var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
-
 						// tempdata = _.sortBy(tempdata, 'order');
 						mymodal = modal({title: "Sort App Instances", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
-
 						Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
-
-
 					}, global: true})
 				}else{
 					tableConfig.add = false;
@@ -230,7 +232,6 @@ initializers['app_instance'] = function() {
 		$.ajax({
 			url: '/api/appinstances/'+resource_id,
 			success: function(data) {				
-				debugger;
 				$('#table').html(`
 				<div style="margin:21px">
 <div class="btn-group pull-right">
@@ -1017,7 +1018,6 @@ initializers['developers'] = function() {
 					if(!model.owner.find({id:parseInt(model.attributes.id)}).length){
 						$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'POST', data: model.attributes,
 							success:function(data){
-								debugger;
 								toastr.success('', 'Developer successfully Added')
 								this.set(data);
 								this.owner.draw();

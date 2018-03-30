@@ -26,7 +26,11 @@ class AppInstancePolicy
 
     public function create(User $user)
     {
-        if ( $user->site_admin || ($user->group_apps_admin(request()->group_id) && $user->app_developer(requet()->app_id))) {
+        if ( $user->site_admin || ($user->group_apps_admin(request()->group_id) && $user->app_developer(request()->app_id))) {
+            return true;
+        }
+        $app_exists_in_group = is_null(AppInstance::select('id')->where('group_id','=',request()->group_id)->where('app_id','=',request()->app_id)->first())?false:true;
+        if ( $user->group_apps_admin(request()->group_id) && $app_exists_in_group) {
             return true;
         }
     }
@@ -47,20 +51,20 @@ class AppInstancePolicy
 
     public function modify_user_options(User $user, AppInstance $app_instance)
     {
-        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member()) {
+        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member($app_instance->group_id)) {
             return true;
         }
     }
     public function get_data(User $user, AppInstance $app_instance)
     {
-        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member()) {
+        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member($app_instance->group_id)) {
             return true;
         }
     }
 
     public function fetch(User $user, AppInstance $app_instance)
     {
-        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member()) {
+        if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member($app_instance->group_id)) {
             return true;
         }
     }

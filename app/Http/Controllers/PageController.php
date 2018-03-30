@@ -127,9 +127,10 @@ class PageController extends Controller
         }}
 
         if($myPage->public == 0) {
-            if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
-                abort(403, 'Access denied');
-            }
+            // if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
+            //     abort(403, 'Access denied');
+            // }
+            $this->authorize('get', $myPage);
         }
 
         if (Auth::check()) { /* User is Authenticated */

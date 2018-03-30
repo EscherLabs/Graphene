@@ -23,13 +23,17 @@ class AppInstanceController extends Controller
     
     public function list_all_app_instances(Request $request) {
         if (Auth::user()->site_admin) {
-            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')->whereHas('group', function($q){
-                $q->where('site_id','=',config('app.site')->id);
-            })->orderBy('group_id','order')->get();
+            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
+                ->with('app')
+                ->whereHas('group', function($q){
+                    $q->where('site_id','=',config('app.site')->id);
+                })->orderBy('group_id','order')->get();
         } else {
-            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')->whereHas('group', function($q){
-                $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
-            })->orderBy('group_id','order')->get();
+            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
+                ->with('app')
+                ->whereHas('group', function($q){
+                    $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
+                })->orderBy('group_id','order')->get();
         }
         return $app_instances;
     }
@@ -49,8 +53,6 @@ class AppInstanceController extends Controller
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app_instance = new AppInstance($request->all());
-        // Add App Version
-        // $app_instance->app_version_id = $request->get('app_version_id');
         $app_instance->app_version_id = AppVersion::where('app_id','=',$request->get('app_id'))->orderBy('id','desc')->pluck('id')->first();
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
@@ -78,8 +80,6 @@ class AppInstanceController extends Controller
 
     public function run($group, $slug, Request $request) {
         if(!is_numeric($group)) {
-			// $groupObj = Group::with('composites')->where('slug','=',$group)->first();
-			// $group = $groupObj->id;
             $groupObj = Group::where('slug','=',$group)->first();
 
             if (Auth::user()->site_admin || Auth::user()->group_admin($groupObj->id)) {
@@ -113,73 +113,32 @@ class AppInstanceController extends Controller
                 $query->where('user_id','=', Auth::user()->id);
             }])->where('group_id','=', $group)->where('slug', '=', $slug)->with('app')->first();
 
-            $this->authorize('fetch' ,$myApp);
-
-            // $current_user_apps = AppInstance::whereIn('group_id',Auth::user()->groups)->with('app')->get();
+            if($myApp->public == 0) {
+                $this->authorize('fetch' ,$myApp);
+            }
             $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
 
             $myApp = AppInstance::with('app')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
             if (is_null($myApp)) { abort(403); }
-            // $current_user_apps = AppInstance::where('public','=',true)->whereHas('group', function($q){
-            //     $q->where('site_id', '=', config('app.site')->id);
-            // })->with('app')->get();
             $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-
         }
-        /* Maybe there's a better way to do this -- appending app version code to app */
 
         $myApp->findVersion();
 
         if($myApp != null) {
-            // dd($myApp->toArray());
-            // Create data object that will be used by the app
-            // $data = ['user'=>$current_user,'options'=>$myApp->options];
-            
-
-            // if(!Auth::check() || !isset($myApp->user_options) || is_null($myApp->user_options) || is_null($myApp->user_options->options)) {
-            //     $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
-            // } else { 
-            //     $data['user']->options = $myApp->user_options->options;
-            // }
-            
-            // // Get each source
-            // // TODO: add conditionals for types and "autofetch", etc
-            // if(!is_null($myApp->app->code) && count($myApp->app->code->sources) > 0){
-            //     foreach($myApp->app->code->sources as $source){
-            //         if($source->name !== ''){
-            //             $data[$source->name] = $this->get_data($myApp, $source->name, $request);
-            //         }
-            //     }
-            // }
-            // return view('app', ['links'=>$links, 'apps'=>$current_user_apps,'name'=>$myApp->name, 'app'=>$myApp,'data'=>$data]);
-
             $template = new Templater();
             return $template->render([
                 'apps_pages'=>$links, 
-                // 'apps'=>$current_user_apps,
                 'name'=>$myApp->name,
                 'slug'=>$myApp->slug,
                 'id'=>$myApp->id,
                 'uapp'=>$myApp, 
-                // 'data2'=>$data,
                 'data'=>array(),
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}'),
                 'group'=>$groupObj
             ]);
-
-            
-            // return view('timtest', [
-            //     'links'=>$links, 
-            //     'apps'=>$current_user_apps,
-            //     'name'=>$myApp->name,
-            //     'slug'=>$myApp->slug,
-            //     'uapp'=>$myApp, 
-            //     'data2'=>$data,
-            //     'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}')
-            //     ]);
-
 
         }
         abort(404,'App not found');
@@ -202,7 +161,6 @@ class AppInstanceController extends Controller
         $myApp->findVersion();
 
         if($myApp != null){
-            // Create data object that will be used by the app
             $data = [
                 'user'=>$current_user,
                 'options'=>$myApp->options
@@ -216,8 +174,6 @@ class AppInstanceController extends Controller
                 $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
             }
             if($myApp->app->code){
-                // Get each source
-                // TODO: add conditionals for types and "autofetch", etc
                 foreach($myApp->app->code->resources as $source){
                     if ($source->fetch === 'true' || $source->fetch === true) {
                         $data[$source->name] = $this->get_data($myApp, $source->name, $request);
@@ -240,7 +196,6 @@ class AppInstanceController extends Controller
                     ->where('url','=',$url)
                     ->whereRaw('created_at >= (NOW() - INTERVAL 10 MINUTE)')
                     ->first();
-                    // dd($cache);
             if (!is_null($cache)) {
                 $data = unserialize($cache->content);
             }
@@ -308,14 +263,9 @@ class AppInstanceController extends Controller
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
         session_write_close(); // Don't keep waiting
-        /* Maybe there's a better way to do this -- appending app version code to app */
-        // $myAppVersion = AppVersion::where('id','=',$app_instance->app_version_id)->first();
-
         if(!isset($app_instance->app->code)){
             $app_instance->findVersion();
         }
-
-        // $app_instance->app->code = $myAppVersion->code;
 
         if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);
@@ -386,9 +336,5 @@ class AppInstanceController extends Controller
         }
         return $data;
     }
-
-    // public function check_cache($endpoint, $resource_app, $verb, $all_data) {
-    //     $cache = ResourceCache::where(' ', '=', $app_instance->id)->first();
-    // }
 
 }
