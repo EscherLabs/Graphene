@@ -173,7 +173,8 @@ class AppInstanceController extends Controller
             }else{
                 $data['user']->options = is_null($myApp->user_options_default)?[]:$myApp->user_options_default;
             }
-            if($myApp->app->code){
+
+            if($myApp->app->code && isset($myApp->app->code->resources) ){
                 foreach($myApp->app->code->resources as $source){
                     if ($source->fetch === 'true' || $source->fetch === true) {
                         $data[$source->name] = $this->get_data($myApp, $source->name, $request);

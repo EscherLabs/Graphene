@@ -155,7 +155,7 @@ initializers['appinstances'] = function() {
 				]
 				if(resource_id !== ''){
 					tableConfig.schema = [
-						{label: 'Group', name:'group_id', type:'select', choices: '/api/groups?limit=true', enabled:false},
+						{label: 'Group', name:'group_id',value:resource_id, type:'select', choices: '/api/groups?limit=true', enabled:false},
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
 						{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},

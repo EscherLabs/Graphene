@@ -46,18 +46,19 @@
 	_.findWhere = _.find;
 	_.where = _.filter;
 	group_id = {{group.id}};
-
 	{{#app_mode}}
 		appMode = true;
 		resource_type = 'app_instance';
-		if(JSON.parse(apps[0].app.code.forms[1].content).fields.length){
+
+		app_instance_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
+		$('.app'+app_instance_id).addClass('active');
+		var fields = JSON.parse(apps[0].app.code.forms[1].content || '{}').fields;
+		if(typeof fields !== 'undefined' && fields.length){
 			$('#edit_instance').show();
 			$('#edit_instance').on('click', function(){
 				editUserOptions(cb.collections[0].getItems()[0])    
 			})
 		}
-		app_instance_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
-		$('.app'+app_instance_id).addClass('active');
 	{{/app_mode}}
 	{{^app_mode}}
 		appMode = false;
@@ -318,11 +319,7 @@ function editMobileOrder(){
 		}
 	}
 	function addWidget(e) { 
-		
-		cb.collections[0].addItem(e); 
-		// debugger;
-		// cb.collections[0].addItem({widgetType: e, guid: generateUUID()});
-	
+		cb.collections[0].addItem(e); 	
 	}
 
 
