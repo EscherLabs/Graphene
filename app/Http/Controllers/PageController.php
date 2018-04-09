@@ -84,7 +84,7 @@ class PageController extends Controller
             
 			$group = $groupObj->id;
 		}else{
-            if (Auth::user()->group_admin($agroup)) {
+            if (Auth::user()->group_admin($group)) {
                 $groupObj = Group::with(array('composites'=>function($query){
                     $query->with(array('group'=>function($query){
                     $query->select('name','id');
