@@ -1,202 +1,12 @@
+attributes = {};
+function load(app_version){
 
-// if(loaded.code == null){loaded.code = {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
-// forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
-// };}
 loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
 forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
-},loaded.code)
+},app_version)
 
-var attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
+attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
 
-$('.navbar-header .nav a h4').html(attributes.app.name);//+' <i class="fa fa-pencil"></i>');
-// $('.navbar-header .nav a h4').on('click',function(){
-//   $().berry({legend:'Update App Name',fields:[{name:'name',label:false, value: attributes.name}]}).on('save', function(){
-//       attributes.app.name = this.toJSON().name;
-//       $('.navbar-header .nav a h4').html(attributes.app.name+' <i class="fa fa-pencil"></i>');
-//       this.trigger('close');
-//   });
-// })
-$('#save').on('click',function() {
-  template_errors = templatePage.errors();
-  script_errors =scriptPage.errors();
-  // debugger;
-  // css_errors = [];
-  // if(Berries.style.toJSON().code.css>0){
-  //   css_errors =cssPage.errors();
-  // }
-
-
-  var data = {code:{}};
-  data.code.css = Berries.style.toJSON().code.css;
-  data.code.resources = _.map(bt.models,'attributes');
-  data.code.templates = templatePage.toJSON();
-  // var successCompile = false;
-  try{
-    _.each(data.code.templates, function(partial){
-      try{
-          Ractive.parse(partial.content);
-        }catch(e){
-          template_errors.push({
-            type: e.name,
-            name: partial.name,
-            message: e.message
-          });
-        }
-    })
-    // if(!this.resourcesForm.validate()){
-    //   toastr.error(e.message, e.name);
-    //   return false;
-    // }
-  }catch(e) {
-      toastr.error(e.message, e.name);
-      return false;
-  }
-  var errorCount = template_errors.length+ script_errors.length;//+ css_errors.length
-
-                  // modal({headerClass:'danger' ,title: e.name+': '+partial.name,content:$('<div>').html(e.message).html()})
-
-
-  if(!errorCount){
-    data.code.scripts = scriptPage.toJSON();
-    var temp = formPage.toJSON();
-    data.code.forms = formPage.toJSON();
-    data.updated_at = attributes.updated_at;
-    // data.code.form = temp[0].content;
-    // data.code.user_options_form = temp[1].content;
-    $.ajax({
-      url: '/api/apps/'+attributes.app_id+'/code',
-      method: 'put',
-      data: data,
-      success:function(e) {
-        attributes.updated_at = e.updated_at;
-        toastr.success('', 'Successfully Saved')
-      },
-      error:function(e) {
-        toastr.error(e.statusText, 'ERROR');
-      },
-        statusCode: {
-          404: function() {
-            toastr.error('You are no longer logged in', 'Logged Out')
-          },
-          409: function(error) {
-            // debugger;
-            test = JSON.parse(JSON.parse(error.responseText).error.message);
-            toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
-
-
-            conflictResults = {};
-
-            conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
-            conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
-            conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
-            conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
-            conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
-
-            modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-
-          }.bind(this),
-          401: function() {
-            toastr.error('You are not authorized to perform this action', 'Not Authorized')
-          }
-        }
-    })
-
-
-  }else{
-    toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
-    modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors/*, css: css_errors*/})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-  }
-
-
-
-})
-
-
-
-
-
-
-				// $('#save').on('click', function(){
-				// 		template_errors = templatePage.errors();
-				// 		script_errors =scriptPage.errors();
-				// 		// debugger;
-				// 		css_errors = [];
-				// 		if(cssPage.toJSON()[0].content.length>0){
-				// 			css_errors =cssPage.errors();
-				// 		}
-				// 		console.log(css_errors);
-
-				// 		// var compilefail = false;
-				// 		// var errors = [];
-				// 		_.each(templatePage.toJSON(), function(partial) {
-				// 			try{
-				// 				Ractive.parse(partial.content);
-				// 			}catch(e){
-				// 				template_errors.push({
-				// 					type: e.name,
-				// 					name: partial.name,
-				// 					message: e.message
-				// 				});
-				// 			}
-				// 		})
-				// 		// template_errors+=errors.length;
-				// 		var errorCount = template_errors.length+ script_errors.length+ css_errors.length
-
-				// 										// modal({headerClass:'danger' ,title: e.name+': '+partial.name,content:$('<div>').html(e.message).html()})
-
-
-				// 		if(!errorCount){
-
-				// 		}else{
-				// 			toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
-				// 			modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors, css: css_errors})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-				// 		}
-				// 	}.bind(this))
-
-
-
-$('#import').on('click',function() {
-    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
-      $.ajax({
-        url: '/api/apps/'+attributes.app_id+'/code',
-        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
-        method: 'PUT',
-        success: function(){
-          Berries.update.trigger('close');
-          window.location.reload();
-        }
-      })
-  });
-})
-$('#publish').on('click',function() {
-
-    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Microapp',fields: [	
-        {label: 'Summary'},
-        {label: 'Description', type: 'textarea'}
-      ]}).on('save', function(){
-      $.ajax({
-        url: '/api/apps/'+attributes.app_id+'/version',
-        data: this.toJSON(),
-        method: 'PUT',
-        success: function(){
-          Berries.publish.trigger('close');
-          toastr.success('', 'Successfully Published')
-        }
-      })
-  });
-})
-
-
-
-
-$(document).keydown(function(e) {
-  if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey))
-  {
-      e.preventDefault();
-      $('#save').click()
-  }
-  return true;
-});
 
 $('.styles').berry({
   actions:false,
@@ -212,7 +22,6 @@ $('.styles').berry({
   ]})
   
 
-// var api = '/api/apps'+;
 var tableConfig = {
 		entries: [25, 50, 100],
 		count: 25,
@@ -222,22 +31,18 @@ var tableConfig = {
 	}
 
 
-    		tableConfig.schema = [
-          {label: 'Name',name: 'name'},
-          {label: 'Fetch', type: 'checkbox',name:'fetch'},
-          {label: 'Path',name:'path'},
-          {label: 'Cache', type: 'checkbox',name:'cache'},
-          {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
-				];
-				tableConfig.data = attributes.code.resources;
-				// tableConfig.click = function(model){window.location.href = '/admin/sites/'+model.attributes.id};
-				bt = new berryTable(tableConfig)
+  tableConfig.schema = [
+    {label: 'Name',name: 'name'},
+    {label: 'Fetch', type: 'checkbox',name:'fetch'},
+    {label: 'Path',name:'path'},
+    {label: 'Cache', type: 'checkbox',name:'cache'},
+    {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
+  ];
+  tableConfig.data = attributes.code.resources;
+  bt = new berryTable(tableConfig)
 
 
-
-
-
-  var temp = $(window).height() - $('.nav-tabs').offset().top -77;// - (88+ this.options.autoSize) +'px');
+  var temp = $(window).height() - $('.nav-tabs').offset().top -77;
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
   templatePage = new paged('.templates',{items:attributes.code.templates, label:'Template'});
@@ -257,8 +62,18 @@ var tableConfig = {
       toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Supported');
     }
   }});
-  // formPage = new paged('.forms',{items:[{name:'Options Form',content:attributes.code.form},{name:'User Options Form',content:attributes.code.user_preference_form}],  mode:'ace/mode/javascript'});
+}
+load(loaded.code);
 
+
+$(document).keydown(function(e) {
+  if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey))
+  {
+      e.preventDefault();
+      $('#save').click()
+  }
+  return true;
+});
 
 function modalForm(form, name, onSave){
 
@@ -334,3 +149,138 @@ function modalForm(form, name, onSave){
     cb.collections[0].load(temp.fields);
   }
 }
+
+
+
+$('.navbar-header .nav a h4').html(attributes.app.name+' - '+(attributes.summary || 'Working Version'));
+
+$('#save').on('click',function() {
+  template_errors = templatePage.errors();
+  script_errors =scriptPage.errors();
+  var data = {code:{}};
+  data.code.css = Berries.style.toJSON().code.css;
+  data.code.resources = _.map(bt.models,'attributes');
+  data.code.templates = templatePage.toJSON();
+
+  try{
+    _.each(data.code.templates, function(partial){
+      try{
+          Ractive.parse(partial.content);
+        }catch(e){
+          template_errors.push({
+            type: e.name,
+            name: partial.name,
+            message: e.message
+          });
+        }
+    })
+  }catch(e) {
+      toastr.error(e.message, e.name);
+      return false;
+  }
+  var errorCount = template_errors.length+ script_errors.length;//+ css_errors.length
+
+  if(!errorCount){
+    data.code.scripts = scriptPage.toJSON();
+    var temp = formPage.toJSON();
+    data.code.forms = formPage.toJSON();
+    data.updated_at = attributes.updated_at;
+
+    $.ajax({
+      url: '/api/apps/'+attributes.app_id+'/code',
+      method: 'put',
+      data: data,
+      success:function(e) {
+        attributes.updated_at = e.updated_at;
+        toastr.success('', 'Successfully Saved')
+      },
+      error:function(e) {
+        toastr.error(e.statusText, 'ERROR');
+      },
+        statusCode: {
+          404: function() {
+            toastr.error('You are no longer logged in', 'Logged Out')
+          },
+          409: function(error) {
+            test = JSON.parse(JSON.parse(error.responseText).error.message);
+            toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
+
+
+            conflictResults = {};
+
+            conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
+            conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
+            conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
+            conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
+            conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
+
+            modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+
+          }.bind(this),
+          401: function() {
+            toastr.error('You are not authorized to perform this action', 'Not Authorized')
+          }
+        }
+    })
+  }else{
+    toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
+    modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors/*, css: css_errors*/})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+  }
+})
+
+$('#import').on('click', function() {
+    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
+      $.ajax({
+        url: '/api/apps/'+attributes.app_id+'/code',
+        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
+        method: 'PUT',
+        success: function(){
+          Berries.update.trigger('close');
+          window.location.reload();
+        }
+      })
+  });
+})
+$('#publish').on('click', function() {
+
+    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Microapp',fields: [	
+        {label: 'Summary'},
+        {label: 'Description', type: 'textarea'}
+      ]}).on('save', function(){
+      $.ajax({
+        url: '/api/apps/'+attributes.app_id+'/publish',
+        data: this.toJSON(),
+        method: 'PUT',
+        success: function(){
+          Berries.publish.trigger('close');
+          toastr.success('', 'Successfully Published')
+        }
+      })
+  });
+})
+$('#versions').on('click', function() {
+  $.ajax({
+    url: '/api/apps/'+loaded.app_id+'/versions',
+    success: function(data) {
+      console.log(data);
+      if(!attributes.stable){
+              data.unshift({id:attributes.id,label:'Working Version'})
+      }
+      $().berry({attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
+          {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
+      ]}).on('save',function() {
+window.open('/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id, '_blank');
+    // $.ajax({
+    //   url: '/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
+    //   method: 'get',
+    //   data: data,
+    //   success:function(data) {
+    //     load(data)
+    //   }
+    // })
+        //switch version
+      })
+    }
+  })
+})
+

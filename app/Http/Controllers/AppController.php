@@ -75,7 +75,7 @@ class AppController extends Controller
         $app_version->save();
         return $app_version;
     }
-    public function version(Request $request, App $app) { 
+    public function publish(Request $request, App $app) { 
         $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
         $app_version->summary = $request->summary;
         $app_version->description = $request->description;
@@ -93,6 +93,11 @@ class AppController extends Controller
             $app_versions[$i]->label = $app_version->created_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
         }
         return $app_versions;
+    }
+
+    public function version(Request $request, App $app, AppVersion $version) { 
+
+        return $version;
     }
     public function update(Request $request, App $app) {  
         $app->update($request->all());

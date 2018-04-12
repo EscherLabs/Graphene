@@ -72,7 +72,7 @@ var paged = function(selector, options){
     $(e.currentTarget).addClass('active');
     this.active = $(e.currentTarget).attr('aria-controls');
 		$(e.currentTarget).parent().parent().find('button.dropdown-toggle').prop('disabled', 
-			_.findWhere(this.options.items, {key: this.active}).disabled || false
+		  (_.findWhere(this.options.items, {key: this.active}) || this.options.items[0]).disabled || false
 		);
     this.berry.fields[this.active].editor.clearSelection();//.instances[0]
  		this.berry.fields[this.active].focus();

@@ -58,10 +58,11 @@ Route::post('/api/apps','AppController@create')->middleware('can:create,App\App'
 // Update an existing app by app_id
 Route::put('/api/apps/{app}','AppController@update')->middleware('can:update,app');
 Route::put('/api/apps/{app}/code','AppController@code')->middleware('can:update,app');
-Route::put('/api/apps/{app}/version','AppController@version')->middleware('can:update,app');
+Route::put('/api/apps/{app}/publish','AppController@publish')->middleware('can:update,app');
 
 //ATS - check middleware
 Route::get('/api/apps/{app}/versions','AppController@versions')->middleware('can:get_versions,app');
+Route::get('/api/apps/{app}/versions/{version}','AppController@version')->middleware('can:get_versions,app');
 
 // Delete an existing app by app_id
 Route::delete('/api/apps/{app}','AppController@destroy')->middleware('can:delete,app');

@@ -294,9 +294,10 @@ viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list
 					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
 						{name:'container', label: false,  type: 'fieldset', fields:[
 
-							{"multiple": {"duplicate": false},label: '<hr>', name: 'resources', type: 'fieldset', fields:[
-								{label: 'Name',columns:6, enabled:false},
-								{label: 'Endpoint',columns:6, type: 'select', choices: '/api/groups/'+data.group_id+'/endpoints'}
+							{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
+								// {label: 'Name',columns:6, enabled:false},
+								{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
+								{name: 'endpoint',label:false,columns:8, type: 'select', choices: '/api/groups/'+data.group_id+'/endpoints'}
 							]}
 						]},
 					]} )
