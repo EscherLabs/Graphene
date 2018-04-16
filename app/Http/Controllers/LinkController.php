@@ -30,6 +30,10 @@ class LinkController extends Controller
         return $links;
     }
 
+    public function list_by_group(Request $request, Group $group) {
+        return Link::where('group','=','group_id')->orderBy('title')->get();
+    }
+
     public function user_index($group_id = null)
     {
         if (!is_null($group_id)) {

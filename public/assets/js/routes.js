@@ -604,8 +604,12 @@ initializers['endpoints'] = function() {
 
 initializers['links'] = function() {
 	$('.navbar-header .nav a h4').html('Links');
+		var url = '/api/'+route;
+		if(resource_id !== ''){
+			url= '/api/groups/'+resource_id+'/'+route
+		}
 	$.ajax({
-		url: '/api/'+route,
+		url: url,		
 		success: function(data){
 			tableConfig.schema = [
 				{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
@@ -670,9 +674,8 @@ initializers['images'] = function() {
 
 				tableConfig.events = [
 					{'name': 'add', 'label': '<i class="fa fa-code"></i> Add', callback: function(model){
-
 							$().berry({name:'newimage',actions:['cancel'],legend: 'Add Image(s)', fields:[
-								{label: 'Group', name:'group_id', type: 'select', choices: '/api/groups?limit=true', required: true, default: {label:"Choose a group", value:'-'}},
+								{label: 'Group', name:'group_id', type: 'select', choices: '/api/groups?limit=true', required: true, default: {label:"Choose a group", value:'-'},value:resource_id,enabled: (resource_id == '') },
 								{show:{"not_matches": {"name": "group_id","value": "-"}},type: 'upload', label: false, path: '/api/images?group_id=', name: 'image_filename'}]}).on('uploaded:image_filename', $.proxy(function(){
 										var temp = Berries.newimage.fields.image_filename.value;
 										// temp.group = _.findWhere(this.groups,{id:parseInt(Berries.newimage.fields.image_filename.value.group_id, 10)}).name;
