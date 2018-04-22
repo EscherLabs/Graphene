@@ -23,7 +23,7 @@
 </div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Reresources<span></a></li>
+    <li role="presentation" class="active"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
     <li role="presentation"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-coffee"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
     <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li>
@@ -44,7 +44,7 @@
   </div>
 
 </div>
-<!-- <div id="container" style="width:800px;height:600px;border:1px solid grey"></div> -->
+<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
 @endsection
 
 @section('end_body_scripts_bottom')
@@ -61,7 +61,7 @@
   <link href="/assets/css/cobler.css" rel="stylesheet">
 
   <!-- TJC 4/22/18 Monaco Test -->
-  <!-- <script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
+  <script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
   <script src="/assets/js/vendor/vs/loader.js"></script>
   <script src="/assets/js/vendor/vs/editor/editor.main.nls.js"></script>
   <script src="/assets/js/vendor/vs/editor/editor.main.js"></script> 
@@ -74,7 +74,7 @@
       ].join('\n'),
       language: 'javascript'
     });
-  </script> -->
+  </script>
   <!-- END TJC 4/22/18 Monaco Test -->
 @endsection
 
@@ -89,6 +89,6 @@
 
 @section('top_page_styles')
   <!-- TJC 4/22/18 Monaco Test -->
-  <!-- <link data-name="vs/editor/editor.main" rel="stylesheet" href="/assets/js/vendor/vs/editor/editor.main.css"> -->
+  <link data-name="vs/editor/editor.main" rel="stylesheet" href="/assets/js/vendor/vs/editor/editor.main.css">
   <!-- END TJC 4/22/18 Monaco Test -->
 @endsection
