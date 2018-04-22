@@ -30,6 +30,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <link data-name="vs/editor/editor.main" rel="stylesheet" href="/assets/js/vendor/vs/editor/editor.main.css">
     @yield('top_page_styles')
   </head>
 
@@ -147,31 +148,22 @@
         </div>
       </div>
     </div>
-    @yield('end_body_scripts_top')
+
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.2/hogan.min.js'></script>
     <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		
-    <!--<script src='https://rawgit.com/Cloverstone/Berry/master/bin/full.berry.min.js'></script>-->
     <script type='text/javascript' src='/assets/js/vendor/summernote.min.js'></script>
     <script type='text/javascript' src='/assets/js/vendor/dropzone.min.js'></script>
 		<script type="text/javascript" src="/assets/js/sortable.js"></script>
 		<script type="text/javascript" src="/assets/js/templates/admin.js"></script>
-
-    <script src='/assets/js/vendor/berry.full.js'></script> 
-    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
-    <!--<script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> -->
-    <script src='/assets/js/vendor/berrytables.full.js'></script> 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>
     <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'></script> 
     <script src='/assets/js/lib.js'></script> 
-    <script src='/assets/js/paged.js'></script> 
-
-    <script src='/assets/js/routes.js'></script> 
-    <!--<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js'></script>		-->
-    <!--<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>-->
+    @yield('end_body_scripts_top')
+    <script src='/assets/js/vendor/berry.full.js'></script> 
+    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
+    <script src='/assets/js/vendor/berrytables.full.js'></script> 
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
   </body>

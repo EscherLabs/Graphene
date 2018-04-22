@@ -39,7 +39,7 @@ var tableConfig = {
     {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
   ];
   tableConfig.data = attributes.code.resources;
-  // bt = new berryTable(tableConfig) /* TJC -- 4/22/18 -- If Commented Out, Monaco Editor Works */
+  bt = new berryTable(tableConfig)
 
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;
 
