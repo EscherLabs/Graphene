@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="row">
-  <div class="col-sm-12 main">
+  <div class="col-sm-12 mymain">
     <h1 class="page-header">App Instances</h1>
     <div class="row">
       <ul class="list-group">

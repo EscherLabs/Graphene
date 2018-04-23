@@ -143,7 +143,7 @@
     <div class="container-fluid" id="main-container">
       <div class="row">
 
-        <div class="col-sm-12 main">
+        <div class="col-sm-12 mymain">
             <div id="content">@yield('content')</div>
         </div>
       </div>
