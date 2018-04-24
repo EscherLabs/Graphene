@@ -363,6 +363,9 @@ function editMobileOrder(){
 </script>
 
 		<style>
+			.view-as.group_all i{display: none;}
+			.group_all .view-as.group_all i{ display:inline;}
+
 {{#group.composites}}
 			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
 			.editor .widget,.editor .page-menu ul li{display: block;}
@@ -403,9 +406,21 @@ function editMobileOrder(){
 
 
 			$('.view-as').on('click', function(e){
-				if($(e.currentTarget).data('group') == 'all'){
+				if($(e.currentTarget).data('group') == 'reset'){
+
 					$('body').attr('class','topbar sidemenu');
+
+					for(var i in groups){
+						$('body').toggleClass('group_'+groups[i]);
+
+					}
+					
+				
+				}else if($(e.currentTarget).data('group') == 'all'){
+					$('body').attr('class','topbar sidemenu group_all');
 				}else{
+										$('body').removeClass('group_all');
+
 					$('body').toggleClass('group_'+$(e.currentTarget).data('group'));
 					// if(window.getComputedStyle($(".page-menu .page_"+page_id)[0]).display == 'none'){
 					// 	// modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})

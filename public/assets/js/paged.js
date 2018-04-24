@@ -20,9 +20,11 @@ var paged = function(selector, options){
   })
   options.default ={label: false,type:'ace',mode:options.mode || 'ace/mode/handlebars'}
   this.options = $.extend(true,{editable: true,},options);
+  this.active = this.options.items[0].key;
+
   $(selector).html(templates.pages.render(this.options,templates));
   this.berry = $(selector+' .dummyTarget').berry(this.options);
-
+  
   this.render = function(){
     $(selector+' .list-group').empty().html(templates.pages_listgroupitem.render(this.options));
     $('[href="#'+this.active+'"]').click();
@@ -74,8 +76,10 @@ var paged = function(selector, options){
 		$(e.currentTarget).parent().parent().find('button.dropdown-toggle').prop('disabled', 
 		  (_.findWhere(this.options.items, {key: this.active}) || this.options.items[0]).disabled || false
 		);
-    this.berry.fields[this.active].editor.clearSelection();//.instances[0]
- 		this.berry.fields[this.active].focus();
+    if(typeof this.berry.fields[this.active] !== 'undefined'){
+      this.berry.fields[this.active].editor.clearSelection();//.instances[0]
+      this.berry.fields[this.active].focus();
+    }
   }.bind(this))
   $(selector).find('.list-group-item.tab').first().click();
   this.getCurrent = function(){

@@ -1,28 +1,30 @@
 attributes = {};
-function load(app_version){
+function load(app_version) {
 
-loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
-forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
-},app_version)
+  loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
+  forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
+  },app_version)
 
-attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
-
-
-$('.styles').berry({
-  actions:false,
-  name: 'style',
-  autoDestroy:false,
-  attributes:attributes,
-  inline:true,
-  flatten:false,
-  fields:[
-    {name:'code', label: false,  type: 'fieldset', fields:[
-      {label:false, name:'css', type:'ace', mode:'ace/mode/css'},
-    ]}
-  ]})
+  attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
+  $('.navbar-header .nav a h4').html(attributes.app.name+' - '+(attributes.summary || 'Working Version'));
+  if(typeof Berries.style !== 'undefined'){
+    Berries.style.destroy();
+  }
+  $('.styles').berry({
+    actions:false,
+    name: 'style',
+    attributes:attributes,
+    inline:true,
+    flatten:false,
+    fields:[
+      {name:'code', label: false,  type: 'fieldset', fields:[
+        {label:false, name:'css', type:'ace', mode:'ace/mode/css'},
+      ]}
+    ]
+  })
   
 
-var tableConfig = {
+  var tableConfig = {
 		entries: [25, 50, 100],
 		count: 25,
 		autoSize: -20,
@@ -44,9 +46,10 @@ var tableConfig = {
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
-  templatePage = new paged('.templates',{items:attributes.code.templates, label:'Template'});
-  scriptPage = new paged('.scripts',{items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
-  formPage = new paged('.forms',{items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
+
+  templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
+  formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
     item.content = this.berry.fields[this.active].toJSON();
     if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
@@ -63,18 +66,18 @@ var tableConfig = {
   }});
 }
 load(loaded.code);
+orig = $.extend({},loaded);
 
 
 $(document).keydown(function(e) {
-  if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey))
-  {
+  if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       $('#save').click()
   }
   return true;
 });
 
-function modalForm(form, name, onSave){
+function modalForm(form, name, onSave) {
 
   if(typeof cb === 'undefined'){
     if(typeof form === 'string'){
@@ -149,9 +152,6 @@ function modalForm(form, name, onSave){
   }
 }
 
-
-
-$('.navbar-header .nav a h4').html(attributes.app.name+' - '+(attributes.summary || 'Working Version'));
 
 $('#save').on('click',function() {
   template_errors = templatePage.errors();
@@ -262,21 +262,38 @@ $('#versions').on('click', function() {
     url: '/api/apps/'+loaded.app_id+'/versions',
     success: function(data) {
       console.log(data);
-      if(!attributes.stable){
-              data.unshift({id:attributes.id,label:'Working Version'})
+      if(!orig.stable){
+              data.unshift({id:orig.id,label:'Working Version'})
       }
-      $().berry({attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
+      Berry.btn.switch={
+        label: 'Switch',
+        icon:'reply',
+        id: 'berry-submit',
+        modifier: 'success pull-right',
+        click: function() {
+          if(this.options.autoDestroy) {
+            this.on('saved', this.destroy);
+          }
+          this.trigger('save');
+        }
+      }
+
+      $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
           {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
       ]}).on('save',function() {
-window.open('/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id, '_blank');
-    // $.ajax({
-    //   url: '/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
-    //   method: 'get',
-    //   data: data,
-    //   success:function(data) {
-    //     load(data)
-    //   }
-    // })
+// window.open('/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id, '_blank');
+    $.ajax({
+      url: '/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
+      method: 'get',
+      data: data,
+      success:function(data) {
+        // debugger;
+        data.app = loaded.app;
+        loaded = data;
+        load(loaded.code);
+        Berries.modal.trigger('close');
+      }
+    })
         //switch version
       })
     }

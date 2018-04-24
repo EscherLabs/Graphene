@@ -44,10 +44,12 @@
   </div>
 
 </div>
-<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+<!--<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>-->
 @endsection
 
 @section('end_body_scripts_top')
+  <script src='//unpkg.com/ractive/ractive.min.js'></script>    
+
   <script src='/assets/js/paged.js'></script> 
   <script type="text/javascript" src="/assets/js/sortable.js"></script>
   <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
@@ -57,15 +59,15 @@
   <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
   <!-- TJC 4/22/18 Monaco Test -->
-  <script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
+  <!--<script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
   <script src="/assets/js/vendor/vs/loader.js"></script>
   <script src="/assets/js/vendor/vs/editor/editor.main.nls.js"></script>
-  <script src="/assets/js/vendor/vs/editor/editor.main.js"></script> 
+  <script src="/assets/js/vendor/vs/editor/editor.main.js"></script> -->
   <!-- END TJC 4/22/18 Monaco Test -->
 @endsection
 
 @section('end_body_scripts_bottom')
-  <script>
+  <!--<script>
     var editor = monaco.editor.create(document.getElementById('container'), {
       value: [
         'function x() {',
@@ -74,7 +76,7 @@
       ].join('\n'),
       language: 'javascript'
     });
-  </script>
+  </script>-->
   <script>var loaded = {!! $app !!};</script>
   <script type='text/javascript' src='/assets/js/editApp.js'></script>
 @endsection
