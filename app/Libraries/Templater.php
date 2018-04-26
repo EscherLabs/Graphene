@@ -53,8 +53,12 @@ class Templater {
 
         foreach($data['apps_pages'] as $index => $link) {
             $data['apps_pages'][$index]['group_id'] = $link['id'];
-            $data['apps_pages'][$index]['group_slug'] = $link['slug'];    
+            $data['apps_pages'][$index]['group_slug'] = $link['slug'];
+            if (count($link['app_instances'])>0 || count($link['pages'])>0) {
+                $data['apps_pages'][$index]['has_apps_or_pages'] = true;
+            }  
         }
+        // dd($data);
 
         // TJC -- 2/10/18 -- Should make slide size configurable at the site level
         $slice_size = 5;
@@ -79,7 +83,7 @@ class Templater {
                 $data['app']['developer'] = in_array ($data['app']['app_id'], $data['user']->developer_apps);   
             }
 
-        } 
+        }
 
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
