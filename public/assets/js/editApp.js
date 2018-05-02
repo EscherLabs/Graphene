@@ -41,6 +41,9 @@ function load(app_version) {
     {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
   ];
   tableConfig.data = attributes.code.resources;
+  if(typeof bt !== 'undefined'){
+    bt.destroy();
+  }
   bt = new berryTable(tableConfig)
 
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;
