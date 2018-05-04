@@ -52,7 +52,7 @@ class EllucianMobileController extends Controller
                     'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
                     'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
                         (isset($app_instance->icon)?$app_instance->icon:'cube').'.png',
-                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
                     'useBeaconToLaunch'=>'false'];
                 $counter++;
             }

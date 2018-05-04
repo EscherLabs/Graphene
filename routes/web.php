@@ -237,7 +237,7 @@ Route::get('/api/groups/{group}/endpoints','GroupController@list_endpoints')->mi
 // Get Tags for a specified group by group_id
 Route::get('/api/groups/{group}/tags','GroupController@list_tags')->middleware('can:list_components,group');
 
-Route::get('/ellucianmobile/pizza','EllucianMobileController@login');
+Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/api/ellucianmobile/config','EllucianMobileController@config');
 
