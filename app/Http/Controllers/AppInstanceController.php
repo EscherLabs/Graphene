@@ -19,7 +19,7 @@ use App\Libraries\Templater;
 class AppInstanceController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth')->except('run','fetch', 'get_data');
+        // $this->middleware('auth')->except('run','fetch', 'get_data');
     }
     
     public function list_all_app_instances(Request $request) {

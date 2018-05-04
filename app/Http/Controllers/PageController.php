@@ -15,7 +15,7 @@ class PageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except('show', 'run');
+        // $this->middleware('auth')->except('show', 'run');
     }
     
     public function list_all_pages(Request $request) {

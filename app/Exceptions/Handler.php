@@ -66,6 +66,12 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return redirect()->guest('login');
+        if (!$request->has('nologin') ) {
+            if($request->is('api/*')){
+                abort(403);
+            }else{                
+                return redirect()->guest('login');
+            }
+        }
     }
 }
