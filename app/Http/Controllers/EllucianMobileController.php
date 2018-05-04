@@ -14,7 +14,39 @@ class EllucianMobileController extends Controller
     }
     
     public function login() {
-        return '<html><head><title>Authentication Success</title></head><body><div class="message">Logged in successfully</div></body></html>';
+        return '
+<!-- Copyright 2014 Ellucian Company L.P. and its affiliates. -->
+<html>
+<head>
+    <title>Authentication Success</title>
+    <style type="text/css">
+    .message {
+        border: 1px solid black;
+        padding: 5px;
+        background-color:#E9E9E9;
+    }
+    .stack {
+        border: 1px solid black;
+        padding: 5px;
+        overflow:auto;
+        height: 300px;
+    }
+    .snippet {
+        padding: 5px;
+        background-color:white;
+        border:1px solid black;
+        margin:3px;
+        font-family:courier;
+    }
+    </style>
+</head>
+
+<body>
+<div class="message">
+    Logged in successfully
+</div>
+</body>
+</html>';
     }
 
     public function userinfo() {
