@@ -92,7 +92,7 @@ class EllucianMobileController extends Controller
                     }
                 }
                 foreach($group->pages as $page) {
-                    if (!$page->unlisted && !$app_instance->getHiddenXsAttribute()) {
+                    if (!$page->unlisted && !$page->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
                             'access'=>$page->public==1?['Everyone']:$composites_array,

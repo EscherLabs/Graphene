@@ -8,8 +8,14 @@ class AppInstance extends Model
 {
     protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon', 'app_version_id', 'unlisted'];
     protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object'];
-    protected $appends = ['visible_xs', 'visible_sm', 'visible_md', 'visible_lg'];
-
+    protected $appends = ['hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg'];
+    
+    /* Transient Properties not saved in the database */
+    public $hidden_xs = false;
+    public $hidden_sm = false;
+    public $hidden_md = false;
+    public $hidden_lg = false;
+    
     public function group() {
       return $this->belongsTo(Group::class);
     }
@@ -31,12 +37,6 @@ class AppInstance extends Model
           ['options'=>$user_options]);
     }   
     
-    /* Transient Properties not saved in the database */
-    public $hidden_xs = false;
-    public $hidden_sm = false;
-    public $hidden_md = false;
-    public $hidden_lg = false;
-    
     public function getHiddenXsAttribute()
     {
         return ($this->device === 1 || $this->device === 2);  
@@ -53,6 +53,7 @@ class AppInstance extends Model
     {
         return ($this->device === 3 || $this->device === 4);  
     }
+    
     public function findVersion() {
         $myAppVersion;
         if(is_null($this->app_version_id)){
