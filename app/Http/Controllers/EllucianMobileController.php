@@ -79,7 +79,7 @@ class EllucianMobileController extends Controller
                     'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
                 $counter++;
                 foreach($group->app_instances as $app_instance) {
-                    if (!$app_instance->unlisted) {
+                    if (!$app_instance->unlisted && !$app_instance->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappa'.$app_instance->id] = 
                             ['type'=>'web','name'=>$app_instance->name,
                             'access'=>$app_instance->public==1?['Everyone']:$composites_array,
@@ -92,7 +92,7 @@ class EllucianMobileController extends Controller
                     }
                 }
                 foreach($group->pages as $page) {
-                    if (!$page->unlisted) {
+                    if (!$page->unlisted && !$app_instance->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
                             'access'=>$page->public==1?['Everyone']:$composites_array,
