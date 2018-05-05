@@ -66,14 +66,15 @@ class EllucianMobileController extends Controller
         $group_apps = Group::with(['app_instances','pages','composites'])->whereHas('site', function($q){
             $q->where('domain', '=', request()->server('SERVER_NAME'));
         })->orderBy('order')->get();
-
+        $http_protocol = 'http'.(request()->secure()?'s':'').'://';
 
         $ellucian_group_apps = [];
         $counter = 1;
         foreach($group_apps as $group) {
+            $composites_array = array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray())));
             if (count($group->app_instances)>0 || count($group->pages)>0) {
                 $ellucian_group_apps['mappg'.$group->id] = 
-                    ['type'=>'header','name'=>$group->name,'access'=>array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray()))),
+                    ['type'=>'header','name'=>$group->name,'access'=>$composites_array,
                     'hideBeforeLogin'=>"false",
                     'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
                 $counter++;
@@ -81,11 +82,11 @@ class EllucianMobileController extends Controller
                     if (!$app_instance->unlisted) {
                         $ellucian_group_apps['mappa'.$app_instance->id] = 
                             ['type'=>'web','name'=>$app_instance->name,
-                            'access'=>$app_instance->public==1?['Everyone']:array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray()))),
+                            'access'=>$app_instance->public==1?['Everyone']:$composites_array,
                             'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
-                            'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
+                            'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                             ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
-                            'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
                         $counter++;
                     }
@@ -94,11 +95,11 @@ class EllucianMobileController extends Controller
                     if (!$page->unlisted) {
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
-                            'access'=>$page->public==1?['Everyone']:array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray()))),
+                            'access'=>$page->public==1?['Everyone']:$composites_array,
                             'hideBeforeLogin'=>($page->public==1)?"false":"true",
-                            'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
+                            'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                                 ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
-                            'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
                         $counter++;
                     }
@@ -122,7 +123,7 @@ class EllucianMobileController extends Controller
             ],
             'about'=>[
                 'icon'=>'',
-                'website'=>['url'=>'http://www.escherlabs.com'],
+                'website'=>['url'=>'https://www.escherlabs.com'],
                 'phone'=>['number'=>'607-323-1234'],
                 "logoUrlPhone"=> "",
                 'email'=>['address'=>'tim@escherlabs.com'],
@@ -131,12 +132,12 @@ class EllucianMobileController extends Controller
             ],
             'home'=>["icons"=> "1","overlay"=> "dark"],
             "security"=> [
-                "url"=> 'http://'.request()->server('SERVER_NAME').'/ellucianmobile/userinfo',
-                "logoutUrl"=> 'http://'.request()->server('SERVER_NAME').'/logout',
+                "url"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/userinfo',
+                "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout',
                 "cas"=> [
                     "loginType"=> "browser",
-                    "loginUrl"=> 'http://'.request()->server('SERVER_NAME').'/ellucianmobile/login',
-                    "logoutUrl"=> 'http://'.request()->server('SERVER_NAME').'/logout'
+                    "loginUrl"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/login',
+                    "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout'
                 ]
             ],
             'mapp' => $ellucian_group_apps

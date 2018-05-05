@@ -72,7 +72,7 @@ class PageController extends Controller
 			// $group = $groupObj->id;
             $groupObj = Group::where('slug','=',$group)->first();
 
-            if (Auth::user()->group_admin($groupObj->id)) {
+            if (Auth::user() && Auth::user()->group_admin($groupObj->id)) {
                 $groupObj->load(array('composites'=>function($query){
                     $query->with(array('group'=>function($query){
                     $query->select('name','id');
@@ -84,7 +84,7 @@ class PageController extends Controller
             
 			$group = $groupObj->id;
 		}else{
-            if (Auth::user()->group_admin($group)) {
+            if (Auth::user() && Auth::user()->group_admin($group)) {
                 $groupObj = Group::with(array('composites'=>function($query){
                     $query->with(array('group'=>function($query){
                     $query->select('name','id');
@@ -96,9 +96,9 @@ class PageController extends Controller
             }
         }
 
-        if(isset($slug)){
+        if(isset($slug)) {
             $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
-        }else{
+        } else{
             // Redirect to first page or first app in this group
             $myPage = Page::where('group_id','=', $group)->first();
             if(!is_null($myPage)){
@@ -117,40 +117,32 @@ class PageController extends Controller
         $uapp_instances = [];
 
         $user = Auth::user();
-        $groups = array_merge($user->groups,$user->content_admin_groups,$user->apps_admin_groups);
-
+        if ($user) {
+            $groups = array_merge($user->groups,$user->content_admin_groups,$user->apps_admin_groups);
+        } else {
+            $groups = [];
+        }
         if(isset($myPage->content)){
-            			$tempPage = $myPage->content;
-
-        foreach($myPage->content->sections as $column_index => $column) {
-            foreach($column as $widget_index => $widget) {
-                
-// $user->site_admin || $user->group_admin($myPage->group_id) || $user->group_member($group_id)
-
-
-
-// is member of group
-                if(	isset($widget->limit) && $widget->limit &&
-                    !in_array ($myPage->group_id , $user->content_admin_groups ) &&
-                    !count(array_intersect ($widget->group->ids, $groups ))
-                ) {
+            $tempPage = $myPage->content;
+            foreach($myPage->content->sections as $column_index => $column) {
+                foreach($column as $widget_index => $widget) {
+                    if(	isset($widget->limit) && $widget->limit &&
+                        !in_array ($myPage->group_id , $user->content_admin_groups ) &&
+                        !count(array_intersect ($widget->group->ids, $groups ))) {
                         unset($tempPage->sections[$column_index][$widget_index]);
-                }else{
-                    if ($widget->widgetType === 'uApp') {
-                        if(isset($widget->app_id)) {
-                            $uapp_instances[] = $widget->app_id;
+                    }else{
+                        if ($widget->widgetType === 'uApp') {
+                            if(isset($widget->app_id)) {
+                                $uapp_instances[] = $widget->app_id;
+                            }
                         }
                     }
                 }
             }
-        }
-        $myPage->content = $tempPage;
+            $myPage->content = $tempPage;
         }
 
         if($myPage->public == 0) {
-            // if(!Auth::check() || !in_array($group, Auth::user()->groups)) {
-            //     abort(403, 'Access denied');
-            // }
             $this->authorize('get', $myPage);
         }
 
@@ -158,7 +150,6 @@ class PageController extends Controller
             $current_user = Auth::user();
             $apps = AppInstance::whereIn('id', $uapp_instances)->with('app')->get();
             $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-            // dd($links);
         } else { /* User is not Authenticated */
             $current_user = new User;
             $apps = AppInstance::whereIn('id', $uapp_instances)->where('public', '=', 1)->with('app')->get();
@@ -169,7 +160,6 @@ class PageController extends Controller
             $myAppVersion = AppVersion::where('id','=',$app->app_version_id)->first();
             $apps[$key]->app->code = $myAppVersion->code;
         }
-
 
         if($myPage != null) {
             if(!isset($myPage->content)){
@@ -192,14 +182,6 @@ class PageController extends Controller
                 'id'=>$myPage->id,
                 'group'=>$groupObj
             ]);
-            // return view('timtest',[
-            //     'links'=>$links, 
-            //     'apps'=>$apps, 
-            //     'name'=>$myPage->name, 
-            //     'slug'=>$myPage->slug, 
-            //     'config'=>$config, 
-            //     'id'=>$myPage->id
-            // ]);
         }
         abort(404,'Page not found');
     }
