@@ -63,7 +63,11 @@ class EllucianMobileController extends Controller
     }
 
     public function config() {
-        $group_apps = Group::with(['app_instances','pages','composites'])->whereHas('site', function($q){
+        $group_apps = Group::with(['pages' => function($query) {
+            $query->orderBy('order');
+        },'app_instances' => function($query) {
+            $query->orderBy('order');
+        },'composites'])->whereHas('site', function($q){
             $q->where('domain', '=', request()->server('SERVER_NAME'));
         })->orderBy('order')->get();
         $http_protocol = 'http'.(request()->secure()?'s':'').'://';
@@ -78,19 +82,6 @@ class EllucianMobileController extends Controller
                     'hideBeforeLogin'=>"false",
                     'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
                 $counter++;
-                foreach($group->app_instances as $app_instance) {
-                    if (!$app_instance->unlisted && !$app_instance->getHiddenXsAttribute()) {
-                        $ellucian_group_apps['mappa'.$app_instance->id] = 
-                            ['type'=>'web','name'=>$app_instance->name,
-                            'access'=>$app_instance->public==1?['Everyone']:$composites_array,
-                            'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
-                            'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
-                            ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
-                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
-                            'useBeaconToLaunch'=>'false'];
-                        $counter++;
-                    }
-                }
                 foreach($group->pages as $page) {
                     if (!$page->unlisted && !$page->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappp'.$page->id] = 
@@ -100,6 +91,19 @@ class EllucianMobileController extends Controller
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                                 ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'useBeaconToLaunch'=>'false'];
+                        $counter++;
+                    }
+                }
+                foreach($group->app_instances as $app_instance) {
+                    if (!$app_instance->unlisted && !$app_instance->getHiddenXsAttribute()) {
+                        $ellucian_group_apps['mappa'.$app_instance->id] = 
+                            ['type'=>'web','name'=>$app_instance->name,
+                            'access'=>$app_instance->public==1?['Everyone']:$composites_array,
+                            'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
+                            'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
+                            ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
+                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
                         $counter++;
                     }
