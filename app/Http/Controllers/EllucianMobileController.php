@@ -63,41 +63,46 @@ class EllucianMobileController extends Controller
     }
 
     public function config() {
-        $group_apps = Group::with(['app_instances','pages'])->whereHas('site', function($q){
+        $group_apps = Group::with(['app_instances','pages','composites'])->whereHas('site', function($q){
             $q->where('domain', '=', request()->server('SERVER_NAME'));
-        })->get();
+        })->orderBy('order')->get();
 
-        // dd(request()->server);
 
         $ellucian_group_apps = [];
         $counter = 1;
         foreach($group_apps as $group) {
-            $ellucian_group_apps['mappg'.$group->id] = 
-                ['type'=>'header','name'=>$group->name,'access'=>[(string)$group->id],
-                'hideBeforeLogin'=>"false",
-                'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
-            $counter++;
-            foreach($group->app_instances as $app_instance) {
-                $ellucian_group_apps['mappa'.$app_instance->id] = 
-                    ['type'=>'web','name'=>$app_instance->name,
-                    'access'=>$app_instance->public==1?['Everyone']:[(string)$group->id],
-                    'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
-                    'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
-                        (isset($app_instance->icon)?$app_instance->icon:'cube').'.png',
-                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
-                    'useBeaconToLaunch'=>'false'];
+            if (count($group->app_instances)>0 || count($group->pages)>0) {
+                $ellucian_group_apps['mappg'.$group->id] = 
+                    ['type'=>'header','name'=>$group->name,'access'=>array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray()))),
+                    'hideBeforeLogin'=>"false",
+                    'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
                 $counter++;
-            }
-            foreach($group->pages as $page) {
-                $ellucian_group_apps['mappp'.$page->id] = 
-                    ['type'=>'web','name'=>$page->name,
-                    'access'=>$page->public==1?['Everyone']:[(string)$group->id],
-                    'hideBeforeLogin'=>($page->public==1)?"false":"true",
-                    'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
-                        (isset($page->icon)?$page->icon:'file').'.png',
-                    'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
-                    'useBeaconToLaunch'=>'false'];
-                $counter++;
+                foreach($group->app_instances as $app_instance) {
+                    if (!$app_instance->unlisted) {
+                        $ellucian_group_apps['mappa'.$app_instance->id] = 
+                            ['type'=>'web','name'=>$app_instance->name,
+                            'access'=>$app_instance->public==1?['Everyone']:array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray()))),
+                            'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
+                            'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
+                            ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
+                            'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'useBeaconToLaunch'=>'false'];
+                        $counter++;
+                    }
+                }
+                foreach($group->pages as $page) {
+                    if (!$page->unlisted) {
+                        $ellucian_group_apps['mappp'.$page->id] = 
+                            ['type'=>'web','name'=>$page->name,
+                            'access'=>$page->public==1?['Everyone']:array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray()))),
+                            'hideBeforeLogin'=>($page->public==1)?"false":"true",
+                            'icon'=>'http://'.request()->server('HTTP_HOST').'/assets/icons/fontawesome/white/36/'.
+                                ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
+                            'urls'=>['url'=>'http://'.request()->server('SERVER_NAME').'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'useBeaconToLaunch'=>'false'];
+                        $counter++;
+                    }
+                }
             }
         }
 
