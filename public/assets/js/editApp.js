@@ -1,4 +1,5 @@
 attributes = {};
+var root = '/api/apps/';
 function load(app_version) {
 
   loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
@@ -189,7 +190,7 @@ $('#save').on('click',function() {
     data.updated_at = attributes.updated_at;
 
     $.ajax({
-      url: '/api/apps/'+attributes.app_id+'/code',
+      url: root+attributes.app_id+'/code',
       method: 'put',
       data: data,
       success:function(e) {
@@ -233,7 +234,7 @@ $('#save').on('click',function() {
 $('#import').on('click', function() {
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
       $.ajax({
-        url: '/api/apps/'+attributes.app_id+'/code',
+        url: root+attributes.app_id+'/code',
         data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
         method: 'PUT',
         success: function(){
@@ -250,7 +251,7 @@ $('#publish').on('click', function() {
         {label: 'Description', type: 'textarea'}
       ]}).on('save', function(){
       $.ajax({
-        url: '/api/apps/'+attributes.app_id+'/publish',
+        url: root+attributes.app_id+'/publish',
         data: this.toJSON(),
         method: 'PUT',
         success: function(){
@@ -262,7 +263,7 @@ $('#publish').on('click', function() {
 })
 $('#versions').on('click', function() {
   $.ajax({
-    url: '/api/apps/'+loaded.app_id+'/versions',
+    url: root+loaded.app_id+'/versions',
     success: function(data) {
       console.log(data);
       if(!orig.stable){
@@ -284,9 +285,9 @@ $('#versions').on('click', function() {
       $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
           {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
       ]}).on('save',function() {
-// window.open('/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id, '_blank');
+// window.open(root+attributes.app_id+'/versions/'+this.toJSON().app_version_id, '_blank');
     $.ajax({
-      url: '/api/apps/'+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
+      url: root+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
       method: 'get',
       data: data,
       success:function(data) {
