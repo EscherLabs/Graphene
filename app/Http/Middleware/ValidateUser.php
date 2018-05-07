@@ -15,6 +15,7 @@ use App\GroupAdmin;
 use App\Group;
 use App\GroupComposite;
 use App\Tag;
+use App\Libraries\CustomAuth;
 
 class ValidateUser
 {
@@ -31,6 +32,12 @@ class ValidateUser
 
         // If user isn't currently logged in, do nothing
         if (is_null(Auth::user())) {
+            // ATS - If user isn't currently logged in, do custom auth?
+            if ($request->is('login*')) {
+                $this->customAuth = new CustomAuth();
+                
+                $this->customAuth->authenticate();
+            }
             return $next($request);
         }
 
@@ -83,6 +90,7 @@ class ValidateUser
             )) {
             abort(403, 'Access denied');
         }
+
         return $next($request);
     }
 }

@@ -10,12 +10,15 @@ use App\AppVersion;
 use App\AppInstance;
 use Illuminate\Http\Request;
 use App\Libraries\Templater;
+use App\Libraries\CustomAuth;
 
 class PageController extends Controller
 {
     public function __construct()
     {
         // $this->middleware('auth')->except('show', 'run');
+        $this->customAuth = new CustomAuth();
+        
     }
     
     public function list_all_pages(Request $request) {
@@ -67,6 +70,8 @@ class PageController extends Controller
     }
 
     public function run($group, $slug = null, Request $request) {
+        //$this->middleware('cas.auth');
+        
         if(!is_numeric($group)) {
 			// $groupObj = Group::with('composites')->where('slug','=',$group)->first();
 			// $group = $groupObj->id;
@@ -127,7 +132,7 @@ class PageController extends Controller
             foreach($myPage->content->sections as $column_index => $column) {
                 foreach($column as $widget_index => $widget) {
                     if(	isset($widget->limit) && $widget->limit &&
-                        !in_array ($myPage->group_id , $user->content_admin_groups ) &&
+                        (!$user || !in_array ($myPage->group_id , $user->content_admin_groups )) &&
                         !count(array_intersect ($widget->group->ids, $groups ))) {
                         unset($tempPage->sections[$column_index][$widget_index]);
                     }else{
@@ -143,6 +148,9 @@ class PageController extends Controller
         }
 
         if($myPage->public == 0) {
+            
+            // $this->middleware('cas.auth');
+            $this->customAuth->authenticate();
             $this->authorize('get', $myPage);
         }
 

@@ -1,6 +1,6 @@
 <?php 
 
-namespace App\Http\Middleware;
+namespace App\Libraries;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
@@ -9,25 +9,22 @@ use App\User;
 use App\Site;
 use App\Libraries\HTTPHelper;
 
-class CASAuthentication
+class CASAuth
 {
 
     protected $auth;
     protected $cas;
 
-    public function __construct(Guard $auth)
+    public function __construct()
     {
-        $this->auth = $auth;
 
         // Build CAS Configuration from Site Configuration
-        if (config('app.site')->auth == 'CAS') {
-            $cas_config = [];
-            foreach(config('app.site')->auth_config as $key => $value) {
-                $cas_config['cas.'.$key] = $value;
-            }
-            config($cas_config);
-            $this->cas = app('cas');
+        $cas_config = [];
+        foreach(config('app.site')->auth_config as $key => $value) {
+            $cas_config['cas.'.$key] = $value;
         }
+        config($cas_config);
+        $this->cas = app('cas');
     }
 
     private function map_user_attributes(&$user,$user_attributes) {
@@ -119,27 +116,22 @@ class CASAuthentication
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle()
     {
-        // Check to see if CAS is enabled for this domain
-        if (config('app.site')->auth == 'CAS') {   
-            // Only run if we're not already authenticated
-            if (!Auth::check()) {
-                if( $this->cas->isAuthenticated() )
-                {
-                    $m = new \Mustache_Engine;                    
-                    if (config('cas.cas_enable_saml') === true || config('cas.cas_enable_saml') === "true") {
-                        $this->handle_saml();
-                    } else {
-                        $this->handle_generic();
-                    }
+        
+        // Only run if we're not already authenticated
+        if (!Auth::check()) {
+            if( $this->cas->isAuthenticated() )
+            {
+                $m = new \Mustache_Engine;                    
+                if (config('cas.cas_enable_saml') === true || config('cas.cas_enable_saml') === "true") {
+                    $this->handle_saml();
                 } else {
-                    if (!$request->has('nologin') && !$request->is('api/*')) {
-                        $this->cas->authenticate();
-                    }
+                    $this->handle_generic();
                 }
+            } else {        
+                $this->cas->authenticate();
             }
-        }     
-        return $next($request);
+        }
     }
 }

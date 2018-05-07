@@ -31,8 +31,6 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            /* CAS Authentication TJC 9/19/17 */
-            \App\Http\Middleware\CASAuthentication::class,
             \App\Http\Middleware\ValidateUser::class,
         ],
         'api' => [
@@ -57,5 +55,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'role' => \App\Http\Middleware\CheckRole::class,
         'http.basic.auth' =>  \App\Http\Middleware\HTTPBasicAuth::class,
+        'custom.auth'=>  \App\Http\Middleware\CustomAuthentication::class,
+        
     ];
 }

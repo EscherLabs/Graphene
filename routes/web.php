@@ -20,26 +20,32 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::get('/','UserDashboardController@index');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
+
 Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');
 
-Route::get('/admin/{resource?}', 'AdminController@index');
-Route::get('/admin/apps/{app}', 'AppController@admin')->middleware('can:get,app');
 
-Route::get('/admin/groups/{group}/', 'AdminController@summary')->middleware('can:list_components,group');
+Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
+  Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
-Route::get('/admin/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/members', 'AdminController@members')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/images', 'AdminController@images')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/links', 'AdminController@links')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_components,group');
-Route::get('/admin/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_components,group');
+  Route::get('/{resource?}', 'AdminController@index');
+  Route::get('/apps/{app}', 'AppController@admin')->middleware('can:get,app');
 
-Route::get('/admin/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
-Route::get('/admin/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
-Route::get('/admin/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
+  Route::get('/groups/{group}/', 'AdminController@summary')->middleware('can:list_components,group');
+
+  Route::get('/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/members', 'AdminController@members')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/images', 'AdminController@images')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/links', 'AdminController@links')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_components,group');
+  Route::get('/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_components,group');
+
+  Route::get('/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
+  Route::get('/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
+  Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
+});
 
 Route::group(['prefix' => 'api'], function () {
 
