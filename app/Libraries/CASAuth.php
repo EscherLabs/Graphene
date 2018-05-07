@@ -131,6 +131,7 @@ class CASAuth
                 }
             } else {        
                 $this->cas->authenticate();
+                
             }
         }
     }

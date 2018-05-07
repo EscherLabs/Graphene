@@ -16,9 +16,9 @@ class PageController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware('auth')->except('show', 'run');
-        $this->customAuth = new CustomAuth();
+        // $this->middleware('auth')->except('show', 'run');    
         
+        $this->customAuth = new CustomAuth();     
     }
     
     public function list_all_pages(Request $request) {
@@ -148,9 +148,12 @@ class PageController extends Controller
         }
 
         if($myPage->public == 0) {
-            
-            // $this->middleware('cas.auth');
-            $this->customAuth->authenticate();
+            if(!Auth::user()){           
+                $this->customAuth->authenticate();
+                if(Auth::user()){
+                    return redirect()->back();
+                }
+            }
             $this->authorize('get', $myPage);
         }
 

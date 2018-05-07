@@ -31,10 +31,11 @@ class ValidateUser
         $current_site = config('app.site');
 
         // If user isn't currently logged in, do nothing
+        $this->customAuth = new CustomAuth();
+        
         if (is_null(Auth::user())) {
             // ATS - If user isn't currently logged in, do custom auth?
             if ($request->is('login*')) {
-                $this->customAuth = new CustomAuth();
                 
                 $this->customAuth->authenticate();
             }

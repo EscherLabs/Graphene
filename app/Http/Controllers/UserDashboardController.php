@@ -7,14 +7,16 @@ use App\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\Templater;
+use App\Libraries\CustomAuth;
 
 class UserDashboardController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth');
+        $this->customAuth = new CustomAuth();                   
     }
     
-    public function index() {
+    public function index(Request $request) {
         $groups = [];
         if(Auth::user()) {
             $user_dashboard = UserDashboard::where('user_id','=',Auth::user()->id)->where('site_id','=',Auth::user()->site->id)->first();
@@ -34,7 +36,12 @@ class UserDashboardController extends Controller
             // Redirect to first Page or first App
             $group_links = Group::has('pages', '>', 0)->AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }else{
-            $group_links = Group::has('pages', '>', 0)->PublicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+
+            $this->customAuth->authenticate();
+            if(Auth::user()){
+                return redirect()->back();
+            }
+            // $group_links = Group::has('pages', '>', 0)->PublicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
 
         }
         if (isset($group_links[0])) {
