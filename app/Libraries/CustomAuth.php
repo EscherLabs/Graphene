@@ -24,7 +24,7 @@ class CustomAuth {
                 }
             }
        } else {
-        return redirect('/login?redirect='.URL::full());
+        return redirect('/login?redirect='.urlencode(URL::full()));
       }
     }
 }

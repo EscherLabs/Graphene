@@ -75,7 +75,7 @@ class LoginController extends Controller
         if (config('app.site')->auth == 'CAS') {
             cas()->logout();
         } else {
-            return redirect('/');
+            return redirect()->back();
         }
     }
 
