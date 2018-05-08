@@ -30,10 +30,12 @@ class CustomAuthentication
      */
     public function handle($request, Closure $next)
     {
-        $return = $this->customAuth->authenticate();
-        if(isset($return)){
-            return $return;
-        }
+        if(!Auth::user()){           
+            $return = $this->customAuth->authenticate();
+            if(isset($return)){
+                return $return;
+            }
+        }   
         return $next($request);
     }
 }

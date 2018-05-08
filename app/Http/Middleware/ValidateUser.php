@@ -83,14 +83,14 @@ class ValidateUser
         Auth::user()->site_admin = $user_site->site_admin;
         Auth::user()->site_developer = $user_site->site_developer;
 
-        if ($request->is('admin*') && 
-            !(  Auth::user()->site_admin || 
-                Auth::user()->developer ||
-                count(Auth::user()->content_admin_groups)>0 ||
-                count(Auth::user()->apps_admin_groups)>0
-            )) {
-            abort(403, 'Access denied');
-        }
+        // if ($request->is('admin*') && 
+        //     !(  Auth::user()->site_admin || 
+        //         Auth::user()->developer ||
+        //         count(Auth::user()->content_admin_groups)>0 ||
+        //         count(Auth::user()->apps_admin_groups)>0
+        //     )) {
+        //     abort(403, 'Access denied');
+        // }
 
         return $next($request);
     }
