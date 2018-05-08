@@ -245,11 +245,13 @@ Route::group(['prefix' => 'api'], function () {
     // Get Tags for a specified group by group_id
     Route::get('/groups/{group}/tags','GroupController@list_tags')->middleware('can:list_components,group');
 
-    Route::get('/ellucianmobile/login','EllucianMobileController@login');
-    Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
-    Route::get('/ellucianmobile/config','EllucianMobileController@config');
-
     /***** Visits *****/
     // Log a visit
     Route::post('/visit/log_visit','VisitController@log_visit');
+
+    Route::get('/ellucianmobile/config','EllucianMobileController@config');
 });
+
+Route::get('/ellucianmobile/login','EllucianMobileController@login');
+Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
+Route::get('/ellucianmobile/config','EllucianMobileController@config');

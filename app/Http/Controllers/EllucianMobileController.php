@@ -6,14 +6,22 @@ use Illuminate\Support\Facades\Auth;
 use App\Group;
 use App\AppInstance;
 use Illuminate\Http\Request;
+use App\Libraries\CustomAuth;
 
 class EllucianMobileController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('config');
+        $this->customAuth = new CustomAuth();     
     }
     
     public function login() {
+        if(!Auth::user()){ 
+            $return = $this->customAuth->authenticate();
+            if(isset($return)){
+                return $return;
+            }
+        }
         return '
 <!-- Copyright 2014 Ellucian Company L.P. and its affiliates. -->
 <html>
@@ -50,6 +58,13 @@ class EllucianMobileController extends Controller
     }
 
     public function userinfo() {
+        if(!Auth::user()){ 
+            $return = $this->customAuth->authenticate();
+            if(isset($return)){
+                return $return;
+            }
+        }
+
         $groups = Auth::user()->group_members()->pluck('group_id');
         foreach($groups as $index => $group) {
             $groups[$index] = (string)$group;
