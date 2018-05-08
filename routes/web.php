@@ -21,7 +21,7 @@ Route::get('/','UserDashboardController@index');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
 
-Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');
+Route::get('/image/{image}','ImageController@get')->middleware('custom.auth')->middleware('can:get,image');
 // Route::group(['middleware' => ['custom.auth']], function () {
   Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 // });
