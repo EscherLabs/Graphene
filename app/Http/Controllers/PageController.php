@@ -18,7 +18,7 @@ class PageController extends Controller
     {
         // $this->middleware('auth')->except('show', 'run');    
         
-        return $this->customAuth = new CustomAuth();     
+        $this->customAuth = new CustomAuth();     
     }
     
     public function list_all_pages(Request $request) {
@@ -146,12 +146,14 @@ class PageController extends Controller
             }
             $myPage->content = $tempPage;
         }
-
+        if(!isset($myPage)){
+            abort(404);
+        }
         if($myPage->public == 0) {
             if(!Auth::user()){           
-                return $this->customAuth->authenticate();
-                if(Auth::user()){
-                    return redirect()->back();
+                $return = $this->customAuth->authenticate();
+                if(isset($return)){
+                    return $return;
                 }
             }
             $this->authorize('get', $myPage);

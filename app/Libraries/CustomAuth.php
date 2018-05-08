@@ -2,6 +2,7 @@
 
 namespace App\Libraries;
 use App\Libraries\CASAuth;
+use Illuminate\Support\Facades\Auth;
 
 class CustomAuth {
 
@@ -14,7 +15,13 @@ class CustomAuth {
 
     public function authenticate() {
       if (config('app.site')->auth == 'CAS') {        
-        $this->cas->handle();
+            if(!Auth::user()){           
+                $this->cas->handle();
+
+                if(Auth::user()){
+                    return redirect()->back();
+                }
+            }
        } else {
          return redirect('/login');
       }
