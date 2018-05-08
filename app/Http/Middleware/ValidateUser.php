@@ -29,17 +29,20 @@ class ValidateUser
     public function handle($request, Closure $next)
     {
         $current_site = config('app.site');
-
+           
+ 
         // If user isn't currently logged in, do nothing
         $this->customAuth = new CustomAuth();
         
         if (is_null(Auth::user())) {
             // ATS - If user isn't currently logged in, do custom auth?
-            if ($request->is('login*')) {
-                
-                $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate();
+            if(!Auth::user()){
+                if(isset($return)){
+                    return $return;
+                }
+                return $next($request);
             }
-            return $next($request);
         }
 
         $user_site = SiteMember::where('user_id','=',Auth::user()->id)

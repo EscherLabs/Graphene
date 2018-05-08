@@ -20,11 +20,12 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::get('/','UserDashboardController@index');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
+Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
-Route::get('/image/{image}','ImageController@get')->middleware('custom.auth')->middleware('can:get,image');
-// Route::group(['middleware' => ['custom.auth']], function () {
-  Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
-// });
+
+Route::group(['middleware' => ['custom.auth']], function () {
+  Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');
+});
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
 
   Route::get('/{resource?}', 'AdminController@index');
