@@ -24,7 +24,8 @@ class CreatePagesTable extends Migration
             $table->tinyInteger('device')->unsigned()->nullable();
 			$table->json('mobile_order')->nullable();
             $table->boolean('unlisted')->default(false);
-			$table->boolean('public')->default(false);
+            $table->boolean('public')->default(false);
+            $table->json('groups')->nullable();
 			$table->timestamps();
             $table->foreign('group_id')->references('id')->on('groups');
         });

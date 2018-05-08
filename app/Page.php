@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model
 {
-    protected $fillable = ['group_id', 'name', 'slug', 'content', 'mobile_order','unlisted','public','icon','device'];
-    protected $casts = ['content' => 'object', 'mobile_order' => 'object'];
+    protected $fillable = ['group_id', 'name', 'slug', 'content', 'mobile_order','unlisted','public','icon','device','groups'];
+    protected $casts = ['content' => 'object', 'mobile_order' => 'array','groups'=>'array'];
     protected $appends = ['hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg'];
 
     /* Transient Properties not saved in the database */

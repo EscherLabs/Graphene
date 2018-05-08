@@ -23,7 +23,8 @@ class CreateAppInstancesTable extends Migration
             $table->integer('order')->unsigned()->default(2147483647);
             $table->tinyInteger('device')->unsigned()->nullable();
             $table->boolean('unlisted')->default(false);
-			$table->boolean('public')->default(false);
+            $table->boolean('public')->default(false);
+            $table->json('groups')->nullable();
             $table->json('options')->nullable();
             $table->json('user_options_default')->nullable();
             $table->json('resources')->nullable();

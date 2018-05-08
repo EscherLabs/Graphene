@@ -23,10 +23,14 @@ class ImageController extends Controller
         session_write_close();
         header("Cache-Control: max-age=86400");
         header("Pragma: cache");
-        return Storage::download(
-            $this->img_dir.'/'.$image->id.'.'.$image->ext,
-            $image->name.'.'.$image->ext
-        );
+        $img_path = $this->img_dir.'/'.$image->id.'.'.$image->ext;
+        if (Storage::exists($img_path)) {
+            return Storage::download(
+                $img_path, $image->name.'.'.$image->ext
+            );
+        } else {
+            abort(404);
+        }
     }
     public function list_all_images(Request $request) {
         if (Auth::user()->site_admin) {
