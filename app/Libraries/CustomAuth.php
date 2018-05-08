@@ -4,6 +4,7 @@ namespace App\Libraries;
 use App\Libraries\CASAuth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Http\Request;
 
 class CustomAuth {
 
@@ -14,7 +15,7 @@ class CustomAuth {
     }
   }
 
-    public function authenticate() {
+    public function authenticate(Request $request) {
       if (config('app.site')->auth == 'CAS') {        
             if(!Auth::user()){           
                 $this->cas->handle();
@@ -24,7 +25,9 @@ class CustomAuth {
                 }
             }
        } else {
-        return redirect('/login?redirect='.urlencode(URL::full()));
+        if(!$request->is('login*')){
+          return redirect('/login?redirect='.urlencode(URL::full()));
+        }
       }
     }
 }

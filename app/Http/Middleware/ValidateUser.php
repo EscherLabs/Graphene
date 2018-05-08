@@ -36,7 +36,7 @@ class ValidateUser
         
         if (is_null(Auth::user())) {
             // ATS - If user isn't currently logged in, do custom auth?
-            $return = $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate($request);
             if(!Auth::user()){
                 if(isset($return)){
                     return $return;
