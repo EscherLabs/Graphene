@@ -3,6 +3,7 @@
 namespace App\Libraries;
 use App\Libraries\CASAuth;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 class CustomAuth {
 
@@ -23,7 +24,7 @@ class CustomAuth {
                 }
             }
        } else {
-         return redirect('/login');
+        return redirect('/login?redirect='.URL::full());
       }
     }
 }
