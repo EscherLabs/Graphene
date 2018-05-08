@@ -18,7 +18,7 @@ class PageController extends Controller
     {
         // $this->middleware('auth')->except('show', 'run');    
         
-        $this->customAuth = new CustomAuth();     
+        return $this->customAuth = new CustomAuth();     
     }
     
     public function list_all_pages(Request $request) {
@@ -149,7 +149,7 @@ class PageController extends Controller
 
         if($myPage->public == 0) {
             if(!Auth::user()){           
-                $this->customAuth->authenticate();
+                return $this->customAuth->authenticate();
                 if(Auth::user()){
                     return redirect()->back();
                 }

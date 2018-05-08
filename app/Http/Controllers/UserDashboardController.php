@@ -12,8 +12,7 @@ use App\Libraries\CustomAuth;
 class UserDashboardController extends Controller
 {
     public function __construct() {
-        // $this->middleware('auth');
-        $this->customAuth = new CustomAuth();                   
+        return $this->customAuth = new CustomAuth();                   
     }
     
     public function index(Request $request) {
@@ -37,7 +36,7 @@ class UserDashboardController extends Controller
             $group_links = Group::has('pages', '>', 0)->AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }else{
 
-            $this->customAuth->authenticate();
+            return $this->customAuth->authenticate();
             if(Auth::user()){
                 return redirect()->back();
             }

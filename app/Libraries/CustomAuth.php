@@ -15,6 +15,8 @@ class CustomAuth {
     public function authenticate() {
       if (config('app.site')->auth == 'CAS') {        
         $this->cas->handle();
+       } else {
+         return redirect('/login');
       }
     }
 }
