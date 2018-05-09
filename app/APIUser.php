@@ -19,7 +19,9 @@ class APIUser extends Authenticatable
     }
 
     public function setAppSecretAttribute($secret) {
-      $this->attributes['app_secret'] = Hash::make($secret);
+      if ($secret !== '*****') {
+        $this->attributes['app_secret'] = Hash::make($secret);
+      }
     }
 
     public function check_app_secret($secret) {
