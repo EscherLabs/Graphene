@@ -16,7 +16,6 @@ use App\Group;
 use App\GroupComposite;
 use App\Tag;
 use App\APIUser;
-use Illuminate\Support\Facades\Crypt;
 
 class HTTPBasicAuth
 {
@@ -35,7 +34,7 @@ class HTTPBasicAuth
             $password = $request->header('PHP_AUTH_PW');
             $user = APIUser::where('site_id',config('app.site')->id)->
                 where('app_name','=',$username)->first();
-            if (!is_null($user) && $username === $user->app_name && $password === $user->app_secret) {
+            if (!is_null($user) && $username === $user->app_name && $user->check_app_secret($password)) {
                 $logged_in = true;
             }
         }

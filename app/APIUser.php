@@ -1,10 +1,9 @@
 <?php
 
 namespace App;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable as Notifiable;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 
 class APIUser extends Authenticatable
 {
@@ -19,18 +18,12 @@ class APIUser extends Authenticatable
       return $this->belongsTo(Site::class);
     }
 
-    public function setAppSecretAttribute($secret)
-    {
-      $this->attributes['app_secret'] = Crypt::encryptString($secret);
+    public function setAppSecretAttribute($secret) {
+      $this->attributes['app_secret'] = Hash::make($secret);
     }
 
-    public function getAppSecretAttribute() {
-      if (isset($this->attributes['app_secret'])) { 
-        $secret = Crypt::decryptString($this->attributes['app_secret']); 
-      } else {
-        $secret = null;
-      }
-      return $secret;
+    public function check_app_secret($secret) {
+      return Hash::check($secret, $this->attributes['app_secret']);
     }
 
 
