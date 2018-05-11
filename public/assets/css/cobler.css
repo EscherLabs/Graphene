@@ -52,6 +52,10 @@ margin:5px 0px 5px -60px
     position: absolute;
     left: 0;
 }
+#modal .dupable hr{
+display:none;
+}
+
 .editor .slice,#sortableList a{
     cursor:move;
 }

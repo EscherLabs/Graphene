@@ -1,5 +1,6 @@
 // initializers['appinstances'] = function() {
 			$('.navbar-header .nav a h4').html('App Instances');
+		composites = _.map(group.composites,function(item){ return item.group})
 
 			$.ajax({
 				url: url,
@@ -7,14 +8,24 @@
 			success: function(data) {
 				tableConfig.schema = [
 					{label: 'Group', name:'group_id', required: true, type:'select',enabled:false, choices: '/api/groups?limit=true'},
+					{label: 'App', name:'app_id', template:'{{attributes.app.name}}',type:'raw'},
+					{label: 'Version', name:'app_version_id', type:'hidden'},
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
 					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-					{label: 'App', name:'app_id', template:'{{attributes.app.name}}',type:'raw'},
-					{label: 'Version', name:'app_version_id', type:'hidden'},
 					{name: 'app', type:'hidden'},
+					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
+					{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+					{label: 'Group', legend: 'Composites', name:'groups', multiple:{duplicate:true}, toArray:true, 'show': {
+							matches: {
+								name: 'limit',
+								value: true
+							}
+						},fields:[
+								{label: false, name: 'ids', type: 'select', options: composites}
+						]
+					},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/admin/appinstances/'+model.attributes.id};
@@ -48,14 +59,25 @@
 				if(resource_id !== ''){
 					tableConfig.schema = [
 						{label: 'Group', name:'group_id',value:resource_id, type:'select', choices: '/api/groups?limit=true', enabled:false},
+						{label: 'App', name:'app_id', type:'select', choices:'/api/apps/group/'+resource_id},
+						{label: 'Version', name:'app_version_id', type:'hidden'},
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
 						{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-						{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 						{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-						{label: 'App', name:'app_id', type:'select', choices:'/api/apps/group/'+resource_id},
-						{label: 'Version', name:'app_version_id', type:'hidden'},
+	
 						{name: 'app', type:'hidden'},
+											{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
+					{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+					{label: 'Group', legend: 'Composites', name:'groups', multiple:{duplicate:true}, toArray:true, 'show': {
+							matches: {
+								name: 'limit',
+								value: true
+							}
+						},fields:[
+								{label: false, name: 'ids', type: 'select', options: composites}
+						]
+					},
 						{name: 'id', type:'hidden'}
 					];
 					tableConfig.events.push({'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){

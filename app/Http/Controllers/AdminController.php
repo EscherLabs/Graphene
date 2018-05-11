@@ -38,9 +38,19 @@ class AdminController extends Controller
         return view('admin', ['resource'=>'links','id'=>$group->id,'group'=>$group]);
     }  
     public function pages(Group $group) {
+        $group->load(['composites'=>function($q){
+            $q->with(['group'=>function($qu){
+                $qu->select('id','name');
+            }]);
+        }]);
         return view('admin', ['resource'=>'pages','id'=>$group->id,'group'=>$group]);
     }
     public function appinstances(Group $group) {
+        $group->load(['composites'=>function($q){
+            $q->with(['group'=>function($qu){
+                $qu->select('id','name');
+            }]);
+        }]);
         return view('admin', ['resource'=>'appinstances','id'=>$group->id,'group'=>$group]);
     }
     public function endpoints(Group $group) {

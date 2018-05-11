@@ -1,8 +1,7 @@
 
 // initializers['pages'] = function(){
-
+		composites = _.map(group.composites,function(item){ return item.group})
 		$('.navbar-header .nav a h4').html('Pages');
-		
 		$.ajax({
 			url: url,
 			success: function(data){
@@ -11,9 +10,19 @@
 					{label: 'Name', name:'name', required: true},
 					{label: 'Slug', name:'slug', required: true},
 					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
 					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },				
 					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
+					{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+					{label: 'Group', legend: 'Composites', name:'groups', type:'fieldset',multiple:{duplicate:true}, 'show': {
+							matches: {
+								name: 'limit',
+								value: true
+							}
+						},fields:[
+								// {label: false, name: 'ids', type: 'select', options: composites}
+						]
+					},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/page/'+model.attributes.group_id+'/'+model.attributes.slug};
