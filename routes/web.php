@@ -156,11 +156,18 @@ Route::group(['prefix' => 'api'], function () {
     // Lookup specific site by site_id
     Route::get('/sites/{site}','SiteController@show')->middleware('can:get,site');
     // Create a new site
-    Route::post('/sites','SiteController@create')->middleware('can:create,App\Endpoint');
+    Route::post('/sites','SiteController@create')->middleware('can:create,App\Site');
     // Update an existing site by site_id
     Route::put('/sites/{site}','SiteController@update')->middleware('can:update,site');
     // Delete an existing site by site_id
     Route::delete('/sites/{site}','SiteController@destroy')->middleware('can:delete,site');
+
+    /***** API Users *****/
+    Route::get('/api_users','APIUserController@list_all_api_users')->middleware('can:get_all,App\APIUser');
+    Route::get('/api_users/{api_user}','APIUserController@show')->middleware('can:get,api_user');
+    Route::post('/api_users','APIUserController@create')->middleware('can:create,App\APIUser');
+    Route::put('/api_users/{api_user}','APIUserController@update')->middleware('can:update,api_user');
+    Route::delete('/api_users/{api_user}','APIUserController@destroy')->middleware('can:delete,api_user');
 
     /***** USERS *****/
     // List all users

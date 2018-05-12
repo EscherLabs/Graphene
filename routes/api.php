@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 
 /* Note: All Routes in this file are automatically prepended with /api */
-Route::group(['middleware' => ['http.basic.auth'], 'prefix' => 'public'], function () {
+Route::group(['middleware' => ['public.api.auth'], 'prefix' => 'public'], function () {
 
     /* Manage Users */
     Route::get('/users','UserController@index');

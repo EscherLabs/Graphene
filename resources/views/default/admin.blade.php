@@ -70,7 +70,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
             @can('view_in_admin','App\Group')
-              <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
+            <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
             @endcan
             @can('view_in_admin','App\User')
               <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
@@ -99,6 +99,9 @@
             @can('view_in_admin', 'App\Site')
               <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
             @endcan  
+            @can('view_in_admin', 'App\APIUser')
+              <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; Manage API Accounts</a></li>
+            @endcan  
           </ul>
           <!--form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -108,7 +111,7 @@
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        @can('get_all','App\Group')
+        @can('view_in_admin','App\Group')
           <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
         @endcan
         @can('view_in_admin','App\User')
@@ -137,6 +140,9 @@
         @endcan
         @can('view_in_admin', 'App\Site')
           <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
+        @endcan  
+        @can('view_in_admin', 'App\APIUser')
+          <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; Manage API Accounts</a></li>
         @endcan  
       </ul>
     </div>

@@ -17,7 +17,7 @@ use App\GroupComposite;
 use App\Tag;
 use App\APIUser;
 
-class HTTPBasicAuth
+class PublicAPIAuth
 {
     /**
      * Handle an incoming request.
