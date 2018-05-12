@@ -12,22 +12,23 @@ use App\Group;
 
 class ImageController extends Controller
 {
-    private $img_dir = 'images';
+    private $img_dir = '';
 
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->img_dir = config('filesystems.disks.local.root').'/images';
     }
     
     public function get(Image $image) {
         session_write_close();
-        header("Cache-Control: max-age=86400");
-        header("Pragma: cache");
+        $headers = [
+            "Cache-Control"=>"max-age=86400",
+            "Pragma"=>"cache",
+            "Content-Disposition"=>'inline; filename="'.$image->name.'.'.$image->ext.'"'
+        ];
         $img_path = $this->img_dir.'/'.$image->id.'.'.$image->ext;
-        if (Storage::exists($img_path)) {
-            return Storage::download(
-                $img_path, $image->name.'.'.$image->ext
-            );
+        if (file_exists($img_path)) {
+            return response()->file($img_path, $headers);
         } else {
             abort(404);
         }
