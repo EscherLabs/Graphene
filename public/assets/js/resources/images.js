@@ -9,7 +9,7 @@
 
 			tableConfig.schema = [
 				{label: 'Group', name:'group_id', required: true,enabled:false, type:'select', choices: '/api/groups?limit=true'},
-				{label: 'Image', name:'filename',show:false, required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}.{{attributes.ext}}"/></div>'},
+				{label: 'Image', name:'filename',show:false, required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}"/></div>'},
 				{label: 'Name', name:'name', required: true},
 				// {label: 'Ext', name:'ext', required: true},
 				{name: 'id', type:'hidden'}
@@ -32,7 +32,12 @@
 					}}
 				]
 
-			
+			tableConfig.click = function(model){
+				// debugger;window.location.href = '/admin/'+route+'/'+model.attributes.id
+				new modal({legend: model.attributes.name, content:'<div style="text-align:center"><img style="max-width:100%" src="/image/'+model.attributes.id+'.'+model.attributes.ext+'"/><h3>'+window.location.protocol+'//'+window.location.host+'/image/'+model.attributes.id+'.'+model.attributes.ext+'</h3></div>'});
+				
+			},
+				
 			tableConfig.data = data;
 			tableConfig.name = "images";
 			bt = new berryTable(tableConfig)

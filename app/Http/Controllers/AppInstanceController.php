@@ -84,6 +84,11 @@ class AppInstanceController extends Controller
     public function update(Request $request, AppInstance $app_instance) {
         $data = $request->all();
         if($request->app_version_id == -1){$data['app_version_id'] = null;}
+
+        if(isset($data['groups'])){
+            $data['groups'] = json_decode($data['groups']);
+        }
+        
         $app_instance->update($data);
         return AppInstance::with('app')->where('id', '=',$app_instance->id)->first();
     }

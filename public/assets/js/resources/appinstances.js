@@ -17,19 +17,23 @@
 					{name: 'app', type:'hidden'},
 					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
 					{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
-					{label: 'Group', legend: 'Composites', name:'groups', multiple:{duplicate:true}, toArray:true, 'show': {
+					{label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
 							matches: {
 								name: 'limit',
 								value: true
 							}
 						},fields:[
-								{label: false, name: 'ids', type: 'select', options: composites}
-						]
+							{label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
+								{label: false, name: 'groups', type: 'select', options: composites}
+							]}
+								// {label: false, name: 'ids', type: 'select', options: composites}
+						],
+						template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
 					},
 					{name: 'id', type:'hidden'}
 				];
 				tableConfig.click = function(model){window.location.href = '/admin/appinstances/'+model.attributes.id};
-				tableConfig.data = data;
+				tableConfig.data = _.map(data,function(item){ item.composites = {composite:{groups:item.groups||[]}};item.limit = !!(item.groups||[]).length; return item;});				
 				tableConfig.name = "appinstances";
 				tableConfig.events = [
 					{'name': 'version', 'label': '<i class="fa fa-cogs"></i> Version', callback: function(model){
@@ -67,17 +71,21 @@
 						{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
 	
 						{name: 'app', type:'hidden'},
-											{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
-					{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
-					{label: 'Group', legend: 'Composites', name:'groups', multiple:{duplicate:true}, toArray:true, 'show': {
-							matches: {
-								name: 'limit',
-								value: true
-							}
-						},fields:[
-								{label: false, name: 'ids', type: 'select', options: composites}
-						]
-					},
+						{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
+						{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+						{label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
+								matches: {
+									name: 'limit',
+									value: true
+								}
+							},fields:[
+								{label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
+									{label: false, name: 'groups', type: 'select', options: composites}
+								]}
+									// {label: false, name: 'ids', type: 'select', options: composites}
+							],
+							template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
+						},
 						{name: 'id', type:'hidden'}
 					];
 					tableConfig.events.push({'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
@@ -103,6 +111,39 @@
 					})
 				})
 
+				tableConfig.add = function(model){
+					model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
+					if(!model.attributes.limit){
+						model.attributes.groups = '[]';
+					}
+					$.ajax({url: api, type: 'POST', data: model.attributes,
+					success:function(data) {
+						data.composites = {composite:{groups:data.groups}};
+						data.limit = !!(data.groups||[]).length;
+						model.set(data);
+						// Berries.modal.trigger('close')
+						toastr.success('', 'Successfully Added')
+					}.bind(model),
+					error:function(e) {
+						toastr.error(e.statusText, 'ERROR');
+					}
+				});}
+				tableConfig.edit = function(model){
+					model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
+					if(!model.attributes.limit){
+						model.attributes.groups = '[]';
+					}
+					$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+					success:function(data) {
+						data.composites = {composite:{groups:data.groups}};
+						data.limit = !!(data.groups||[]).length;
+						model.set(data);
+						toastr.success('', 'Successfully Updated')
+					},
+					error:function(e) {
+						toastr.error(e.statusText, 'ERROR');
+					}
+				});}
 				tableConfig.defaultSort = 'order';
 				bt = new berryTable(tableConfig)
 			}

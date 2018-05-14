@@ -50,7 +50,8 @@
         }
       });},
       edit: function(model){$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
-        success:function() {
+        success:function(data) {
+          model.set(data);
           toastr.success('', 'Successfully Updated')
         },
         error:function(e) {
