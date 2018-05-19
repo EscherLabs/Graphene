@@ -94,8 +94,44 @@
 						mymodal = modal({title: "Sort App Instances", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
 						Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
 					}, global: true})
+
+
+					tableConfig.add = function(model){
+						model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
+						if(!model.attributes.limit){
+							model.attributes.groups = '[]';
+						}
+						$.ajax({url: api, type: 'POST', data: model.attributes,
+						success:function(data) {
+							data.composites = {composite:{groups:data.groups}};
+							data.limit = !!(data.groups||[]).length;
+							model.set(data);
+							// Berries.modal.trigger('close')
+							toastr.success('', 'Successfully Added')
+						}.bind(model),
+						error:function(e) {
+							toastr.error(e.statusText, 'ERROR');
+						}
+					});}
+					tableConfig.edit = function(model){
+						model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
+						if(!model.attributes.limit){
+							model.attributes.groups = '[]';
+						}
+						$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+						success:function(data) {
+							data.composites = {composite:{groups:data.groups}};
+							data.limit = !!(data.groups||[]).length;
+							model.set(data);
+							toastr.success('', 'Successfully Updated')
+						},
+						error:function(e) {
+							toastr.error(e.statusText, 'ERROR');
+						}
+					});}
 				}else{
 					tableConfig.add = false;
+					tableConfig.edit = false;
 				}
 
 
@@ -111,39 +147,7 @@
 					})
 				})
 
-				tableConfig.add = function(model){
-					model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
-					if(!model.attributes.limit){
-						model.attributes.groups = '[]';
-					}
-					$.ajax({url: api, type: 'POST', data: model.attributes,
-					success:function(data) {
-						data.composites = {composite:{groups:data.groups}};
-						data.limit = !!(data.groups||[]).length;
-						model.set(data);
-						// Berries.modal.trigger('close')
-						toastr.success('', 'Successfully Added')
-					}.bind(model),
-					error:function(e) {
-						toastr.error(e.statusText, 'ERROR');
-					}
-				});}
-				tableConfig.edit = function(model){
-					model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
-					if(!model.attributes.limit){
-						model.attributes.groups = '[]';
-					}
-					$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
-					success:function(data) {
-						data.composites = {composite:{groups:data.groups}};
-						data.limit = !!(data.groups||[]).length;
-						model.set(data);
-						toastr.success('', 'Successfully Updated')
-					},
-					error:function(e) {
-						toastr.error(e.statusText, 'ERROR');
-					}
-				});}
+
 				tableConfig.defaultSort = 'order';
 				bt = new berryTable(tableConfig)
 			}
