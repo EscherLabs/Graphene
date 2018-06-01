@@ -87,6 +87,47 @@ class GroupController extends Controller
         return $group;
     }
 
+    public function sync(Request $request, $slug)
+    {
+        //Slug will be added here if new because it is fillable
+        //If we chage this field the above will need to be considered
+        $group = \App\Group::firstOrNew(
+            ['slug' => $slug, 'site_id' => config('app.site')->id]
+        );
+
+        $group->update($request->all());
+
+        //This must be set seperately because it is not fillable
+        $group->site_id = config('app.site')->id;
+
+        //Name has no default options, so if one does not exist we must set it
+        if(!isset($group->name)){
+            $group->name = $slug;
+        }
+
+        $group->save();
+        return $group;
+    }
+
+    public function populate(Request $request)
+    {
+        $group = \App\Group::where(
+            ['slug' => $request->get('slug'), 'site_id' => config('app.site')->id]
+        )->firstOrFail();
+
+        foreach($request->get('members') as $member){
+            $user = \App\User::firstOrNew(
+                ['unique_id' => $member['unique_id']], $member
+            );
+            //This must be set seperately because it is not fillable
+            $user->unique_id = $member['unique_id'];
+            $user->save();
+            $group->add_member($user, 'external');
+        }
+
+        return $group;
+    }
+
     public function destroy(Group $group)
     {
         if ($group->delete()) {
