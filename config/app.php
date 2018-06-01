@@ -15,7 +15,7 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'Laravel',
+    'name' => 'Graphene',
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'local'),
+    'env' => env('APP_ENV', isset($_SERVER['APP_ENV'])?$_SERVER['APP_ENV']:'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', true),
+    'debug' => env('APP_DEBUG', isset($_SERVER['APP_DEBUG'])?$_SERVER['APP_DEBUG']:true),
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'EST',
+    'timezone' => env('APP_TIMEZONE',isset($_SERVER['APP_TIMEZONE'])?$_SERVER['APP_TIMEZONE']:'EST'),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,9 +106,10 @@ return [
     |
     */
 
-    'key' => env('APP_KEY','base64:SCguh35vL7jDEyLDEV8SqhXYM7Y4+2K+AYkvZXqCNgA='),
-
+    'key' => env('APP_KEY',isset($_SERVER['APP_KEY'])?$_SERVER['APP_KEY']:'base64:SCguh35vL7jDEyLDEV8SqhXYM7Y4+2K+AYkvZXqCNgA='),
     'cipher' => 'AES-256-CBC',
+
+    'key_portal' => env('APP_KEY_PORTAL',isset($_SERVER['APP_KEY_PORTAL'])?$_SERVER['APP_KEY_PORTAL']:''),
 
     /*
     |--------------------------------------------------------------------------

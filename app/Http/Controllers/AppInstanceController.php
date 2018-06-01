@@ -337,9 +337,10 @@ class AppInstanceController extends Controller
 
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
             $data = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
-        } else if ($endpoint->type == 'google_sheets') {
-            $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
-        }
+        } 
+        // else if ($endpoint->type == 'google_sheets') {
+        //     $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
+        // }
         return $data;
     }
 

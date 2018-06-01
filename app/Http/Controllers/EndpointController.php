@@ -35,17 +35,18 @@ class EndpointController extends Controller
         $endpoint->group_id = $request->get('group_id');
         if ($endpoint->type == 'http_basic_auth' || $endpoint->type == 'http_no_auth') {
             $endpoint->save();
-        } else if ($endpoint->type == 'google_sheets') {
-            $endpoint->save();
-            $googleClient = new \PulkitJalan\Google\Client(config('google'));
-            $client = $googleClient->getClient();
-            $client->setState(base64_encode(json_encode(['endpoint_id'=>$endpoint->id])));
-            $client->setAccessType('offline'); // required to get refresh access token!
-            $client->setPrompt('consent'); // required to get refresh access token!
-            $authUrl = $client->createAuthUrl();
-            $endpoint->config->google_redirect = $authUrl;
-            $endpoint->save();
-        }
+        } 
+        // else if ($endpoint->type == 'google_sheets') {
+        //     $endpoint->save();
+        //     $googleClient = new \PulkitJalan\Google\Client(config('google'));
+        //     $client = $googleClient->getClient();
+        //     $client->setState(base64_encode(json_encode(['endpoint_id'=>$endpoint->id])));
+        //     $client->setAccessType('offline'); // required to get refresh access token!
+        //     $client->setPrompt('consent'); // required to get refresh access token!
+        //     $authUrl = $client->createAuthUrl();
+        //     $endpoint->config->google_redirect = $authUrl;
+        //     $endpoint->save();
+        // }
         return $endpoint;
     }
 
@@ -62,13 +63,13 @@ class EndpointController extends Controller
         }
     }
 
-    public function google_callback(Request $request) {
-        $state = json_decode(base64_decode($request->state),true);
-        $endpoint = Endpoint::find($state['endpoint_id']);
-        $googleClient = new \PulkitJalan\Google\Client(config('google'));
-        $client = $googleClient->getClient();
-        $endpoint->config->secret = $client->fetchAccessTokenWithAuthCode($request->code);
-        $endpoint->config->google_redirect = 'Successfully Configured';
-        $endpoint->save();
-    }
+    // public function google_callback(Request $request) {
+    //     $state = json_decode(base64_decode($request->state),true);
+    //     $endpoint = Endpoint::find($state['endpoint_id']);
+    //     $googleClient = new \PulkitJalan\Google\Client(config('google'));
+    //     $client = $googleClient->getClient();
+    //     $endpoint->config->secret = $client->fetchAccessTokenWithAuthCode($request->code);
+    //     $endpoint->config->google_redirect = 'Successfully Configured';
+    //     $endpoint->save();
+    // }
 }

@@ -11,13 +11,13 @@
 					{label: 'Auth Type', name:'type', type: 'select', choices:[
 						{label:'HTTP No Auth', value:'http_no_auth'}, 
 						{label:'HTTP Basic Auth', value:'http_basic_auth'}, 
-						{label:'Google Sheets', value:'google_sheets'},
+						// {label:'Google Sheets', value:'google_sheets'},
 					], required: true},
 					{label: 'Configuration', name:'config', showColumn:false, fields:[
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
 						{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
-						{label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
-						{label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
+						// {label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
+						// {label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
 						{label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
 						{label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
 					]},
