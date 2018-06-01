@@ -718,17 +718,29 @@ function berryTable(options) {
 	this.fixStyle = function(){
 		if(this.options.autoSize){
 			try{
-				this.$el.find('.table-container > div').css('width', 'auto') 
-				this.$el.find('.table-container > div').css('minWidth', 'auto') 
-				this.$el.find('.table-container > div').css('height', $(window).height() - $('.table-container > div').offset().top - (88+ this.options.autoSize) +'px');
+				var container = this.$el.find('.table-container > div');
+				var headers = this.$el.find('.table-container > table tr th:visible');
+				container.css('width', 'auto') 
+				container.css('minWidth', 'auto') 
+				headers.css('width','auto')
+				headers.css('minWidth','85px')
+				container.css('height', $(window).height() - container.offset().top - (88+ this.options.autoSize) +'px');
 				_.each(	this.$el.find('.list-group tr:first td'), function(item, index){
-					this.$el.find('.table-container > table tr th:visible')[index].style.width = item.offsetWidth+'px';
-					this.$el.find('.table-container > table tr th:visible')[index].style.minWidth = item.offsetWidth+'px';
+					if(headers[index].offsetWidth > item.offsetWidth){
+						item.width = headers[index].offsetWidth+'px';
+						item.minWidth = headers[index].offsetWidth+'px';
+					}
+					headers[index].style.width = item.offsetWidth+'px';
+					headers[index].style.minWidth = item.offsetWidth+'px';
 
 				}.bind(this))
 
-				this.$el.find('.table-container > div').css('width', this.$el.find('.table-container > div table')[0].offsetWidth + 'px') 
-				this.$el.find('.table-container > div').css('minWidth', this.$el.find('.table-container > div table')[0].offsetWidth + 'px') 
+				var target = this.$el.find('.table-container > div table')[0].offsetWidth;
+				if(this.$el.find('.table-container > table')[0].offsetWidth > target){target = this.$el.find('.table-container > table')[0].offsetWidth;}
+
+				container.css('width', target + 'px') 
+				container.css('minWidth', target + 'px') 
+
 			}catch(e){}
 		}
 	}
