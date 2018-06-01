@@ -33,7 +33,7 @@ class UserDashboardController extends Controller
             // }))->whereIn('id',Auth::user()->groups)->get();
             
             // Redirect to first Page or first App
-            $group_links = Group::has('pages', '>', 0)->AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+            $group_links = Group::has('pages', '>', 0)->orHas('app_instances','>',0)->AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }else{
 
             $return = $this->customAuth->authenticate();
