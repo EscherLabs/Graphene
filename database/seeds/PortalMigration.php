@@ -385,6 +385,13 @@ class PortalMigration extends Seeder
                                 } else {
                                     $text = '';
                                 }
+                                if ($page_widget_db->widgetType=='Content') {
+                                    $editor = 'contenteditable';
+                                } else if ($page_widget_db->widgetType=='Html') {
+                                    $editor = 'ace';
+                                } else {
+                                    $editor = 'contenteditable';
+                                }
                                 $page_content_array['sections'][$page_column_num][] = [
                                     'widgetType' => 'Content',
                                     'title' => isset($page_widget_db->title)?$page_widget_db->title:false,
@@ -394,6 +401,7 @@ class PortalMigration extends Seeder
                                     'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
                                     'limit' => $limit_boolean,
                                     'group' => $limit_groups,
+                                    'editor' => $editor,
                                 ];
                             } if ($page_widget_db->widgetType=='Slider') {
                                 foreach($page_widget_db->images as $index => $image) {
