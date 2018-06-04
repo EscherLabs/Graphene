@@ -234,6 +234,7 @@ class PortalMigration extends Seeder
                     $app_db->script = str_replace('user.pods','user.params.pods',$app_db->script);
                     $app_db->template = str_replace('user.pods','user.params.pods',$app_db->template);
                     $app_db->sources = str_replace('tags.','user.tags.',$app_db->sources);
+                    $app_db->script = str_replace('this.data.tags','this.data.user.tags',$app_db->script);
                     $app_db->script = str_replace('tags.','user.tags.',$app_db->script);
                     $app_db->template = str_replace('tags.','user.tags.',$app_db->template);  
                     
