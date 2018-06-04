@@ -171,14 +171,11 @@ class PageController extends Controller
             $apps = AppInstance::whereIn('id', $uapp_instances)->where('public', '=', 1)->with('app')->get();
             $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
-        /* This should probably be fixed -- we're looping through all the apps to find the correct app version code */
+
         foreach($apps as $key => $app) {
-            // $myAppVersion = AppVersion::where('id','=',$app->app_version_id)->first();
-            // $apps[$key]->app->code = $myAppVersion->code;
             $apps[$key]->findVersion();
         }
         
-
         if($myPage != null) {
             if(!isset($myPage->content)){
                 $config = '""';

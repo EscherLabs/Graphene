@@ -299,7 +299,7 @@ class AppInstanceController extends Controller
             }
         }
         if (!$endpoint_found) {
-            abort(505,'Endpoint Not Found');
+            abort(404, 'Endpoint Not Found');
         }
 
         // Lookup Endpoint
