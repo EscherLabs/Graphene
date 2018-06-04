@@ -1,5 +1,8 @@
 <?php
 
+/* Putting ini_set stuff here -- TJC 6/3/18 */
+session_cache_limiter('');
+
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
