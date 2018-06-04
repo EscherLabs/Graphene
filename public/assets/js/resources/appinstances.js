@@ -49,9 +49,8 @@
 									// model.attributes.app_version_id = this.toJSON().version;
 									var temp = $.extend(true,{},this.options.m.attributes,this.toJSON());
 									// temp.app_version_id = parseInt(temp.app_version_id);
-
-									this.options.m.set(temp)
-									this.options.m.owner.options.edit(this.options.m)
+									this.options.m.set(temp);
+									this.options.m.owner.options.edit(this.options.m);
 									this.options.m.owner.draw();
 									this.trigger('close');
 								})
@@ -69,7 +68,6 @@
 						{label: 'Slug', name:'slug', required: true},
 						{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 						{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-	
 						{name: 'app', type:'hidden'},
 						{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
 						{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
@@ -131,7 +129,7 @@
 					});}
 				}else{
 					tableConfig.add = false;
-					tableConfig.edit = false;
+					tableConfig.hasEdit = false;
 				}
 
 

@@ -173,9 +173,11 @@ class PageController extends Controller
         }
         /* This should probably be fixed -- we're looping through all the apps to find the correct app version code */
         foreach($apps as $key => $app) {
-            $myAppVersion = AppVersion::where('id','=',$app->app_version_id)->first();
-            $apps[$key]->app->code = $myAppVersion->code;
+            // $myAppVersion = AppVersion::where('id','=',$app->app_version_id)->first();
+            // $apps[$key]->app->code = $myAppVersion->code;
+            $apps[$key]->findVersion();
         }
+        
 
         if($myPage != null) {
             if(!isset($myPage->content)){

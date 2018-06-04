@@ -250,7 +250,10 @@ function berryTable(options) {
 		return {'isEnabled': (typeof val.showColumn =='undefined' || val.showColumn), 'label': val.label, 'name': name, 'cname': (val.name|| val.label.split(' ').join('_').toLowerCase()), 'id': val.id, 'visible':!(val.type == 'hidden')} 
 	})};
 	options.hasActions = !!(options.edit || options.delete || options.events);
-	options.hasEdit = !!(options.edit);
+	if(typeof options.hasEdit == 'undefined'){
+		options.hasEdit = !!(options.edit);			
+	}
+
 	options.hasDelete = !!(options.delete);
 	options.entries = options.entries || [25, 50 ,100];
 	summary.options = options;
@@ -608,7 +611,7 @@ function berryTable(options) {
 						if(typeof this.options.defaultSort !== 'undefined'){
 							this.models = _.sortBy(this.models, function(obj) { return obj.attributes[this.options.defaultSort]; }.bind(this)).reverse();
 						}
-						Berries.modal.trigger('saved');
+						// Berries.modal.trigger('cancel');
 						this.draw();
 						this.updateCount(this.summary.checked_count);
 						
@@ -671,7 +674,7 @@ function berryTable(options) {
 					if(_.where(options.filterFields, {id:filter})[0] && typeof _.where(options.filterFields, {id:filter})[0].options == 'undefined') {
 						temp = ($.score((anyModel.display[this.filterMap[filter]]+'').replace(/\s+/g, " ").toLowerCase(), (options.search[filter]+'').toLowerCase() ) > 0.40);
 					}else{
-						temp = (anyModel.attributes[this.filterMap[filter]]+'' == options.search[filter]+'')
+						temp = (anyModel.display[this.filterMap[filter]]+'' == options.search[filter]+'')
 					}
 					keep = temp;
 					if(!keep){break;}
@@ -698,6 +701,7 @@ function berryTable(options) {
 		if(this.filter){
 			silentPopulate.call(this.filter, this.defaults)
 		}
+
 		search = search.toLowerCase()
 		//score each model searching each field and finding a total 
 		_.map(this.models, function(model){
@@ -724,6 +728,8 @@ function berryTable(options) {
 				container.css('minWidth', 'auto') 
 				headers.css('width','auto')
 				headers.css('minWidth','85px')
+				// this.$el.find('.list-group tr:first td').css('width','auto')
+				// this.$el.find('.list-group tr:first td').css('minWidth','auto')
 				container.css('height', $(window).height() - container.offset().top - (88+ this.options.autoSize) +'px');
 				_.each(	this.$el.find('.list-group tr:first td'), function(item, index){
 					if(headers[index].offsetWidth > item.offsetWidth){
@@ -732,7 +738,6 @@ function berryTable(options) {
 					}
 					headers[index].style.width = item.offsetWidth+'px';
 					headers[index].style.minWidth = item.offsetWidth+'px';
-
 				}.bind(this))
 
 				var target = this.$el.find('.table-container > div table')[0].offsetWidth;
@@ -1045,11 +1050,10 @@ function tableModel (owner, initial) {
 	this.schema = owner.options.schema;
 	var processAtts = function() {
 		_.each(this.schema, function(item){
-
 			if(typeof item.options !== 'undefined'){
 				var option;
 				if(typeof item.value_key !== 'undefined'){
-					if(item.value_key == 'index'){
+										if(item.value_key == 'index'){
 						option = item.options[this.attributes[item.name]]
 					}else{
 						var search = {};
