@@ -373,8 +373,7 @@ class PortalMigration extends Seeder
                                         'container' => true,
                                         'show_all' => false,
                                         'guid' => isset($page_widget_db->guid)?$page_widget_db->guid:str_random(32),
-                                        'limit' => $limit_boolean,
-                                        'group' => $limit_groups,
+                                        'limit' => false,
                                     ];
                                 }
                             } if ($page_widget_db->widgetType=='Html' || $page_widget_db->widgetType=='Content') {
