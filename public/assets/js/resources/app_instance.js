@@ -3,7 +3,8 @@
 		$('.navbar-header .nav a h4').html('App Instance');
 		$.ajax({
 			url: '/api/appinstances/'+resource_id,
-			success: function(data) {				
+			success: function(data) {		
+				debugger;		
 				$('#table').html(`
 				<div style="margin:21px">
 <div class="btn-group pull-right">
@@ -13,8 +14,9 @@
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu">
-    <li><a href="/app/`+data.group.slug+'/'+data.slug+`">Visit</a></li>
-    <li><a href="javascript:void(0)" id="find">Find on Pages</a></li>
+	<li><a href="/app/`+data.group.slug+'/'+data.slug+`">Visit</a></li>
+	<li><a href="javascript:void(0)" id="find">Find on Pages</a></li>
+	<li><a href="/admin/apps/`+data.app_id+`">Edit MicroApp</a></li>
   </ul>
 </div>
   <!-- Nav tabs -->
@@ -37,8 +39,7 @@
   	<div class="col-sm-3"></div></div></div>
   </div>
 
-</div>
-				`)
+</div>`)
 viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
 
 					$('#find').on('click', function(){
