@@ -12,11 +12,12 @@ Cobler.types.Links = function(container){
 	var item = {
 		title: 'Links',
 		show_all: false,
-		guid: generateUUID()
+		guid: generateUUID(),
+		no_minimize:true
 	}
 	var fields = {
 		Title: {},
-		"Container?":{name:'container', type: 'checkbox'},
+		// "Container?":{name:'container', type: 'checkbox'},
 		"Show All":{name:'show_all', type: 'checkbox'}
 	}
 	return {

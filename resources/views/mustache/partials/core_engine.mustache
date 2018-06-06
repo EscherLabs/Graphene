@@ -217,13 +217,12 @@
 			cb.on('change',save);
 
 			cb.on('manage',function(item){
-				$().berry({name: 'modal', attributes: item.get(), legend: 'Visibility',flatten:true, fields:[
+				$().berry({name: 'modal', attributes: item.get(), legend: 'Display Settings',flatten:true, fields:[
 					{label: 'Device', name: 'device', type: 'select', value:'widget', choices: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
-					{label: 'Allow Minimization', name: 'enable_min', type: 'checkbox', show:!item.no_minimize},
-
-
-							{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  {test: function(){return group_composites.length >0;}} },
-
+					{label: 'Container?', name:'container', type: 'checkbox'},
+					{label: 'Allow Minimization', name: 'enable_min', type: 'checkbox', show:!item.get().no_minimize},
+					{label:' Start Collapsed', name:'collapsed',type:'checkbox', show:{matches:{name:'enable_min',value:true}},parse:'show'},
+					{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  {test: function(){return group_composites.length >0;}} },
 						{legend: 'Groups', 'show': {
 									matches: {
 										name: 'limit',
@@ -234,8 +233,6 @@
 									{label: false, name: 'ids', type: 'select', options: group_composites}
 								]
 							}]},
-							
-
 				]})
 				.on('save',function(){
 					this.container.update(Berries.modal.toJSON(),this)
@@ -363,9 +360,9 @@ function editMobileOrder(){
 </script>
 
 		<style>
-			.view-as.group_all i{display: none;}
+/*			.view-as.group_all i{display: none;}
 			.group_all .view-as.group_all i{ display:inline;}
-
+*/
 {{#group.composites}}
 			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
 			.editor .widget,.editor .page-menu ul li{display: block;}
@@ -406,6 +403,7 @@ function editMobileOrder(){
 
 
 			$('.view-as').on('click', function(e){
+				e.stopPropagation();
 				if($(e.currentTarget).data('group') == 'reset'){
 
 					$('body').attr('class','topbar sidemenu');
@@ -417,9 +415,18 @@ function editMobileOrder(){
 					
 				
 				}else if($(e.currentTarget).data('group') == 'all'){
-					$('body').attr('class','topbar sidemenu group_all');
+					//$('body').attr('class','topbar sidemenu group_all');
+					$('body').attr('class','topbar sidemenu');
+					
+					for(var i in group_composites){
+						$('.view-as.group_'+group_composites[i].id).click();
+					}
+
+				}else if($(e.currentTarget).data('group') == 'clear'){
+					//$('body').attr('class','topbar sidemenu group_all');
+					$('body').attr('class','topbar sidemenu');
 				}else{
-										$('body').removeClass('group_all');
+					//$('body').removeClass('group_all');
 
 					$('body').toggleClass('group_'+$(e.currentTarget).data('group'));
 					// if(window.getComputedStyle($(".page-menu .page_"+page_id)[0]).display == 'none'){

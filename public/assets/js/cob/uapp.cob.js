@@ -8,9 +8,7 @@ Cobler.types.uApp = function(container){
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/groups/'+group_id+'/appinstances'},
-		"Container?":{name:'container', type: 'checkbox'},
     'User Options':{name:'user_edit',type:'checkbox'},
-    'Start Collapsed':{name:'collapsed',type:'checkbox'}
 		// 'Template': {}
 	}
 	return {
@@ -28,7 +26,7 @@ Cobler.types.uApp = function(container){
 		initialize: function(el){
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
-      if(this.container.owner.options.disabled){
+      if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
