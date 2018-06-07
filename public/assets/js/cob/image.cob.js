@@ -22,10 +22,9 @@ Cobler.types.Image = function(container){
 		guid: generateUUID()
 	}
 	var fields = {
-		// 'Start Collapsed':{name:'collapsed',type:'checkbox'},
-		"Title":{label: 'Title'},
-		// "Container":{name:'container',label: "Container?", type: 'checkbox'},
-		"My Images":{label: false,fields:[			
+		"My Images":{label: false,fields:[
+			{label: 'Title'},
+			{name:'container',label: "Container?", type: 'checkbox'},
 			{type: 'fieldset',name:"images", label: false, multiple: {duplicate: true}, fields: [
 				// { name: 'image', type: 'image_picker', choices: '/images?group_id='+groupID, value_key: 'image_filename', label: 'Image'},
 				// { name: 'image', label: 'Image', post: '<i class="fa fa-image"></i>'},
@@ -49,7 +48,7 @@ Cobler.types.Image = function(container){
 		set: set,
 		initialize: function(el){
 			$(el).find('.slider').nivoSlider({effect: 'fade'});
-				if(this.container.owner.options.disabled && this.get().enable_min){
+				if(this.container.owner.options.disabled){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)

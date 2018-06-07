@@ -31,15 +31,11 @@
             <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-group"></i><span class="sr-only">User</span> <span class="caret"></span></a>
             <ul class="dropdown-menu with-arrow  pull-right" role="menu">
               <li>
-                <a href="javascript:void(0);" class="view-as" data-group="reset"> Reset to my Groups</a>
+                <a href="javascript:void(0);" class="view-as" data-group="reset"> Reset</a>
               </li>           
               <li>
-                <a href="javascript:void(0);" class="view-as group_all" data-group="all"> All Groups</a>
+                <a href="javascript:void(0);" class="view-as group_all" data-group="all"><i class="fa fa-check text-success"></i> All</a>
               </li>
-              <li>
-                <a href="javascript:void(0);" class="view-as" data-group="clear"> No Groups</a>
-              </li>
-              <li role="separator" class="divider"></li>
               {{#group.composites}}
               <li>
                 <a href="javascript:void(0);" class="view-as group_{{ group.id }} " data-group="{{ group.id }} "><i class="fa fa-check text-success"></i> {{ group.name }} </a>

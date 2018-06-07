@@ -16,7 +16,7 @@ Cobler.types.Content = function(container){
 	}
 	var fields = {
 		Title: {},
-		// "Container?":{name:'container', type: 'checkbox'},
+		"Container?":{name:'container', type: 'checkbox'},
 		"Editor":{name:'editor', type:'radio',value:'contenteditable', options:[{'label':'WYSIWYG Editor',value:'contenteditable'},{'label':'HTML',value:'ace'}]},
 		Text: {name:'text',type: 'ace', mode:'ace/mode/html', label: false,show:false},// show:{multiMatch:[{name:'editor',value:'raw'}]},parsable:'show'},
 		// contenteditable: {name:'text', type: 'contenteditable', label: false},// show:{multiMatch:[{name:'editor',value:'html'}]},parsable:'show'},
@@ -35,7 +35,7 @@ Cobler.types.Content = function(container){
 				this.fields.Text.show = true;
 				this.fields.Text.type = this.get().editor;
 			}
-			if(this.container.owner.options.disabled && this.get().enable_min){
+			if(this.container.owner.options.disabled){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
