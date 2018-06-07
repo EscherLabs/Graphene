@@ -241,6 +241,7 @@ class PortalMigration extends Seeder
                     $app_db->script = str_replace('_.findWhere','_.find',$app_db->script);
                     $app_db->script = str_replace('_.filter','_.where',$app_db->script);
                     $app_db->script = str_replace('_.pluck','_.map',$app_db->script);
+                    $app_db->script = str_replace('_.contains','_.includes',$app_db->script);
 
                     $app_sources_db = json_decode($app_db->sources,true);
                     $app_sources = [];
