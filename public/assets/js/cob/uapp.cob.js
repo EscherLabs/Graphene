@@ -8,9 +8,7 @@ Cobler.types.uApp = function(container){
 	var fields = {
 		Title: {},
 		'App ID': {type: 'select', choices: '/api/groups/'+group_id+'/appinstances'},
-		"Container?":{name:'container', type: 'checkbox'},
     'User Options':{name:'user_edit',type:'checkbox'},
-    'Start Collapsed':{name:'collapsed',type:'checkbox'}
 		// 'Template': {}
 	}
 	return {
@@ -28,7 +26,7 @@ Cobler.types.uApp = function(container){
 		initialize: function(el){
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
-      if(this.container.owner.options.disabled){
+      if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
@@ -67,14 +65,14 @@ Cobler.types.uApp = function(container){
             opts.config.app_instance_id = this.get().app_id;
             $('body').append('<style>'+opts.config.css+'</style>');
             this.bae = new berryAppEngine(opts);
-
+            
             this.bae.app.on('refetch', function(data){
               $.ajax({
                 type: 'GET',
                 url:'/api/fetch/'+this.get().app_id,
                 success:function(data){
                   this.bae.app.update(data);
-                  toastr.success('', 'Data refetched Successfully');
+                  // toastr.success('', 'Data refetched Successfully');
                 }.bind(this),
                 error:function(data){
                     toastr.error(data.statusText, 'An error occured updating App')

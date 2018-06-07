@@ -17,6 +17,8 @@
     <li><a href="#" id="versions">Versions</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="publish">Publish</a></li>
+    <li><a href="/admin/apps/{!! $app->app_id !!}/developers">Manage Developers</a></li>
+    
     <!--<li role="separator" class="divider"></li>
     <li><a href="#">Visit</a></li>-->
   </ul>
