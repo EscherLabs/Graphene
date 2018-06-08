@@ -28,18 +28,15 @@ class AppInstanceController extends Controller
                 ->with('app')
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id);
-                })->orderBy('group_id','order');
+                })->orderBy('group_id','order')->get();
         } else {
             $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
                 ->with('app')
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
-                })->orderBy('group_id','order');
+                })->orderBy('group_id','order')->get();
         }
-        if($request->has('app_id')){
-            $app_instances->where('app_id','=',$request->get('app_id'));
-        }
-        return $app_instances->get();
+        return $app_instances;
     }
 
     public function admin(AppInstance $app_instance) {
