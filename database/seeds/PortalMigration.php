@@ -237,6 +237,9 @@ class PortalMigration extends Seeder
                     $app_db->script = str_replace('this.data.tags','this.data.user.tags',$app_db->script);
                     $app_db->script = str_replace('tags.','user.tags.',$app_db->script);
                     $app_db->template = str_replace('tags.','user.tags.',$app_db->template);  
+
+                    $app_db->template = str_replace('groupID','group_id',$app_db->template);  
+                    $app_db->script = str_replace('groupID','group_id',$app_db->script);  
                     
                     $app_db->script = str_replace('_.findWhere','_.find',$app_db->script);
                     $app_db->script = str_replace('_.filter','_.where',$app_db->script);
