@@ -20,9 +20,7 @@
     <li><a href="#" id="instances">Instances</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="publish">Publish</a></li>
-
-    <!--<li role="separator" class="divider"></li>
-    <li><a href="#">Visit</a></li>-->
+    <!-- <li><a href="#">Visit</a></li> -->
   </ul>
 </div>
   <!-- Nav tabs -->
