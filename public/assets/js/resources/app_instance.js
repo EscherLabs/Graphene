@@ -44,9 +44,9 @@ viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list
 					$('#find').on('click', function(){
 						$.get('/api/appinstances/'+data.id+'/pages', function(data){
 							if(data.length > 0){
-								modal({title:'This uApp was found on the following pages', content:viewTemplate.render({items:data})});
+								modal({title:'This App Instance was found on the following pages', content:viewTemplate.render({items:data})});
 							}else{
-								modal({title: 'No pages Found', content:'This uApp is not currently placed on any pages.'});
+								modal({title: 'No pages Found', content:'This App Instance is not currently placed on any pages.'});
 							}
 						})
 					})			  
