@@ -24,10 +24,39 @@ class PortalMigration extends Seeder
             $site_id = 1;
             // $user_ids = [1,2]; -- No longer assigning app developers TJC 2/11/18
             $user_bnums = ['B00573562','B00505893'];
+            $user_devs = [];
             $key = config('app.key_portal');
             $site = \App\Site::where('id',$site_id)->first();
 
+            /* Begin Import Users */
+            echo "Importing Users (this takes a while) ...\n";
+            $users_db = DB::connection('mysql-portal')->table('users')->get();
+            $users_index = [];
+            foreach($users_db as $index => $user_db) {
+                if (config('database.full_seed') || in_array($user_db->bnum,$user_bnums)) {
+                    $user = new \App\User;
+                    $user->first_name = $user_db->first_name;
+                    $user->last_name = $user_db->last_name;
+                    $user->email = ($user_db->email=='')?NULL:$user_db->email;
+                    $user->unique_id = ($user_db->bnum=='')?NULL:$user_db->bnum;
+                    $user->params = ['pidm'=>$user_db->pidm,'bnum'=>$user_db->bnum,'pods'=>explode('@',$user_db->email)[0]];
+                    try {
+                        $user->save();
+                        $users_index[$user_db->pidm] = $user;
+                        $site->add_member($user,0,0);
+                    } catch (Exception $e) {
+                        echo "Error Creating User: ".$e->getMessage()."\n";
+                        echo "... continuing anyway ...\n";
+                    }
+                }
+                if (in_array($user_db->bnum,$user_bnums)) {
+                    $user_devs[] = $user;
+                }
+            }
+            /* End Import Users */
+
             /* Begin Import Groups */
+            echo "Importing Groups ...\n";
             $groups_db = DB::connection('mysql-portal')->table('groups')->get();
             $groups_index = [];
             foreach($groups_db as $index => $group_db) {
@@ -40,13 +69,13 @@ class PortalMigration extends Seeder
                 $group->save();
                 $groups_index[$group_db->id] = $group;
 
-                // if (in_array($group->name,$group_memberships)) {
-                //     foreach($user_ids as $user_id) {
-                //         $current_user = \App\User::find($user_id);
-                //         $group->add_admin($current_user, 1);
-                //         $group->add_member($current_user, 1);
-                //     }
-                // }
+                // Assign group memberships for all user devs (Initial Only During Testing)
+                if (!config('database.full_seed')) {
+                    foreach($user_devs as $user_dev) {
+                        $group->add_admin($user_dev, 1);
+                        $group->add_member($user_dev, 1);
+                    }
+                }
             }
             /* End Import Groups */
 
@@ -106,30 +135,6 @@ class PortalMigration extends Seeder
             }
             /* End Import Composites */
 
-            /* Begin Import Users */
-            echo "Importing Users (this takes a while) ...\n";
-            $users_db = DB::connection('mysql-portal')->table('users')->get();
-            $users_index = [];
-            foreach($users_db as $index => $user_db) {
-                if (config('database.full_seed') || in_array($user_db->bnum,$user_bnums)) {
-                    $user = new \App\User;
-                    $user->first_name = $user_db->first_name;
-                    $user->last_name = $user_db->last_name;
-                    $user->email = ($user_db->email=='')?NULL:$user_db->email;
-                    $user->unique_id = ($user_db->bnum=='')?NULL:$user_db->bnum;
-                    $user->params = ['pidm'=>$user_db->pidm,'bnum'=>$user_db->bnum,'pods'=>explode('@',$user_db->email)[0]];
-                    try {
-                        $user->save();
-                        $users_index[$user_db->pidm] = $user;
-                        $site->add_member($user,0,0);
-                    } catch (Exception $e) {
-                        echo "Error Creating User: ".$e->getMessage()."\n";
-                        echo "... continuing anyway ...\n";
-                    }
-                }
-            }
-            /* End Import Users */
-
             /* Begin Group Memberships */
             echo "Importing Group Memberships ...\n";
             $group_members_db = DB::connection('mysql-portal')->table('group_members')->get();
@@ -139,7 +144,11 @@ class PortalMigration extends Seeder
                     $group_member->user_id = $users_index[$group_member_db->pidm]->id;
                     $group_member->group_id = $groups_index[$group_member_db->group_id]->id;
                     $group_member->status = ($group_member_db->membership_status==='approved')?'internal':'external';
-                    $group_member->save();
+                    try {
+                        $group_member->save();
+                    } catch (Exception $e) {
+                        echo "Failed Adding Member... continuing anyway...\n";
+                    }
                 }
             }
             /* End Group Memberships */
@@ -154,7 +163,11 @@ class PortalMigration extends Seeder
                     $group_admin->group_id = $groups_index[$group_admin_db->group_id]->id;
                     $group_admin->content_admin = true;
                     $group_admin->apps_admin = true;
-                    $group_admin->save();
+                    try {
+                        $group_admin->save();
+                    } catch (Exception $e) {
+                        echo "Failed Adding Admin... continuing anyway...\n";
+                    }
                 }
             }
             /* End Group Admins */
@@ -472,7 +485,7 @@ class PortalMigration extends Seeder
                                         $app_instance->group_id = $groups_index[$page_db->group_id]->id;
                                         $app_instance->app_id = $apps_index[$page_widget_db->microapp]->id;
                                         $app_instance->public = $apps_index_db[$page_widget_db->microapp]->public;
-                                        $app_instance->app_version_id = $app_versions_index[$apps_index[$page_widget_db->microapp]->id]->id;
+                                        $app_instance->app_version_id = NULL; //$app_versions_index[$apps_index[$page_widget_db->microapp]->id]->id;
                                         $app_instance->options = $app_instance_options;
                                         $app_instance->user_options_default = $app_instance_user_options;
                                         $app_instance->unlisted = 1;
