@@ -5,51 +5,7 @@
 		url: '/api/sites/'+resource_id,
 		success: function(data) {			
 
-			$('#table').html(`
-			<div style="margin:21px;">
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-primary" id="save">Save</button>
-<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-<span class="caret"></span>
-<span class="sr-only">Toggle Dropdown</span>
-</button>
-<ul class="dropdown-menu">
-<li><a href="/app/`+data.slug+`">Visit</a></li>
-<li><a href="#" id="export">Export Theme</a></li>
-<li><a href="#" id="import">Import Theme</a></li>
-</ul>
-</div>
-<!-- Nav tabs -->
-<ul class="nav nav-tabs" role="tablist">
-<li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
-<li role="presentation"><a href="#theme" aria-controls="theme" role="tab" data-toggle="tab">Theme</a></li>
-<li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab">Templates</a></li>
-<li role="presentation"><a href="#cas_config" aria-controls="cas_config" role="tab" data-toggle="tab">CAS</a></li>
-</ul>
-
-<!-- Tab panes -->
-<div class="tab-content">
-	<div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-	<div class="col-sm-3"></div></div></div>
-	<div role="tabpanel" class="tab-pane" id="theme" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-	<div class="col-sm-3"></div></div></div>
-	<div role="tabpanel" class="tab-pane" id="cas_config" style="padding-top: 20px;">
-		<div class="row">
-			<div class="col-sm-9 styles">
-				<div class="cas_config_form"></div>
-				<div class="external_user_lookup_form"></div>								
-				<div class="cas_data_map_default_form"></div>
-				<div class="cas_data_map_additional_form"></div>
-			</div>
-			<div class="col-sm-3"></div>
-		</div>
-	</div>	
-	<div role="tabpanel" class="tab-pane" id="templates" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-	<div class="col-sm-3"></div></div></div>
-</div>
-
-</div>
-			`)
+			$('#table').html(templates['site'].render())
 			var temp = $(window).height() - $('.nav-tabs').offset().top;
 			
 			$('body').append('<style>#table{height:'+temp +'px;overflow:scroll;margin:-16px -21px 0px !important} .ace_editor { height: '+(temp-120)+'px; }#theme .ace_editor { height: '+(temp-220)+'px; }</style>')
