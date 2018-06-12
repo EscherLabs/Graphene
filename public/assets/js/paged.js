@@ -104,6 +104,26 @@ var paged = function(selector, options){
     update:function(key,value){
       this.berry.fields[key].setValue(value)
     }.bind(this),
+    remove: function(name){
+      var updateItem = _.findWhere(this.options.items, {name: name});
+      this.options.items.splice(_.indexOf(this.options.items, updateItem),1)
+      // updateItem.removed = true;
+      this.render();      
+    }.bind(this),
+    add: function(name, value){
+      var key = this.options.u_id+name.toLowerCase().replace(/ /g,"_").split('.').join('_');;
+      this.options.items.push({name: name,key:key, content:""})
+      this.$el.find('.tab-content').append(templates.pages_tabpanel.render({name: name,key:key, content:""}));
+      if(typeof this.berry.fields[key] == 'undefined'){
+        this.berry.createField($.extend({name:key},this.berry.options.default), this.$el.find('.tab-content').find('#'+key),null)
+      }else{      
+        var updateItem = _.findWhere(this.options.items, {name: name});
+        
+        updateItem.removed = false;
+      }
+      this.render();
+      this.berry.fields[key].setValue(value)
+    }.bind(this),
     errors: function(){
     	// var errors = 0;
     	var errors = [];

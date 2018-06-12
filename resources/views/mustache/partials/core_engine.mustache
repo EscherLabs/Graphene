@@ -364,6 +364,8 @@ function editMobileOrder(){
 /*			.view-as.group_all i{display: none;}
 			.group_all .view-as.group_all i{ display:inline;}
 */
+			.group_ .widget,.group_ .page-menu ul li{display:none;}
+
 {{#group.composites}}
 			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
 			.editor .widget,.editor .page-menu ul li{display: block;}
@@ -407,7 +409,7 @@ function editMobileOrder(){
 				e.stopPropagation();
 				if($(e.currentTarget).data('group') == 'reset'){
 
-					$('body').attr('class','topbar sidemenu');
+					$('body').attr('class',bodyClasses);
 
 					for(var i in groups){
 						$('body').toggleClass('group_'+groups[i]);
@@ -417,7 +419,7 @@ function editMobileOrder(){
 				
 				}else if($(e.currentTarget).data('group') == 'all'){
 					//$('body').attr('class','topbar sidemenu group_all');
-					$('body').attr('class','topbar sidemenu');
+					$('body').attr('class',bodyClasses);
 					
 					for(var i in group_composites){
 						$('.view-as.group_'+group_composites[i].id).click();
@@ -425,7 +427,8 @@ function editMobileOrder(){
 
 				}else if($(e.currentTarget).data('group') == 'clear'){
 					//$('body').attr('class','topbar sidemenu group_all');
-					$('body').attr('class','topbar sidemenu');
+					$('body').attr('class',bodyClasses);
+					
 				}else{
 					//$('body').removeClass('group_all');
 
@@ -438,6 +441,7 @@ function editMobileOrder(){
 				}
 			})
 			groups = [{{#user.groups}}{{.}},{{/user.groups}}];
+			bodyClasses = $('body').attr('class');
 			for(var i in groups){
 				$('.view-as.group_'+groups[i]).click();
 			}

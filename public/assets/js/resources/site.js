@@ -3,9 +3,10 @@
 	$('.navbar-header .nav a h4').html('Site');
 	$.ajax({
 		url: '/api/sites/'+resource_id,
-		success: function(data) {				
+		success: function(data) {			
+
 			$('#table').html(`
-			<div style="margin:21px">
+			<div style="margin:21px;">
 <div class="btn-group pull-right">
 <button type="button" class="btn btn-primary" id="save">Save</button>
 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -14,14 +15,16 @@
 </button>
 <ul class="dropdown-menu">
 <li><a href="/app/`+data.slug+`">Visit</a></li>
+<li><a href="#" id="export">Export Theme</a></li>
+<li><a href="#" id="import">Import Theme</a></li>
 </ul>
 </div>
 <!-- Nav tabs -->
 <ul class="nav nav-tabs" role="tablist">
 <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Main</a></li>
 <li role="presentation"><a href="#theme" aria-controls="theme" role="tab" data-toggle="tab">Theme</a></li>
-<li role="presentation"><a href="#cas_config" aria-controls="cas_config" role="tab" data-toggle="tab">CAS</a></li>
 <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab">Templates</a></li>
+<li role="presentation"><a href="#cas_config" aria-controls="cas_config" role="tab" data-toggle="tab">CAS</a></li>
 </ul>
 
 <!-- Tab panes -->
@@ -47,7 +50,10 @@
 
 </div>
 			`)
-
+			var temp = $(window).height() - $('.nav-tabs').offset().top;
+			
+			$('body').append('<style>#table{height:'+temp +'px;overflow:scroll;margin:-16px -21px 0px !important} .ace_editor { height: '+(temp-120)+'px; }#theme .ace_editor { height: '+(temp-220)+'px; }</style>')
+			
 			$('#main .col-sm-9').berry({fields: [
 				{label: 'Name', name:'name', required: true},
 				{label: 'Domain', name:'domain', required: true},
@@ -58,8 +64,8 @@
 			],attributes:data, actions:false, name:'main'})
 
 			$('#theme .col-sm-9').berry({fields: [
-				{label: 'Icon', name:'icon', required: true},
-				{label: 'CSS', name:'css', required: true, type:'ace', mode:'ace/mode/css'},
+				{label: 'Icon', name:'icon', required: true, inline: true},
+				{label: 'CSS', name:'css', type:'ace', inline: true, mode:'ace/mode/css'},
 			],attributes:data.theme, actions:false, name:'theme'})
 
 			$('#cas_config .cas_config_form').berry({fields: [
@@ -140,23 +146,23 @@
 					_.object(_.map(Berries.cas_data_map_additional.toJSON().additional, function(x){return [x.name, x.value]}))
 				item.auth_config.external_user_lookup = Berries.external_user_lookup.toJSON();
 				var partials = templatePage.toJSON();
-  // var successCompile = false;
-  // try{
-  //   _.each(partials, function(partial){
-  //     Ractive.parse(partial.content);
-  //   })
-  //   // if(!this.resourcesForm.validate()){
-  //   //   toastr.error(e.message, e.name);
-  //   //   return false;
-  //   // }
-  // }catch(e) {
-  //     toastr.error(e.message, e.name);
-  //     return false;
-  // }
-var partials = _.indexBy(partials, 'name')
-for(var i in partials){
-	partials[i] = partials[i].content;
-}
+					// var successCompile = false;
+					// try{
+					//   _.each(partials, function(partial){
+					//     Ractive.parse(partial.content);
+					//   })
+					//   // if(!this.resourcesForm.validate()){
+					//   //   toastr.error(e.message, e.name);
+					//   //   return false;
+					//   // }
+					// }catch(e) {
+					//     toastr.error(e.message, e.name);
+					//     return false;
+					// }
+				var partials = _.indexBy(partials, 'name')
+				for(var i in partials){
+					partials[i] = partials[i].content;
+				}
 				item.templates = {partials:partials}
 				if(!item.templates.partials.main.length){
 				 delete item.templates.partials.main;
@@ -164,7 +170,7 @@ for(var i in partials){
 				// item.templates.partials = partials;
 
 				$.ajax({url: '/api/sites/'+item.id, type: 'PUT', data: item, success:function(){
-						toastr.success('', 'Successfully updated App Instance')
+						toastr.success('', 'Successfully updated Site Configuration')
 					}.bind(this),
 					error:function(e) {
 						toastr.error(e.statusText, 'ERROR');
@@ -172,6 +178,38 @@ for(var i in partials){
 				});
 			})
 
+			$(document).keydown(function(e) {
+				if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey)) {
+						e.preventDefault();
+						$('#save').click()
+				}
+				return true;
+			});
+
+			$('#export').on('click',function() {
+				downloadObjectAsJson({css:data.theme.css,partials:data.templates.partials}, 'site');
+			})			
+
+
+			$('#import').on('click', function() {
+				$().berry({name: 'update', inline: true, legend: '<i class="fa fa-cloud"></i> Import Site Theme',fields: [	{label: 'Theme', type: 'textarea'}]}).on('save', function(){
+					_.each(templatePage.toJSON(),function(item){templatePage.remove(item.name)})
+					var theme = JSON.parse(this.toJSON().theme);
+					Berries.theme.fields.css.set(theme.css);
+					_.each(theme.partials, function(item){templatePage.add(item.name,item.content)})
+					Berries.update.trigger('close');
+			});
+		})
+
+			function downloadObjectAsJson(exportObj, exportName){
+				var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+				var downloadAnchorNode = document.createElement('a');
+				downloadAnchorNode.setAttribute("href",     dataStr);
+				downloadAnchorNode.setAttribute("download", exportName + ".json");
+				document.body.appendChild(downloadAnchorNode); // required for firefox
+				downloadAnchorNode.click();
+				downloadAnchorNode.remove();
+			}
 		}
 	});
 // }

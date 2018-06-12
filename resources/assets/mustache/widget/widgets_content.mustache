@@ -2,12 +2,17 @@
 {{#container}}
 <div class="panel panel-default">
 {{>widgets__header}}
-{{/container}}
 	<div class="collapsible panel-body" style="overflow: auto;">
 		<div>
 		{{{text}}}
 		</div>
 	</div>
-{{#container}}
 </div>
+{{/container}}
+{{^container}}
+	<div class="collapsible" style="overflow: auto;">
+			<div>
+		{{{text}}}
+		</div>
+	</div>
 {{/container}}

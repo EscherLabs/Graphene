@@ -270,7 +270,7 @@ body{
 .callout {
   padding: 20px;
   margin: 20px 0;
-  border: 1px solid #eee;
+  border-left: 3px solid #eee;
   border-left-width: 5px;
   border-radius: 3px;
   background-color:#fff;
@@ -331,3 +331,5 @@ body{
   color: #5bc0de;
 }
 /* End Bootstrap Callouts */
+
+.slice .actions{position:absolute;top:5px;right:5px;z-index:6}

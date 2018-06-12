@@ -1,3 +1,13 @@
+{{#app_mode}}
+<div class="btn btn-info pull-right" id="edit_instance" style="margin-top: 8px;display:none;"><i class="fa fa-gears"></i> Options</div>
+
+{{#logged_in}}
+{{#app.site_developer}}
+    <a class="btn btn-default pull-right" style="margin-top: 8px;margin-right:15px" href="/admin/apps/{{app.app_id}}"><i class="fa fa-pencil"></i> Edit App</a>
+{{/app.site_developer}}
+{{/logged_in}}
+{{/app_mode}}
+{{^app_mode}}
 <div class="btn btn-danger pull-right hidden editTools" style="margin:8px 15px 0 0;" id="doneEditing" onclick="load(true);"><i class="fa fa-times"></i> Done</div>
 <div class="dropdown pull-right hidden editTools" style="margin:8px 15px 0 0;">
     <button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -15,3 +25,5 @@
 <div class="btn btn-info pull-right" id="layout" style="margin:8px 15px 0 0;" onclick="layout()"><i class="fa fa-columns"></i> Layout</div>
 {{#group.admin}}<div class="btn btn-primary pull-right editTools" id="startEditing" style="margin:8px 15px 0 0;" onclick="load(false);"><i class="fa fa-pencil"></i> Edit</div>
 <div class="btn btn-warning pull-right" style="margin:8px 15px 0 0;" onclick="editMobileOrder();"><i class="fa fa-sort"></i> Mobile Order</div>{{/group.admin}}
+
+{{/app_mode}}

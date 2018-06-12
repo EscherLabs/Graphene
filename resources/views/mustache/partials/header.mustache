@@ -37,7 +37,7 @@
                 <a href="javascript:void(0);" class="view-as group_all" data-group="all"> All Groups</a>
               </li>
               <li>
-                <a href="javascript:void(0);" class="view-as" data-group="clear"> No Groups</a>
+                <a href="javascript:void(0);" class="view-as" data-group="clear"> Clear Groups</a>
               </li>
               <li role="separator" class="divider"></li>
               {{#group.composites}}
@@ -106,8 +106,7 @@
       <!--form class="navbar-form navbar-right">
         <input type="text" class="form-control" placeholder="Search...">
       </form-->
-      {{#app_mode}}{{> app_titlebar}}{{/app_mode}}
-      {{^app_mode}}{{> dashboard_titlebar}}{{/app_mode}}
+      {{> titlebar}}
     </div>
   </div>
 </nav>
