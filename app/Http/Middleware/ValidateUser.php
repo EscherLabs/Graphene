@@ -66,10 +66,14 @@ class ValidateUser
         $member_groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
             $q->where('user_id', '=',  Auth::user()->id);
         })->pluck('id')->toArray();
+
+        // Add user to "default" group if they are not a member of any other groups
+        if (count($member_groups) == 0) {
+            $member_groups = Group::where([['site_id', '=', $current_site->id],['name','like','default']])->pluck('id')->toArray();
+        }
+
         $composite_groups = GroupComposite::whereIn('composite_group_id', $member_groups)->pluck('group_id')->toArray();
         
-        // Treat Group Admin Permissions as Group Memberships as well -- TJC 2/11/18
-        // ATS- added array_values to make the array the same as the other group lists and work in mustache
         Auth::user()->groups = array_values(array_unique(array_merge($member_groups, $composite_groups)));/*,Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups));*/
         
         Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
