@@ -22,10 +22,11 @@ Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
-
 Route::group(['middleware' => ['custom.auth']], function () {
   Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');
+  Route::get('/heartbeat',function() {return ['status'=>true];});
 });
+
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
 
   Route::get('/{resource?}', 'AdminController@index');
