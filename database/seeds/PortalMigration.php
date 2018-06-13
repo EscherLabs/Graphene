@@ -23,7 +23,7 @@ class PortalMigration extends Seeder
         try {
             $site_id = 1;
             // $user_ids = [1,2]; -- No longer assigning app developers TJC 2/11/18
-            $user_bnums = ['B00573562','B00505893'];
+            $user_bnums = ['B00573562','B00505893','B00078891','B00612268'];
             $user_devs = [];
             $key = config('app.key_portal');
             $site = \App\Site::where('id',$site_id)->first();
