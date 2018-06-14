@@ -4,43 +4,8 @@
 		$.ajax({
 			url: '/api/appinstances/'+resource_id,
 			success: function(data) {		
-				$('#table').html(`
-				<div style="margin:21px">
-<div class="btn-group pull-right">
-  <button type="button" class="btn btn-primary" id="save">Save</button>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-	<li><a href="/app/`+data.group.slug+'/'+data.slug+`">Visit</a></li>
-	<li><a href="javascript:void(0)" id="find">Find on Pages</a></li>
-	<li><a href="javascript:void(0)" id="version">Change Version</a></li>
-	<li><a target="_blank" href="/admin/apps/`+data.app_id+`">Edit MicroApp</a></li>
-  </ul>
-</div>
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#main" aria-controls="home" role="tab" data-toggle="tab">Main</a></li>
-    <li id="resoucestab" role="presentation" style="display:none"><a href="#resources" aria-controls="messages" role="tab" data-toggle="tab">Resources</a></li>
-		<li id="optionstab" role="presentation" style="display:none"><a href="#options" aria-controls="profile" role="tab" data-toggle="tab">Options</a></li>
-		<li id="useroptionstab" role="presentation" style="display:none"><a href="#user_options_default" aria-controls="profile" role="tab" data-toggle="tab">User Default Options</a></li>	
-  </ul>
-
-  <!-- Tab panes -->
-  <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="main" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-  	<div class="col-sm-3"></div></div></div>
-    <div role="tabpanel" class="tab-pane" id="resources" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-	<div class="col-sm-3"></div></div></div>
-	<div role="tabpanel" class="tab-pane" id="options" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-  	<div class="col-sm-3"></div></div></div>
-	<div role="tabpanel" class="tab-pane" id="user_options_default" style="padding-top: 20px;"><div class="row"><div class="col-sm-9 styles"></div>
-  	<div class="col-sm-3"></div></div></div>
-  </div>
-
-</div>`)
-viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
+				$('#table').html(templates.app_instance.render());
+					viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
 
 					$('#find').on('click', function(){
 						$.get('/api/appinstances/'+data.id+'/pages', function(data){

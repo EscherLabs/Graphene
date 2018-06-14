@@ -8,12 +8,12 @@
 			url: url,
 			success: function(data) {
 				tableConfig.schema = [
-					{label: 'Group', name:'composite_group_id', required: true, type:'select', choices: '/api/groups?limit=true', label_key:'composite_group_id'}
+					{label: 'Group', name:'id', required: true, type:'select', choices: '/api/groups?limit=true', label_key:'name'}
 				];
 				tableConfig.data = data;
 				tableConfig.add = function(model){
 					if(!model.owner.find({user_id:parseInt(model.attributes.composite_group_id)}).length){
-						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.composite_group_id, type: 'POST', data: model.attributes,
+						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.id, type: 'POST', data: model.attributes,
 							success:function(data){
 								toastr.success('', 'Composite successfully Added')
 							}.bind(model),
@@ -31,7 +31,7 @@
 				},
 				tableConfig.edit = false,
 				tableConfig.delete = function(model){
-						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.composite_group_id, type: 'DELETE',
+						$.ajax({url: '/api/groups/'+resource_id+'/composites/'+model.attributes.id, type: 'DELETE',
 							success:function(){
 								toastr.success('', 'Composite successfully Removed')
 							},
