@@ -93,7 +93,7 @@ class AppInstanceController extends Controller
         }
         
         $app_instance->update($data);
-        return AppInstance::with('app')->where('id', '=',$app_instance->id)->first();
+        return AppInstance::where('id', '=',$app_instance->id)->first();
     }
 
     public function destroy(AppInstance $app_instance){
