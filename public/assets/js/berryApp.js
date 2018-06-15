@@ -19,11 +19,25 @@ function App() {
 		this.draw();
 	}
 	function refresh(skipFetch) {
-		this.destroy();
-		this.config = $.extend(true, {}, this.options.config);
-		this.load();
+		$.ajax({
+		type: 'GET',
+		url:'/api/fetch/'+this.config.app_instance_id,
+		success:function(data){
+			this.app.update(data);
+			this.destroy();
+			this.config = $.extend(true, {}, this.options.config);
+			this.load();
+			// toastr.success('', 'Data refetched Successfully');
+		}.bind(this),
+		error:function(data){
+			toastr.error(data.statusText, 'An error occured updating App')
+		}
+		})
+
+		// this.destroy();
+		// this.config = $.extend(true, {}, this.options.config);
+		// this.load();
 		// this.app.trigger('refreshed')
-		this.app.trigger('refetch')
 	}
 	function update(newData) {
 		$.extend(this.data, newData || {});
