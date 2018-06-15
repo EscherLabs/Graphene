@@ -263,7 +263,7 @@ $('#publish').on('click', function() {
               toastr.success('', 'Successfully Published')
             },
             error: function(e){
-              toastr.error(e.statusText, 'ERROR');
+              toastr.error(e.responseJSON.message, 'ERROR');
             }
           })
         }

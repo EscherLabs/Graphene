@@ -76,13 +76,17 @@ class AppController extends Controller
         return $app_version;
     }
     public function publish(Request $request, App $app) { 
-        $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
-        $app_version->summary = $request->summary;
-        $app_version->description = $request->description;
-        $app_version->stable = true;
-        $app_version->user_id = Auth::user()->id;
-        $app_version->save();
-        return $app_version;
+        $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->where('stable','=',0)->first();
+        if($app_version) {
+            $app_version->summary = $request->summary;
+            $app_version->description = $request->description;
+            $app_version->stable = true;
+            $app_version->user_id = Auth::user()->id;
+            $app_version->save();
+            return $app_version;
+        }else{
+            abort(409, 'No changes have been made since last published.<br><br> To publish please save changes.');
+        }
     }    
     public function versions(Request $request, App $app) { 
         $app_versions = AppVersion::select('id','summary','created_at','user_id')
