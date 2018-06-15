@@ -2,7 +2,7 @@ $('.navbar-header .nav a h4').html('App Instance');
 $.ajax({
 	url: '/api/appinstances/'+resource_id,
 	success: function(data) {		
-		$('#table').html(templates.app_instance.render());
+		$('#table').html(templates.app_instance.render(data));
 			viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
 
 			$('#find').on('click', function(){

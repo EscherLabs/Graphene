@@ -47,6 +47,10 @@
 	_.findWhere = _.find;
 	_.where = _.filter;
 	group_id = {{group.id}};
+	group_admin = {{group.admin}};
+	if(group_admin){
+		$('body').addClass('admin');
+	}
 	{{#app_mode}}
 		appMode = true;
 		resource_type = 'app_instance';
