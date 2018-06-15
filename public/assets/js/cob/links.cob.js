@@ -33,7 +33,6 @@ Cobler.types.Links = function(container){
 				e.preventDefault();
 				_.findWhere(this.links,{id:parseInt(e.currentTarget.parentElement.dataset.guid)}).favorite = !_.findWhere(this.links,{id:parseInt(e.currentTarget.parentElement.dataset.guid)}).favorite
 				Lockr.set('links',_.map(_.where(this.links,{favorite:true}),function(item){return _.pick(item, 'id', 'favorite')}))
-				// debugger;
 				$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links}), templates))
 
 			}.bind(this))

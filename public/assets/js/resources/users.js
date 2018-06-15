@@ -1,4 +1,3 @@
-// initializers['users'] = function() {
 	$('.navbar-header .nav a h4').html('Users');
 	$('#table').html('<div style="margin:20px"><div class="col-md-6 well" id="search"></div><div class="col-md-6" id="user"></div></div>')
 	$('#search').berry({
@@ -47,10 +46,8 @@
 					type: 'PUT',
 					data:this.toJSON(),
 					success: function(data) {
-						// debugger;
 						this.populate(data);	
 				}.bind(this)})
 			})
 			Berries.user_search.trigger('close');
 		})
-// }

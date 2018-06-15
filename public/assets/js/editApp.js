@@ -310,7 +310,6 @@ $('#versions').on('click', function() {
       method: 'get',
       data: data,
       success:function(data) {
-        // debugger;
         data.app = loaded.app;
         loaded = data;
         load(loaded.code);

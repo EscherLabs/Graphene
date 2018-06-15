@@ -1,4 +1,3 @@
-
 $('.navbar-header .nav a h4').html('Manage API Accounts');
 
 $.ajax({

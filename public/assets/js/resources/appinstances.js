@@ -58,7 +58,6 @@ $.ajax({
 
 		]
 		if(resource_id !== ''){
-			debugger;
 			tableConfig.schema = [
 				{label: 'Group', name:'group_id',value:resource_id, type:'select', choices: '/api/groups?limit=true', enabled:false},
 				{label: 'App', name:'app_id', type:'select', choices:'/api/apps/group/'+resource_id},
@@ -101,7 +100,6 @@ $.ajax({
 				$.ajax({url: api, type: 'POST', data: model.attributes,
 				success:function(data) {
 					data.composites = {composite:{groups:data.groups}};
-					debugger;
 					data.limit = !!(data.groups||[]).length;
 					model.set(data);
 					Berries.modal.trigger('close')
