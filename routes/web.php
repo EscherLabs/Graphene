@@ -19,8 +19,9 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
 Route::get('/css',function(){
-  header('Content-type: text/css');  
-  return config('app.site')->theme->css;
+  $response = Response::make(config('app.site')->theme->css, 200);
+  $response->header('Content-Type', 'text/css');
+  return $response;
 });
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
