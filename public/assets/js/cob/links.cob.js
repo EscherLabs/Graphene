@@ -1,6 +1,10 @@
 Cobler.types.Links = function(container){
 	function render() {
-		return templates['widgets_links_container'].render(get(), templates);
+		var temp = get();
+		temp.link_admin = group_admin;
+		temp.group_id = group_id;
+		console.log(temp);
+		return templates['widgets_links_container'].render(temp, templates);
 	}
 	function get() {
 		item.widgetType = 'Links';

@@ -4,7 +4,10 @@ Cobler.types.Image = function(container){
 		// if(get().images.length >1){
 		// 	return templates['widgets_slider'].render(get(), templates);
 		// }else{
-			return templates['widgets_image_header'].render(get(), templates);
+		var temp = get();
+		temp.image_admin = group_admin;
+		temp.group_id = group_id;		
+		return templates['widgets_image_header'].render(temp, templates);
 		// }
 	}
 	function get() {

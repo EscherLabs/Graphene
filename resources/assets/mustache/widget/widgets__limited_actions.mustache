@@ -1,5 +1,6 @@
 <div class="btn-group pull-right actions parent-hover">
-	{{#enable_admin}}<a href="/admin/appinstances/{{app_id}}" target="_blank" class="btn btn-default btn-sm fa fa-edit admin-item" data-event="admin_edit"  title="Instance Admin"></a>{{/enable_admin}}
+	{{#uapp_admin}}<a href="/admin/appinstances/{{app_id}}" target="_blank" class="btn btn-default btn-sm fa fa-edit admin-item" data-event="admin_edit"  title="Instance Admin"></a>{{/uapp_admin}}
+	{{#image_admin}}<a href="/admin/groups/{{group_id}}/images" target="_blank" class="btn btn-default btn-sm fa fa-edit admin-item" data-event="admin_edit"  title="Images Admin"></a>{{/image_admin}}
 	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
 	{{#user_edit}}<span class="btn btn-default btn-sm fa fa-pencil edit-item" data-event="user_edit"  title="Edit"></span>{{/user_edit}}
 </div>

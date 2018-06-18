@@ -16,7 +16,7 @@ Cobler.types.uApp = function(container){
 		fields: fields,
 		render: function() {
       var temp = get();
-      temp.enable_admin = group_admin;
+      temp.uapp_admin = group_admin;
 			return templates['widgets_microapp'].render(temp, templates);
 		},
 		edit: berryEditor.call(this, container),

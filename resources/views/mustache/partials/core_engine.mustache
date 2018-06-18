@@ -197,9 +197,10 @@
 		}
 
 		cb = new Cobler({ disabled: status, targets: document.getElementsByClassName('cobler_container'),itemContainer: template,itemTarget:target, items:data})
-
 		if(!status){
-			cb.addSource(document.getElementById('sortableList'));
+			if(document.getElementById('sortableList') != null){
+				cb.addSource(document.getElementById('sortableList'));
+			}
 			if('{{name}}' == 'Dashboard'){
 				var save = function(){
 					$.post('/api/dashboard',{"config":JSON.stringify({"sections":cb.toJSON({editor: true})}) },function(data){
@@ -220,7 +221,6 @@
 			cb.on('reorder', save);
 			cb.on('remove', save);
 			cb.on('change',save);
-
 			cb.on('manage',function(item){
 				$().berry({name: 'modal', attributes: item.get(), legend: 'Display Settings',flatten:true, fields:[
 					{label: 'Device', name: 'device', type: 'select', value:'widget', choices: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
