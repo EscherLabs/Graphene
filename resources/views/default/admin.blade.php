@@ -18,7 +18,7 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
-    <link href="/assets/css/cobler.css" rel="stylesheet">
+    <link href="/assets/css/graohene.css" rel="stylesheet">
     <link href="/assets/css/dashboard.css" rel="stylesheet">
     <link href="/assets/css/dropzone.css" rel="stylesheet">
     <!--@if(!empty(config('app.site')->theme->css))<style> {!! config('app.site')->theme->css !!}</style>@endif-->

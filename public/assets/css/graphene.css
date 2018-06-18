@@ -243,6 +243,6 @@ form.berry.tab-content {margin-top: 20px;}
 	color:#333;
 }
 .editor .slice:hover .label {
-	/* display:inline-block;  */
+	z-index:-1
 }
 .slice .actions{position:absolute;top:5px;right:5px;z-index:6}
