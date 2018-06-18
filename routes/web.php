@@ -18,9 +18,16 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
+Route::get('/css',function(){
+  header('Content-type: text/css');  
+  return config('app.site')->theme->css;
+});
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+
+
+
 
 Route::group(['middleware' => ['custom.auth']], function () {
   Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');

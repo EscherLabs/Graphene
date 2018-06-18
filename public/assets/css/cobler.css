@@ -230,3 +230,19 @@ display: none;
 
 form.berry.tab-content {margin-top: 20px;}
 
+.editor .slice > div {
+	min-height: 36px;
+}
+
+.slice .label {
+	position: absolute;
+	top: -1px;
+	left: -1px;
+	background: #efefef;
+	border: solid 1px #fff;
+	color:#333;
+}
+.editor .slice:hover .label {
+	/* display:inline-block;  */
+}
+.slice .actions{position:absolute;top:5px;right:5px;z-index:6}
