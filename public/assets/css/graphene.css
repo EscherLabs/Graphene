@@ -206,7 +206,7 @@ display:none;
 a.popins{ border-bottom: 1px dotted #111;}
 .popins{cursor: pointer; }
 
-.btn.btn-success{background-color:#7BC143;}
+/* .btn.btn-success{background-color:#7BC143;} */
 
 .txt-color-blueDark {color:#4377AE !important}
 .rating i {
