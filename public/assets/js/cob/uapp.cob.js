@@ -65,6 +65,7 @@ Cobler.types.uApp = function(container){
             opts.config = (_.find(apps, {id: parseInt(this.get().app_id,10)}) || _.find(Berry.collection.get('/api/groups/'+group_id+'/appinstances'), {id: parseInt(this.get().app_id,10)})).app.code || {};
             // opts.config = _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_instance_id = this.get().app_id;
+            opts.config.title = this.get().title;
             $('style[name="'+opts.config.app_instance_id+'"]').remove();
             if(opts.config.css.length){
               $('body').append('<style name="'+opts.config.app_instance_id+'">'+opts.config.css+'</style>');
@@ -84,7 +85,6 @@ Cobler.types.uApp = function(container){
                 })
               }.bind(this));
             }.bind(this)
-
             this.bae = new berryAppEngine(opts);
             
 

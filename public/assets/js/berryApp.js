@@ -105,23 +105,19 @@ berryAppEngine = function(options) {
 		for(var i in this.config.templates) {
 			this.partials[this.config.templates[i].name] = this.config.templates[i].content;
 		}
-		
-		try{
-			var temp = JSON.parse(this.config.scripts);
-			this.config.script = temp;
-		}catch(e){}
-		if(typeof this.config.scripts == 'object') {
-			this.config.script = _.map(this.config.scripts, 'content').join(';');
-		}
 
+		if(typeof this.config.scripts == 'object') {
+
+			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
+				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
+			}, '//'+config.title+'('+this.config.app_instance_id+')\nfunction mount(){var context = this;\n/*- Custom Code starts Here -*/');
+			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
+
+		}
+		
 		var mountResult = (function(data, script) {
-		// try{
-			eval('function mount(){var context = this;'+script+';return this;}');
-			return mount.call({data:data});
-		// }catch(e) {
-		// 	console.log(e);
-		// 	return;
-		// }
+			eval(script);
+			return mount.call({data:data});			
 		})(this.options.data || {}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
