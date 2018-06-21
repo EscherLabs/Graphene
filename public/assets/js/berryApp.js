@@ -115,13 +115,13 @@ berryAppEngine = function(options) {
 		}
 
 		var mountResult = (function(data, script) {
-		try{
+		// try{
 			eval('function mount(){var context = this;'+script+';return this;}');
 			return mount.call({data:data});
-		}catch(e) {
-			console.log(e);
-			return;
-		}
+		// }catch(e) {
+		// 	console.log(e);
+		// 	return;
+		// }
 		})(this.options.data || {}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
@@ -145,7 +145,10 @@ berryAppEngine = function(options) {
     if(typeof this.app == 'undefined'){
       this.app = App.call(this)
     }
-    this.draw()
+		this.draw()
+		if(typeof this.options.onLoad == 'function'){
+			this.options.onLoad.call(this);
+		}
   }
 
   this.draw = function() {
@@ -219,6 +222,6 @@ berryAppEngine = function(options) {
 	this.optionsupdated = function() {
 		this.app.trigger('options');
 	}
-
-	this.load();
+	setTimeout(this.load.bind(this),0)
+	// this.load();
 }

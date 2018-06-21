@@ -42,7 +42,7 @@
       add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes,
         success:function(data) {
           model.set(data);
-          // Berries.modal.trigger('close')
+          Berries.modal.trigger('close')
           toastr.success('', 'Successfully Added')
         }.bind(model),
         error:function(e) {
