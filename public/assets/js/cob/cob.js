@@ -313,10 +313,10 @@ function Cobler(options) {
 Cobler.types = {};
 
 
-berryEditor = function(container){
+berryEditor = function(container, renderer){
 	return function(){
 		var formConfig = $.extend(true, {}, {
-			// renderer: 'tabs', 
+			renderer: renderer || 'base', 
 			attributes: this.get(), 
 			fields: this.fields,
 			autoDestroy: true,
