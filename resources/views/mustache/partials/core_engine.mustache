@@ -47,7 +47,7 @@
 	_.findWhere = _.find;
 	_.where = _.filter;
 	group_id = {{group.id}};
-	group_admin = {{group.admin}};
+	group_admin = {{#group.admin}}true{{/group.admin}}{{^group.admin}}false{{/group.admin}};
 	if(group_admin){
 		$('body').addClass('admin');
 	}

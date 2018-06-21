@@ -18,9 +18,18 @@ class HTTPHelper {
             if(array_key_exists('query', $url_parts)){
                 parse_str($url_parts['query'],$url_parts_query);
             }
-            $url = $url_parts['scheme'].'://'.$url_parts['host'].
-                    $url_parts['path'].'?'.
-                    http_build_query(array_merge($request_data,$url_parts_query));
+            if(array_key_exists('scheme', $url_parts) && array_key_exists('host', $url_parts)) {
+                $url = $url_parts['scheme'].'://'.$url_parts['host'];
+                if(array_key_exists('port', $url_parts)) {
+                    $url .= ':'+$url_parts['port'];
+                }
+                if(array_key_exists('path', $url_parts)) {
+                    $url .= $url_parts['path'];
+                }
+                $url .= '?'.http_build_query(array_merge($request_data,$url_parts_query));
+            }else{
+                abort(400);             
+            }
         } else {
             $request_config['content'] = http_build_query($request_data);
         }
