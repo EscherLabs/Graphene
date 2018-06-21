@@ -89,7 +89,7 @@ $.ajax({
 
 					{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
 						{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
-						{name: 'endpoint',label:false,columns:8, type: 'select', choices: '/api/groups/'+data.group_id+'/endpoints'},
+						{name: 'endpoint',label:false,columns:8, type: 'select',default: {name:'None', value:'none'}, choices: '/api/groups/'+data.group_id+'/endpoints'},
 						{label:false, name: 'name',columns:0, type:'hidden'}
 					]}
 				]},

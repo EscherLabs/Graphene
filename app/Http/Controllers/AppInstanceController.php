@@ -305,8 +305,13 @@ class AppInstanceController extends Controller
             abort(404, 'Endpoint Not Found');
         }
 
-        // Lookup Endpoint
-        $endpoint = Endpoint::find((int)$resource_endpoint->endpoint);
+        if ($resource_endpoint->endpoint === 'none') {
+            $endpoint = new Endpoint(['config'=>['url'=>''],'type'=>'http_no_auth']);
+        } else {
+            // Lookup Endpoint
+            $endpoint = Endpoint::find((int)$resource_endpoint->endpoint);
+        }
+            
         
         // Merge App Options with User Preferences, User Info, and `request` data
 
