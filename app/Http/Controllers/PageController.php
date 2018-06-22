@@ -134,6 +134,8 @@ class PageController extends Controller
             $tempPage = $myPage->content;
             foreach($myPage->content->sections as $column_index => $column) {
                 foreach($column as $widget_index => $widget) {
+                   
+
                     if(	isset($widget->limit) && $widget->limit &&
                         (!$user || !in_array ($myPage->group_id , $user->content_admin_groups )) &&
                         !count(array_intersect ($widget->group->ids, $groups ))) {
@@ -146,7 +148,9 @@ class PageController extends Controller
                         }
                     }
                 }
+                $tempPage->sections[$column_index] = array_values($tempPage->sections[$column_index]);
             }
+
             $myPage->content = $tempPage;
         }
         if(!isset($myPage)){
@@ -185,7 +189,6 @@ class PageController extends Controller
             if(!isset($myPage->mobile_order)){
                 $myPage->mobile_order = [];
             }
-            
             $template = new Templater();
             return $template->render([
                 'apps_pages'=>$links, 

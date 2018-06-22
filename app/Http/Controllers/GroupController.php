@@ -162,8 +162,8 @@ class GroupController extends Controller
     {
         return $group->add_admin(
             $user,
-            $request->has('content_admin')?$request->content_admin:false,
-            $request->has('apps_admin')?$request->apps_admin:false);
+            $request->has('content_admin')?$request->content_admin:0,
+            $request->has('apps_admin')?$request->apps_admin:0);
     }
     public function remove_admin(Group $group, User $user)
     {
