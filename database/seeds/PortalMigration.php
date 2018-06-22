@@ -28,6 +28,17 @@ class PortalMigration extends Seeder
             $key = config('app.key_portal');
             $site = \App\Site::where('id',$site_id)->first();
 
+            $site->domain = 'grapheneawsdev.escherlabs.com';
+            $site->name = 'Graphene AWS';
+            $bing_theme = json_decode(file_get_contents(base_path('public/assets/data').'/bing_theme.json'));
+            $site->theme = ['css'=>$bing_theme->css,'icon'=>'cloud'];
+            $site_theme_partials = [];
+            foreach($bing_theme->partials as $partial) {
+                $site_theme_partials[$partial->name] = $partial->content;
+            }
+            $site->templates = ['partials'=>$site_theme_partials];
+            $site->save();
+
             /* Begin Import Users */
             echo "Importing Users (this takes a while) ...\n";
             $users_db = DB::connection('mysql-portal')->table('users')->get();
@@ -223,7 +234,7 @@ class PortalMigration extends Seeder
                     $user_form_fields_to_replace = [];
                     if (isset($app_options_db['fields'])) {
                         foreach($app_options_db['fields'] as $app_option_db) {
-                            if (isset($app_option_db['userEdit']) && $app_option_db['userEdit']==true) {
+                            if (isset($app_option_db['userEdit']) && ($app_option_db['userEdit']==true || $app_option_db['userEdit']=="true" ))  {
                                 $app_db->user_options[] = $app_option_db;
                                 $user_form_fields_to_replace[] = $app_option_db['name'];
                             } else {
@@ -247,7 +258,7 @@ class PortalMigration extends Seeder
                     $app_db->script = str_replace('user.pods','user.params.pods',$app_db->script);
                     $app_db->template = str_replace('user.pods','user.params.pods',$app_db->template);
                     $app_db->sources = str_replace('tags.','user.tags.',$app_db->sources);
-                    $app_db->script = str_replace('tags.','user.tags.',$app_db->script);
+                    $app_db->script = str_replace('data.tags.','data.user.tags.',$app_db->script);
                     $app_db->script = str_replace('this.data.tags','this.data.user.tags',$app_db->script);
                     $app_db->template = str_replace('tags.','user.tags.',$app_db->template);  
 
@@ -259,7 +270,7 @@ class PortalMigration extends Seeder
                     $app_db->script = str_replace('_.pluck','_.map',$app_db->script);
                     $app_db->script = str_replace('_.contains','_.includes',$app_db->script);
 
-                    $app_db->script = str_replace("url:'/groups/'+groupID","url:'/heartbeat'",$app_db->script);
+                    $app_db->script = str_replace("url:'/groups/'+group_id","url:'/heartbeat'",$app_db->script);
 
                     $app_sources_db = json_decode($app_db->sources,true);
                     $app_sources = [];
