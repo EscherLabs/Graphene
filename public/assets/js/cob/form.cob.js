@@ -7,11 +7,19 @@ Cobler.types.textbox = function(container) {
 	}
 	function get() {
 		item.widgetType = 'textbox';
-		// item.isEnabled = true;
+		item.isEnabled = true;
 		return item;
 	}
-	function toJSON() {
-		return get();
+	function toJSON(opts) {
+		var temp = get();
+		if(!opts.editor){
+		delete temp.isEnabled;
+		delete temp.widgetType;
+		delete temp.type;
+		return temp;
+		}else{
+			return temp;
+		}
 	}
 	function set(newItem){
 		item = newItem;
@@ -20,7 +28,7 @@ Cobler.types.textbox = function(container) {
 		widgetType: 'textbox',
 		type: 'text',
 		label: 'Label',
-		//isEnabled: true
+		isEnabled: true
 	}
 	var fields = [
 		{type: 'text', required: true, label: 'Field Label', name: 'label'},
@@ -55,11 +63,18 @@ Cobler.types.select = function(container) {
 	}
 	function get() {		
 		item.widgetType = 'select';
-		//item.isEnabled = true;
+		item.isEnabled = true;
 		return item;
 	}
-	function toJSON() {
-		return get();
+	function toJSON(opts) {
+		var temp = get();
+		if(!opts.editor){
+		delete temp.isEnabled;
+		delete temp.widgetType;
+		return temp;
+		}else{
+			return temp;
+		}
 	}
 	function set(newItem) {
 		item = newItem;
@@ -68,7 +83,7 @@ Cobler.types.select = function(container) {
 		widgetType: 'select',
 		type: 'select',
 		label: 'Label',
-		//isEnabled: true
+		isEnabled: true
 	}
 	var fields = [
 		{type: 'fieldset', name:'basics', legend: '<i class="fa fa-th"></i> Basics', hideLabel: true, inline: true, fields:[
@@ -115,13 +130,21 @@ Cobler.types.checkbox = function(container) {
 	}
 	function get() {
 		item.widgetType = 'checkbox';
-		//item.isEnabled = true;
+		item.isEnabled = true;
 
 		item.type = 'checkbox';
 		return item;
 	}
-	function toJSON() {
-		return get();
+
+	function toJSON(opts) {
+		var temp = get();
+		if(!opts.editor){
+		delete temp.isEnabled;
+		delete temp.widgetType;
+		return temp;
+		}else{
+			return temp;
+		}
 	}
 	function set(newItem) {
 		item = newItem;
@@ -130,7 +153,7 @@ Cobler.types.checkbox = function(container) {
 		widgetType: 'checkbox',
 		type: 'checkbox',
 		label: 'Label',
-		// isEnabled: true
+		isEnabled: true
 	}
 	var fields = [
 		{type: 'text', required: true, label: 'Field Label', name: 'label'},
@@ -157,7 +180,7 @@ Cobler.types.fieldset = function(container) {
 	}
 	function get() {
 		item.widgetType = 'fieldset';
-		// item.isEnabled = true;
+		item.isEnabled = true;
 
 		item.type = 'fieldset';
 		return item;

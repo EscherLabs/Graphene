@@ -62,7 +62,7 @@ function load(app_version) {
 
         var old = formPage.getCurrent();
         
-        formPage.update(old.key, JSON.stringify($.extend(true, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
+      formPage.update(old.key, JSON.stringify($.extend(true, {}, /*JSON.parse(old.content||'{}'),*/{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
       });
     }else{
       toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Supported');
