@@ -99,7 +99,7 @@ $.ajax({
 			}},
 		]
 		$('body').on('click','.list-group-item.user', function(e){
-			bt.add({user_id:e.currentTarget.dataset.id})
+			bt.add({user_id:e.currentTarget.dataset.id,apps_admin:1,content_admin:1})
 			Berries.user_search.trigger('close');
 		})
 
