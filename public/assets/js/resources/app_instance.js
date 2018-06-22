@@ -64,17 +64,18 @@ $.ajax({
 			});
 
 		})
-		if(data.app.code.forms[0].content){
+		if(_.findWhere(data.app.code.forms,{name:"Options"}).content){
 			$('#optionstab').show();
-			var options = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[0].content)) 
+			var options = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.app.code.forms,{name:"Options"}).content)) 
+			$('#optionstab').toggle(!!options.fields.length);
 			options.attributes = data.options || {};
 			options.attributes.id = data.id;
 			options.name = 'options';
 			$('#options .col-sm-9').berry(options);
 		}
-		if(data.app.code.forms[1].content){
-			$('#useroptionstab').show();
-			var user_options_default = $.extend(true,{actions:false}, JSON.parse(data.app.code.forms[1].content)) 
+		if(_.findWhere(data.app.code.forms,{name:"User Options"}).content){
+			var user_options_default = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.app.code.forms,{name:"User Options"}).content)) 
+			$('#useroptionstab').toggle(!!user_options_default.fields.length);
 			user_options_default.attributes = data.user_options_default || {};
 			user_options_default.attributes.id = data.id;
 			user_options_default.name = 'user_options_default';
