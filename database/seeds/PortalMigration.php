@@ -234,7 +234,7 @@ class PortalMigration extends Seeder
                     $user_form_fields_to_replace = [];
                     if (isset($app_options_db['fields'])) {
                         foreach($app_options_db['fields'] as $app_option_db) {
-                            if (isset($app_option_db['userEdit']) && ($app_option_db['userEdit']==true || $app_option_db['userEdit']=="true" ))  {
+                            if (isset($app_option_db['userEdit']) && ($app_option_db['userEdit']===true || $app_option_db['userEdit']==="true" ))  {
                                 $app_db->user_options[] = $app_option_db;
                                 $user_form_fields_to_replace[] = $app_option_db['name'];
                             } else {
