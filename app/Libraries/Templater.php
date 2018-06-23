@@ -31,17 +31,29 @@ class Templater {
         $this->get_site_templates();
         $this->set_defaults($data);
 
+        // Strip Out App Instances and Pages User Doesn't Have Permission to See
+        foreach($data['apps_pages'] as $index => $group_apps_pages) {
+            foreach($group_apps_pages->pages as $page_index => $page) {
+                if (!Auth::user()->can('get', $page)) {
+                    unset($data['apps_pages'][$index]->pages[$page_index]);
+                }
+            }
+            foreach($group_apps_pages->app_instances as $app_instance_index => $app_instance) {
+                if (!Auth::user()->can('fetch', $app_instance)) {
+                    unset($data['apps_pages'][$index]->app_instances[$app_instance_index]);
+                }
+            }
+        }
+
         // Build $data object
-        if (isset($data['group'])) {
+        if (isset($data['group'])) {            
             $data['group'] = $data['group']->toArray();
-            // return $data['group'];
             $data['group']['apps_pages'] = $data['apps_pages']->where('id','=',$data['group']['id'])->first();
             if(!is_null($data['group']['apps_pages'])){
               $data['group']['apps_pages'] = $data['group']['apps_pages']->toArray();   
             }else{
               $data['group']['apps_pages'] =[];
             }
-            
             $data['group']['apps_pages']['group_id'] = $data['group']['id'];
             $data['group']['apps_pages']['group_slug'] = $data['group']['slug'];
             if(isset($data['user']) && isset($data['user']['content_admin_groups']) && isset($data['user']['apps_admin_groups'])){
@@ -58,9 +70,8 @@ class Templater {
                 $data['apps_pages'][$index]['has_apps_or_pages'] = true;
             }  
         }
-        // dd($data);
 
-        // TJC -- 2/10/18 -- Should make slide size configurable at the site level
+        // TJC -- 2/10/18 -- Should make slice size configurable at the site level
         $slice_size = 5;
         $data['apps_pages'] = [array_slice($data['apps_pages'],0,$slice_size),array_slice($data['apps_pages'],$slice_size)];
 
@@ -88,7 +99,6 @@ class Templater {
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
 
-        // dd($data);
         $loader = new \Mustache_Loader_CascadingLoader(array(
             new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->partials),
             new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')

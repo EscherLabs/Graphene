@@ -171,12 +171,12 @@ class Group extends Model
     public function scopePublicAppsPages($query)
     {
         return $query->with(['app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
             $q->where('public','=','1');
             $q->where('unlisted','=',0);
             $q->orderBy('order');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
             $q->where('public','=','1');
             $q->where('unlisted','=',0);
             $q->orderBy('order');
@@ -193,11 +193,11 @@ class Group extends Model
     public function scopeAppsPages($query)
     {
         return $query->with(array('app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
             $q->where('unlisted','=',0);
             $q->orderBy('order');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
             $q->where('unlisted','=',0);
             $q->orderBy('order');
         }))->whereIn('id', Auth::user()->groups);
