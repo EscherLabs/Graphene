@@ -15,9 +15,9 @@ class EllucianMobileController extends Controller
         $this->customAuth = new CustomAuth();     
     }
     
-    public function login() {
+    public function login(Request $request) {
         if(!Auth::user()){ 
-            $return = $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate($request);
             if(isset($return)){
                 return $return;
             }
@@ -57,9 +57,9 @@ class EllucianMobileController extends Controller
 </html>';
     }
 
-    public function userinfo() {
+    public function userinfo(Request $request) {
         if(!Auth::user()){ 
-            $return = $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate($request);
             if(isset($return)){
                 return $return;
             }
@@ -77,9 +77,9 @@ class EllucianMobileController extends Controller
         ];
     }
 
-    public function redirect($base_64_redirect) {
+    public function redirect(Request $request, $base_64_redirect) {
         if(!Auth::user()){ 
-            $return = $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate($request);
             if(isset($return)){
                 return $return;
             }
@@ -87,7 +87,7 @@ class EllucianMobileController extends Controller
         return redirect(base64_decode($base_64_redirect));
     }
 
-    public function config() {
+    public function config(Request $request) {
         $group_apps = Group::with(['pages' => function($query) {
             $query->orderBy('order');
         },'app_instances' => function($query) {
