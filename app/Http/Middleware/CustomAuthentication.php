@@ -31,7 +31,7 @@ class CustomAuthentication
     public function handle($request, Closure $next)
     {
         if(!Auth::user()){           
-            $return = $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate($request);
             if(isset($return)){
                 return $return;
             }

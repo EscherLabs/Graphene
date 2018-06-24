@@ -84,6 +84,11 @@ class AppInstancePolicy
         } else if ($user->group_member($app_instance->group_id)) {
             return true;
         }
+
+        // If the app instancd is public => you can view the app instance.
+        if ($app_instance->public == true) {
+            return true;
+        }
     }
 
     // public function fetch(User $user, AppInstance $app_instance)
@@ -106,6 +111,11 @@ class AppInstancePolicy
             }
         // If the app instance DOESNT limit visibility to composites, and you are a member of the app instance group => you can view the app instance.
         } else if ($user->group_member($app_instance->group_id)) {
+            return true;
+        }
+
+        // If the app instancd is public => you can view the app instance.
+        if ($app_instance->public == true) {
             return true;
         }
     }

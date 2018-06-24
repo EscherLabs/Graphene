@@ -36,13 +36,13 @@ class ValidateUser
         
         if (is_null(Auth::user())) {
             // ATS - If user isn't currently logged in, do custom auth?
-            $return = $this->customAuth->authenticate($request);
-            if(!Auth::user()){
+            if ($request->is('login*')) {
+                $request = $this->customAuth->authenticate($request);
                 if(isset($return)){
                     return $return;
                 }
-                return $next($request);
             }
+            return $next($request);
         }
 
         $user_site = SiteMember::where('user_id','=',Auth::user()->id)

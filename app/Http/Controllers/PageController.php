@@ -158,7 +158,7 @@ class PageController extends Controller
         }
         if($myPage->public == 0) {
             if(!Auth::user()){           
-                $return = $this->customAuth->authenticate();
+                $return = $this->customAuth->authenticate($request);
                 if(isset($return)){
                     return $return;
                 }

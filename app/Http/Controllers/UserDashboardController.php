@@ -36,7 +36,7 @@ class UserDashboardController extends Controller
             $group_links = Group::has('pages', '>', 0)->orHas('app_instances','>',0)->AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }else{
 
-            $return = $this->customAuth->authenticate();
+            $return = $this->customAuth->authenticate($request);
             if(isset($return)){
                 return $return;
             }

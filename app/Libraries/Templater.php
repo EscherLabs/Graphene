@@ -34,12 +34,12 @@ class Templater {
         // Strip Out App Instances and Pages User Doesn't Have Permission to See
         foreach($data['apps_pages'] as $index => $group_apps_pages) {
             foreach($group_apps_pages->pages as $page_index => $page) {
-                if (!Auth::user()->can('get', $page)) {
+                if (Auth::user()!==null && !Auth::user()->can('get', $page)) {
                     unset($data['apps_pages'][$index]->pages[$page_index]);
                 }
             }
             foreach($group_apps_pages->app_instances as $app_instance_index => $app_instance) {
-                if (!Auth::user()->can('fetch', $app_instance)) {
+                if (Auth::user()!==null && !Auth::user()->can('fetch', $app_instance)) {
                     unset($data['apps_pages'][$index]->app_instances[$app_instance_index]);
                 }
             }
