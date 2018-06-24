@@ -77,6 +77,16 @@ class EllucianMobileController extends Controller
         ];
     }
 
+    public function redirect($base_64_redirect) {
+        if(!Auth::user()){ 
+            $return = $this->customAuth->authenticate();
+            if(isset($return)){
+                return $return;
+            }
+        }
+        return redirect(base64_decode($base_64_redirect));
+    }
+
     public function config() {
         $group_apps = Group::with(['pages' => function($query) {
             $query->orderBy('order');

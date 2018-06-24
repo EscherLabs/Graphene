@@ -270,5 +270,6 @@ Route::group(['prefix' => 'api'], function () {
 });
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
+Route::get('/ellucianmobile/redirect/{base_64_redirect}','EllucianMobileController@redirect');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
