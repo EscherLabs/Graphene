@@ -116,7 +116,7 @@ class CASAuth
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle()
+    public function handle($skip = false)
     {
         
         // Only run if we're not already authenticated
@@ -129,9 +129,10 @@ class CASAuth
                 } else {
                     $this->handle_generic();
                 }
-            } else {        
-                $this->cas->authenticate();
-                
+            } else { 
+                if(!$skip){       
+                    $this->cas->authenticate();
+                }
             }
         }
     }

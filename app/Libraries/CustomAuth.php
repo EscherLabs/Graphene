@@ -15,10 +15,10 @@ class CustomAuth {
     }
   }
 
-    public function authenticate(Request $request) {
+    public function authenticate(Request $request, $skip = false) {
       if (config('app.site')->auth == 'CAS') {        
             if(!Auth::user()){           
-                $this->cas->handle();
+                $this->cas->handle($skip && !$request->is('login*'));
 
                 if(Auth::user()){
                     return redirect()->back();
