@@ -3,9 +3,26 @@
   <a href="{{link}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item" style="color:#005A43">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="{{title}}" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
 {{/favorite}}
 {{/links}}
-<hr style="margin: 16px;border: solid 1px #ffd700;">
-{{#links}}
-{{^favorite}}
-  <a href="{{link}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item" style="color:#005A43">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="{{title}}" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
-{{/favorite}}
-{{/links}}
+{{! <hr style="margin: 16px;border: solid 1px #ffd700;"> }}
+<div class="panel-default">
+<div class="panel-heading" role="tab" id="headingOne">
+  <h4 class="panel-title">
+    <a id="available_links" data-toggle="collapse" href="#links-container" aria-expanded="true" aria-controls="links-container" {{#toggle}}class="collapsed"{{/toggle}}>
+      <i class="fa fa-collapse fa-fw"></i> Available Links
+    </a>
+  </h4>
+</div>
+
+
+<div id="links-container" class="panel-collapse collapse {{^toggle}}in{{/toggle}}" {{#toggle}}style="height: 0px;"{{/toggle}} role="tabpanel" aria-labelledby="links-container">
+      <div class="panel-body" style="padding:0">
+      	<div class="list-group" style="margin-bottom:0;min-height:30px" data-title="links" id="links" data-label="Useful Links">
+        {{#links}}
+        {{^favorite}}
+          <a href="{{link}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item" style="color:#005A43">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="{{title}}" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
+
+        {{/favorite}}
+        {{/links}}
+      </div>
+    </div>
+</div></div>

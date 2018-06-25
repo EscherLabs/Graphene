@@ -246,3 +246,9 @@ form.berry.tab-content {margin-top: 20px;}
 	z-index:-1
 }
 .slice .actions{position:absolute;top:5px;right:5px;z-index:6}
+.panel-title a .fa-collapse:before{
+  content:"\f107";
+}
+.panel-title a.collapsed .fa-collapse:before{
+  content:"\f105";
+}

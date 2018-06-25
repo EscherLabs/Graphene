@@ -3,7 +3,6 @@ Cobler.types.Links = function(container){
 		var temp = get();
 		temp.link_admin = group_admin;
 		temp.group_id = group_id;
-		console.log(temp);
 		return templates['widgets_links_container'].render(temp, templates);
 	}
 	function get() {
@@ -33,12 +32,22 @@ Cobler.types.Links = function(container){
 		get: get,
 		set: set,
 		initialize: function(el){
+			this.state = Lockr.get('links') || {favorites:[],toggle:false};
+			// if(this.state.toggle){
+			// 	$(el).find('#available_links').click();
+			// }
+			$(el).on('click','#available_links',function(e){
+				this.state.toggle  = !this.state.toggle;
+				Lockr.set('links', this.state)
+			}.bind(this))
+
+
 			$(el).on('click','.favorites',function(e){
 				e.preventDefault();
 				_.findWhere(this.links,{id:parseInt(e.currentTarget.parentElement.dataset.guid)}).favorite = !_.findWhere(this.links,{id:parseInt(e.currentTarget.parentElement.dataset.guid)}).favorite
-				Lockr.set('links',_.map(_.where(this.links,{favorite:true}),function(item){return _.pick(item, 'id', 'favorite')}))
-				$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links}), templates))
-
+				this.state.favorites = _.map(_.where(this.links,{favorite:true}),function(item){return _.pick(item, 'id', 'favorite', 'link')});
+				Lockr.set('links',this.state)
+				$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links,toggle:this.state.toggle}), templates))
 			}.bind(this))
 
 			var url = '/api/user_links/'
@@ -50,14 +59,21 @@ Cobler.types.Links = function(container){
 			dataType : 'json',
 				type: 'GET',
 				success  : function(el,data){
-					_.each(Lockr.get('links'),function(links){
-						var temp = _.findWhere(data,{id:links.id});
-						if(typeof temp !== 'undefined') {
-							temp.favorite = links.favorite;
-						}
-					})
-					this.links = data
-					$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links}), templates))
+					if(typeof this.state.favorites !== 'undefined'){
+						_.each(this.state.favorites,function(links){
+							var temp = _.findWhere(data,{id: links.id});
+							if(typeof temp !== 'undefined') {
+								temp.favorite = links.favorite;
+							}else{
+								temp = _.findWhere(data, {link: links.link});
+								if(typeof temp !== 'undefined') {
+									temp.favorite = links.favorite;
+								}
+							}
+						})
+					}
+					this.links = data;
+					$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links,toggle:this.state.toggle}), templates))
 				}.bind(this,el)
 			})
 		}

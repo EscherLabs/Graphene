@@ -51,7 +51,7 @@ Cobler.types.uApp = function(container){
                 type: 'POST',
                 data: {request: data},
                 error: function (data) {
-                  if(data.responseJSON.error) {
+                  if(typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
                     toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
                   }else{
                     toastr.error(data.statusText, 'ERROR')
