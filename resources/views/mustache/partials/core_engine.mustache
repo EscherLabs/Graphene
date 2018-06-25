@@ -457,7 +457,9 @@ function editMobileOrder(){
 					data: {width:window.innerWidth,resource_id:resource_id,resource_type:resource_type},
 					success: function(){}
 			});
-			// }
+			function inspect(row,element){
+				mymodal = modal({title: "Widget Summary", content: templates.widgets_summary.render(cb.collections[row||0].getItems()[element||0].bae.data)});
+			}
 		</script>
 
 		
