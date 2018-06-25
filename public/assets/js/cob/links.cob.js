@@ -51,7 +51,10 @@ Cobler.types.Links = function(container){
 				type: 'GET',
 				success  : function(el,data){
 					_.each(Lockr.get('links'),function(links){
-						_.findWhere(data,{id:links.id}).favorite = links.favorite;
+						var temp = _.findWhere(data,{id:links.id});
+						if(typeof temp !== 'undefined') {
+							temp.favorite = links.favorite;
+						}
 					})
 					this.links = data
 					$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links}), templates))
