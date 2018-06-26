@@ -125,7 +125,7 @@ berryAppEngine = function(options) {
 			this.methods = {};
 			for(var i in mountResult) {
 				if(typeof mountResult[i] == 'function') {
-					this.methods[i] = mountResult[i];
+					this.methods[i] = mountResult[i].bind(this);
 				}
 			}
 		} else {

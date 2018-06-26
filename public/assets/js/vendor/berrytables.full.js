@@ -174,6 +174,7 @@ function berryTable(options) {
 	if(typeof options.filters !== 'undefined'){
 		options.filters = _.map(options.filters, Berry.processOpts)
 	}
+	
 	options.filterFields = _.map($.extend(true, {}, options.filters || options.schema), function(val){
 		val = Berry.normalizeItem(val);
 		name = val.name;
@@ -209,6 +210,8 @@ function berryTable(options) {
 		val.show = {};
 		// val.isEnabled = true;
 		val.enabled = true;
+		val.help = '';
+		
 		return val;
 	});
 	if(typeof options.columns == 'object'){

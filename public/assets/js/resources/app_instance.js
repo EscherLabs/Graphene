@@ -51,8 +51,12 @@ $.ajax({
 		],attributes:data, actions:false, name:'main'})
 		$('#save').on('click',function(){
 			var item = Berries.main.toJSON();
-			item.options = Berries.options.toJSON();
-			item.user_options_default = Berries.user_options_default.toJSON();
+			if(typeof Berries.options !== 'undefined') {
+				item.options = Berries.options.toJSON();
+			}			
+			if(typeof Berries.user_options_default !== 'undefined') {
+				item.user_options_default = Berries.user_options_default.toJSON();
+			}
 			item.resources = Berries.resources.toJSON().resources;
 
 			$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', data: item, success:function(){
@@ -83,8 +87,8 @@ $.ajax({
 		}
 		if(data.app.code.resources[0].name !== '') {	
 			$('#resoucestab').show();
+			var attributes = $.extend(true, [], data.resources,data.app.code.resources);
 
-			var attributes = $.extend(true, [],data.app.code.resources, data.resources);
 			$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
 				{name:'container', label: false,  type: 'fieldset', fields:[
 
