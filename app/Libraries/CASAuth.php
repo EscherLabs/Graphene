@@ -59,11 +59,12 @@ class CASAuth
             }
 
             $httpHelper = new HTTPHelper();
-            return $httpHelper->http_fetch(
+            $response = $httpHelper->http_fetch(
                 $url,config('cas.external_user_lookup')->verb,
                 $user_attributes,
                 $username,
                 $password);
+            return $response['data'];
         } else {
             return [];
         }

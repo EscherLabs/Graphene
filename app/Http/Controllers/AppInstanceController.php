@@ -185,7 +185,7 @@ class AppInstanceController extends Controller
             if($myApp->app->code && isset($myApp->app->code->resources) ){
                 foreach($myApp->app->code->resources as $source){
                     if ($source->fetch === 'true' || $source->fetch === true) {
-                        $data[$source->name] = $this->get_data($myApp, $source->name, $request);
+                        $data[$source->name] = $this->get_data_int($myApp, $source->name, $request);
                     }
                 }
             }
@@ -206,17 +206,19 @@ class AppInstanceController extends Controller
                     ->whereRaw('created_at >= (NOW() - INTERVAL 10 MINUTE)')
                     ->first();
             if (!is_null($cache)) {
-                $data = unserialize($cache->content);
+                $response = unserialize($cache->content);
             }
         }
         if (!isset($data)) {
             // Fetch Data based on Endpoint Type
             $httpHelper = new HTTPHelper();
             if ($endpoint->type == 'http_no_auth') {
-                $data = $httpHelper->http_fetch($url,$verb,$all_data['request']);
+                $response = $httpHelper->http_fetch($url,$verb,$all_data['request']);
+                // $data = $response['data'];
             } else if ($endpoint->type == 'http_basic_auth') {
-                $data = $httpHelper->http_fetch($url,$verb,$all_data['request'],
+                $response = $httpHelper->http_fetch($url,$verb,$all_data['request'],
                         $endpoint->config->username, $endpoint->getSecret());
+                // $data = $response['data'];
             } else {
                 abort(505,'Authentication Type Not Supported');
             }
@@ -227,28 +229,26 @@ class AppInstanceController extends Controller
                 $cache = ResourceCache::create([
                     'app_instance_id' => $app_instance_id,
                     'url' => $url,
-                    'content' => serialize($data),
+                    'content' => serialize($response),
                 ]);
             }
         }
         // Convert Data based on Modifier
         if ($resource_info->modifier == 'csv') {
-            $data = array_map("str_getcsv", explode("\n", $data));
+            $response['content'] = array_map("str_getcsv", explode("\n", $response['content']));
         } else if ($resource_info->modifier == 'xml') {
-            $data = json_decode(json_encode(simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA)),true);
+            $response['content'] = json_decode(json_encode(simplexml_load_string($response['content'], 'SimpleXMLElement', LIBXML_NOCDATA)),true);
         } else {
-            
             try{
-                if(is_string($data)){
-                    $try_decode = json_decode($data);
+                if(is_string($response['content'])){
+                    $try_decode = json_decode($response['content']);
                     if($try_decode){
-                        $data = $try_decode;
+                        $response['content'] = $try_decode;
                     }
                 }
             }catch(Exception $e){}
         }
-
-        return $data;
+        return $response['content'];
     }
 
     private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
@@ -270,7 +270,7 @@ class AppInstanceController extends Controller
         return $values;
     }
 
-    public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
+    public function get_data_int(AppInstance $app_instance, $endpoint_name, Request $request) {
         session_write_close(); // Don't keep waiting
         if(!isset($app_instance->app->code)){
             $app_instance->findVersion();
@@ -351,5 +351,10 @@ class AppInstanceController extends Controller
         // }
         return $data;
     }
+
+    public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
+        $data = self::get_data_int($app_instance, $endpoint_name, $request);
+    }
+
 
 }

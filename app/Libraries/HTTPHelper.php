@@ -34,18 +34,22 @@ class HTTPHelper {
             $request_config['content'] = http_build_query($request_data);
         }
         $context = stream_context_create(['http' =>$request_config]);
-        $response = @file_get_contents($url, false, $context);
-        if ($response === FALSE) {
-            return error_get_last();
-        }
+        $response_data = @file_get_contents($url, false, $context);
+        // if ($response_data === FALSE) {
+        //     $response_data = error_get_last();
+        // }
 
         // Check if the data we got back was JSON Formatted
         foreach($http_response_header as $header) {
             if (stristr($header, 'Content-Type: application/json')) {
-                $response = json_decode($response,true);
+                $response_data = json_decode($response_data,true);
+                break;
+            } else if (stristr($header, 'HTTP/')) {
+                $header_exploded = explode(' ',$header);
+                $response_code = $header_exploded[1];
                 break;
             }
         }
-        return $response;
+        return ['content'=>$response_data,'code'=>$response_code,'headers'=>$http_response_header];
     }
 }
