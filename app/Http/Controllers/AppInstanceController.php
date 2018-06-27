@@ -185,7 +185,8 @@ class AppInstanceController extends Controller
             if($myApp->app->code && isset($myApp->app->code->resources) ){
                 foreach($myApp->app->code->resources as $source){
                     if ($source->fetch === 'true' || $source->fetch === true) {
-                        $data[$source->name] = $this->get_data_int($myApp, $source->name, $request);
+                        $response = $this->get_data_int($myApp, $source->name, $request);
+                        $data[$source->name] = $response['content'];
                     }
                 }
             }
@@ -248,7 +249,7 @@ class AppInstanceController extends Controller
                 }
             }catch(Exception $e){}
         }
-        return $response['content'];
+        return $response;
     }
 
     private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
@@ -344,17 +345,22 @@ class AppInstanceController extends Controller
         $resource_app->endpoint = $resource_endpoint->endpoint;
 
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
-            $data = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
+            $response = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
         } 
         // else if ($endpoint->type == 'google_sheets') {
         //     $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
         // }
-        return $data;
+        return $response;
     }
 
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
         $data = self::get_data_int($app_instance, $endpoint_name, $request);
+        if (is_array($data['content']) || is_object($data['content'])) {
+            $content_type = 'text/json';
+            $data['content'] = json_encode($data['content']);
+        } else {
+            $content_type = 'text/plain';
+        }
+        return response($data['content'], $data['code'])->header('Content-Type', $content_type);
     }
-
-
 }
