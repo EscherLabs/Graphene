@@ -41,7 +41,7 @@ function App() {
 	}
 	function update(newData) {
 		$.extend(this.data, newData || {});
-		$.extend(true, this.data, this.data.options,  this.data.user.options);
+		// $.extend(true, this.data, this.data.options,  this.data.user.options);
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
@@ -134,8 +134,8 @@ berryAppEngine = function(options) {
 
 		this.data.options = $.extend({}, this.data.options);
 
-		$.extend(true, this.data.options, this.data.user.options);
-		$.extend(this.data, this.data.options);
+		// $.extend(true, this.data.options, this.data.user.options);
+		// $.extend(this.data, this.data.options);
 
     this.$el = this.options.$el;
     if(typeof this.app == 'undefined'){
