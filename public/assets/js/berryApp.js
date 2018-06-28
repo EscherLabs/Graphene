@@ -1,4 +1,3 @@
-// groupID=0;
 function App() {
 	function router(verb, name, data, callback) {
 		var callback = callback || function(data) {
