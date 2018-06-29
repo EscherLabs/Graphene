@@ -808,6 +808,11 @@ function berryTable(options) {
 
 				container.css('width', target + 'px') 
 				container.css('minWidth', target + 'px') 
+				if(target > this.$el.find('.table-container')[0].offsetWidth){
+					this.$el.find('.table-container').css('overflow','auto');
+				}else{
+					this.$el.find('.table-container').css('overflow','hidden');					
+				}
 
 			}catch(e){}
 		}
