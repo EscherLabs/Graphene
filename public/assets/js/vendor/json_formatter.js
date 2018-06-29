@@ -493,7 +493,7 @@
     /* 1 */
     /***/ (function(module, exports, __webpack_require__) {
     
-    JSONFormatter = __webpack_require__(0).default;
+            JSONFormatter = __webpack_require__(0).default;
     
     /***/ })
     /******/ ]);

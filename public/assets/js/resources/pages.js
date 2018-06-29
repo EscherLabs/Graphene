@@ -4,7 +4,7 @@ $.ajax({
 	url: url,
 	success: function(data){
 		tableConfig.schema = [
-			{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+			{label: 'Group', name:'group_id', required: true, type: 'select', choices: '/api/groups?limit=true'},
 			{label: 'Name', name:'name', required: true},
 			{label: 'Slug', name:'slug', required: true},
 			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},

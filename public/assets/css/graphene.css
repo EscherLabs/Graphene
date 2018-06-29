@@ -252,3 +252,11 @@ form.berry.tab-content {margin-top: 20px;}
 .panel-title a.collapsed .fa-collapse:before{
   content:"\f105";
 }
+
+table.table-fixed td{
+	word-wrap:break-word;
+}
+.table-fixed{
+	table-layout: fixed;
+}
+thead .form-group{margin-bottom:0;}
