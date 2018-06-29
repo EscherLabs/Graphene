@@ -4,7 +4,7 @@
 @section('content')
 <div class="row">
   <div class="col-sm-12">
-    <div id="tableouter" style="margin:-21px">
+    <div id="tableouter" >
       <div class="panel-page">
         <section class="panel panel-default">
           @if(isset($group))
