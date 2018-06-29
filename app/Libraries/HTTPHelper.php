@@ -43,11 +43,9 @@ class HTTPHelper {
         foreach($http_response_header as $header) {
             if (stristr($header, 'Content-Type: application/json')) {
                 $response_data = json_decode($response_data,true);
-                break;
             } else if (stristr($header, 'HTTP/')) {
                 $header_exploded = explode(' ',$header);
                 $response_code = $header_exploded[1];
-                break;
             }
         }
         return ['content'=>$response_data,'code'=>$response_code,'headers'=>$http_response_header];

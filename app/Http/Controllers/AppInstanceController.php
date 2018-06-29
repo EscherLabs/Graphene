@@ -356,7 +356,7 @@ class AppInstanceController extends Controller
     public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
         $data = self::get_data_int($app_instance, $endpoint_name, $request);
         if (is_array($data['content']) || is_object($data['content'])) {
-            $content_type = 'text/json';
+            $content_type = 'application/json';
             $data['content'] = json_encode($data['content']);
         } else {
             $content_type = 'text/plain';
