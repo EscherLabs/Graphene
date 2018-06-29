@@ -130,12 +130,11 @@ class PageController extends Controller
         } else {
             $groups = [];
         }
+
         if(isset($myPage->content)){
             $tempPage = $myPage->content;
             foreach($myPage->content->sections as $column_index => $column) {
                 foreach($column as $widget_index => $widget) {
-                   
-
                     if(	isset($widget->limit) && $widget->limit &&
                         (!$user || !in_array ($myPage->group_id , $user->content_admin_groups )) &&
                         !count(array_intersect ($widget->group->ids, $groups ))) {
@@ -176,8 +175,18 @@ class PageController extends Controller
             $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
 
+
+        $scripts = [];
+        $styles = [];
         foreach($apps as $key => $app) {
             $apps[$key]->findVersion();
+            foreach($apps[$key]->app->code->resources as $resource){
+                if($resource->modifier == "script"){
+                    $scripts[$resource->name] = array("src"=>$resource->path,"name"=>$resource->name);
+                }else if($resource->modifier == "css"){
+                    $styles[$resource->name] =  array("src"=>$resource->path,"name"=>$resource->name);
+                }
+            }
         }
         
         if($myPage != null) {
@@ -198,7 +207,9 @@ class PageController extends Controller
                 'config'=>$config, 
                 'data'=>$myPage->mobile_order, 
                 'id'=>$myPage->id,
-                'group'=>$groupObj
+                'group'=>$groupObj,
+                'scripts'=>$scripts,
+                'styles'=>$styles
             ]);
         }
         abort(404,'Page not found');

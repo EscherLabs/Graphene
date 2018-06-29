@@ -16,7 +16,6 @@
 <script src='/assets/js/vendor/moment_datepicker.js'></script>
 
 <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
-{{! <script src='https://rawgit.com/Cloverstone/berryTables/master/bin/js/berryTables.min.js'></script> }}
 <script src='/assets/js/vendor/berrytables.full.js'></script> 
 
 <script src='https://rawgit.com/Cloverstone/Cobler/master/bin/cobler.min.js'></script> 
@@ -37,12 +36,15 @@
 <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
 <script type='text/javascript' src='/assets/js/cob/links.cob.js'></script>
 <script type='text/javascript' src='/assets/js/filter.js'></script>
-<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
-<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>`
+<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>
 <script type='text/javascript' src='/assets/js/templates/widget.js'></script>
 <script src='/assets/js/lib.js'></script> 
 <script src='/assets/js/vendor/json_formatter.js'></script> 
-
+<!-- Included Scripts -->
+{{#scripts}}
+<script name="{{name}}" src='{{src}}'></script> 
+{{/scripts}}
+<!-- End Included Scripts-->
 <script type='text/javascript' >
 	var config = {{{config_json}}};
 	var mobile_order = {{{data}}};
@@ -328,7 +330,12 @@ function editMobileOrder(){
 	}
 
 
+(function() {
+   // your page initialization code here
+   // the DOM will be available here
 	load(true);
+
+})();
 
 	$('body').keydown(function(event) {
 		switch(event.keyCode) {

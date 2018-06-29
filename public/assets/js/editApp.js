@@ -36,10 +36,10 @@ function load(app_version) {
 
   tableConfig.schema = [
     {label: 'Name',name: 'name'},
-    {label: 'Fetch', type: 'checkbox',name:'fetch'},
+    {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}, {label: 'Include as Script', value: 'script'}, {label: 'Include as CSS', value: 'css'}]},
     {label: 'Path',name:'path'},
-    {label: 'Cache', type: 'checkbox',name:'cache'},
-    {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}]}
+    {label: 'Fetch', type: 'checkbox',name:'fetch'},
+    {label: 'Cache', type: 'checkbox',name:'cache'}
   ];
   tableConfig.data = attributes.code.resources;
   if(typeof bt !== 'undefined'){

@@ -134,7 +134,15 @@ class AppInstanceController extends Controller
         }
 
         $myApp->findVersion();
-
+        $scripts = [];
+        $styles = [];
+        foreach($myApp->app->code->resources as $resource){
+            if($resource->modifier == "script"){
+                $scripts[] = array("src"=>$resource->path,"name"=>$resource->name);
+            }else if($resource->modifier == "css"){
+                $styles[] =  array("src"=>$resource->path,"name"=>$resource->name);
+            }
+        }
         if($myApp != null) {
             $template = new Templater();
             return $template->render([
@@ -145,7 +153,9 @@ class AppInstanceController extends Controller
                 'uapp'=>$myApp, 
                 'data'=>array(),
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp"}]],"layout":4}'),
-                'group'=>$groupObj
+                'group'=>$groupObj,
+                'scripts'=>$scripts,
+                'styles'=>$styles
             ]);
 
         }
