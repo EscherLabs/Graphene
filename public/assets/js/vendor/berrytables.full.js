@@ -12,7 +12,7 @@ function berryTable(options) {
 		}catch(e){};
 	}
 	if(options.item_template ){options.item_template= Hogan.compile(options.item_template)}else{
-		if(window.outerWidth > 991){//767){
+		if(window.outerWidth > 767 || window.outerWidth == 0){
 			options.item_template = templates['table_row'];
 		}else{
 			options.item_template = templates['mobile_row'];
@@ -282,7 +282,7 @@ function berryTable(options) {
 	if(options.template ){
 		template= Hogan.compile(Hogan.compile(options.template).render(summary, templates));  
 	}else{
-		if(window.outerWidth > 991){//767){
+		if(window.outerWidth > 767 || window.outerWidth == 0){
 			template = Hogan.compile(templates['table'].render(summary, templates));
 		}else{
 			template = Hogan.compile(templates['mobile_table'].render(summary, templates));
