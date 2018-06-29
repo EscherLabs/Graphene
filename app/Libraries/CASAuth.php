@@ -64,7 +64,7 @@ class CASAuth
                 $user_attributes,
                 $username,
                 $password);
-            return $response['data'];
+            return $response['content'];
         } else {
             return [];
         }
