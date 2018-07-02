@@ -19,8 +19,11 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
 Route::get('/css',function(){
-  $response = Response::make(config('app.site')->theme->css, 200);
+  $site_css = config('app.site')->select('theme')->first()->theme->css;
+  $response = Response::make($site_css, 200);
   $response->header('Content-Type', 'text/css');
+  $response->header('Pragma','cache');
+  $response->header('Cache-Control','max-age=86400');
   return $response;
 });
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');

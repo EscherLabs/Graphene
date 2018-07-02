@@ -99,12 +99,14 @@ class Templater {
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
 
+        $site_templates = config('app.site')->select('templates')->first()->templates;
+
         $loader = new \Mustache_Loader_CascadingLoader(array(
-            new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->partials),
+            new \Mustache_Loader_ArrayLoader((array)$site_templates->partials),
             new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
         ));
         $partials_loader = new \Mustache_Loader_CascadingLoader(array(
-            new \Mustache_Loader_ArrayLoader((array)config('app.site')->templates->partials),
+            new \Mustache_Loader_ArrayLoader((array)$site_templates->partials),
             new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
         ));
 
