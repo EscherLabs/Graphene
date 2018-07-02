@@ -2,24 +2,16 @@
 @extends('default.admin')
 
 @section('content')
-<div class="row">
-  <div class="col-sm-12">
-    <div id="tableouter" >
-      <div class="panel-page">
-        <section class="panel panel-default">
-          @if(isset($group))
-          <div class="panel-heading">
-            <h4 class="panel-title"><a href="/admin/groups/{{$group->id}}">{{$group->name}} <span class="text-muted">({{$group->slug}})</span></a></h4>
-          </div>
-          @endif
-          <div id="mypanel" class="panel-body">
-            <div id="table" style="margin:-16px -21px -42px"></div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-</div>
+
+  @if(isset($group))
+    <h4 class="panel-title" style="position: fixed;left: 200px;right: 0px;top: 50px;background: #f8f8f8;padding: 14px;z-index: 1001;border-bottom: solid 1px #f0f0f0;"><a href="/admin/groups/{{$group->id}}">{{$group->name}} <span class="text-muted">({{$group->slug}})</span></a></h4>
+    <div id="table" style="margin:20px -20px -44px"></div>
+  @endif
+  @if(!isset($group))
+
+<div id="table" style="margin:-20px -20px -44px"></div>
+@endif
+
 @endsection
 
 @section('end_body_scripts_top')

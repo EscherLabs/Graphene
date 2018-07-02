@@ -209,6 +209,7 @@ function berryTable(options) {
 		val.show = {};
 		// val.isEnabled = true;
 		val.enabled = true;
+		val.help = '';
 		return val;
 	});
 	if(typeof options.columns == 'object'){

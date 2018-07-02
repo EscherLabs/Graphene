@@ -1,5 +1,5 @@
 	$('.navbar-header .nav a h4').html('Users');
-	$('#table').html('<div style="margin:20px"><div class="col-md-6 well" id="search"></div><div class="col-md-6" id="user"></div></div>')
+	$('#table').html('<div style="margin:40px 20px"><div class="col-md-6 well" id="search"></div><div class="col-md-6" id="user"></div></div>')
 	$('#search').berry({
 				name:'user_search',
 				actions:false,

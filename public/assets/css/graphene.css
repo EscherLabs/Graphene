@@ -245,7 +245,7 @@ form.berry.tab-content {margin-top: 20px;}
 .editor .slice:hover .label {
 	z-index:-1
 }
-.slice .actions{position:absolute;top:5px;right:5px;z-index:6}
+.slice  .slice-actions{position:absolute;top:5px;right:5px;z-index:6}
 .panel-title a .fa-collapse:before{
   content:"\f107";
 }
