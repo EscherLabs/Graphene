@@ -56,31 +56,46 @@ class ValidateUser
 
         $developer_apps = []; $groups = []; $content_admin_groups = []; $apps_admin_groups = []; $is_developer = false; $is_admin = false;
 
-        Auth::user()->content_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
-            $q->where('user_id', '=', Auth::user()->id)->where('content_admin','=',true);
-        })->pluck('id')->toArray();
-        Auth::user()->apps_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
-            $q->where('user_id', '=', Auth::user()->id)->where('apps_admin','=',true);
-        })->pluck('id')->toArray();
+        // Store Critical User Info in Session for 1 Minute, Regenerate After
+        if (session()->has('user_data_timestamp') && session('user_data_timestamp') + (1*60) >= time()) {
+            Auth::user()->content_admin_groups = session('content_admin_groups');
+            Auth::user()->apps_admin_groups = session('apps_admin_groups');
+            Auth::user()->groups = session('groups');
+            Auth::user()->developer_apps = session('developer_apps');
+            Auth::user()->tags_array = session('tags_array');
+        } else {
+            Auth::user()->content_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
+                $q->where('user_id', '=', Auth::user()->id)->where('content_admin','=',true);
+            })->pluck('id')->toArray();
+            Auth::user()->apps_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
+                $q->where('user_id', '=', Auth::user()->id)->where('apps_admin','=',true);
+            })->pluck('id')->toArray();
 
-        $member_groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
-            $q->where('user_id', '=',  Auth::user()->id);
-        })->pluck('id')->toArray();
+            $member_groups = Group::where('site_id', '=', $current_site->id )->whereHas('members', function($q){
+                $q->where('user_id', '=',  Auth::user()->id);
+            })->pluck('id')->toArray();
+            // Add user to "default" group if they are not a member of any other groups
+            if (count($member_groups) == 0) {
+                $member_groups = Group::where([['site_id', '=', $current_site->id],['name','like','default']])->pluck('id')->toArray();
+            }
+            $composite_groups = GroupComposite::whereIn('composite_group_id', $member_groups)->pluck('group_id')->toArray();
+            Auth::user()->groups = array_values(array_unique(array_merge($member_groups, $composite_groups)));
 
-        // Add user to "default" group if they are not a member of any other groups
-        if (count($member_groups) == 0) {
-            $member_groups = Group::where([['site_id', '=', $current_site->id],['name','like','default']])->pluck('id')->toArray();
+            Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
+                $q->where('user_id', '=',  Auth::user()->id);
+            })->pluck('id')->toArray();
+
+            Auth::user()->tags_array = Tag::whereIn('group_id',Auth::user()->groups)->get(['name','value'])->toArray();
+            session([
+                'content_admin_groups' => Auth::user()->content_admin_groups,
+                'apps_admin_groups' => Auth::user()->apps_admin_groups,
+                'groups' => Auth::user()->groups,
+                'developer_apps' => Auth::user()->developer_apps,
+                'tags_array' => Auth::user()->tags_array,
+                'user_data_timestamp' => time()
+            ]);  
         }
-
-        $composite_groups = GroupComposite::whereIn('composite_group_id', $member_groups)->pluck('group_id')->toArray();
         
-        Auth::user()->groups = array_values(array_unique(array_merge($member_groups, $composite_groups)));/*,Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups));*/
-        
-        Auth::user()->developer_apps = App::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
-            $q->where('user_id', '=',  Auth::user()->id);
-        })->pluck('id')->toArray();
-
-        Auth::user()->tags_array = Tag::whereIn('group_id',Auth::user()->groups)->get(['name','value'])->toArray();
         Auth::user()->tags = [];
         foreach(Auth::user()->tags_array as $tag) {
             Auth::user()->tags[$tag['name']][] = $tag['value'];
@@ -89,15 +104,6 @@ class ValidateUser
         Auth::user()->site = $current_site;
         Auth::user()->site_admin = $user_site->site_admin;
         Auth::user()->site_developer = $user_site->site_developer;
-
-        // if ($request->is('admin*') && 
-        //     !(  Auth::user()->site_admin || 
-        //         Auth::user()->developer ||
-        //         count(Auth::user()->content_admin_groups)>0 ||
-        //         count(Auth::user()->apps_admin_groups)>0
-        //     )) {
-        //     abort(403, 'Access denied');
-        // }
 
         return $next($request);
     }
