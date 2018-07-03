@@ -229,9 +229,10 @@
 			cb.on('manage',function(item){
 				$().berry({name: 'modal', attributes: item.get(), legend: 'Display Settings',flatten:true, fields:[
 					{label: 'Device', name: 'device', type: 'select', value:'widget', choices: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
-					{label: 'Container?', name:'container', type: 'checkbox'},
-					{label: 'Allow Minimization', name: 'enable_min', type: 'checkbox', show:!item.get().no_minimize},
-					{label:' Start Collapsed', name:'collapsed',type:'checkbox', show:{matches:{name:'enable_min',value:true}},parse:'show'},
+					{label: 'Enclose in a Container?', name:'container', type: 'checkbox'},
+					{label: 'Display Title Bar?', name:'titlebar', type: 'checkbox', show:{matches:{name:'container',value:true}}},
+					{label: 'Allow Minimization?', name: 'enable_min', type: 'checkbox', show:!item.get().no_minimize},
+					{label:' Start Minimized?', name:'collapsed',type:'checkbox', show:{matches:{name:'enable_min',value:true}},parse:'show'},
 					{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  {test: function(){return group_composites.length >0;}} },
 						{legend: 'Groups', 'show': {
 									matches: {

@@ -59,7 +59,7 @@ display:none;
 .editor .slice,#sortableList a{
     cursor:move;
 }
-#page li.widget_active{padding: 10px;cursor:default}
+#page li.widget_active{cursor:default}
 
 .note-editor.note-frame.fullscreen {
     top: 50px;
@@ -260,3 +260,9 @@ table.table-fixed td{
 	table-layout: fixed;
 }
 thead .form-group{margin-bottom:0;}
+.widget > .panel >.panel-heading.hide{
+	display:none;
+}
+.cob-collapsed.widget > .panel >.panel-heading.hide{
+	display:block;
+}
