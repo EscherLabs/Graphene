@@ -260,9 +260,8 @@ table.table-fixed td{
 	table-layout: fixed;
 }
 thead .form-group{margin-bottom:0;}
-.widget > .panel >.panel-heading.hide{
-	display:none;
-}
+
 .cob-collapsed.widget > .panel >.panel-heading.hide{
-	display:block;
+	display:block !important;
 }
+.editor .widget_active> form{padding:10px}
