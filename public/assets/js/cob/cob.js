@@ -164,7 +164,6 @@ function Cobler(options) {
 			temp.className += ' ' + cob.options.active;
 			var modEL = elementOf(item);
 			 var a = modEL.parentNode.replaceChild(temp, modEL);
-			 debugger;
 		 	if(typeof item.initialize !== 'undefined'){
 				item.initialize(temp)
 			}

@@ -19,14 +19,16 @@ Cobler.types.textbox = function(container) {
 			"widgetType": "textbox",
 			"placeholder": "",
 			"value": "",
+			"name": "",
 			"help": "",
 			"required": false
 		}
 		temp = _.omit(temp,'validate');
 		
-		temp =  Berry.normalizeItem(_.omit(temp, function(v, k) {
+debugger;
+		temp = _.omit(Berry.normalizeItem(temp, 0), function(v, k) {
 			return initial[k] === v;
-		}), '')
+		})
 		}
 		temp = _.omit(temp,'required');
 		
@@ -42,6 +44,8 @@ Cobler.types.textbox = function(container) {
 		isEnabled: true
 	}
 	var fields = [
+		{type: 'fieldset', name:'basics', legend: 'General', hideLabel: true, inline: true, fields:[
+			
 		{type: 'text', required: true, label: 'Field Label', name: 'label'},
 		{type: 'text', label: 'Name', name: 'name'},
 		{type: 'select', label: 'Display', name: 'type', value: 'dropdown', 'choices': [
@@ -55,11 +59,11 @@ Cobler.types.textbox = function(container) {
 		]},
 		{type: 'text', label: 'Placeholder', name: 'placeholder'},
 		{type: 'text', label: 'Default value', name: 'value'},
-		{type: 'fieldset', name:'validate', legend: 'validate',label:false, fields:[
+		{type: 'fieldset', name:'validate', legend: false,label:false, fields:[
 			{type: 'checkbox', label: 'Required', name: 'required'}
 		]},
 		{type: 'textarea', label: 'Instructions', name: 'help'},
-	]
+	]}]
 	return {
 		fields: fields,
 		render: render,
@@ -89,6 +93,7 @@ Cobler.types.select = function(container) {
 				"placeholder": "",
 				"value": "",
 				"help": "",
+				"name": "",
 				"required": false,
 				"choices": "",
 				"label_key": "",
@@ -106,9 +111,9 @@ Cobler.types.select = function(container) {
 			}
 			temp = _.omit(temp,'validate');
 			
-			temp = Berry.normalizeItem(_.omit(temp, function(v, k) {
+			temp = _.omit(Berry.normalizeItem(temp, 0), function(v, k) {
 				return initial[k] === v;
-			}), '')
+			})
 			temp = _.omit(temp,'required');
 			if(typeof temp.options !== 'undefined' && temp.options.length == 1){
 				if((typeof temp.options.label == 'undefined' || temp.options.label == '') && (typeof temp.options.value == 'undefined' || temp.options.value == '')){
@@ -138,7 +143,7 @@ Cobler.types.select = function(container) {
 				{name: 'Range', value: 'range'}
 			]},
 			{type: 'text', label: 'Default Value', name: 'value'},
-			{type: 'fieldset', name:'validate', legend: 'validate',label:false, fields:[
+			{type: 'fieldset', name:'validate', legend: false,label:false, fields:[
 				{type: 'checkbox', label: 'Required', name: 'required'}
 			]},
 			
@@ -198,14 +203,15 @@ Cobler.types.checkbox = function(container) {
 				"widgetType": "checkbox",
 				"placeholder": "",
 				"value": false,
+				"name": "",
 				"help": "",
 				"required": false
 			}
 			temp = _.omit(temp,'validate');
 			
-			temp = Berry.normalizeItem(_.omit(temp, function(v, k) {
+			temp = _.omit(Berry.normalizeItem(temp, 0), function(v, k) {
 				return initial[k] === v;
-			}), '')
+			})
 			temp = _.omit(temp,'required');
 			}
 
@@ -221,14 +227,16 @@ Cobler.types.checkbox = function(container) {
 		isEnabled: true
 	}
 	var fields = [
+		{type: 'fieldset', name:'basics', legend: 'General', hideLabel: true, inline: true, fields:[
+			
 		{type: 'text', required: true, label: 'Field Label', name: 'label'},
 		{type: 'text', label: 'Name', name: 'name'},
 		{type: 'checkbox', label: 'Default Value', name: 'value'},
-		{type: 'fieldset', name:'validate', legend: 'validate',label:false, fields:[
+		{type: 'fieldset', name:'validate', legend: false,label:false, fields:[
 			{type: 'checkbox', label: 'Required', name: 'required'}
 			]},
 		{type: 'textarea', label: 'Instructions', name: 'help'},
-	]
+	]}]
 	return {
 		fields: fields,
 		render: render,
