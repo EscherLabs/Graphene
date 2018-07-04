@@ -52,11 +52,10 @@ Cobler.types.Image = function(container){
 		set: set,
 		initialize: function(el){
 			$(el).find('.slider').nivoSlider({effect: 'fade'});
-				if(this.container.owner.options.disabled && this.get().enable_min){
-          var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
+				if(this.container.owner.options.disabled && this.get().enable_min){					
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
 	  		  this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
-          //$(el).find('.collapsible').toggle(!collapsed)
       }
 		}
 	}

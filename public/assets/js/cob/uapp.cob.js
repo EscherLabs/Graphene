@@ -29,10 +29,9 @@ Cobler.types.uApp = function(container){
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
-          var collapsed = (Lockr.get(this.get().guid) || {collapsed:false}).collapsed;
-	  		  this.set({collapsed:collapsed});
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
-          //$(el).find('.collapsible').toggle(!collapsed)
       }
 
       $.ajax({
