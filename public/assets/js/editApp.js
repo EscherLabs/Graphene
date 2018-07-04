@@ -1,6 +1,62 @@
+/**
+ * jQuery Plugin: Sticky Tabs
+ *
+ * @author Aidan Lister <aidan@php.net>
+ * @version 1.2.0
+ */
+(function ( $ ) {
+  $.fn.stickyTabs = function( options ) {
+    var context = this
+
+    var settings = $.extend({
+        getHashCallback: function(hash, btn) { return hash }
+    }, options );
+
+    // Show the tab corresponding with the hash in the URL, or the first tab.
+    var showTabFromHash = function() {
+      var hash = window.location.hash;
+      var selector = hash ? 'a[href="' + hash + '"]' : 'li.active > a';
+      $(selector, context).tab('show');
+    }
+
+    // We use pushState if it's available so the page won't jump, otherwise a shim.
+    var changeHash = function(hash) {
+      if (history && history.pushState) {
+        history.pushState(null, null, '#' + hash);
+      } else {
+        scrollV = document.body.scrollTop;
+        scrollH = document.body.scrollLeft;
+        window.location.hash = hash;
+        document.body.scrollTop = scrollV;
+        document.body.scrollLeft = scrollH;
+      }
+    }
+
+    // Set the correct tab when the page loads
+    showTabFromHash(context)
+
+    // Set the correct tab when a user uses their back/forward button
+    $(window).on('hashchange', showTabFromHash);
+
+    // Change the URL when tabs are clicked
+    $('a', context).on('click', function(e) {
+      var hash = this.href.split('#')[1];
+      var adjustedhash = settings.getHashCallback(hash, this);
+      changeHash(adjustedhash);
+    });
+
+    return this;
+};
+}( jQuery ));
+
 attributes = {};
 var root = '/api/apps/';
 function load(app_version) {
+
+
+
+
+	$('.nav-tabs').stickyTabs();
 
   loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
   forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
@@ -57,15 +113,12 @@ function load(app_version) {
 
     item.content = this.berry.fields[this.active].toJSON();
     if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
-
-      modalForm(item.content, item.name, function(){
-
+      modalForm(item.content, item.name, function() {
         var old = formPage.getCurrent();
-        
-      formPage.update(old.key, JSON.stringify($.extend(true, {}, /*JSON.parse(old.content||'{}'),*/{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
+        formPage.update(old.key, JSON.stringify($.extend(false, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
       });
     }else{
-      toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Supported');
+      toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
     }
   }});
 }
@@ -103,7 +156,7 @@ function modalForm(form, name, onSave) {
       this.ref.modal('hide');
       
     }.bind(this))
-    this.ref.modal();
+    this.ref.modal({backdrop: 'static'});
 
     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
     $('.modal #form').keydown(function(event) {
@@ -136,7 +189,7 @@ function modalForm(form, name, onSave) {
     var temp = $.extend(true, {}, form);
     for(var i in temp.fields){
 
-      temp.fields[i] = Berry.normalizeItem(Berry.processOpts(temp.fields[i]), i);
+      temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
       switch(temp.fields[i].type) {
         case "select":
         case "radio":
@@ -155,7 +208,6 @@ function modalForm(form, name, onSave) {
     cb.collections[0].load(temp.fields);
   }
 }
-
 
 $('#save').on('click',function() {
   template_errors = templatePage.errors();
@@ -207,18 +259,13 @@ $('#save').on('click',function() {
           409: function(error) {
             test = JSON.parse(JSON.parse(error.responseText).error.message);
             toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
-
-
             conflictResults = {};
-
             conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
             conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
             conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
             conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
             conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
-
             modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-
           }.bind(this),
           401: function() {
             toastr.error('You are not authorized to perform this action', 'Not Authorized')
@@ -246,19 +293,19 @@ $('#import').on('click', function() {
         }
       })
   });
-})
-$('#publish').on('click', function() {
+});
 
+$('#publish').on('click', function() {
     $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Microapp',fields: [	
-        {label: 'Summary', required:true},
+        {label: 'Summary', required: true},
         {label: 'Description', type: 'textarea'}
-      ]}).on('save', function(){
+      ]}).on('save', function() {
         if(Berries.publish.validate()){
           $.ajax({
-            url: root+attributes.app_id+'/publish',
+            url: root + attributes.app_id + '/publish',
             data: this.toJSON(),
             method: 'PUT',
-            success: function(){
+            success: function() {
               Berries.publish.trigger('close');
               toastr.success('', 'Successfully Published')
             },
@@ -268,25 +315,26 @@ $('#publish').on('click', function() {
           })
         }
   });
-})
-$('#instances').on('click', function() {
+});
 
-viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/app/{{group_id}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
-				$.get('/api/appinstances/?app_id='+loaded.app_id, function(data){
-							if(data.length > 0){
-								modal({title:'This App Instance was found on the following pages', content:viewTemplate.render({items:data})});
-							}else{
-								modal({title: 'No pages Found', content:'This App Instance is not currently placed on any pages.'});
-							}
-						})
-})
+$('#instances').on('click', function() {
+  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/app/{{group_id}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
+  $.get('/api/appinstances/?app_id=' + loaded.app_id, function(data) {
+    if(data.length > 0){
+      modal({title: 'This App Instance was found on the following pages', content: viewTemplate.render({items: data})});
+    }else{
+      modal({title: 'No pages Found', content: 'This App Instance is not currently placed on any pages.'});
+    }
+  })
+});
+
 $('#versions').on('click', function() {
   $.ajax({
-    url: root+loaded.app_id+'/versions',
+    url: root + loaded.app_id + '/versions',
     success: function(data) {
       console.log(data);
-      if(!orig.stable){
-              data.unshift({id:orig.id,label:'Working Version'})
+      if(!orig.stable) {
+        data.unshift({id:orig.id,label:'Working Version'})
       }
       Berry.btn.switch={
         label: 'Switch',
@@ -302,21 +350,20 @@ $('#versions').on('click', function() {
       }
 
       $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
-          {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
-      ]}).on('save',function() {
-// window.open(root+attributes.app_id+'/versions/'+this.toJSON().app_version_id, '_blank');
-    $.ajax({
-      url: root+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
-      method: 'get',
-      data: data,
-      success:function(data) {
-        data.app = loaded.app;
-        loaded = data;
-        load(loaded.code);
-        Berries.modal.trigger('close');
-      }
-    })
+        {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
+      ]}).on('save', function() {
         //switch version
+        $.ajax({
+          url: root+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
+          method: 'get',
+          data: data,
+          success:function(data) {
+            data.app = loaded.app;
+            loaded = data;
+            load(loaded.code);
+            Berries.modal.trigger('close');
+          }
+        })
       })
     }
   })

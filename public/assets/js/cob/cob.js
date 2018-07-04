@@ -60,7 +60,7 @@ function Cobler(options) {
 					animation: 50,
 					// delay: 200,
 					preventOnFilter: false,
-					filter: ".widget_active, input, textarea",
+					filter: "."+cob.options.active+", input, textarea",
 					onSort: function (/**Event*/evt) {
 						if(cob.options.remove) {
 								cob.options.removed = items.splice(parseInt(evt.item.dataset.start, 10), 1)[0];
@@ -163,7 +163,8 @@ function Cobler(options) {
 			var temp = renderItem.call(cob,item);
 			temp.className += ' ' + cob.options.active;
 			var modEL = elementOf(item);
-		 	var a = modEL.parentNode.replaceChild(temp, modEL);
+			 var a = modEL.parentNode.replaceChild(temp, modEL);
+			 debugger;
 		 	if(typeof item.initialize !== 'undefined'){
 				item.initialize(temp)
 			}

@@ -18,29 +18,27 @@ function App() {
 		this.draw();
 	}
 	function refresh(skipFetch) {
-		$.ajax({
-		type: 'GET',
-		url:'/api/fetch/'+this.config.app_instance_id,
-		success:function(data){
-			this.app.update(data);
-			this.destroy();
-			this.config = $.extend(true, {}, this.options.config);
+		this.destroy();
+		this.config = $.extend(true, {}, this.options.config);
+		this.$el.html(this.options.defaultHtml);
+		if(!skipFetch){
+			$.ajax({
+			type: 'GET',
+			url:'/api/fetch/'+this.config.app_instance_id,
+			success:function(data){		
+				this.load();
+				this.app.update(data);
+			}.bind(this),
+				error:function(data){
+					toastr.error(data.statusText, 'An error occured updating App')
+				}
+			})
+		}else{		
 			this.load();
-			// toastr.success('', 'Data refetched Successfully');
-		}.bind(this),
-		error:function(data){
-			toastr.error(data.statusText, 'An error occured updating App')
 		}
-		})
-
-		// this.destroy();
-		// this.config = $.extend(true, {}, this.options.config);
-		// this.load();
-		// this.app.trigger('refreshed')
 	}
 	function update(newData) {
 		$.extend(this.data, newData || {});
-		// $.extend(true, this.data, this.data.options,  this.data.user.options);
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
@@ -76,13 +74,20 @@ function App() {
 		find:function(selectors){
 			return this.$el[0].querySelectorAll(selectors)
 		}.bind(this),
-		render:function(template,data){
-			return Hogan.compile(this.partials[template]).render(data);
-		}.bind(this)
-
+		render:function(template, data){
+			return Hogan.compile(this.partials[template]).render(data || this.data);
+		}.bind(this),
+		version: function(){return '1.0.0'}
+		// debug:function(text){
+		// 	if(this.data.user.site_developer){
+		// 		console.log(text)
+		// 	}
+		// }.bind(this)
+		
 		//modal
 		//message
 		//dialog
+		//debug
 		//form
 			//alert?
 
@@ -95,10 +100,6 @@ function App() {
 }
  
 berryAppEngine = function(options) {
-		var item = {
-		user_edit: false,
-		loaded:false
-	};
   this.load = function() {
 		this.partials = {};
 		for(var i in this.config.templates) {
@@ -115,8 +116,11 @@ berryAppEngine = function(options) {
 		}
 
 		var mountResult = (function(data, script) {
-			eval(script);
-			return mount.call({data:data});			
+			try{
+				eval(script);
+				return mount.call({data:data});	
+			}catch(e){
+			}		
 		})(this.options.data || {}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
@@ -133,9 +137,6 @@ berryAppEngine = function(options) {
 
 		this.data.options = $.extend({}, this.data.options);
 
-		// $.extend(true, this.data.options, this.data.user.options);
-		// $.extend(this.data, this.data.options);
-
     this.$el = this.options.$el;
     if(typeof this.app == 'undefined'){
       this.app = App.call(this)
@@ -147,6 +148,7 @@ berryAppEngine = function(options) {
   }
 
   this.draw = function() {
+		this.options.defaultHtml = this.$el.html();
     this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
 
 		this.$el.find('[data-toggle="tooltip"]').tooltip();
@@ -165,7 +167,6 @@ berryAppEngine = function(options) {
 					success:function(data){
 						this.app.update( { user: { options:data.options } } );
 						this.optionsupdated();
-						// toastr.success('', 'Options Updated Successfully');
 					}.bind(this),
 					error:function(data) {
 							toastr.error(data.statusText, 'An error occured updating options')
@@ -217,6 +218,5 @@ berryAppEngine = function(options) {
 	this.optionsupdated = function() {
 		this.app.trigger('options');
 	}
-	setTimeout(this.load.bind(this),0)
-	// this.load();
+	setTimeout(this.load.bind(this), 0)
 }
