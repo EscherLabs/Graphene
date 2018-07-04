@@ -110,11 +110,11 @@ class PageController extends Controller
             // Redirect to first page or first app in this group
             $myPage = Page::where('group_id','=', $group)->first();
             if(!is_null($myPage)){
-                return redirect('/page/'.$groupObj->slug.'/'.$myPage->slug);
+                return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
             } else {
                 $myAppInstance = AppInstance::where('group_id','=', $group)->first();
                 if(!is_null($myAppInstance)){
-                    return redirect('/app/'.$groupObj->slug.'/'.$myAppInstance->slug);
+                    return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
                 } else {
                     abort(404);
                 }

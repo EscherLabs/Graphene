@@ -45,9 +45,9 @@ class UserDashboardController extends Controller
         }
         if (isset($group_links[0])) {
             if (isset($group_links[0]->pages[0])) {
-                return redirect('/page/'.$group_links[0]->slug.'/'.$group_links[0]->pages[0]->slug);
+                return redirect('/page/'.strtolower($group_links[0]->slug).'/'.strtolower($group_links[0]->pages[0]->slug));
             } else if (isset($group_links[0]->app_instances[0])) {
-                return redirect('/app/'.$group_links[0]->slug.'/'.$group_links[0]->app_instances[0]->slug);
+                return redirect('/app/'.strtolower($group_links[0]->slug).'/'.strtolower($group_links[0]->app_instances[0]->slug));
             }
         }
         

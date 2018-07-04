@@ -33,12 +33,15 @@ class Templater {
 
         // Strip Out App Instances and Pages User Doesn't Have Permission to See
         foreach($data['apps_pages'] as $index => $group_apps_pages) {
+            $data['apps_pages'][$index]['slug'] = strtolower($data['apps_pages'][$index]['slug']);
             foreach($group_apps_pages->pages as $page_index => $page) {
+                $data['apps_pages'][$index]->pages[$page_index]['slug'] = strtolower($data['apps_pages'][$index]->pages[$page_index]['slug']);
                 if (Auth::user()!==null && !Auth::user()->can('get', $page)) {
                     unset($data['apps_pages'][$index]->pages[$page_index]);
                 }
             }
             foreach($group_apps_pages->app_instances as $app_instance_index => $app_instance) {
+                $data['apps_pages'][$index]->app_instances[$app_instance_index]['slug'] = strtolower($data['apps_pages'][$index]->app_instances[$app_instance_index]['slug']);
                 if (Auth::user()!==null && !Auth::user()->can('fetch', $app_instance)) {
                     unset($data['apps_pages'][$index]->app_instances[$app_instance_index]);
                 }
@@ -55,7 +58,7 @@ class Templater {
               $data['group']['apps_pages'] =[];
             }
             $data['group']['apps_pages']['group_id'] = $data['group']['id'];
-            $data['group']['apps_pages']['group_slug'] = $data['group']['slug'];
+            $data['group']['apps_pages']['group_slug'] = strtolower($data['group']['slug']);
             if(isset($data['user']) && isset($data['user']['content_admin_groups']) && isset($data['user']['apps_admin_groups'])){
                 $data['group']['admin'] = in_array($data['group']['id'], $data['user']['content_admin_groups']) || in_array($data['group']['id'], $data['user']['apps_admin_groups']);   
             }
@@ -65,7 +68,7 @@ class Templater {
 
         foreach($data['apps_pages'] as $index => $link) {
             $data['apps_pages'][$index]['group_id'] = $link['id'];
-            $data['apps_pages'][$index]['group_slug'] = $link['slug'];
+            $data['apps_pages'][$index]['group_slug'] = strtolower($link['slug']);
             if (count($link['app_instances'])>0 || count($link['pages'])>0) {
                 $data['apps_pages'][$index]['has_apps_or_pages'] = true;
             }  
