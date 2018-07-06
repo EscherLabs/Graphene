@@ -26,8 +26,8 @@ function App() {
 			type: 'GET',
 			url:'/api/fetch/'+this.config.app_instance_id,
 			success:function(data){		
-				this.load();
 				this.app.update(data);
+				this.load();
 			}.bind(this),
 				error:function(data){
 					toastr.error(data.statusText, 'An error occured updating App')
