@@ -40,7 +40,6 @@
 
 		<script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
 		<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
-		<script type='text/javascript' src='//cdn.tinymce.com/4/tinymce.min.js'></script>
 		<script type='text/javascript' src='/assets/js/templates/widget.js'></script>
 	    <script src='/assets/js/lib.js'></script> 
 

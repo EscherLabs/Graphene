@@ -120,6 +120,7 @@ Cobler.types.select = function(container) {
 					delete temp.options;
 				}
 			}
+
 			}
 				
 			return temp;
@@ -152,7 +153,7 @@ Cobler.types.select = function(container) {
 			{type: 'text', label: 'External List', name: 'choices'},
 
 			{type: 'text', label: 'Label key', name: 'label_key',show:{'not_matches':{"name":"choices","value":""}}},
-			{type: 'text', label: 'Value key', name: 'value_key',show:{'not_matches':{"name":"choices","value":""}}},
+			{type: 'text', label: 'Value key', name: 'value_key'},
 
 			{type: 'number', label: 'Max', name: 'max',show:{'matches':{"name":"choices","value":""}}},
 			{type: 'number', label: 'Min', name: 'min',placeholder:'1',show:{'not_matches':{"name":"max","value":0}}},
@@ -167,7 +168,7 @@ Cobler.types.select = function(container) {
 		{type: 'fieldset', name:'choices_c', legend: '<i class="fa fa-th-list"></i> Options', hideLabel: true,  inline: true, fields:[
 			{type: 'fieldset', label: false, multiple: {duplicate: true}, name: 'options', fields: [
 				{label: 'Label'},
-				{label: 'Value'}
+				{label: 'Value',show:{'not_matches':{"name":"value_key","value":"index"}}}
 			]}
 		]}
 	]
