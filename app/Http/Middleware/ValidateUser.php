@@ -56,8 +56,8 @@ class ValidateUser
 
         $developer_apps = []; $groups = []; $content_admin_groups = []; $apps_admin_groups = []; $is_developer = false; $is_admin = false;
 
-        // Store Critical User Info in Session for 5 Minutes, Regenerate After
-        if (Auth::user()->invalidate_cache !== true && session()->has('user_data_timestamp') && session('user_data_timestamp') + (5*60) >= time()) {
+        // Store Critical User Info in Session for 1 Minute, Regenerate After
+        if (Auth::user()->invalidate_cache !== true && session()->has('user_data_timestamp') && session('user_data_timestamp') + (1*60) >= time()) {
             Auth::user()->content_admin_groups = session('content_admin_groups');
             Auth::user()->apps_admin_groups = session('apps_admin_groups');
             Auth::user()->groups = session('groups');
