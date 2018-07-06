@@ -119,8 +119,10 @@ class Templater {
             'loader' => $loader,
             'partials_loader' => $partials_loader,
         ]);
-    
-        $tpl = $m->loadTemplate('main');
+    if (!isset($data['template'])) {
+        $data['template'] = 'main';
+    }   
+        $tpl = $m->loadTemplate($data['template']);
         return $tpl->render($data);
     }
 }

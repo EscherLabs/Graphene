@@ -57,8 +57,9 @@ $.ajax({
 			if(typeof Berries.user_options_default !== 'undefined') {
 				item.user_options_default = Berries.user_options_default.toJSON();
 			}
-			item.resources = Berries.resources.toJSON().resources;
-
+			if(typeof Berries.resources !== 'undefined') {
+				item.resources = Berries.resources.toJSON().resources;
+			}
 			$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', data: item, success:function(){
 					toastr.success('', 'Successfully updated App Instance')
 				}.bind(this),
@@ -68,7 +69,7 @@ $.ajax({
 			});
 
 		})
-		if(_.findWhere(data.app.code.forms,{name:"Options"}).content){
+		if(typeof data.app.code.forms !== 'undefined' && _.findWhere(data.app.code.forms,{name:"Options"}).content){
 			$('#optionstab').show();
 			var options = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.app.code.forms,{name:"Options"}).content)) 
 			$('#optionstab').toggle(!!options.fields.length);
@@ -77,7 +78,7 @@ $.ajax({
 			options.name = 'options';
 			$('#options .col-sm-9').berry(options);
 		}
-		if(_.findWhere(data.app.code.forms,{name:"User Options"}).content){
+		if(typeof data.app.code.forms !== 'undefined' && _.findWhere(data.app.code.forms,{name:"User Options"}).content){
 			var user_options_default = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.app.code.forms,{name:"User Options"}).content)) 
 			$('#useroptionstab').toggle(!!user_options_default.fields.length);
 			user_options_default.attributes = data.user_options_default || {};
@@ -85,7 +86,7 @@ $.ajax({
 			user_options_default.name = 'user_options_default';
 			$('#user_options_default .col-sm-9').berry(user_options_default);
 		}
-		if(data.app.code.resources[0].name !== '') {	
+		if(typeof data.app.code.resources !== 'undefined' && data.app.code.resources[0].name !== '') {	
 			$('#resoucestab').show();
 			var attributes = $.extend(true, [], data.resources,data.app.code.resources);
 

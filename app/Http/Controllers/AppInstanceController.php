@@ -106,8 +106,11 @@ class AppInstanceController extends Controller
     {
         return $app_instance->set_user_options(Auth::user(),$request->get('options'));
     }
+    public function run($group, $slug = null, Request $request) {
+        return $this->render("main", $group, $slug, $request);
+    }
 
-    public function run($group, $slug, Request $request) {
+    public function render($renderer = "main", $group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
             $groupObj = Group::with('composites')->where('slug','=',$group)->first();       
 			$group = $groupObj->id;
@@ -136,11 +139,14 @@ class AppInstanceController extends Controller
         $myApp->findVersion();
         $scripts = [];
         $styles = [];
-        foreach($myApp->app->code->resources as $resource){
-            if($resource->modifier == "script"){
-                $scripts[] = array("src"=>$resource->path,"name"=>$resource->name);
-            }else if($resource->modifier == "css"){
-                $styles[] =  array("src"=>$resource->path,"name"=>$resource->name);
+
+        if($myApp->app->code && isset($myApp->app->code->resources) ) {
+            foreach($myApp->app->code->resources as $resource) {
+                if($resource->modifier == "script"){
+                    $scripts[] = array("src"=>$resource->path,"name"=>$resource->name);
+                }else if($resource->modifier == "css"){
+                    $styles[] =  array("src"=>$resource->path,"name"=>$resource->name);
+                }
             }
         }
         if($myApp != null) {
@@ -155,7 +161,8 @@ class AppInstanceController extends Controller
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
-                'styles'=>$styles
+                'styles'=>$styles,
+                'template'=>$renderer
             ]);
 
         }

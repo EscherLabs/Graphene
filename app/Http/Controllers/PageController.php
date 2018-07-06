@@ -71,13 +71,13 @@ class PageController extends Controller
             return 1;
         }
     }
-
     public function run($group, $slug = null, Request $request) {
-        //$this->middleware('cas.auth');
-        
+        return $this->render("main", $group, $slug, $request);
+    }
+
+    public function render($renderer = "main", $group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
-			// $groupObj = Group::with('composites')->where('slug','=',$group)->first();
-			// $group = $groupObj->id;
+
             $groupObj = Group::where('slug','=',$group)->first();
 
             if (Auth::user() && Auth::user()->group_admin($groupObj->id)) {
@@ -201,7 +201,7 @@ class PageController extends Controller
             $template = new Templater();
             return $template->render([
                 'apps_pages'=>$links, 
-                'apps'=>$apps, 
+                'apps'=>$apps,
                 'name'=>$myPage->name, 
                 'slug'=>$myPage->slug, 
                 'config'=>$config, 
@@ -209,7 +209,8 @@ class PageController extends Controller
                 'id'=>$myPage->id,
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
-                'styles'=>$styles
+                'styles'=>$styles,
+                'template'=>$renderer
             ]);
         }
         abort(404,'Page not found');

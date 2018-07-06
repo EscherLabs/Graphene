@@ -27,7 +27,9 @@ Route::get('/css',function(){
   return $response;
 });
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
+Route::get('/ar/{renderer}/{group}/{slug?}', 'AppInstanceController@render');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
+Route::get('/r/{renderer}/{group}/{slug?}', 'PageController@render');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
 
