@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->nullable()->unique()->default(null);
             $table->string('password')->nullable();
             $table->json('params')->nullable();
+            $table->boolean('invalidate_cache')->default(false);
             $table->rememberToken();
             $table->timestamps();
             $table->index('unique_id');

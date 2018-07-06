@@ -10,8 +10,9 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = ['first_name', 'last_name', 'email', 'password'];
-    protected $hidden = ['password', 'remember_token','created_at','updated_at'];
+    protected $hidden = ['password', 'remember_token','created_at','updated_at','invalidate_cache'];
     protected $appends = ['options','groups','content_admin_groups','apps_admin_groups','site_admin','site_developer','tags','tags_array'];
+    protected $casts = ['invalidate_cache' => 'boolean', 'params' => 'object'];
 
     /* Transient Properties not saved in the database */
     public $developer_apps = [];
@@ -24,8 +25,6 @@ class User extends Authenticatable
     public $site_developer = false;
     public $site = null;
     public $options = null;
-
-    protected $casts = ['params' => 'object'];
 
     public function site_members() {
       return $this->hasMany(SiteMember::class);
@@ -103,7 +102,5 @@ class User extends Authenticatable
         return count($this->developer_apps)>0;
       }
       return in_array($app_id,$this->developer_apps);
-    }
-    
-
+    }    
 }

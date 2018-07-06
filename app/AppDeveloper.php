@@ -16,4 +16,13 @@ class AppDeveloper extends Model
     public function user() {
       return $this->belongsTo(User::class);
     }
+    public static function boot()
+    {
+      parent::boot();
+      self::saved(function($model){
+        $user = User::where('id','=',$model->user_id)->first();
+        $user->invalidate_cache = true;
+        $user->save();
+      });
+    }
 }
