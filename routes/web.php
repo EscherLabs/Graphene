@@ -29,6 +29,7 @@ Route::get('/css',function(){
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/ar/{renderer}/{group}/{slug?}', 'AppInstanceController@render');
 Route::get('/page/{group}/{slug?}', 'PageController@run');
+Route::get('/community/{group}/{slug?}', 'PageController@run'); /* Compatibility with old portal */
 Route::get('/r/{renderer}/{group}/{slug?}', 'PageController@render');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
