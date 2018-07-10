@@ -3,7 +3,7 @@
  */
 
 /* Move down content because we have a fixed navbar that is 50px tall */
-body.topbar {
+body {
   padding-top: 50px;
 }
 
@@ -71,16 +71,16 @@ body.topbar {
  * Main content
  */
 
-.mymain {
+.gr-main {
   padding: 20px;
 }
 @media (min-width: 768px) {
-  .mymain {
+  .gr-main {
     padding-right: 40px;
     padding-left: 40px;
   }
 }
-.mymain .page-header {
+.gr-main .page-header {
   margin-top: 0;
 }
 
@@ -109,7 +109,7 @@ body{
   background-color: #F0F0F4;
 }
 
-.mymain {
+.gr-main {
   padding: 20px;
 }
 
@@ -141,10 +141,10 @@ body{
     /*font-size: 16px;*/
     width:200px;
   }
-  body.topbar .sidebar {
+  body .sidebar {
     top: 50px;
   }
-  body.sidemenu #main-container{
+  body #main-container{
     margin-left:200px;
   }
 }

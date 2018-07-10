@@ -9,8 +9,8 @@ class Templater {
 
     private function set_defaults(&$data) {
         $data['site'] = config('app.site');
-        $data['topbar_enabled'] = Request::get('topbar') !== 'false';
-        $data['sidemenu_enabled'] = Request::get('sidemenu') !== 'false';
+        // $data['topbar_enabled'] = Request::get('topbar') !== 'false';
+        // $data['sidemenu_enabled'] = Request::get('sidemenu') !== 'false';
         $data['logged_in'] = Auth::check();
         $data['user'] = Auth::user();
         $data['user_md5_email'] = (null !== Auth::user())?md5(Auth::user()->email):'';

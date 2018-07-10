@@ -115,7 +115,7 @@ class EllucianMobileController extends Controller
                             'hideBeforeLogin'=>($page->public==1)?"false":"true",
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                                 ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
-                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/page/'.$group->slug.'/'.$page->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/r/app/'.$group->slug.'/'.$page->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
                         $counter++;
                     }
@@ -128,7 +128,7 @@ class EllucianMobileController extends Controller
                             'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                             ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
-                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/app/'.$group->slug.'/'.$app_instance->slug.'?nologin&topbar=false&sidemenu=false'],'order'=>(string)$counter,
+                            'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/ar/app/'.$group->slug.'/'.$app_instance->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
                         $counter++;
                     }

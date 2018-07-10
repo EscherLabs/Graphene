@@ -245,7 +245,7 @@ form.berry.tab-content {margin-top: 20px;}
 .editor .slice:hover .label {
 	z-index:-1
 }
-.slice  .slice-actions{position:absolute;top:5px;right:5px;z-index:6}
+.slice  .slice-actions{position:absolute;top:3px;right:5px;z-index:6}
 .panel-title a .fa-collapse:before{
   content:"\f107";
 }
@@ -265,3 +265,4 @@ thead .form-group{margin-bottom:0;}
 	display:block !important;
 }
 .editor .widget_active> form{padding:10px}
+.admin-main{padding:20px}

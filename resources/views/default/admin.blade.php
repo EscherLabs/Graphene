@@ -34,7 +34,7 @@
     @yield('top_page_styles')
   </head>
 
-  <body class="topbar sidemenu">
+  <body>
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
@@ -149,7 +149,7 @@
     <div class="container-fluid" id="main-container">
       <div class="row">
 
-        <div class="col-sm-12 mymain">
+        <div class="col-sm-12 admin-main">
             <div id="content">@yield('content')</div>
         </div>
       </div>

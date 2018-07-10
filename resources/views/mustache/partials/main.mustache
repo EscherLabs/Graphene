@@ -3,20 +3,9 @@
   <head>
     {{> core_head}}
   </head>
-  <body id="page" class="
-  {{#topbar_enabled}}
-  topbar
-  {{/topbar_enabled}}
-  {{#sidemenu_enabled}}
-  sidemenu
-  {{/sidemenu_enabled}}
-">
-    {{#topbar_enabled}}
-      {{> header}}
-    {{/topbar_enabled}}
-    {{#sidemenu_enabled}}
-      {{>menu}}
-    {{/sidemenu_enabled}}
+  <body id="page">
+    {{> header}}
+    {{>menu}}
     {{> core_container}}
     {{> footer}}
     {{> core_engine}}

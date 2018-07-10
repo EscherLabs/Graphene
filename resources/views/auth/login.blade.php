@@ -4,14 +4,9 @@
 Guest
 @endsection
 
-@section('body_classes')
-    @if(Request::get('sidemenu') !== 'false' && count($apps)>0)
-        sidemenu
-    @endif
-@endsection
 
 @section('sidemenu')
-    @if( Request::get('sidemenu') !== 'false' && count($links)>0))
+    @if(count($links)>0))
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         @if(isset($links))
