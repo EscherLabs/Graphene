@@ -97,7 +97,7 @@ $.ajax({
 			item.auth_config.cas_data_map = {};
 			item.auth_config.cas_data_map.default = Berries.cas_data_map_default.toJSON();
 			item.auth_config.cas_data_map.additional = 
-				_.object(_.map(Berries.cas_data_map_additional.toJSON().additional, function(x){return [x.name, x.value]}))
+				_.zipObject(_.map(Berries.cas_data_map_additional.toJSON().additional, function(x){return [x.name, x.value]}))
 			item.auth_config.external_user_lookup = Berries.external_user_lookup.toJSON();
 			var partials = templatePage.toJSON();
 				// var successCompile = false;
@@ -113,7 +113,7 @@ $.ajax({
 				//     toastr.error(e.message, e.name);
 				//     return false;
 				// }
-			var partials = _.indexBy(partials, 'name')
+			var partials = _.keyBy(partials, 'name')
 			for(var i in partials){
 				partials[i] = partials[i].content;
 			}

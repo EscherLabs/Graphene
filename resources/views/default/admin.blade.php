@@ -11,15 +11,14 @@
     @if(!empty(config('app.site')->theme->icon))
       <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{ config('app.site')->theme->icon }}.png" />
     @endif
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/css/toastr.min.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
     <link href="/assets/css/graphene.css" rel="stylesheet">
-    <link href="/assets/css/dashboard.css" rel="stylesheet">
     <link href="/assets/css/dropzone.css" rel="stylesheet">
     <!--@if(!empty(config('app.site')->theme->css))<style> {!! config('app.site')->theme->css !!}</style>@endif-->
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
@@ -155,20 +154,22 @@
       </div>
     </div>
 
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.2/hogan.min.js'></script>
-    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>		
-    <script type='text/javascript' src='/assets/js/vendor/summernote.min.js'></script>
-    <script type='text/javascript' src='/assets/js/vendor/dropzone.min.js'></script>
-		<script type="text/javascript" src="/assets/js/sortable.js"></script>
-		<script type="text/javascript" src="/assets/js/templates/admin.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js" charset="utf-8"></script>
-    <script src='//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'></script> 
+    <script src='/assets/js/vendor/jquery.min.js'></script>
+    <script src="/assets/js/vendor/bootstrap.min.js"></script>
+    <script src='/assets/js/vendor/hogan.min.js'></script>
+    <script src='/assets/js/vendor/lodash.min.js'></script>		
+    <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
+    
+    <script src='/assets/js/vendor/summernote.min.js'></script>
+    <script src='/assets/js/vendor/dropzone.min.js'></script>
+		<script src="/assets/js/sortable.js"></script>
+		<script src="/assets/js/templates/admin.js"></script>
+    <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
+    <script src='/assets/js/vendor/toastr.min.js'></script> 
     <script src='/assets/js/lib.js'></script> 
     @yield('end_body_scripts_top')
     <script src='/assets/js/vendor/berry.full.js'></script> 
-    <script src='https://rawgit.com/Cloverstone/Berry/master/bin/bootstrap.full.berry.js'></script> 
+    <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
     <script src='/assets/js/vendor/berrytables.full.js'></script> 
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
