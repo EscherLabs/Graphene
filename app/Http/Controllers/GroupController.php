@@ -87,28 +87,12 @@ class GroupController extends Controller
         return $group;
     }
 
-    public function sync(Request $request)
-    {
 
-    }
-
-
-    public function members_by_slug(Request $request, $slug)
+    public function update_group_by_slug(Request $request, $slug)
     {
         //Slug will be added here if new because it is fillable
         //If we chage this field the above will need to be considered
-        $group = Group::where(
-            ['slug' => $slug, 'site_id' => config('app.site')->id]
-        )->first();
-                
-        return $group->members()->with('bulkuser')->get()->pluck('bulkuser');
- 
-    }
-    public function update_by_slug(Request $request, $slug)
-    {
-        //Slug will be added here if new because it is fillable
-        //If we chage this field the above will need to be considered
-        $group = \App\Group::firstOrNew(
+        $group = Group::firstOrNew(
             ['slug' => $slug, 'site_id' => config('app.site')->id]
         );
 
@@ -126,20 +110,50 @@ class GroupController extends Controller
         return $group;
     }
 
-    public function populate(Request $request)
+    public function members_by_slug(Request $request, $slug)
     {
-        $group = \App\Group::where(
+        //Slug will be added here if new because it is fillable
+        //If we chage this field the above will need to be considered
+        $group = Group::where(
+            ['slug' => $slug, 'site_id' => config('app.site')->id]
+        )->firstOrFail();
+
+        return $group->members()->with('bulkuser')->get()->pluck('bulkuser');
+ 
+    }
+
+    public function add_members_by_slug(Request $request, $slug)
+    {
+        $group = Group::where(
             ['slug' => $request->get('slug'), 'site_id' => config('app.site')->id]
         )->firstOrFail();
 
         foreach($request->get('members') as $member){
-            $user = \App\User::firstOrNew(
+            $user = User::firstOrNew(
                 ['unique_id' => $member['unique_id']], $member
             );
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
             $user->save();
             $group->add_member($user, 'external');
+        }
+
+        return $group;
+    }
+
+    public function remove_members_by_slug(Request $request, $slug)
+    {
+        $group = Group::where(
+            ['slug' => $request->get('slug'), 'site_id' => config('app.site')->id]
+        )->firstOrFail();
+
+        foreach($request->get('members') as $member){
+            $user = User::where(
+                ['unique_id' => $member['unique_id']], $member
+            )->first();
+            if(isset($user)){
+                $group->remove_member($user);                
+            }
         }
 
         return $group;
