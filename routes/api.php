@@ -16,9 +16,15 @@ Route::group(['middleware' => ['public.api.auth'], 'prefix' => 'public'], functi
 
     /* Manage Groups */
     Route::get('/groups','GroupController@list_all_groups');
-    Route::get('/groups/sync/{slug}','GroupController@sync');
-    Route::post('/groups/populate','GroupController@populate');
+    Route::post('/groups/updatebyslug/{slug}','GroupController@update_by_slug');
 
+    Route::post('/groups/populate','GroupController@populate');
+    Route::post('/groups/sync','GroupController@sync');
+    
+    Route::get('/groups/members/{slug}', 'GroupController@members_by_slug');
+    Route::post('/groups/members/{slug}', 'GroupController@add_members_by_slug');
+    Route::delete('/groups/members/{slug}', 'GroupController@remove_members_by_slug');
+    
     // Route::get('/groups/user','GroupController@list_user_groups');
     // Route::get('/groups/{group}/summary','GroupController@summary');
     // Route::get('/groups/{group}','GroupController@show');

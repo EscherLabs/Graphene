@@ -87,7 +87,24 @@ class GroupController extends Controller
         return $group;
     }
 
-    public function sync(Request $request, $slug)
+    public function sync(Request $request)
+    {
+
+    }
+
+
+    public function members_by_slug(Request $request, $slug)
+    {
+        //Slug will be added here if new because it is fillable
+        //If we chage this field the above will need to be considered
+        $group = Group::where(
+            ['slug' => $slug, 'site_id' => config('app.site')->id]
+        )->first();
+                
+        return $group->members()->with('user')->get()->pluck('user');
+ 
+    }
+    public function update_by_slug(Request $request, $slug)
     {
         //Slug will be added here if new because it is fillable
         //If we chage this field the above will need to be considered
