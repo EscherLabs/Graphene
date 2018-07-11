@@ -101,7 +101,7 @@ class GroupController extends Controller
             ['slug' => $slug, 'site_id' => config('app.site')->id]
         )->first();
                 
-        return $group->members()->with('user')->get()->pluck('user');
+        return $group->members()->with('bulkuser')->get()->pluck('bulkuser');
  
     }
     public function update_by_slug(Request $request, $slug)

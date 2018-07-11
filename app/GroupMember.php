@@ -17,6 +17,10 @@ class GroupMember extends Model
       return $this->belongsTo(User::class);
     }
 
+    public function bulkuser() {
+      return $this->belongsTo(BulkUser::class, 'user_id');
+    }
+
     public static function boot()
     {
       parent::boot();
