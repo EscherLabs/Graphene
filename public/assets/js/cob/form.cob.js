@@ -23,14 +23,12 @@ Cobler.types.textbox = function(container) {
 			"help": "",
 			"required": false
 		}
-		temp = _.omit(temp,'validate');
-		
-debugger;
-		temp = _.omit(Berry.normalizeItem(temp, 0), function(v, k) {
+		temp = _.omitBy(temp,'validate');
+		temp = _.omitBy(Berry.normalizeItem(temp, 0), function(v, k) {
 			return initial[k] === v;
 		})
 		}
-		temp = _.omit(temp,'required');
+		temp = _.omitBy(temp,'required');
 		
 		return temp;
 	}
@@ -85,7 +83,6 @@ Cobler.types.select = function(container) {
 	}
 	function toJSON(opts) {
 		var temp = get();
-		
 		if(!opts.editor){
 			var initial = {
 				"isEnabled": true,
@@ -109,12 +106,12 @@ Cobler.types.select = function(container) {
 					}
 				]
 			}
-			temp = _.omit(temp,'validate');
+			temp = _.omitBy(temp,'validate');
 			
-			temp = _.omit(Berry.normalizeItem(temp, 0), function(v, k) {
+			temp = _.omitBy(Berry.normalizeItem(temp, 0), function(v, k) {
 				return initial[k] === v;
 			})
-			temp = _.omit(temp,'required');
+			temp = _.omitBy(temp,'required');
 			if(typeof temp.options !== 'undefined' && temp.options.length == 1){
 				if((typeof temp.options.label == 'undefined' || temp.options.label == '') && (typeof temp.options.value == 'undefined' || temp.options.value == '')){
 					delete temp.options;
@@ -208,12 +205,12 @@ Cobler.types.checkbox = function(container) {
 				"help": "",
 				"required": false
 			}
-			temp = _.omit(temp,'validate');
+			temp = _.omitBy(temp,'validate');
 			
-			temp = _.omit(Berry.normalizeItem(temp, 0), function(v, k) {
+			temp = _.omitBy(Berry.normalizeItem(temp, 0), function(v, k) {
 				return initial[k] === v;
 			})
-			temp = _.omit(temp,'required');
+			temp = _.omitBy(temp,'required');
 			}
 
 			return temp;
