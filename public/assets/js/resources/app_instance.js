@@ -103,3 +103,11 @@ $.ajax({
 		}
 	}
 });
+
+$(document).keydown(function(e) {
+  if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      $('#save').click()
+  }
+  return true;
+});
