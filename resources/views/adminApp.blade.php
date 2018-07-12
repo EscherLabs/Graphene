@@ -53,7 +53,7 @@
   <script src='//unpkg.com/ractive/ractive.min.js'></script>    
 
   <script src='/assets/js/paged.js'></script> 
-  <script type="text/javascript" src="/assets/js/sortable.js"></script>
+  <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>

@@ -89,12 +89,6 @@ $.ajax({
 							toastr.error(e.statusText, 'ERROR');
 						}.bind(model)
 					});
-
-
-
-
-
-					debugger;
 				}, model)
 			}},
 		]

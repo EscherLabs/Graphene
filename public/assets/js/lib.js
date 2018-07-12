@@ -59,3 +59,39 @@ function modal(options) {
   this.ref.modal();
   return this;
 };
+
+
+function processFilter(){
+	var	currentTarget = this.currentTarget;
+	var collection;
+	if(this.selector){
+		collection = $(this.selector).find('.filterable')
+	}else{
+		collection = $('.filterable');
+	}
+	collection.each(
+	function(){
+    if($.score($(this).text().replace(/\s+/g, " ").toLowerCase(), $(currentTarget).val().toLowerCase() ) > ($(currentTarget).data('score') || 0.40)){
+			$(this).removeClass('nodisplay');
+		}else{
+			$(this).addClass('nodisplay');
+		}
+	});
+}
+
+
+filterTimer = null;
+$('body').on('keyup','[name=filter]', function(event){
+
+	this.currentTarget = event.currentTarget;
+	this.selector = $(this).data('selector');
+	if(!$(this).hasClass("delay")){
+		processFilter.call(this);
+	}else{
+  	clearTimeout(filterTimer);
+  	filterTimer=setTimeout($.proxy(processFilter, this), 300);
+	}
+});
+
+templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
+
