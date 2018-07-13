@@ -114,6 +114,8 @@ class GroupController extends Controller
         if(!isset($slug)){
             if($request->has('slug')) {
                 $slug = $request->get('slug');
+            }else{
+                abort(400);
             }
         }
 
@@ -134,6 +136,8 @@ class GroupController extends Controller
         if(!isset($slug)){
             if($request->has('slug')) {
                 $slug = $request->get('slug');
+            }else{
+                abort(400);
             }
         }
 
@@ -147,7 +151,7 @@ class GroupController extends Controller
             );
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
-            if(issert($member['params'])){
+            if(isset($member['params'])){
                 $user->params = array_merge($user->params, $member['params']);
             }
             $user->save();
@@ -161,6 +165,8 @@ class GroupController extends Controller
         if(!isset($slug)){
             if($request->has('slug')) {
                 $slug = $request->get('slug');
+            }else{
+                abort(400);
             }
         }
 
