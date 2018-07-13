@@ -145,7 +145,7 @@ class GroupController extends Controller
             ['slug' =>  $slug, 'site_id' => config('app.site')->id]
         )->firstOrFail();
 
-        foreach($request->get('members') as $member){
+        foreach($request->get('members') as $member) {
             $user = User::firstOrNew(
                 ['unique_id' => $member['unique_id']], $member
             );
@@ -154,8 +154,11 @@ class GroupController extends Controller
             if(isset($member['params'])){
                 $user->params = array_merge((array)$user->params, $member['params']);
             }
-            $user->save();
-            $group->add_member($user, 'external');
+            try {
+                $user->save();
+                $group->add_member($user, 'external');
+            } catch (Exception $e) {
+            }
         }
 
         return $group;
