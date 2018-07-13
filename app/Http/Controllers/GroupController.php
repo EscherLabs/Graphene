@@ -149,19 +149,19 @@ class GroupController extends Controller
         )->firstOrFail();
 
         foreach($request->get('members') as $member) {
-            try {
-                $user = User::firstOrNew(
-                    ['unique_id' => $member['unique_id']], $member
-                );
-                //This must be set seperately because it is not fillable
-                $user->unique_id = $member['unique_id'];
-                if(isset($member['params'])){
-                    $user->params = array_merge((array)$user->params, $member['params']);
-                }
-                $user->save();
-                $group->add_member($user, 'external');
-            } catch (Exception $e) {
+            $user = User::where(['unique_id' => $member['unique_id']])->orWhere(['email' => $member['email']])->first();
+            if(is_null($user)){
+                $user = new User();
             }
+            $user->update($member);
+
+            //This must be set seperately because it is not fillable
+            $user->unique_id = $member['unique_id'];
+            if(isset($member['params'])){
+                $user->params = array_merge((array)$user->params, $member['params']);
+            }
+            $user->save();
+            $group->add_member($user, 'external');
         }
 
         return $group;
