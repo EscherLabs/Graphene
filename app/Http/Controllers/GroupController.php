@@ -123,7 +123,11 @@ class GroupController extends Controller
             ['slug' => $slug, 'site_id' => config('app.site')->id]
         )->firstOrFail();
 
-        return $group->members()->with('bulkuser')->get()->pluck('bulkuser');
+        if($request->has('status')){
+          return $group->members()->where('status', '=', $request->get('status'))->with('bulkuser')->get()->pluck('bulkuser');
+        }else{
+          return $group->members()->with('bulkuser')->get()->pluck('bulkuser');
+        }
     }
 
     public function add_members_by_slug(Request $request, $slug) {
@@ -144,7 +148,7 @@ class GroupController extends Controller
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
             if(issert($member['params'])){
-                $user->params = array_merge($member['params'], $user->params);
+                $user->params = array_merge($user->params, $member['params']);
             }
             $user->save();
             $group->add_member($user, 'external');
