@@ -110,8 +110,13 @@ class GroupController extends Controller
         return $group;
     }
 
-    public function members_by_slug(Request $request, $slug)
-    {
+    public function members_by_slug(Request $request, $slug) {   
+        if(!isset($slug)){
+            if($request->has('slug')) {
+                $slug = $request->get('slug');
+            }
+        }
+
         //Slug will be added here if new because it is fillable
         //If we chage this field the above will need to be considered
         $group = Group::where(
@@ -119,13 +124,17 @@ class GroupController extends Controller
         )->firstOrFail();
 
         return $group->members()->with('bulkuser')->get()->pluck('bulkuser');
- 
     }
 
-    public function add_members_by_slug(Request $request, $slug)
-    {
+    public function add_members_by_slug(Request $request, $slug) {
+        if(!isset($slug)){
+            if($request->has('slug')) {
+                $slug = $request->get('slug');
+            }
+        }
+
         $group = Group::where(
-            ['slug' => $request->get('slug'), 'site_id' => config('app.site')->id]
+            ['slug' =>  $slug, 'site_id' => config('app.site')->id]
         )->firstOrFail();
 
         foreach($request->get('members') as $member){
@@ -134,6 +143,9 @@ class GroupController extends Controller
             );
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
+            if(issert($member['params'])){
+                $user->params = array_merge($member['params'], $user->params);
+            }
             $user->save();
             $group->add_member($user, 'external');
         }
@@ -141,10 +153,15 @@ class GroupController extends Controller
         return $group;
     }
 
-    public function remove_members_by_slug(Request $request, $slug)
-    {
+    public function remove_members_by_slug(Request $request, $slug) {
+        if(!isset($slug)){
+            if($request->has('slug')) {
+                $slug = $request->get('slug');
+            }
+        }
+
         $group = Group::where(
-            ['slug' => $request->get('slug'), 'site_id' => config('app.site')->id]
+            ['slug' => $slug, 'site_id' => config('app.site')->id]
         )->firstOrFail();
 
         foreach($request->get('members') as $member){
