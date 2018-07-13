@@ -150,11 +150,11 @@ class GroupController extends Controller
 
         foreach($request->get('members') as $member) {
             $user = User::where(['unique_id' => $member['unique_id']])->orWhere(['email' => $member['email']])->first();
-            if(is_null($user)){
-                $user = new User();
+            if(!isset($user)){
+                $user = new User($member);
+            }else{
+                $user->update($member);
             }
-            $user->update($member);
-
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
             if(isset($member['params'])){
