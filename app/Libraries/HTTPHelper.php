@@ -7,10 +7,11 @@ class HTTPHelper {
     public function http_fetch($url, $verb='GET', $request_data=[],$username=null,$password=null) {
         // Build HTTP Request
         $request_config = [];
+        $request_config['ignore_errors'] = true;
         $request_config['method'] = $verb;
-        $request_config['header'] = 'Content-type: application/x-www-form-urlencoded';
+        $request_config['header'] = "Content-type: application/x-www-form-urlencoded\r\n"."User-Agent: rest\r\n";
         if (!is_null($username)) {
-            $request_config['header'] .= "\r\nAuthorization: Basic ".base64_encode($username.':'.$password);
+            $request_config['header'] .= "Authorization: Basic ".base64_encode($username.':'.$password)."\r\n";
         }
         if ($verb == 'GET') {
             $url_parts = parse_url($url);
