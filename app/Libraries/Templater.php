@@ -100,6 +100,9 @@ class Templater {
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
 
+        if(!(Auth::user()->app_developer() || Auth::user()->site_developer)) {
+            $data['apps_json'] = preg_replace('/(?:\s\s+)/', ' ', preg_replace('/(?:\\\n+|\\\t+)/', ' ', $data['apps_json']));            
+        }
         $site_templates = config('app.site')->select('templates')->first()->templates;
 
         $loader = new \Mustache_Loader_CascadingLoader(array(

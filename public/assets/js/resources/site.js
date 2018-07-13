@@ -118,7 +118,7 @@ $.ajax({
 				partials[i] = partials[i].content;
 			}
 			item.templates = {partials:partials}
-			if(!item.templates.partials.main.length){
+			if(typeof item.templates.partials.main !== 'undefined' && !item.templates.partials.main.length){
 				delete item.templates.partials.main;
 			}
 			// item.templates.partials = partials;
