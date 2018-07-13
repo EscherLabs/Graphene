@@ -96,8 +96,8 @@ $.ajax({
 			item.auth_config = Berries.cas_config.toJSON();
 			item.auth_config.cas_data_map = {};
 			item.auth_config.cas_data_map.default = Berries.cas_data_map_default.toJSON();
-			item.auth_config.cas_data_map.additional = 
-				_.zipObject(_.map(Berries.cas_data_map_additional.toJSON().additional, function(x){return [x.name, x.value]}))
+			item.auth_config.cas_data_map.additional = _.zipObject(_.map(Berries.cas_data_map_additional.toJSON().additional, 'name'), _.map(Berries.cas_data_map_additional.toJSON().additional, 'value'))
+			
 			item.auth_config.external_user_lookup = Berries.external_user_lookup.toJSON();
 			var partials = templatePage.toJSON();
 				// var successCompile = false;
