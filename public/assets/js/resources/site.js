@@ -121,6 +121,10 @@ $.ajax({
 			if(typeof item.templates.partials.main !== 'undefined' && !item.templates.partials.main.length){
 				delete item.templates.partials.main;
 			}
+
+			if(_.size(item.templates.partials) == 0){
+				item.templates = 'false';
+			}
 			// item.templates.partials = partials;
 
 			$.ajax({url: '/api/sites/'+item.id, type: 'PUT', data: item, success:function(){

@@ -40,8 +40,11 @@ class SiteController extends Controller
     }
 
     public function update(Request $request, Site $site)
-    {
-        $site->update($request->all());
+    {   $site_config = $request->all();
+        if($request->has('templates') && $request->get('templates') == 'false'){
+            $site_config['templates'] = ['partials'=>[]];
+        }
+        $site->update($site_config);
         return $site;
     }
 
