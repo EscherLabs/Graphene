@@ -34,7 +34,7 @@ body {
   display: none;
 }
 @media (min-width: 768px) {
-  .sidebar {
+  body .sidebar {
     position: fixed;
     top: 51px;
     bottom: 0;
@@ -132,22 +132,7 @@ body{
   border:solid 1px #ddd;
 }
 
-@media (min-width: 768px) {
-  .sidebar {
-    top:0;
-    border-right: 0;
-    padding: 0 20px;
-    background-color: #273135;
-    /*font-size: 16px;*/
-    width:200px;
-  }
-  body .sidebar {
-    top: 50px;
-  }
-  body#page #main-container{
-    margin-left:200px;
-  }
-}
+
 
 .navbar-inverse {
   background-color: #333;
@@ -244,7 +229,7 @@ body{
   content:"\f060";
   left: 4px;
 }
-.editor .main:hover .cobler_container {
+.editor .generated-content:hover .cobler_container {
     min-height: 100px;
     outline: dashed 1px #aaa;
 }
@@ -337,7 +322,7 @@ body{
 *:hover > .parent-hover{visibility: visible;}
 .cobler_container{list-style:none;/*padding-left:0;*/}
 .cobler_container > li > .parent-hover{z-index: 10;opacity:.6;position:absolute;top:3px;right:3px;}
-.cobler_container > li{position: relative;display: block;overflow:hidden;}
+.cobler_container > li{position: relative;display: block;}
 .cobler_container > li:hover{outline:dashed 1px #ccc;z-index: 1}
 .cobler_container > li.sortable-chosen {outline:none;outline:dashed 1px #222;background:#fff;}
 .cobler_container > li.sortable-ghost {opacity: 1;border:solid 0px #ccc;}
@@ -608,5 +593,20 @@ thead .form-group{margin-bottom:0;}
 @media (min-width: 768px) {
   .admin-main{
     padding-left:220px;    
+  }
+}
+@media (min-width: 768px) {
+  body .sidebar {
+    top:0;
+    border-right: 0;
+    padding: 0 20px;
+    background-color: #273135;
+    /*font-size: 16px;*/
+    width:200px;    
+    top: 50px;
+  }
+
+  body#page #main-container{
+    margin-left:200px;
   }
 }
