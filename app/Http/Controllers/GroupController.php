@@ -152,7 +152,7 @@ class GroupController extends Controller
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
             if(isset($member['params'])){
-                $user->params = array_merge($user->params, $member['params']);
+                $user->params = array_merge((array)$user->params, $member['params']);
             }
             $user->save();
             $group->add_member($user, 'external');
