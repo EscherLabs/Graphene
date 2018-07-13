@@ -21,7 +21,7 @@ Route::group(['middleware' => ['public.api.auth'], 'prefix' => 'public'], functi
     
     Route::get('/groups/members/{slug?}', 'GroupController@members_by_slug');
     Route::post('/groups/members/{slug?}', 'GroupController@add_members_by_slug');
-    Route::delete('/groups/members/{slu?}', 'GroupController@remove_members_by_slug');
+    Route::delete('/groups/members/{slug?}', 'GroupController@remove_members_by_slug');
     
     // Route::get('/groups/user','GroupController@list_user_groups');
     // Route::get('/groups/{group}/summary','GroupController@summary');
