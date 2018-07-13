@@ -111,6 +111,7 @@ class GroupController extends Controller
     }
 
     public function members_by_slug(Request $request, $slug) {   
+        set_time_limit ( 600 );
         if(!isset($slug)){
             if($request->has('slug')) {
                 $slug = $request->get('slug');
@@ -133,6 +134,8 @@ class GroupController extends Controller
     }
 
     public function add_members_by_slug(Request $request, $slug) {
+        set_time_limit ( 600 );
+
         if(!isset($slug)){
             if($request->has('slug')) {
                 $slug = $request->get('slug');
@@ -165,6 +168,7 @@ class GroupController extends Controller
     }
 
     public function remove_members_by_slug(Request $request, $slug) {
+        set_time_limit ( 600 );
         if(!isset($slug)){
             if($request->has('slug')) {
                 $slug = $request->get('slug');
