@@ -188,33 +188,35 @@ class PortalMigration extends Seeder
             $endpoints_db = DB::connection('mysql-portal')->table('endpoints')->get();
             $endpoints_index = [];
             foreach($endpoints_db as $index => $endpoint_db) {
-                try {
-                    $endpoint = new \App\Endpoint;
-                    $endpoint->site_id = $site_id;
-                    $endpoint->name = $endpoint_db->name;
-
-                    if ($endpoint_db->password === '') {
-                        $password = '';
-                    } else {
-                        // Decrypt Existing Password
-                        $payload = json_decode(base64_decode($endpoint_db->password), true);
-                        $value = base64_decode($payload['value']);
-                        $iv = base64_decode($payload['iv']);
-                        $password = unserialize(mcrypt_decrypt(MCRYPT_RIJNDAEL_128,$key,$value,MCRYPT_MODE_CBC,$iv));
-                    }
-
-                    $endpoint->config = [
-                        'url'=>$endpoint_db->target,
-                        'username'=>$endpoint_db->username,
-                        'secret'=>$password,
-                    ];
-                    $endpoint->type = 'http_basic_auth';
-                    $endpoint->group_id = $groups_index[$endpoint_db->group_id]->id;
-                    $endpoint->save();
-                    $endpoints_index[$endpoint_db->id] = $endpoint;
-                } catch (Exception $e) {
-                    echo 'Caught exception: ',  $e->getMessage(), "\n";
-                    echo "The exception was created on line: " . $e->getLine(). "\n";
+                if (isset($groups_index[$endpoint_db->group_id])) {
+                    try {
+                        $endpoint = new \App\Endpoint;
+                        $endpoint->site_id = $site_id;
+                        $endpoint->name = $endpoint_db->name;
+    
+                        if ($endpoint_db->password === '') {
+                            $password = '';
+                        } else {
+                            // Decrypt Existing Password
+                            $payload = json_decode(base64_decode($endpoint_db->password), true);
+                            $value = base64_decode($payload['value']);
+                            $iv = base64_decode($payload['iv']);
+                            $password = unserialize(mcrypt_decrypt(MCRYPT_RIJNDAEL_128,$key,$value,MCRYPT_MODE_CBC,$iv));
+                        }
+    
+                        $endpoint->config = [
+                            'url'=>$endpoint_db->target,
+                            'username'=>$endpoint_db->username,
+                            'secret'=>$password,
+                        ];
+                        $endpoint->type = 'http_basic_auth';
+                        $endpoint->group_id = $groups_index[$endpoint_db->group_id]->id;
+                        $endpoint->save();
+                        $endpoints_index[$endpoint_db->id] = $endpoint;
+                    } catch (Exception $e) {
+                        echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        echo "The exception was created on line: " . $e->getLine(). "\n";
+                    }    
                 }
             }
 
