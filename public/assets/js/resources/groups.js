@@ -1,8 +1,3 @@
-templates["group_view"] = new Hogan.Template({code: function (c,p,i) { var t=this;t.b(i=i||"");t.b("<li id=\"list_");t.b(t.v(t.f("id",c,p,0)));t.b("\" data-id=\"");t.b(t.v(t.f("id",c,p,0)));t.b("\" class=\"list-group-item filterable\">");t.b("\n" + i);t.b("	<div class=\"sortableContent\">");t.b("\n" + i);t.b("	<div class=\"handle\"></div>");t.b("\n" + i);t.b("	");t.b(t.v(t.f("name",c,p,0)));t.b("\n" + i);t.b("	</div>");t.b("\n" + i);t.b("</li>");return t.fl(); },partials: {}, subs: {  }});
-
-render('group_view');
-templates.listing = Hogan.compile('<ol id="sorter" class="list-group" style="margin: -15px;">{{#items}}{{>group_view}}{{/items}}</ol>');
-
 $('.navbar-header .nav a h4').html('Groups');
 $.ajax({
 	url: url,
@@ -27,7 +22,7 @@ $.ajax({
 				var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
 
 				// tempdata = _.sortBy(tempdata, 'order');
-				mymodal = modal({title: "Sort Groups", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+				mymodal = modal({title: "Sort Groups", content: templates.sortlist.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
 
 				Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
 

@@ -12,6 +12,7 @@ $.ajax({
 			{label: 'Slug', name:'slug', required: true},
 			{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 			{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+			{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},			
 			{name: 'app', type:'hidden'},
 			{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
 			{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
@@ -66,6 +67,7 @@ $.ajax({
 				{label: 'Slug', name:'slug', required: true},
 				{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
 				{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+				{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
 				{name: 'app', type:'hidden'},
 				{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
 				{label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
@@ -87,7 +89,7 @@ $.ajax({
 			tableConfig.events.push({'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
 				var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
 				// tempdata = _.sortBy(tempdata, 'order');
-				mymodal = modal({title: "Sort App Instances", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+				mymodal = modal({title: "Sort App Instances", content: templates.sortlist.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
 				Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
 			}, global: true})
 

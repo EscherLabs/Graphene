@@ -1,4 +1,5 @@
 composites = _.map(group.composites,function(item){ return item.group})
+
 $('.navbar-header .nav a h4').html('Pages');
 $.ajax({
 	url: url,
@@ -39,7 +40,7 @@ $.ajax({
 					var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
 
 					// tempdata = _.sortBy(tempdata, 'order');
-					mymodal = modal({title: "Sort Pages", content: templates.listing.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+					mymodal = modal({title: "Sort Pages", content: templates.sortlist.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
 
 					Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
 
