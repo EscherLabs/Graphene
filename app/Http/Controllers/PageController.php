@@ -133,21 +133,23 @@ class PageController extends Controller
 
         if(isset($myPage->content)){
             $tempPage = $myPage->content;
-            foreach($myPage->content->sections as $column_index => $column) {
-                foreach($column as $widget_index => $widget) {
-                    if(	isset($widget->limit) && $widget->limit &&
-                        (!$user || !in_array ($myPage->group_id , $user->content_admin_groups )) &&
-                        !count(array_intersect ($widget->group->ids, $groups ))) {
-                        unset($tempPage->sections[$column_index][$widget_index]);
-                    }else{
-                        if ($widget->widgetType === 'uApp') {
-                            if(isset($widget->app_id)) {
-                                $uapp_instances[] = $widget->app_id;
+            if(isset($myPage->content->sections)) {
+                foreach($myPage->content->sections as $column_index => $column) {
+                    foreach($column as $widget_index => $widget) {
+                        if(	isset($widget->limit) && $widget->limit &&
+                            (!$user || !in_array ($myPage->group_id , $user->content_admin_groups )) &&
+                            !count(array_intersect ($widget->group->ids, $groups ))) {
+                            unset($tempPage->sections[$column_index][$widget_index]);
+                        }else{
+                            if ($widget->widgetType === 'uApp') {
+                                if(isset($widget->app_id)) {
+                                    $uapp_instances[] = $widget->app_id;
+                                }
                             }
                         }
                     }
+                    $tempPage->sections[$column_index] = array_values($tempPage->sections[$column_index]);
                 }
-                $tempPage->sections[$column_index] = array_values($tempPage->sections[$column_index]);
             }
 
             $myPage->content = $tempPage;
