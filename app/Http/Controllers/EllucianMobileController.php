@@ -99,7 +99,11 @@ class EllucianMobileController extends Controller
 
         $ellucian_group_apps = [];
         $counter = 1;
+        $max_time = 0;
         foreach($group_apps as $group) {
+            if ($group->updated_at->timestamp > $max_time) {
+                $max_time = $group->updated_at->timestamp;
+            }
             $composites_array = array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray())));
             if (count($group->app_instances)>0 || count($group->pages)>0) {
                 $ellucian_group_apps['mappg'.$group->id] = 
@@ -108,6 +112,9 @@ class EllucianMobileController extends Controller
                     'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
                 $counter++;
                 foreach($group->pages as $page) {
+                    if ($page->updated_at->timestamp > $max_time) {
+                        $max_time = $page->updated_at->timestamp;
+                    }
                     if (!$page->unlisted && !$page->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
@@ -121,6 +128,9 @@ class EllucianMobileController extends Controller
                     }
                 }
                 foreach($group->app_instances as $app_instance) {
+                    if ($app_instance->updated_at->timestamp > $max_time) {
+                        $max_time = $app_instance->update_at->timestamp;
+                    }
                     if (!$app_instance->unlisted && !$app_instance->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappa'.$app_instance->id] = 
                             ['type'=>'web','name'=>$app_instance->name,
@@ -137,7 +147,7 @@ class EllucianMobileController extends Controller
         }
 
         return [
-            'lastUpdated'=>date('c'),
+            'lastUpdated'=>date('c',$max_time),
             'versions'=> ['ios' => ['2.0.0'], 'android' => ['2.0.0']],
             'layout'=>[
                 'defaultMenuIcon'=>'true',
