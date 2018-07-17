@@ -119,7 +119,7 @@ class EllucianMobileController extends Controller
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
                             'access'=>$page->public==1?['Everyone']:$composites_array,
-                            'hideBeforeLogin'=>($page->public==1)?"false":"true",
+                            'hideBeforeLogin'=>"true",
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                                 ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/r/app/'.$group->slug.'/'.$page->slug],'order'=>(string)$counter,
@@ -135,7 +135,7 @@ class EllucianMobileController extends Controller
                         $ellucian_group_apps['mappa'.$app_instance->id] = 
                             ['type'=>'web','name'=>$app_instance->name,
                             'access'=>$app_instance->public==1?['Everyone']:$composites_array,
-                            'hideBeforeLogin'=>($app_instance->public==1)?"false":"true",
+                            'hideBeforeLogin'=>"true",
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                             ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/ar/app/'.$group->slug.'/'.$app_instance->slug],'order'=>(string)$counter,
