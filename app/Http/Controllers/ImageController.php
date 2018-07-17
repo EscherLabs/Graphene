@@ -58,9 +58,8 @@ class ImageController extends Controller
         $image->save();
 
         $path = Storage::putFileAs(
-            $this->img_dir, $request->file('image_filename'), $image->id.'.'.$image->ext
+            'images/', $request->file('image_filename'), $image->id.'.'.$image->ext
         );
-
         return $image;
     }
 
