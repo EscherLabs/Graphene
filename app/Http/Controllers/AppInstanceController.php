@@ -105,6 +105,7 @@ class AppInstanceController extends Controller
     public function save_user_options(AppInstance $app_instance, Request $request)
     {
         if (Auth::check()) {
+            $this->authorize('modify_user_options', $app_instance);
             return $app_instance->set_user_options(Auth::user(),$request->get('options'));
         } else {
             session(['ai_'.$app_instance->id =>$request->get('options')]);
