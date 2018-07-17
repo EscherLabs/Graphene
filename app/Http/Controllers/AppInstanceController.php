@@ -11,6 +11,7 @@ use App\UserPreference;
 use App\User;
 use App\Page;
 use App\ResourceCache;
+use App\UserOption;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
@@ -108,7 +109,9 @@ class AppInstanceController extends Controller
             $this->authorize('modify_user_options', $app_instance);
             return $app_instance->set_user_options(Auth::user(),$request->get('options'));
         } else {
-            session(['ai_'.$app_instance->id =>$request->get('options')]);
+            session(['ai_'.$app_instance->id =>(object)$request->get('options')]);
+            $user_option = new UserOption(['app_instance_id'=>$app_instance->id,'options'=>$request->get('options')]);
+            return $user_option;
         }
     }
     public function run($group, $slug = null, Request $request) {
