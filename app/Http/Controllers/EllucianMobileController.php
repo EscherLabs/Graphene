@@ -129,7 +129,7 @@ class EllucianMobileController extends Controller
                 }
                 foreach($group->app_instances as $app_instance) {
                     if ($app_instance->updated_at->timestamp > $max_time) {
-                        $max_time = $app_instance->update_at->timestamp;
+                        $max_time = $app_instance->updated_at->timestamp;
                     }
                     if (!$app_instance->unlisted && !$app_instance->getHiddenXsAttribute()) {
                         $ellucian_group_apps['mappa'.$app_instance->id] = 
