@@ -182,11 +182,13 @@ class PageController extends Controller
         $styles = [];
         foreach($apps as $key => $app) {
             $apps[$key]->findVersion();
-            foreach($apps[$key]->app->code->resources as $resource){
-                if($resource->modifier == "script"){
-                    $scripts[$resource->name] = array("src"=>$resource->path,"name"=>$resource->name);
-                }else if($resource->modifier == "css"){
-                    $styles[$resource->name] =  array("src"=>$resource->path,"name"=>$resource->name);
+            if($apps[$key]->app->code && isset($apps[$key]->app->code->resources) ) {
+                foreach($apps[$key]->app->code->resources as $resource){
+                    if($resource->modifier == "script"){
+                        $scripts[$resource->name] = array("src"=>$resource->path,"name"=>$resource->name);
+                    }else if($resource->modifier == "css"){
+                        $styles[$resource->name] =  array("src"=>$resource->path,"name"=>$resource->name);
+                    }
                 }
             }
         }

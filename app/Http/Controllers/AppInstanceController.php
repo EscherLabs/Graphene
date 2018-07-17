@@ -351,9 +351,11 @@ class AppInstanceController extends Controller
         }
 
         $resource_found = false;
-        foreach($app_instance->app->code->resources as $resource_app) {
-            if ($endpoint_name == $resource_app->name) {
-                $resource_found = true; break;
+        if($app_instance->app->code && isset($app_instance->app->code->resources) ){
+            foreach($app_instance->app->code->resources as $resource_app) {
+                if ($endpoint_name == $resource_app->name) {
+                    $resource_found = true; break;
+                }
             }
         }
         if (!$resource_found) {

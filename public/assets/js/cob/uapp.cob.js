@@ -40,6 +40,12 @@ Cobler.types.uApp = function(container){
 					type: 'GET',
 
 					success  : function(data){
+            if(typeof data.user.id == 'undefined') {
+              var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
+              data.user.options = (Lockr.get(url)|| {options:{}}).options;
+            }
+
+
             var opts = {
               template: this.get().template || 'dashboard',
               $el: $(el).find('.collapsible'),
@@ -75,6 +81,11 @@ Cobler.types.uApp = function(container){
                   type: 'GET',
                   url:'/api/fetch/'+this.get().app_id,
                   success:function(data){
+                      if(typeof data.user.id == 'undefined') {
+                        var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
+                        data.user.options = (Lockr.get(url)|| {options:{}}).options;
+                      }
+
                     this.bae.app.update(data);
                     // toastr.success('', 'Data refetched Successfully');
                   }.bind(this),

@@ -25,7 +25,13 @@ function App() {
 			$.ajax({
 			type: 'GET',
 			url:'/api/fetch/'+this.config.app_instance_id,
-			success:function(data){		
+			success:function(data){	
+				debugger;
+				if(typeof data.user.id == 'undefined') {
+					var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
+					data.user.options = (Lockr.get(url)|| {options:{}}).options;
+				}
+		
 				this.app.update(data);
 				this.load();
 			}.bind(this),
