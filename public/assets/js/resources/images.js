@@ -17,11 +17,11 @@ $.ajax({
 				{'name': 'add', 'label': '<i class="fa fa-code"></i> Add', callback: function(model){
 						$().berry({name:'newimage',actions:['cancel'],legend: 'Add Image(s)', fields:[
 							{label: 'Group', name:'group_id', type: 'select', choices: '/api/groups?limit=true', required: true, default: {label:"Choose a group", value:'-'},value:resource_id,enabled: (resource_id == '') },
-							{show:{"not_matches": {"name": "group_id","value": "-"}},type: 'upload', label: false, path: '/api/images?group_id=', name: 'image_filename'}]}).on('uploaded:image_filename', $.proxy(function(){
+							{show:{"not_matches": {"name": "group_id","value": "-"}},type: 'upload', label: false, path: '/api/images?group_id='+resource_id, name: 'image_filename'}]}).on('uploaded:image_filename', $.proxy(function(){
 									var temp = Berries.newimage.fields.image_filename.value;
 									bt.add(temp);
 									Berries.newimage.trigger('close');
-						}, this) ).on('change:group_id', function(){
+						}, this) ).on('change:group_id', function(){	
 								var groupid =this.fields.group_id.toJSON();
 								this.fields.image_filename.update({path:'/api/images?group_id='+groupid}, true)
 						});
