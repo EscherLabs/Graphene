@@ -112,9 +112,9 @@ Route::group(['prefix' => 'api'], function () {
     Route::delete('/appinstances/{app_instance}','AppInstanceController@destroy')->middleware('can:delete,app_instance');
 
     // Fetch App User Options for current user by app_instance_id
-    Route::get('/apps/instances/{app_instance}/user_options','AppInstanceController@get_user_options')->middleware('can:modify_user_options,app_instance');
+    Route::get('/apps/instances/{app_instance}/user_options','AppInstanceController@get_user_options');//->middleware('can:modify_user_options,app_instance');
     // Save App User Options for current user by app_instance_id
-    Route::post('/apps/instances/{app_instance}/user_options','AppInstanceController@save_user_options')->middleware('can:modify_user_options,app_instance');
+    Route::post('/apps/instances/{app_instance}/user_options','AppInstanceController@save_user_options');//->middleware('can:modify_user_options,app_instance');
     // Get App Instance External Resource Data by endpoint_id (POST or GET)
     Route::get('/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
     Route::post('/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller

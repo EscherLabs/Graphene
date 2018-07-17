@@ -104,7 +104,11 @@ class AppInstanceController extends Controller
 
     public function save_user_options(AppInstance $app_instance, Request $request)
     {
-        return $app_instance->set_user_options(Auth::user(),$request->get('options'));
+        if (Auth::check()) {
+            return $app_instance->set_user_options(Auth::user(),$request->get('options'));
+        } else {
+            session(['ai_'.$app_instance->id =>$request->get('options')]);
+        }
     }
     public function run($group, $slug = null, Request $request) {
         return $this->render("main", $group, $slug, $request);
@@ -180,6 +184,9 @@ class AppInstanceController extends Controller
         } else { /* User is not Authenticated */
             $current_user = new User;
             $myApp = AppInstance::where('id', '=', $ai_id)->first();
+            if (session()->has('ai_'.$ai_id)) {
+                $myApp->user_options->options = session('ai_'.$ai_id);
+            }
             if (is_null($myApp)) { abort(403); }
         }
   
@@ -335,16 +342,19 @@ class AppInstanceController extends Controller
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
+            $user_prefs = $app_instance->user_options()->where('user_id','=',$current_user->id)->first();
         } else { /* User is not Authenticated */
             $current_user = new User;
+            if (session()->has('ai_'.$app_instance->id)) {
+                $user_prefs = ['options'=>session('ai_'.$app_instance->id)];
+            }
         }
 
         $all_data = ['options'=>$options,
                      'user'=>$current_user->toArray(),
                      'request'=>$request->has('request')?$request->input('request'):[]];
 
-        $user_prefs = $app_instance->user_options()->where('user_id','=',$current_user->id)->first();
-        if(isset($user_prefs['options'])){
+        if(isset($user_prefs) && isset($user_prefs['options'])){
             $all_data['user']['options'] = $user_prefs['options'];
         }else{
             $all_data['user']['options'] = $user_options_default;
