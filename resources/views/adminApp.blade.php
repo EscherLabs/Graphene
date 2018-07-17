@@ -11,7 +11,7 @@
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu">
-    <li><a href="/admin/apps/{!! $app->app_id !!}/developers">Manage Developers</a></li>
+    <li><a href="/admin/apps/{!! $app->app_id !!}/developers" target="_blank">Manage Developers</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="/api/apps/{!! $app->app_id !!}" target="_blank">Export</a></li>
     <li><a href="#" id="import">Import</a></li>
