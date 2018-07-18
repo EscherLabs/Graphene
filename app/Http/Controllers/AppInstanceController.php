@@ -188,6 +188,9 @@ class AppInstanceController extends Controller
         } else { /* User is not Authenticated */
             $current_user = new User;
             $myApp = AppInstance::where('id', '=', $ai_id)->first();
+            if ($request->has('options')) {
+                $myApp->user_options->options = $request->options;
+            }
             // if (session()->has('ai_'.$ai_id)) {
             //     $myApp->user_options->options = session('ai_'.$ai_id);
             // }
@@ -348,6 +351,9 @@ class AppInstanceController extends Controller
             $user_prefs = $app_instance->user_options()->where('user_id','=',$current_user->id)->first();
         } else { /* User is not Authenticated */
             $current_user = new User;
+            if ($request->has('options')) {
+                $user_prefs = ['options'=>$request->options];
+            }
             // if (session()->has('ai_'.$app_instance->id)) {
             //     $user_prefs = ['options'=>session('ai_'.$app_instance->id)];
             // }
