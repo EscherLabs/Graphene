@@ -23,14 +23,14 @@ function App() {
 		this.$el.html(this.options.defaultHtml);
 		if(!skipFetch){
 			$.ajax({
-			type: 'GET',
+			type: 'POST',
 			url:'/api/fetch/'+this.config.app_instance_id,
+			data: (Lockr.get('/api/apps/instances/'+this.config.app_instance_id+'/user_options')|| {options:{}}),
 			success:function(data){	
 				if(typeof data.user.id == 'undefined') {
 					var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
 					data.user.options = (Lockr.get(url)|| {options:{}}).options;
 				}
-		
 				this.app.update(data);
 				this.load();
 			}.bind(this),
