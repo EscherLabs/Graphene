@@ -18,3 +18,11 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
+
+<IfModule mod_expires.c>
+    <Directory "assets/">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 day"
+    Header append Cache-Control "public"
+    </Directory>
+</IfModule>
