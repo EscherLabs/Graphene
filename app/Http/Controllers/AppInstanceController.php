@@ -396,6 +396,9 @@ class AppInstanceController extends Controller
         if (is_array($data['content']) || is_object($data['content'])) {
             $content_type = 'application/json';
             $data['content'] = json_encode($data['content']);
+        } if (is_bool($data['content']) || is_numeric($data['content'])) {
+            $content_type = 'application/json';
+            $data['content'] = (string)$data['content'];
         } else {
             $content_type = 'text/plain';
         }
