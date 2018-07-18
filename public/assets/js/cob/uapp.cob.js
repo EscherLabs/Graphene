@@ -89,7 +89,7 @@ Cobler.types.uApp = function(container){
                 $.ajax({
                   type: 'POST',
                   url:'/api/fetch/'+this.get().app_id,
-                  data:{options:options},
+                  data:options,
                   success:function(data){
                       if(typeof data.user.id == 'undefined') {
                         var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
