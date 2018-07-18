@@ -161,17 +161,15 @@ berryAppEngine = function(options) {
 
 		if(this.$el.find('[data-inline]').length && this.options.config.forms[1].content.length) {//} > 0 && this.userEdit.length > 0){
 			this.inline = this.$el.berry({attributes: this.options.data.user.options, renderer: 'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type}).on('save', function() {
-
-				this.app.update({ user: { options: this.inline.toJSON() } });
+			this.app.update( { user: $.extend(true,{},this.data.user,{ options: this.inline.toJSON() }  )});
 				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
-
 				if(typeof this.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
 						url:url,
 						data: {'options': this.inline.toJSON()},
 						success:function(data){
-							this.app.update( { user: { options:data.options } } );
+							this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
 							this.optionsupdated();
 						}.bind(this),
 						error:function(data) {

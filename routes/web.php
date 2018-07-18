@@ -117,7 +117,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
     Route::post('/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
     // Get all App Data by app_instance
-    Route::get('/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
+    Route::post('/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
 
     /***** ENDPOINTS *****/
     // List all endpoints

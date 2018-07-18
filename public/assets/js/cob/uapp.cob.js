@@ -37,8 +37,8 @@ Cobler.types.uApp = function(container){
       $.ajax({
           url: '/api/fetch/'+this.get().app_id,
           dataType : 'json',
-					type: 'GET',
-
+					type: 'POST',
+          data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
 					success  : function(data){
             if(typeof data.user.id == 'undefined') {
               var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
@@ -54,7 +54,7 @@ Cobler.types.uApp = function(container){
                 url: '/api/app_data/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
                 // dataType : 'json',
                 type: 'POST',
-                data: {request: data},
+                data: {request: data, options:this.data.user.options},
                 error: function (data) {
                   if(typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
                     toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
@@ -77,15 +77,22 @@ Cobler.types.uApp = function(container){
             }
             opts.onLoad = function(){
               this.bae.app.on('refetch', function(data){
+
+                if(typeof data.user.id == 'undefined') {
+                  options =  (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}});
+                }else{
+                   options = data.user.options;
+                }
+
                 $.ajax({
-                  type: 'GET',
+                  type: 'POST',
                   url:'/api/fetch/'+this.get().app_id,
+                  data:{options:options},
                   success:function(data){
                       if(typeof data.user.id == 'undefined') {
                         var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
                         data.user.options = (Lockr.get(url)|| {options:{}}).options;
                       }
-
                     this.bae.app.update(data);
                     // toastr.success('', 'Data refetched Successfully');
                   }.bind(this),
