@@ -105,14 +105,14 @@ class AppInstanceController extends Controller
 
     public function save_user_options(AppInstance $app_instance, Request $request)
     {
-        if (Auth::check()) {
-            $this->authorize('modify_user_options', $app_instance);
+        // if (Auth::check()) {
+        //     $this->authorize('modify_user_options', $app_instance);
             return $app_instance->set_user_options(Auth::user(),$request->get('options'));
-        } else {
-            session(['ai_'.$app_instance->id =>(object)$request->get('options')]);
-            $user_option = new UserOption(['app_instance_id'=>$app_instance->id,'options'=>$request->get('options')]);
-            return $user_option;
-        }
+        // } else {
+        //     session(['ai_'.$app_instance->id =>(object)$request->get('options')]);
+        //     $user_option = new UserOption(['app_instance_id'=>$app_instance->id,'options'=>$request->get('options')]);
+        //     return $user_option;
+        // }
     }
     public function run($group, $slug = null, Request $request) {
         return $this->render("main", $group, $slug, $request);
@@ -188,9 +188,9 @@ class AppInstanceController extends Controller
         } else { /* User is not Authenticated */
             $current_user = new User;
             $myApp = AppInstance::where('id', '=', $ai_id)->first();
-            if (session()->has('ai_'.$ai_id)) {
-                $myApp->user_options->options = session('ai_'.$ai_id);
-            }
+            // if (session()->has('ai_'.$ai_id)) {
+            //     $myApp->user_options->options = session('ai_'.$ai_id);
+            // }
             if (is_null($myApp)) { abort(403); }
         }
   
@@ -343,15 +343,14 @@ class AppInstanceController extends Controller
             
         
         // Merge App Options with User Preferences, User Info, and `request` data
-
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $user_prefs = $app_instance->user_options()->where('user_id','=',$current_user->id)->first();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            if (session()->has('ai_'.$app_instance->id)) {
-                $user_prefs = ['options'=>session('ai_'.$app_instance->id)];
-            }
+            // if (session()->has('ai_'.$app_instance->id)) {
+            //     $user_prefs = ['options'=>session('ai_'.$app_instance->id)];
+            // }
         }
 
         $all_data = ['options'=>$options,
