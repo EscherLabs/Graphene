@@ -59,7 +59,7 @@ $.ajax({
 					data.composites = {composite:{groups:data.groups}};
 					data.limit = !!(data.groups||[]).length;
 					model.set(data);
-					// Berries.modal.trigger('close')
+					Berries.modal.trigger('close')
 					toastr.success('', 'Successfully Added')
 				}.bind(model),
 				error:function(e) {

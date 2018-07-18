@@ -77,11 +77,10 @@ Cobler.types.uApp = function(container){
             }
             opts.onLoad = function(){
               this.bae.app.on('refetch', function(data){
-
-                if(typeof data.user.id == 'undefined') {
+                if(typeof this.bae.data.user.id == 'undefined') {
                   options =  (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}});
                 }else{
-                   options = data.user.options;
+                   options = this.bae.data.user.options;
                 }
 
                 $.ajax({
