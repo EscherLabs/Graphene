@@ -121,11 +121,11 @@ berryAppEngine = function(options) {
 		}
 
 		var mountResult = (function(data, script) {
-			try{
+			// try{
 				eval(script);
 				return mount.call({data:data});	
-			}catch(e){
-			}		
+			// }catch(e){
+			// }		
 		})(this.options.data || {}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {

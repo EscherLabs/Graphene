@@ -6,7 +6,7 @@ $.ajax({
 		tableConfig.schema = [
 			{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
 			{label: 'Title', name:'title', required: true},
-			{label: 'Link', name:'link', required: true},
+			{label: 'Link', name:'link', required: true, template:'<a href="{{value}}">{{value}}</a>'},
 			{label: 'Image', name:'image', required: false,template:'<img src="{{value}}" style="height:18px;">',showColumn: false},
 			{label: 'Icon', name:'icon', 
 			type:'select', choices:'/assets/data/icons.json',
