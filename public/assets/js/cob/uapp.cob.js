@@ -50,11 +50,15 @@ Cobler.types.uApp = function(container){
               template: this.get().template || 'dashboard',
               $el: $(el).find('.collapsible'),
               crud: function(name, data, callback, verb){
+                var send_data = {request: data};
+                if(typeof this.data.user.id == 'undefined') {
+                  send_data.options = this.data.user.options;
+                }
                 $.ajax({
                 url: '/api/app_data/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
                 // dataType : 'json',
                 type: 'POST',
-                data: {request: data, options:this.data.user.options},
+                data: send_data,
                 error: function (data) {
                   if(typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
                     toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
@@ -77,10 +81,9 @@ Cobler.types.uApp = function(container){
             }
             opts.onLoad = function(){
               this.bae.app.on('refetch', function(data){
+                var options;
                 if(typeof this.bae.data.user.id == 'undefined') {
                   options =  (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}});
-                }else{
-                   options = this.bae.data.user.options;
                 }
 
                 $.ajax({
