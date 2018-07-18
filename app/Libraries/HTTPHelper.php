@@ -25,7 +25,7 @@ class HTTPHelper {
                     $url .= ':'+$url_parts['port'];
                 }
                 if(array_key_exists('path', $url_parts)) {
-                    $url .= $url_parts['path'];
+                    $url .= str_replace(' ', '%20', $url_parts['path']);
                 }
                 $url .= '?'.http_build_query(array_merge($request_data,$url_parts_query));
             }else{
@@ -35,6 +35,7 @@ class HTTPHelper {
             $request_config['content'] = http_build_query($request_data);
         }
         $context = stream_context_create(['http' =>$request_config]);
+        // dd($url);
         $response_data = @file_get_contents($url, false, $context);
         // if ($response_data === FALSE) {
         //     $response_data = error_get_last();
