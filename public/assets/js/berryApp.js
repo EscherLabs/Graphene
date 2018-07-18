@@ -173,11 +173,12 @@ berryAppEngine = function(options) {
 							this.optionsupdated();
 						}.bind(this),
 						error:function(data) {
-								toastr.error(data.statusText, 'An error occured updating options')
+							toastr.error(data.statusText, 'An error occured updating options')
 						}
 					})
 				}else{
 					Lockr.set(url, {'options': this.data.user.options})
+					this.optionsupdated();
 				}
 
 			},this);
