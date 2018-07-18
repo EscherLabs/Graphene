@@ -33,12 +33,14 @@ class Templater {
         foreach($data['apps_pages'] as $index => $group_apps_pages) {
             $data['apps_pages'][$index]['slug'] = strtolower($data['apps_pages'][$index]['slug']);
             foreach($group_apps_pages->pages as $page_index => $page) {
+                unset($data['apps_pages'][$index]->pages[$page_index]['groups']);
                 $data['apps_pages'][$index]->pages[$page_index]['slug'] = strtolower($data['apps_pages'][$index]->pages[$page_index]['slug']);
                 if (Auth::user()!==null && !Auth::user()->can('get', $page)) {
                     unset($data['apps_pages'][$index]->pages[$page_index]);
                 }
             }
             foreach($group_apps_pages->app_instances as $app_instance_index => $app_instance) {
+                unset($data['apps_pages'][$index]->app_instances[$app_instance_index]['groups']);
                 $data['apps_pages'][$index]->app_instances[$app_instance_index]['slug'] = strtolower($data['apps_pages'][$index]->app_instances[$app_instance_index]['slug']);
                 if (Auth::user()!==null && !Auth::user()->can('fetch', $app_instance)) {
                     unset($data['apps_pages'][$index]->app_instances[$app_instance_index]);
