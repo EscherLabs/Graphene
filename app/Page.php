@@ -9,7 +9,7 @@ class Page extends Model
     protected $fillable = ['group_id', 'name', 'slug', 'content', 'mobile_order','unlisted','public','icon','device','groups'];
     protected $casts = ['content' => 'object', 'mobile_order' => 'array','groups'=>'array'];
     protected $appends = ['hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
-    protected $hidden = ['groups'];
+    // protected $hidden = ['groups'];
 
     /* Transient Properties not saved in the database */
     public $hidden_xs = false;
