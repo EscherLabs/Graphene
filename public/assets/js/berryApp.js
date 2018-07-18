@@ -26,7 +26,6 @@ function App() {
 			type: 'GET',
 			url:'/api/fetch/'+this.config.app_instance_id,
 			success:function(data){	
-				debugger;
 				if(typeof data.user.id == 'undefined') {
 					var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
 					data.user.options = (Lockr.get(url)|| {options:{}}).options;
@@ -166,18 +165,22 @@ berryAppEngine = function(options) {
 				this.app.update({ user: { options: this.inline.toJSON() } });
 				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
 
-				$.ajax({
-					type: 'POST',
-					url:url,
-					data: {'options': this.inline.toJSON()},
-					success:function(data){
-						this.app.update( { user: { options:data.options } } );
-						this.optionsupdated();
-					}.bind(this),
-					error:function(data) {
-							toastr.error(data.statusText, 'An error occured updating options')
-					}
-				})
+				if(typeof this.data.user.id !== 'undefined') {
+					$.ajax({
+						type: 'POST',
+						url:url,
+						data: {'options': this.inline.toJSON()},
+						success:function(data){
+							this.app.update( { user: { options:data.options } } );
+							this.optionsupdated();
+						}.bind(this),
+						error:function(data) {
+								toastr.error(data.statusText, 'An error occured updating options')
+						}
+					})
+				}else{
+					Lockr.set(url, {'options': this.data.user.options})
+				}
 
 			},this);
 
