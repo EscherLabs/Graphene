@@ -50,13 +50,13 @@ Cobler.types.Links = function(container){
 				$(el).find('.link_collection').html(templates['widgets_links'].render($.extend({},this.get(),{links:this.links,toggle:this.state.toggle}), templates))
 			}.bind(this))
 
-			var url = '/api/user_links/'
+			var url = '/api/user_links'
 			if(!this.get().show_all){
 				url = url+group_id;
 			}
 			$.ajax({
-			url: url,
-			dataType : 'json',
+				url: url,
+				dataType : 'json',
 				type: 'GET',
 				success  : function(el,data){
 					if(typeof this.state.favorites !== 'undefined'){
