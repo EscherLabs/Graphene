@@ -19,7 +19,7 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
 Route::get('/css',function(){
-  config(['session.driver' =>'nosave_database']);
+  config(['session.driver' =>'array']);
   
   $site_css = config('app.site')->select('theme')->first()->theme->css;
   $response = Response::make($site_css, 200);
