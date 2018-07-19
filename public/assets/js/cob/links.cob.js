@@ -52,7 +52,7 @@ Cobler.types.Links = function(container){
 
 			var url = '/api/user_links'
 			if(!this.get().show_all){
-				url = url+group_id;
+				url = url+'/'+group_id;
 			}
 			$.ajax({
 				url: url,
