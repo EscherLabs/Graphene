@@ -64,6 +64,9 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => null,
+            'options' => [
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', isset($_SERVER['DB_PERSISTENT'])?$_SERVER['DB_PERSISTENT']:false),
+            ],
         ],
 
         // This is specifically for running a migration from legacy myBinghamton database.  Will be removed.
