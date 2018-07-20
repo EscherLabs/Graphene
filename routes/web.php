@@ -20,7 +20,6 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::get('/','UserDashboardController@index');
 Route::get('/css',function(){
   config(['session.driver' =>'array']);
-  
   $site_css = config('app.site')->select('theme')->first()->theme->css;
   $response = Response::make($site_css, 200);
   $response->header('Content-Type', 'text/css');
@@ -39,7 +38,7 @@ Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
 
 Route::group(['middleware' => ['custom.auth']], function () {
-  Route::get('/image/{image}','ImageController@get')->middleware('can:get,image');
+  Route::get('/image/{image}','ImageController@get')->middleware('no.save.session')->middleware('can:get,image');
   Route::get('/heartbeat',function() {return ['status'=>true];});
 });
 
@@ -65,7 +64,7 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
   Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
 });
 
-Route::group(['middleware' => ['api.session'],'prefix' => 'api'], function () {
+Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {
 
     /***** Dashboard  *****/
     Route::post('/dashboard','UserDashboardController@update');

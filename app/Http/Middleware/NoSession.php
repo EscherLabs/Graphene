@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class APISession
+class NoSaveSession
 {
 
     /**
@@ -16,6 +16,7 @@ class APISession
      */
     public function handle($request, Closure $next)
     {
+        session_write_close();
         config(['session.driver' =>'nosave_database']);
         return $next($request);
     }

@@ -20,7 +20,7 @@ class ImageController extends Controller
     }
     
     public function get(Image $image) {
-        session_write_close();
+        // session_write_close();
         // response()->header('Cache-Control', 'no-cache, must-revalidate');
         $headers = [
             "Cache-Control"=>"max-age=86400",
@@ -28,10 +28,10 @@ class ImageController extends Controller
             "Content-Disposition"=>'inline; filename="'.$image->name.'.'.$image->ext.'"'
         ];
         $img_path = $this->img_dir.'/'.$image->id.'.'.$image->ext;
-        if (file_exists($img_path)) {
+        if (file_exists($img_path) && is_file($img_path)) {
             return response()->file($img_path, $headers);
         } else {
-            abort(404);
+            return response('Image Not Found', 404);
         }
     }
     public function list_all_images(Request $request) {

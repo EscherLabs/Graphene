@@ -11,18 +11,6 @@ class NoSaveDatabaseSessionHandler extends DatabaseSessionHandler
      */
     public function write($sessionId, $data)
     {
-        // $payload = $this->getDefaultPayload($data);
-
-        // if (! $this->exists) {
-        //     $this->read($sessionId);
-        // }
-
-        // if ($this->exists) {
-        //     $this->performUpdate($sessionId, $payload);
-        // } else {
-        //     $this->performInsert($sessionId, $payload);
-        // }
-
         return $this->exists = true;
     }
 }

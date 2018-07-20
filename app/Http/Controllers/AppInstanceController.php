@@ -178,7 +178,7 @@ class AppInstanceController extends Controller
     }
     
     public function fetch($ai_id, Request $request) {
-       session_write_close();
+    //    session_write_close();
        if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $myApp = AppInstance::with(['user_options'=>function($query){
@@ -303,7 +303,7 @@ class AppInstanceController extends Controller
     }
 
     public function get_data_int(AppInstance $app_instance, $endpoint_name, Request $request) {
-        session_write_close(); // Don't keep waiting
+        // session_write_close(); // Don't keep waiting
         if(!isset($app_instance->app->code)){
             $app_instance->findVersion();
         }
