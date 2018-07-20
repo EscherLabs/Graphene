@@ -77,8 +77,8 @@ class PageController extends Controller
 
     public function render($renderer = "main", $group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
-
             $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
+            if (is_null($groupObj)) { abort(404);}
 
             if (Auth::user() && Auth::user()->group_admin($groupObj->id)) {
                 $groupObj->load(array('composites'=>function($query){
@@ -89,7 +89,6 @@ class PageController extends Controller
             }else{
                 $groupObj->load('composites');
             }            
-            
 			$group = $groupObj->id;
 		}else{
             if (Auth::user() && Auth::user()->group_admin($group)) {
@@ -98,11 +97,13 @@ class PageController extends Controller
                     $query->select('name','id');
                 }))->select('group_id','composite_group_id');
                 }))->where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
+                if (is_null($groupObj)) { abort(404);}
                 $group = $groupObj->id;
             }else{
-    			$groupObj = Group::with('composites')->where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
+                $groupObj = Group::with('composites')->where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
             }
         }
+        if (is_null($groupObj)) { abort(404);}
 
         if(isset($slug)) {
             $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
@@ -217,17 +218,22 @@ class PageController extends Controller
 		}else{
             $groupObj = Group::where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
         }
-        // Redirect to first page or first app in this group
-        $myPage = Page::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
-        if(!is_null($myPage)){
-            return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
-        } else {
-            $myAppInstance = AppInstance::where('group_id','=', $group)->orderBy('order', 'asc')->first();
-            if(!is_null($myAppInstance)){
-                return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
+        if (!is_null($groupObj)) {
+            // Redirect to first page or first app in this group
+            $myPage = Page::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+            if(!is_null($myPage)){
+                return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
             } else {
-                abort(404);
+                $myAppInstance = AppInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+                if(!is_null($myAppInstance)){
+                    return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
+                } else {
+                    abort(404);
+                }
             }
+        } else {
+            abort(404);
         }
+    
     }
 }

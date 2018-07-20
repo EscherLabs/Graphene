@@ -28,7 +28,8 @@ Route::get('/css',function(){
   return $response;
 });
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
-Route::get('/ar/{renderer}/{group}/{slug?}', 'AppInstanceController@render');
+Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
+Route::get('/ar/{renderer}/{group}/{slug}', 'AppInstanceController@render');
 Route::get('/page/{group}/{slug}', 'PageController@run');
 Route::get('/page/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/community/{group}/{slug?}', 'PageController@run'); /* Compatibility with old portal */
