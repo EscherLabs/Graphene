@@ -78,7 +78,7 @@ class PageController extends Controller
     public function render($renderer = "main", $group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
 
-            $groupObj = Group::where('slug','=',$group)->first();
+            $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
 
             if (Auth::user() && Auth::user()->group_admin($groupObj->id)) {
                 $groupObj->load(array('composites'=>function($query){
@@ -97,28 +97,17 @@ class PageController extends Controller
                     $query->with(array('group'=>function($query){
                     $query->select('name','id');
                 }))->select('group_id','composite_group_id');
-                }))->where('id','=',$group)->first();
+                }))->where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
                 $group = $groupObj->id;
             }else{
-    			$groupObj = Group::with('composites')->where('id','=',$group)->first();
+    			$groupObj = Group::with('composites')->where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
             }
         }
 
         if(isset($slug)) {
             $myPage = Page::where('group_id','=', $group)->where('slug', '=', $slug)->first();
         } else{
-            // Redirect to first page or first app in this group
-            $myPage = Page::where('group_id','=', $group)->first();
-            if(!is_null($myPage)){
-                return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
-            } else {
-                $myAppInstance = AppInstance::where('group_id','=', $group)->first();
-                if(!is_null($myAppInstance)){
-                    return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
-                } else {
-                    abort(404);
-                }
-            }
+            // Moved to Redirect Function
         }
 
         // Get a list of all the micro app instances on the page
@@ -218,5 +207,27 @@ class PageController extends Controller
             ]);
         }
         abort(404,'Page not found');
+    }
+
+
+    public function redirect($group, Request $request) {
+        // dd('here');
+        if(!is_numeric($group)) {
+            $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
+		}else{
+            $groupObj = Group::where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
+        }
+        // Redirect to first page or first app in this group
+        $myPage = Page::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+        if(!is_null($myPage)){
+            return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
+        } else {
+            $myAppInstance = AppInstance::where('group_id','=', $group)->orderBy('order', 'asc')->first();
+            if(!is_null($myAppInstance)){
+                return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
+            } else {
+                abort(404);
+            }
+        }
     }
 }
