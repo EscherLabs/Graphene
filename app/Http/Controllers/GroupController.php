@@ -151,8 +151,10 @@ class GroupController extends Controller
         foreach($request->get('members') as $member) {
             $user = User::where(['unique_id' => $member['unique_id']])->orWhere(['email' => $member['email']])->first();
             if(!isset($user)){
+                $user_exists = false;
                 $user = new User($member);
             }else{
+                $user_exists = true;
                 $user->update($member);
             }
             //This must be set seperately because it is not fillable
@@ -161,6 +163,10 @@ class GroupController extends Controller
                 $user->params = array_merge((array)$user->params, $member['params']);
             }
             $user->save();
+            // 7/23/18 -- Added by TJC to Add User to Site (If New User)
+            if (!$user_exists) {
+                config('app.site')->add_member($user,false,false);
+            }
             $group->add_member($user, 'external');
         }
 
