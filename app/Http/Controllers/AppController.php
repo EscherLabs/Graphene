@@ -94,11 +94,65 @@ class AppController extends Controller
         } else {
             $code_query = 'code->'.$type;
         }
-        return App::select('id','name','description','tags')
-        // ->with('versions')
-        ->whereHas('versions', function($query) use ($request,$code_query) {
-            $query->where($code_query,'like','%'.$request->q.'%');
-        })->orderBy('name','asc')->get();
+        $apps_with_versions = App::select('id','name','description','tags')
+            ->with('versions')
+            ->whereHas('versions', function($query) use ($request,$code_query) {
+                $query->where($code_query,'like','%'.$request->q.'%');
+            })->orderBy('name','asc')->get();
+
+        $search_response = [];
+        foreach($apps_with_versions as $apps_index => $app_with_versions) {
+            $search_response[$app_with_versions->id] = [
+                'id'=>$app_with_versions->id,
+                'name'=>$app_with_versions->name,
+                'description'=>$app_with_versions->description,
+                'tags'=>$app_with_versions->tags,
+            ];
+            $found = false;
+            foreach($app_with_versions->versions as $version_index => $version) {
+                $search_response[$app_with_versions->id]['versions'][$version->id] = [
+                    'id' => $version->id,
+                    'summary' => $version->summary,
+                    'description' => $version->description,
+                    'user' => $version->user_id,
+                ];
+                if (is_null($type) || $type=='scripts') { // Find Matches in Scripts
+                    foreach($version->code->scripts as $script_index => $script) {
+                        $script_lines = explode("\n",$script->content);
+                        foreach($script_lines as $line_number => $script_line) {
+                            if (stristr($script_line, $request->q) && strlen($script_line)<1000) {
+                                $found = true;
+                                $search_response[$app_with_versions->id]['versions'][$version->id]['scripts'][] = [
+                                    'filename' => $script->name,
+                                    'line' => $line_number,
+                                    'text' => trim($script_line),
+                                ];
+                            }
+                        }
+                    }
+                }
+                if (is_null($type) || $type=='css') { // Find Matches in CSS
+                    $css_lines = explode("\n",$version->code->css);
+                    foreach($css_lines as $line_number => $css_line) {
+                        if (stristr($css_line, $request->q) && strlen($css_line)<1000) {
+                            $found = true;
+                            $search_response[$app_with_versions->id]['versions'][$version->id]['css'][] = [
+                                'line' => $line_number,
+                                'text' => trim($css_line),
+                            ];
+                        }
+                    }
+                }
+
+            }
+            if ($found === true) {
+                $search_response[$app_with_versions->id]['versions'] = array_values($search_response[$app_with_versions->id]['versions']);
+            } else {
+                unset($search_response[$app_with_versions->id]);
+            }
+        }
+        $search_response = array_values($search_response);
+        return $search_response;
     }
     public function versions(Request $request, App $app) { 
         $app_versions = AppVersion::select('id','summary','created_at','user_id')
