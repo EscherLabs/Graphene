@@ -108,7 +108,7 @@ class EllucianMobileController extends Controller
             if (count($group->app_instances)>0 || count($group->pages)>0) {
                 $ellucian_group_apps['mappg'.$group->id] = 
                     ['type'=>'header','name'=>$group->name,'access'=>$composites_array,
-                    'hideBeforeLogin'=>"false",
+                    'hideBeforeLogin'=>"true",
                     'order'=>(string)$counter,'useBeaconToLaunch'=>'false'];
                 $counter++;
                 foreach($group->pages as $page) {
