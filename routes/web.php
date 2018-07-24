@@ -75,6 +75,8 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/apps/group/{group_id}','AppController@list_user_group_apps')->middleware('can:get_all,App\App');
 
     Route::get('/apps/developers','AppController@list_all_developers')->middleware('can:list_all_developers,App\App');
+    Route::match(['get','post'],'/apps/search/{type?}','AppController@search')->middleware('can:get_all,App\App');
+
     // Lookup specific app by app_id
     Route::get('/apps/{app}','AppController@show')->middleware('can:get,app');
     // Create a new app

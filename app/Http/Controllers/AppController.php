@@ -87,7 +87,19 @@ class AppController extends Controller
         }else{
             abort(409, 'No changes have been made since last published.<br><br> To publish please save changes.');
         }
-    }    
+    }
+    public function search(Request $request, $type=null) {
+        if (is_null($type)) {
+            $code_query = 'code';
+        } else {
+            $code_query = 'code->'.$type;
+        }
+        return App::select('id','name','description','tags')
+        // ->with('versions')
+        ->whereHas('versions', function($query) use ($request,$code_query) {
+            $query->where($code_query,'like','%'.$request->q.'%');
+        })->orderBy('name','asc')->get();
+    }
     public function versions(Request $request, App $app) { 
         $app_versions = AppVersion::select('id','summary','created_at','user_id')
             ->with('user')->where('app_id','=',$app->id)->where('stable','=',1)
