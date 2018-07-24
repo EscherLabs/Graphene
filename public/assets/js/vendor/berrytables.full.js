@@ -615,12 +615,14 @@ function berryTable(options) {
 						if(typeof this.options.defaultSort !== 'undefined'){
 							this.models = _.sortBy(this.models, function(obj) { return obj.attributes[this.options.defaultSort]; }.bind(this)).reverse();
 						}
-						// Berries.modal.trigger('cancel');
 						this.draw();
 						this.updateCount(this.summary.checked_count);
 						
 						if(typeof this.options.add == 'function') {
 							this.options.add(newModel);
+						}
+						if(typeof Berries.modal !== 'undefined'){
+							Berries.modal.trigger('cancel');
 						}
 					}
 				}, this)
