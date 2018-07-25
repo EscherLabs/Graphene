@@ -105,7 +105,7 @@ class AppController extends Controller
         foreach($apps_with_versions as $apps_index => $app_with_versions) {
             // dd($app_with_versions);
             $search_response[$app_with_versions->id] = [
-                'id'=>$app_with_versions->id,
+                'app_id'=>$app_with_versions->id,
                 'name'=>$app_with_versions->name,
                 'description'=>$app_with_versions->description,
                 'tags'=>$app_with_versions->tags,
@@ -113,7 +113,7 @@ class AppController extends Controller
             $found = false;
             foreach($app_with_versions->versions as $version_index => $version) {
                 $search_response[$app_with_versions->id]['versions'][$version->id] = [
-                    'id' => $version->id,
+                    'version_id' => $version->id,
                     'working' => (bool)!$version->stable,
                     'summary' => $version->summary,
                     'description' => $version->description,
