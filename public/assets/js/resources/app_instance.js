@@ -108,7 +108,13 @@ $.ajax({
 								{label:false, name: 'name',columns:0, type:'hidden'}
 							]}
 						]},
-					]} )
+					]} ).on('change',function(item, b, c){
+						var item = Berries.resources.findByID(item.id)
+						var url = '';
+						url += (_.findWhere(Berry.collection.get('/api/groups/'+this.group_id+'/endpoints'),{id:parseInt(item.value)})||{config:{url:''} }).config.url;
+						url+=(_.findWhere(this.app.code.resources,{name:item.parent.children.name.instances[1].value})||{path:''}).path				
+						item.update({help:url, value:item.value}, true)
+					}.bind(data))
 				}
 		
 			}.bind(null,data)
