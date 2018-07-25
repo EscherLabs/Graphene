@@ -98,10 +98,12 @@ class AppController extends Controller
             ->with('versions')
             ->whereHas('versions', function($query) use ($request,$code_query) {
                 $query->where($code_query,'like','%'.$request->q.'%');
-            })->orderBy('name','asc')->get();
+            })
+            ->orderBy('name','asc')->get();
 
         $search_response = [];
         foreach($apps_with_versions as $apps_index => $app_with_versions) {
+            // dd($app_with_versions);
             $search_response[$app_with_versions->id] = [
                 'id'=>$app_with_versions->id,
                 'name'=>$app_with_versions->name,
@@ -112,35 +114,72 @@ class AppController extends Controller
             foreach($app_with_versions->versions as $version_index => $version) {
                 $search_response[$app_with_versions->id]['versions'][$version->id] = [
                     'id' => $version->id,
+                    'working' => (bool)!$version->stable,
                     'summary' => $version->summary,
                     'description' => $version->description,
-                    'user' => $version->user_id,
                 ];
                 if (is_null($type) || $type=='scripts') { // Find Matches in Scripts
                     foreach($version->code->scripts as $script_index => $script) {
+                        $found_script = false;
                         $script_lines = explode("\n",$script->content);
                         foreach($script_lines as $line_number => $script_line) {
-                            if (stristr($script_line, $request->q) && strlen($script_line)<1000) {
-                                $found = true;
-                                $search_response[$app_with_versions->id]['versions'][$version->id]['scripts'][] = [
-                                    'filename' => $script->name,
-                                    'line' => $line_number,
-                                    'text' => trim($script_line),
+                            $location = strpos($script_line, $request->q);
+                            if ($location !== false) {
+                                $text = [];
+                                if (strlen($script_line) >= 500) {
+                                    $full_line = false;
+                                    if (isset($script_line[$location-50])) {$beginning = $location-50;} else {$beginning = 0;}
+                                    if (isset($script_line[$location+50])) {$end = $location+50;} else {$end = count($script_line)-1;}
+                                    $text[] = substr($script_line, $beginning, $end-$beginning);
+                                } else {
+                                    $full_line = true;
+                                    if (isset($script_lines[$line_number-1])) {$text[] = $script_lines[$line_number-1];}
+                                    $text[] = $script_line;
+                                    if (isset($script_lines[$line_number+2])) {$text[] = $script_lines[$line_number+2];}
+                                }
+                                $found_script = true; $found = true;
+                                $search_response[$app_with_versions->id]['versions'][$version->id]['scripts'][$script->name]['filename'] = $script->name;
+                                $search_response[$app_with_versions->id]['versions'][$version->id]['scripts'][$script->name]['matches'][] = [
+                                    'line' => $line_number+1,
+                                    'text' => implode("\n",$text),
+                                    'full' => $full_line,
                                 ];
                             }
+                        }
+                        if ($found_script === true) {
+                            $search_response[$app_with_versions->id]['versions'][$version->id]['scripts'] = array_values($search_response[$app_with_versions->id]['versions'][$version->id]['scripts']);
                         }
                     }
                 }
                 if (is_null($type) || $type=='css') { // Find Matches in CSS
                     $css_lines = explode("\n",$version->code->css);
                     foreach($css_lines as $line_number => $css_line) {
-                        if (stristr($css_line, $request->q) && strlen($css_line)<1000) {
-                            $found = true;
+                        $found_css = false;
+                        $location = strpos($css_line, $request->q);
+                        if ($location !== false) {
+                            $text = [];
+                            if (strlen($css_line) >= 500) {
+                                $full_line = false;
+                                if (isset($css_line[$location-50])) {$beginning = $location-50;} else {$beginning = 0;}
+                                if (isset($css_line[$location+50])) {$end = $location+50;} else {$end = count($css_line)-1;}
+                                $text[] = substr($css_line, $beginning, $end-$beginning);
+                            } else {
+                                $full_line = true;
+                                if (isset($css_lines[$line_number-1])) {$text[] = $css_lines[$line_number-1];}
+                                if (isset($css_lines[$location+50])) {$end = $location+50;} else {$end = count($css_line)-1;}
+                                $text[] = $css_line;
+                                if (isset($css_lines[$line_number+2])) {$text[] = $css_lines[$line_number+2];}
+                            }
+                            $found_css = true; $found = true;
                             $search_response[$app_with_versions->id]['versions'][$version->id]['css'][] = [
                                 'line' => $line_number,
-                                'text' => trim($css_line),
+                                'text' => implode("\n",$text),
+                                'full' => $full_line,
                             ];
                         }
+                    }
+                    if ($found_css === true) {
+                        $search_response[$app_with_versions->id]['versions'][$version->id]['css'] = array_values($search_response[$app_with_versions->id]['versions'][$version->id]['css']);
                     }
                 }
 
