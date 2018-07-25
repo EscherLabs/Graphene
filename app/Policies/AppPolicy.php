@@ -56,7 +56,10 @@ class AppPolicy
 
     public function delete(User $user, App $app)
     {
-        if ($user->site_developer || $user->site_admin || $user->app_developer($app->id)) {
+        // TJC 7/25/18 -- Prevent Bulk Deleting of Apps Accidentally, Even if You're 
+        // a Site Admin or Site Developer.  (MUST BE AN A DEVELOPER OF THAT APP)
+        // Advised by Lauri Arnold / Robin Sassani
+        if ($user->app_developer($app->id)) {
             return true;
         }
     }
