@@ -241,16 +241,13 @@ class AppInstanceController extends Controller
                 $response = unserialize($cache->content);
             }
         }
-        if (!isset($data)) {
+        if (!isset($response)) {
             // Fetch Data based on Endpoint Type
             $httpHelper = new HTTPHelper();
             if ($endpoint->type == 'http_no_auth') {
                 $response = $httpHelper->http_fetch($url,$verb,$all_data['request']);
-                // $data = $response['data'];
             } else if ($endpoint->type == 'http_basic_auth') {
-                $response = $httpHelper->http_fetch($url,$verb,$all_data['request'],
-                        $endpoint->config->username, $endpoint->getSecret());
-                // $data = $response['data'];
+                $response = $httpHelper->http_fetch($url,$verb,$all_data['request'],$endpoint->config->username, $endpoint->getSecret());
             } else {
                 abort(505,'Authentication Type Not Supported');
             }
