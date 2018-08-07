@@ -73,7 +73,7 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="{{ url('/login') }}"><i class="fa fa-sign-in fa-fw"></i> Login</a></li>
+                <li><a href="{{ url('/') }}"><i class="fa fa-sign-in fa-fw"></i> Login</a></li>
               </ul>
               @endif
             </li>

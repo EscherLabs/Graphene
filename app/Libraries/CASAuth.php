@@ -121,22 +121,32 @@ class CASAuth
      */
     public function handle($skip = false)
     {
-        
         // Only run if we're not already authenticated
         if (!Auth::check()) {
-            if( $this->cas->isAuthenticated() )
-            {
-                $m = new \Mustache_Engine;                    
-                if (config('cas.cas_enable_saml') === true || config('cas.cas_enable_saml') === "true") {
-                    $this->handle_saml();
-                } else {
-                    $this->handle_generic();
+            try {
+                ob_start(); // Suppress CAS Error Messages
+                $is_authenticated = $this->cas->isAuthenticated();
+                ob_end_clean();
+                if( $is_authenticated )
+                {
+                    $m = new \Mustache_Engine;                    
+                    if (config('cas.cas_enable_saml') === true || config('cas.cas_enable_saml') === "true") {
+                        $this->handle_saml();
+                    } else {
+                        $this->handle_generic();
+                    }
+                } else { 
+                    if(!$skip){    
+                        ob_start(); // Suppress CAS Error Messages
+                        $this->cas->authenticate();
+                        ob_end_clean();
+                    }
                 }
-            } else { 
-                if(!$skip){       
-                    $this->cas->authenticate();
-                }
+            } catch (\Exception $e) {
+                ob_end_clean();
+                abort(401);
             }
         }
+        return true;
     }
 }
