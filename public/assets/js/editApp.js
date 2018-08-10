@@ -57,13 +57,19 @@ function load(app_version) {
 
 
 	$('.nav-tabs').stickyTabs();
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    bt.fixStyle()
+  })
 
   loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
   forms:[{name:'Options',content:'', disabled: true},{name:'User Options',content:'', disabled: true}]
   },app_version)
 
   attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
-  $('.navbar-header .nav a h4').html(attributes.app.name+' - '+(attributes.summary || 'Working Version'));
+  $('.navbar-header .nav a h4').html('MicroApp - '+attributes.app.name);
+
+  $('#version').html((attributes.summary || 'Working Version'));
+
   if(typeof Berries.style !== 'undefined'){
     Berries.style.destroy();
   }

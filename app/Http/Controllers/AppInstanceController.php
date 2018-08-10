@@ -22,7 +22,7 @@ class AppInstanceController extends Controller
     public function __construct() {
         // $this->middleware('auth')->except('run','fetch', 'get_data');
     }
-    
+
     public function list_all_app_instances(Request $request) {
         if (Auth::user()->site_admin) {
             $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
@@ -44,7 +44,14 @@ class AppInstanceController extends Controller
     }
 
     public function admin(AppInstance $app_instance) {
-     return view('admin', ['resource'=>'app_instance','id'=>$app_instance->id]);
+        //
+        $app_instance->load(array('group'=>function($query){
+            // $query->with(array('group'=>function($query){
+            //     $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
+            // }))->select('group_id','user_id');
+        }));
+        // return $app_instance;
+     return view('admin', ['resource'=>'app_instance','id'=>$app_instance->id, 'group'=>$app_instance->group]);
     }
 
     public function show(AppInstance $app_instance) {
@@ -63,7 +70,7 @@ class AppInstanceController extends Controller
 			foreach($sections->sections as $section){
 				foreach($section as $widget){
 					if($widget->widgetType === 'uApp'){
-						if($widget->app_id == $app_instance->id){								
+						if($widget->app_id == $app_instance->id){
 							unset($page->content);
 							$page_list[] = $page;
 							break 2;
@@ -92,7 +99,7 @@ class AppInstanceController extends Controller
         if(isset($data['groups'])){
             $data['groups'] = json_decode($data['groups']);
         }
-        
+
         $app_instance->update($data);
         return AppInstance::where('id', '=',$app_instance->id)->first();
     }
@@ -120,7 +127,7 @@ class AppInstanceController extends Controller
 
     public function render($renderer = "main", $group, $slug, Request $request) {
         if(!is_numeric($group)) {
-            $groupObj = Group::with('composites')->where('slug','=',$group)->first();       
+            $groupObj = Group::with('composites')->where('slug','=',$group)->first();
 			$group = $groupObj->id;
 		}else{
     		$groupObj = Group::with('composites')->where('id','=',$group)->first();
@@ -160,11 +167,11 @@ class AppInstanceController extends Controller
         if($myApp != null) {
             $template = new Templater();
             return $template->render([
-                'apps_pages'=>$links, 
+                'apps_pages'=>$links,
                 'name'=>$myApp->name,
                 'slug'=>$myApp->slug,
                 'id'=>$myApp->id,
-                'uapp'=>$myApp, 
+                'uapp'=>$myApp,
                 'data'=>array(),
                 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
                 'group'=>$groupObj,
@@ -176,7 +183,7 @@ class AppInstanceController extends Controller
         }
         abort(404,'App not found');
     }
-    
+
     public function fetch($ai_id, Request $request) {
     //    session_write_close();
        if (Auth::check()) { /* User is Authenticated */
@@ -196,7 +203,7 @@ class AppInstanceController extends Controller
             // }
             if (is_null($myApp)) { abort(403); }
         }
-  
+
         $myApp->findVersion();
 
         if($myApp != null){
@@ -307,7 +314,7 @@ class AppInstanceController extends Controller
 
         if (!$app_instance->public) {
             $this->authorize('get_data', $app_instance);
-        } 
+        }
         $options = $app_instance->options;
         $user_options_default = $app_instance->user_options_default;
         $resources = $app_instance->resources;
@@ -340,8 +347,8 @@ class AppInstanceController extends Controller
             // Lookup Endpoint
             $endpoint = Endpoint::find((int)$resource_endpoint->endpoint);
         }
-            
-        
+
+
         // Merge App Options with User Preferences, User Info, and `request` data
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
@@ -381,7 +388,7 @@ class AppInstanceController extends Controller
 
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
             $response = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
-        } 
+        }
         // else if ($endpoint->type == 'google_sheets') {
         //     $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
         // }

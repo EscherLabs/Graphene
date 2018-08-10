@@ -19,10 +19,11 @@
     <li><a href="#" id="versions">Versions</a></li>
     <li><a href="#" id="instances">Instances</a></li>
     <li role="separator" class="divider"></li>
-    <li><a href="#" id="publish">Publish</a></li>
+    <li><a href="#" id="publish">Publish (new version)</a></li>
     <!-- <li><a href="#">Visit</a></li> -->
   </ul>
 </div>
+  <span class="label label-default" style="float:right;margin-right:15px;" id="version"></span>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>

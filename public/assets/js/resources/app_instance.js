@@ -7,8 +7,8 @@ $.ajax({
 		$.ajax({
 			url: '/api/apps/'+data.app_id+'/versions',
 			success: function(data, versions) {
-				versions.unshift({id:0,label:'Latest Stable'})
-				versions.unshift({id:-1,label:'Latest (working or stable)'})
+				versions.unshift({id:0,label:'Latest Published'})
+				versions.unshift({id:-1,label:'Latest (Working or Published)'})
 
 				$('#table').html(templates.app_instance.render(data));
 					viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
@@ -27,8 +27,8 @@ $.ajax({
 						// $.ajax({
 						// 	url: '/api/apps/'+data.app_id+'/versions',
 						// 	success: function(versions) {
-						// 		versions.unshift({id:0,label:'Latest Stable'})
-						// 		versions.unshift({id:-1,label:'Latest (working or stable)'})
+						// 		versions.unshift({id:0,label:'Latest Published'})
+						// 		versions.unshift({id:-1,label:'Latest (working or Published)'})
 								$().berry({name:'versionForm',attributes:data,legend:'Select Version',fields:[
 										{label: 'Version', name:'app_version_id', required:true, options:versions,type:'select', value_key:'id',label_key:'label'},
 								]}).on('save',function(){
