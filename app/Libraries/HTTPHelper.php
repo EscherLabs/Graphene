@@ -35,11 +35,12 @@ class HTTPHelper {
             $request_config['content'] = http_build_query($request_data);
         }
         $context = stream_context_create(['http' =>$request_config]);
-        // dd($url);
         $response_data = @file_get_contents($url, false, $context);
-        // if ($response_data === FALSE) {
-        //     $response_data = error_get_last();
-        // }
+        
+        // Failed -- Return 502 Bad Gateway
+        if ($response_data === FALSE || !isset($http_response_header)) {
+            return ['code'=>502,'headers'=>[],'content'=>''];
+        }
 
         // Check if the data we got back was JSON Formatted
         foreach($http_response_header as $header) {
