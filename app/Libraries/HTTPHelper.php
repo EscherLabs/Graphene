@@ -41,11 +41,12 @@ class HTTPHelper {
         
         // Failed -- Return 502 Bad Gateway
         if ($response_data === FALSE || !isset($http_response_header)) {
-            Log::error('HTTPHelper - Failed to Fetch Data For URL: '.$url);
+            Log::error('HTTPHelper - '.$username.'@'.$password.' - Failed to Fetch Data For URL: '.$url);
             return ['code'=>502,'headers'=>[],'content'=>''];
         }
 
         // Check if the data we got back was JSON Formatted
+        $response_code = '444'; // This should be overwritten with an actual response code
         foreach($http_response_header as $header) {
             if (stristr($header, 'Content-Type: application/json')) {
                 $response_data = json_decode($response_data,true);
