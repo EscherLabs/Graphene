@@ -2,6 +2,8 @@
 
 namespace App\Libraries;
 
+use Illuminate\Support\Facades\Log;
+
 class HTTPHelper {
 
     public function http_fetch($url, $verb='GET', $request_data=[],$username=null,$password=null) {
@@ -39,6 +41,7 @@ class HTTPHelper {
         
         // Failed -- Return 502 Bad Gateway
         if ($response_data === FALSE || !isset($http_response_header)) {
+            Log::error('HTTPHelper - Failed to Fetch Data For URL: '.$url);
             return ['code'=>502,'headers'=>[],'content'=>''];
         }
 
