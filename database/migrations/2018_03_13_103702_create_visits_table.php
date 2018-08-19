@@ -18,7 +18,7 @@ class CreateVisitsTable extends Migration
 			$table->integer('user_id')->unsigned();
             $table->enum('resource_type',['page', 'app_instance'])->default('page');
             $table->integer('resource_id')->nullable()->default(null);
-            $table->integer('width')->unsigned('');
+            $table->integer('width')->unsigned('')->nullable()->default(null);
             $table->timestamp('created_at')->useCurrent();
             $table->index('user_id');
             $table->index('resource_type');

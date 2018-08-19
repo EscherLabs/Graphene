@@ -262,11 +262,14 @@ class AppInstanceController extends Controller
                 // Delete existing cache for that app_instance, as well as any other stale cache
                 ResourceCache::where('app_instance_id', '=', $app_instance_id)->where('url','=',$url)->delete();
                 ResourceCache::whereRaw('created_at < (NOW() - INTERVAL 10 MINUTE)')->delete();
-                $cache = ResourceCache::firstOrCreate([
+                $cache = ResourceCache::firstOrNew([
                     'app_instance_id' => $app_instance_id,
                     'url' => $url,
                     'content' => serialize($response),
                 ]);
+                try {
+                    $cache->save();
+                } catch (Exception $e) {} // Do Nothing -- someone else will save it
             }
         }
         // Convert Data based on Modifier

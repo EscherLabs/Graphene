@@ -36,6 +36,9 @@ class LinkController extends Controller
 
     public function user_index($group_id = null)
     {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
         if (!is_null($group_id)) {
             $composite_groups = GroupComposite::where('group_id','=',$group_id)->pluck('composite_group_id')->toArray();
             $common_groups = array_values(array_intersect(array_merge([$group_id],$composite_groups),Auth::user()->groups));
