@@ -9,9 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/assets/favicon.png">
     <title>{{ config('app.site')->name }}</title>
-    @if(!empty(config('app.site')->theme->icon))
-      <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{ config('app.site')->theme->icon }}.png" />
-    @endif    <!-- Bootstrap -->
+    <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -20,7 +18,6 @@
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
     <link href="/assets/css/graphene.css" rel="stylesheet">
-    @if(!empty(config('app.site')->theme->css))<style> {!! config('app.site')->theme->css !!}</style>@endif
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <!--<script src="../../assets/js/ie-emulation-modes-warning.js"></script>-->
@@ -42,9 +39,6 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">
-            @if(!empty(config('app.site')->theme->icon))
-            <i class="fa fa-{{ config('app.site')->theme->icon }} fa-fw" style="font-size: 36px;margin: -8px 0px 0px -8px;float: left;"></i>
-            @endif
             &nbsp;{{ config('app.site')->name }}
           </a>
           <!--<ul class="nav navbar-nav navbar-right hidden-xs">
