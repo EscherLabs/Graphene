@@ -42,7 +42,7 @@
           </button>
           <a class="navbar-brand" href="/">
           @isset(config('app.site')->name)
-            <title>{{ config('app.site')->name }}</title>
+            {{ config('app.site')->name }}
           @endisset
           </a>
           <!--<ul class="nav navbar-nav navbar-right hidden-xs">
