@@ -260,13 +260,22 @@ class AppInstanceController extends Controller
                 abort(505,'Authentication Type Not Supported');
             }
             if ($resource_info->cache === true || $resource_info->cache === 'true') {
-                $cache = ResourceCache::updateOrCreate([
-                    'app_instance_id' => $app_instance_id,
-                    'url' => $url,
-                ],[
-                    'content' => serialize($response),
-                    'created_at' => Carbon::now(),
-                ]);
+                // TJC -- Laravel has a "non-bug" which prevents updateOrCreate from working 
+                // correctly in the event of a race condition.  See details:
+                // https://github.com/laravel/framework/issues/19372
+                // Wrapping this in try/catch, as I don't really care if the insert
+                // fails.
+                try {
+                    $cache = ResourceCache::updateOrCreate([
+                        'app_instance_id' => $app_instance_id,
+                        'url' => $url,
+                    ],[
+                        'content' => serialize($response),
+                        'created_at' => Carbon::now(),
+                    ]);
+                } catch (\Exception $e) {
+                    // Move along
+                }
                 // Delete Other Stale Cache
                 ResourceCache::where('created_at','<',Carbon::now()->subMinutes(10)->toDateTimeString())->delete();
             }
