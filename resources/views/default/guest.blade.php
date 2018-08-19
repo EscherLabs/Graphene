@@ -8,7 +8,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/assets/favicon.png">
-    <title>{{ config('app.site')->name }}</title>
+    @isset(config('app.site')->name)
+      <title>{{ config('app.site')->name }}</title>
+    @endisset
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -39,7 +41,9 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">
-            &nbsp;{{ config('app.site')->name }}
+          @isset(config('app.site')->name)
+            <title>{{ config('app.site')->name }}</title>
+          @endisset
           </a>
           <!--<ul class="nav navbar-nav navbar-right hidden-xs">
             <li><a href="#"><h4 style="margin:0">HELLO WORLD</h4></a></li>
