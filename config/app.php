@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE',isset($_SERVER['APP_TIMEZONE'])?$_SERVER['APP_TIMEZONE']:'EST'),
+    'timezone' => env('APP_TIMEZONE',isset($_SERVER['APP_TIMEZONE'])?$_SERVER['APP_TIMEZONE']:'America/New_York'),
 
     /*
     |--------------------------------------------------------------------------

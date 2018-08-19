@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
+use \Carbon\Carbon;
 
 class AppInstanceController extends Controller
 {
@@ -259,17 +260,15 @@ class AppInstanceController extends Controller
                 abort(505,'Authentication Type Not Supported');
             }
             if ($resource_info->cache === true || $resource_info->cache === 'true') {
-                // Delete existing cache for that app_instance, as well as any other stale cache
-                ResourceCache::where('app_instance_id', '=', $app_instance_id)->where('url','=',$url)->delete();
-                ResourceCache::whereRaw('created_at < (NOW() - INTERVAL 10 MINUTE)')->delete();
-                $cache = ResourceCache::firstOrNew([
+                $cache = ResourceCache::updateOrCreate([
                     'app_instance_id' => $app_instance_id,
                     'url' => $url,
+                ],[
                     'content' => serialize($response),
+                    'created_at' => Carbon::now(),
                 ]);
-                try {
-                    $cache->save();
-                } catch (Exception $e) {} // Do Nothing -- someone else will save it
+                // Delete Other Stale Cache
+                ResourceCache::where('created_at','<',Carbon::now()->subMinutes(10)->toDateTimeString())->delete();
             }
         }
         // Convert Data based on Modifier
