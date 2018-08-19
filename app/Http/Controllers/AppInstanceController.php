@@ -243,7 +243,7 @@ class AppInstanceController extends Controller
         if ($resource_info->cache === true || $resource_info->cache === 'true') {
             $cache = ResourceCache::where('app_instance_id', '=', $app_instance_id)
                     ->where('url','=',$url)
-                    ->whereRaw('created_at >= (NOW() - INTERVAL 10 MINUTE)')
+                    ->where('created_at','>=',Carbon::now()->subMinutes(10)->toDateTimeString())
                     ->first();
             if (!is_null($cache)) {
                 $response = unserialize($cache->content);
