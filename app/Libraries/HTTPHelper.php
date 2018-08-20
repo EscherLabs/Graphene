@@ -11,6 +11,11 @@ class HTTPHelper {
         $request_config = [];
         $request_config['ignore_errors'] = true;
         $request_config['method'] = $verb;
+        if (is_string($request_data)) {
+            $content_type = 'raw';
+        } else {
+            $content_type = 'application/x-www-form-urlencoded';
+        }
         $request_config['header'] = "Content-type: application/x-www-form-urlencoded\r\n"."User-Agent: rest\r\n";
         if (!is_null($username)) {
             $request_config['header'] .= "Authorization: Basic ".base64_encode($username.':'.$password)."\r\n";
@@ -34,7 +39,11 @@ class HTTPHelper {
                 abort(400);             
             }
         } else {
-            $request_config['content'] = http_build_query($request_data);
+            if (is_string($request_data)) {
+                $request_config['content'] = $request_data;
+            } else {
+                $request_config['content'] = http_build_query($request_data);
+            }
         }
         $context = stream_context_create(['http' =>$request_config]);
         $response_data = @file_get_contents($url, false, $context);
