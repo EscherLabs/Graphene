@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Extensions;
+namespace App\Libraries;
 use App\Session;
 use Illuminate\Session\DatabaseSessionHandler;
 

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Extensions\NoSaveDatabaseSessionHandler;
+use App\Libraries\NoSaveDatabaseSessionHandler;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
