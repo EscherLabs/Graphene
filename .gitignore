@@ -6,6 +6,10 @@ Homestead.json
 .env
 .vscode
 
+# Don't Include Mustache Cache
+/storage/cache/mustache/*
+!/storage/cache/mustache/.gitkeep 
+
 config/database.php
 
 # Elastic Beanstalk Files

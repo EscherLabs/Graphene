@@ -121,6 +121,7 @@ class Templater {
         $m = new \Mustache_Engine([
             'loader' => $loader,
             'partials_loader' => $partials_loader,
+            'cache' => storage_path('cache/mustache'),
         ]);
     if (!isset($data['template'])) {
         $data['template'] = 'main';
