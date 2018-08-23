@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'lifetime' => 120,
+    'lifetime' => isset($_SERVER['SESSION_LIFETIME'])?$_SERVER['SESSION_LIFETIME']:120,
 
     'expire_on_close' => false,
 
