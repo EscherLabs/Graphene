@@ -11,11 +11,10 @@ use App\Libraries\CustomAuth;
 
 class UserDashboardController extends Controller
 {
-    public function __construct() {
-        $this->customAuth = new CustomAuth();                   
-    }
+    public function __construct() {}
     
     public function index(Request $request) {
+        $this->customAuth = new CustomAuth();
         $groups = [];
         if(Auth::user()) {
             $user_dashboard = UserDashboard::where('user_id','=',Auth::user()->id)->where('site_id','=',Auth::user()->site->id)->first();
@@ -63,7 +62,20 @@ class UserDashboardController extends Controller
         ]);
     }
 
+    public function css(Request $request) {
+        $site_css = config('app.site')->select('theme')->first()->theme->css;
+        return response($site_css,200)
+            ->header('Content-Type', 'text/css')
+            ->header('Pragma','cache')
+            ->header('Cache-Control','max-age=86400');
+    }
+
+    public function heartbeat(Request $request) {
+        return ['status'=>true];
+    }
+
     public function update(Request $request) {
+        $this->customAuth = new CustomAuth();
         return UserDashboard::updateOrCreate(
             ['user_id'=>Auth::user()->id, 'site_id'=>Auth::user()->site->id], 
             ['config'=>json_decode($request->config)]);

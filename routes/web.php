@@ -18,15 +18,7 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
-Route::get('/css',function(){
-  config(['session.driver' =>'array']);
-  $site_css = config('app.site')->select('theme')->first()->theme->css;
-  $response = Response::make($site_css, 200);
-  $response->header('Content-Type', 'text/css');
-  $response->header('Pragma','cache');
-  $response->header('Cache-Control','max-age=86400');
-  return $response;
-});
+Route::get('/css','UserDashboardController@css')->middleware('no.save.session');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/ar/{renderer}/{group}/{slug}', 'AppInstanceController@render');
@@ -38,7 +30,7 @@ Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
 Route::group(['middleware' => ['custom.auth']], function () {
   Route::get('/image/{image}','ImageController@get')->middleware('no.save.session')->middleware('can:get,image');
-  Route::get('/heartbeat',function() {return ['status'=>true];});
+  Route::get('/heartbeat','UserDashboardController@heartbeat');
 });
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
