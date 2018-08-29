@@ -17,11 +17,14 @@ use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
 use \Carbon\Carbon;
+use App\Libraries\CustomAuth;
 
 class AppInstanceController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('run','fetch', 'get_data');
+
+        $this->customAuth = new CustomAuth();
     }
 
     public function list_all_app_instances(Request $request) {
@@ -140,6 +143,10 @@ class AppInstanceController extends Controller
                 $query->where('user_id','=', Auth::user()->id);
             }])->where('group_id','=', $group)->where('slug', '=', $slug)->with('app')->first();
 
+            if (is_null($myApp)) { 
+                abort(404); 
+            }
+            
             if($myApp->public == 0) {
                 $this->authorize('fetch' ,$myApp);
             }
@@ -148,7 +155,13 @@ class AppInstanceController extends Controller
             $current_user = new User;
 
             $myApp = AppInstance::with('app')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
-            if (is_null($myApp)) { abort(403); }
+            if (is_null($myApp)) { 
+                //abort(403); // TJC -- Changed to Force Login, not 403
+                $return = $this->customAuth->authenticate($request);
+                if(isset($return)){
+                    return $return;
+                }
+            }
             $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
 
