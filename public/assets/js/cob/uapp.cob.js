@@ -55,7 +55,7 @@ Cobler.types.uApp = function(container){
                   send_data.options = this.data.user.options;
                 }
                 $.ajax({
-                url: '/api/app_data/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
+                url: '/api/fetch/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
                 // dataType : 'json',
                 type: 'POST',
                 data: send_data,

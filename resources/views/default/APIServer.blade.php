@@ -61,38 +61,10 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            @can('view_in_admin','App\Group')
-            <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
-            @endcan
-            @can('view_in_admin','App\User')
-              <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
-            @endcan
-            @can('view_in_admin', 'App\Endpoint')
-              <!-- <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>   -->
-            @endcan   
-            @can('view_in_admin', 'App\Link')
-              <!-- <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>   -->
-            @endcan   
-            @can('view_in_admin', 'App\Image')
-              <!-- <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>   -->
-            @endcan   
-            @can('view_in_admin', 'App\Tag')
-              <!-- <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>   -->
-            @endcan   
-            @can('view_in_admin','App\App')
-              <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
-            @endcan
-            @can('view_in_admin','App\AppInstance')
-              <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
-            @endcan
-            @can('view_in_admin','App\Page')
-              <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
-            @endcan
-            @can('view_in_admin', 'App\APIUser')
-              <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; Manage API Accounts</a></li>
-            @endcan  
             @can('view_in_admin', 'App\Site')
-              <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
+            <li><a href="/admin/apiserver/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
+            <li><a href="/admin/apiserver/modules"><i class="fa fa-cloud fa-fw"></i>&nbsp; Modules</a></li>
+            <li><a href="/admin/apiserver/databases"><i class="fa fa-cloud fa-fw"></i>&nbsp; Databases</a></li>
             @endcan  
           </ul>
           <!--form class="navbar-form navbar-right">
@@ -103,38 +75,14 @@
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        @can('view_in_admin','App\Group')
-          <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
-        @endcan
-        @can('view_in_admin','App\User')
-          <li><a href="/admin/users"><i class="fa fa-user fa-fw"></i>&nbsp; Users</a></li>
-        @endcan
-        @can('view_in_admin', 'App\Endpoint')
-          <!-- <li><a href="/admin/endpoints"><i class="fa fa-crosshairs fa-fw"></i>&nbsp; Endpoints</a></li>   -->
-        @endcan   
-        @can('view_in_admin', 'App\Link')
-          <!-- <li><a href="/admin/links"><i class="fa fa-link fa-fw"></i>&nbsp; Links</a></li>   -->
-        @endcan   
-        @can('view_in_admin', 'App\Image')
-          <!-- <li><a href="/admin/images"><i class="fa fa-image fa-fw"></i>&nbsp; Images</a></li>   -->
-        @endcan   
-        @can('view_in_admin', 'App\Tag')
-          <!-- <li><a href="/admin/tags"><i class="fa fa-tags fa-fw"></i>&nbsp; Tags</a></li>   -->
-        @endcan   
-        @can('view_in_admin','App\App')
-          <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
-        @endcan
-        @can('view_in_admin','App\AppInstance')
-          <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
-        @endcan
-        @can('view_in_admin','App\Page')
-          <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
-        @endcan
-        @can('view_in_admin', 'App\APIUser')
-          <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; Manage API Accounts</a></li>
-        @endcan  
         @can('view_in_admin', 'App\Site')
-          <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
+        <li><a href="/admin/apiserver/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
+        <li><a href="/admin/apiserver/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
+        <li><a href="/admin/apiserver/modules"><i class="fa fa-cubes fa-fw"></i>&nbsp; Modules</a></li>
+        <li><a href="/admin/apiserver/module_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Modules Versions</a></li>
+        <li><a href="/admin/apiserver/module_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Module Instances</a></li>
+        <li><a href="/admin/apiserver/databases"><i class="fa fa-database fa-fw"></i>&nbsp; Databases</a></li>
+        <li><a href="/admin/apiserver/database_instances"><i class="fa fa-table fa-fw"></i>&nbsp; Database Instances</a></li>
         @endcan  
       </ul>
     </div>

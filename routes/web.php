@@ -107,12 +107,14 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     // Save App User Options for current user by app_instance_id (Policy Enforced in Controller!)
     Route::post('/apps/instances/{app_instance}/user_options','AppInstanceController@save_user_options')->middleware('can:modify_user_options,app_instance');
+
     // Get App Instance External Resource Data by endpoint_id (POST or GET)
-    Route::get('/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
-    Route::post('/app_data/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
+    Route::get('/fetch/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
+    Route::post('/fetch/{app_instance}/{endpoint}','AppInstanceController@get_data'); // Check Permissions in Controller
     // Get all App Data by app_instance
     Route::post('/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
-
+    Route::get('/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
+    
     /***** ENDPOINTS *****/
     // List all endpoints
     Route::get('/endpoints','EndpointController@list_all_endpoints')->middleware('can:get_all,App\Endpoint');
@@ -271,3 +273,34 @@ Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/redirect/{base_64_redirect}','EllucianMobileController@redirect');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
+
+
+Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {
+});
+Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin/apiserver'], function () {
+  
+    Route::get('/{resource?}', 'APIServerController@index');
+    // Route::get('/fetch/{environment}/{endpoint}','APIServerController@fetch'); // Check Permissions in Controller
+    
+    Route::get('/fetch/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller
+    Route::post('/fetch/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller
+    Route::put('/fetch/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller
+    
+    // Route::get('/apps/{app}', 'AppController@admin')->middleware('can:get,app');
+  
+    // Route::get('/groups/{group}/', 'AdminController@summary')->middleware('can:list_components,group');
+  
+    // Route::get('/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/members', 'AdminController@members')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/images', 'AdminController@images')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/links', 'AdminController@links')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_components,group');
+    // Route::get('/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_components,group');
+  
+    // Route::get('/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
+    // Route::get('/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
+    // Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
+  });

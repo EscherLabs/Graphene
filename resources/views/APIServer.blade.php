@@ -16,7 +16,7 @@
     var resource_id = '{{ $id }}';
     var group = {!! $group or "{}" !!};
     var user = {!! Auth::user() !!};
-    var url = '/api/'+route;
+    var url = '/admin/apiserver/fetch/'+route;
     if(resource_id !== ''){
       url= '/api/groups/'+resource_id+'/'+route;
     }
