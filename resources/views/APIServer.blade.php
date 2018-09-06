@@ -16,11 +16,13 @@
     var resource_id = '{{ $id }}';
     var group = {!! $group or "{}" !!};
     var user = {!! Auth::user() !!};
-    var url = '/admin/apiserver/fetch/'+route;
-    if(resource_id !== ''){
-      url= '/api/groups/'+resource_id+'/'+route;
-    }
-    var api = '/api/'+route;
+    // var url = '/admin/apiserver/fetch/'+route;
+    // if(resource_id !== ''){
+    //   url= '/api/groups/'+resource_id+'/'+route;
+    // }
+    // var api = '/api/'+route;
+    var api = '/api/proxy/'+route;
+
     var tableConfig = {
       entries: [25, 50, 100],
       count: 25,
@@ -37,7 +39,9 @@
           toastr.error(e.statusText, 'ERROR');
         }
       });},
-      edit: function(model){$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+      edit: function(model){
+        debugger;
+        $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
         success:function(data) {
           model.set(data);
           toastr.success('', 'Successfully Updated')
@@ -46,7 +50,9 @@
           toastr.error(e.statusText, 'ERROR');
         }
       });},
-      delete: function(model){ $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
+      delete: function(model){ 
+        debugger;
+        $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
         success:function() {
           toastr.success('', 'Successfully Deleted')
         },

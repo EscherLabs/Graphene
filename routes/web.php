@@ -267,7 +267,12 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::post('/visit/log_visit','VisitController@log_visit');
 
     Route::get('/ellucianmobile/config','EllucianMobileController@config');
-});
+
+    Route::get('/proxy/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller  
+    Route::post('/proxy/{route}/{object_id?}','APIServerController@fetch'); 
+    Route::put('/proxy/{route}/{object_id?}','APIServerController@fetch'); 
+    Route::delete('/proxy/{route}/{object_id?}','APIServerController@fetch'); 
+  });
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/redirect/{base_64_redirect}','EllucianMobileController@redirect');
@@ -275,32 +280,8 @@ Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
 
 
-Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {
-});
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin/apiserver'], function () {
+  Route::get('/{resource?}', 'APIServerController@index');    
+  Route::get('/modules/{module_id}', 'APIServerController@module');    
+});
   
-    Route::get('/{resource?}', 'APIServerController@index');
-    // Route::get('/fetch/{environment}/{endpoint}','APIServerController@fetch'); // Check Permissions in Controller
-    
-    Route::get('/fetch/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller
-    Route::post('/fetch/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller
-    Route::put('/fetch/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller
-    
-    // Route::get('/apps/{app}', 'AppController@admin')->middleware('can:get,app');
-  
-    // Route::get('/groups/{group}/', 'AdminController@summary')->middleware('can:list_components,group');
-  
-    // Route::get('/groups/{group}/admins', 'AdminController@admins')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/members', 'AdminController@members')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/composites', 'AdminController@composites')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/tags', 'AdminController@tags')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/images', 'AdminController@images')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/links', 'AdminController@links')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/pages', 'AdminController@pages')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/appinstances', 'AdminController@appinstances')->middleware('can:list_components,group');
-    // Route::get('/groups/{group}/endpoints', 'AdminController@endpoints')->middleware('can:list_components,group');
-  
-    // Route::get('/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
-    // Route::get('/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
-    // Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
-  });

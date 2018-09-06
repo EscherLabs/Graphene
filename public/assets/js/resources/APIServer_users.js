@@ -1,5 +1,6 @@
 $('.navbar-header .nav a h4').html('Users');
-url = "/admin/apiserver/fetch/api_users";
+url = "/api/proxy/api_users";
+api = url;
 $.ajax({
 	url: url,		
 	success: function(data){
