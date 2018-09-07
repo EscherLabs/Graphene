@@ -88,19 +88,25 @@ function load(app_version) {
 		entries: [25, 50, 100],
 		count: 25,
 		autoSize: -20,
-		container: '.resources',
+		container: '.routes',
     edit:true,delete:true,add:true
 	}
 
 
   tableConfig.schema = [
-    {label: 'Name',name: 'name'},
-    {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}, {label: 'Include as Script', value: 'script'}, {label: 'Include as CSS', value: 'css'}]},
-    {label: 'Path',name:'path'},
-    {label: 'Fetch', type: 'checkbox',name:'fetch'},
-    {label: 'Cache', type: 'checkbox',name:'cache'}
+    {label: 'Description',name: 'description'},
+    {label: 'Path', name:'path', required:true},
+    {label: 'Function Name', name:'function_name', required:true},
+    // {label: 'Path',name:'path'},
+    {label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
+    {label: 'Optional', name:'optional'},    
+    {label: 'Required', name:'required'},
+
+
+    // {label: 'Fetch', type: 'checkbox',name:'fetch'},
+    // {label: 'Cache', type: 'checkbox',name:'cache'}
   ];
-  tableConfig.data = attributes.code.resources;
+  tableConfig.data = attributes.routes;
   if(typeof bt !== 'undefined'){
     bt.destroy();
   }
@@ -111,7 +117,7 @@ function load(app_version) {
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
 
   // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
-  scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code, mode:'ace/mode/js', label:'Script'});
+  scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code, mode:'ace/mode/php', label:'Script'});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
   //   item.content = this.berry.fields[this.active].toJSON();
@@ -212,74 +218,56 @@ function modalForm(form, name, onSave) {
   }
 }
 
-// $('#save').on('click',function() {
-//   template_errors = templatePage.errors();
-//   script_errors =scriptPage.errors();
-//   var data = {code:{}};
-//   data.code.css = Berries.style.toJSON().code.css;
-//   data.code.resources = _.map(bt.models,'attributes');
-//   data.code.templates = templatePage.toJSON();
+$('#save').on('click',function() {
+  script_errors =scriptPage.errors();
+  var data = attributes;
+  // data.code.css = Berries.style.toJSON().code.css;
+  data.routes = _.map(bt.models,'attributes');
 
-//   try{
-//     _.each(data.code.templates, function(partial){
-//       try{
-//           Ractive.parse(partial.content);
-//         }catch(e){
-//           template_errors.push({
-//             type: e.name,
-//             name: partial.name,
-//             message: e.message
-//           });
-//         }
-//     })
-//   }catch(e) {
-//       toastr.error(e.message, e.name);
-//       return false;
-//   }
-//   var errorCount = template_errors.length+ script_errors.length;//+ css_errors.length
+  var errorCount = script_errors.length;//+ css_errors.length
 
-//   if(!errorCount){
-//     data.code.scripts = scriptPage.toJSON();
-//     var temp = formPage.toJSON();
-//     data.code.forms = formPage.toJSON();
-//     data.updated_at = attributes.updated_at;
+  if(!errorCount){
+    data.code = scriptPage.toJSON();
+    // var temp = formPage.toJSON();
+    // data.code.forms = formPage.toJSON();
+    data.updated_at = attributes.updated_at;
 
-//     $.ajax({
-//       url: root+attributes.app_id+'/code',
-//       method: 'put',
-//       data: data,
-//       success:function(e) {
-//         attributes.updated_at = e.updated_at;
-//         toastr.success('', 'Successfully Saved')
-//       },
-//       error:function(e) {
-//         toastr.error(e.statusText, 'ERROR');
-//       },
-//         statusCode: {
-//           404: function() {
-//             toastr.error('You are no longer logged in', 'Logged Out')
-//           },
-//           409: function(error) {
-//             test = JSON.parse(JSON.parse(error.responseText).error.message);
-//             toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
-//             conflictResults = {};
-//             conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
-//             conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
-//             conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
-//             conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
-//             conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
-//             modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-//           }.bind(this),
-//           401: function() {
-//             toastr.error('You are not authorized to perform this action', 'Not Authorized')
-//           }
-//         }
-//     })
-//   }else{
-//     toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
-//     modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors/*, css: css_errors*/})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
-//   }
-// })
+    $.ajax({
+      url: '/api/proxy/module_versions/'+attributes.id,
+      method: 'PUT',
+      data: data,
+      success:function(e) {
+        attributes.updated_at = e.updated_at;
+        toastr.success('', 'Successfully Saved')
+      },
+      error:function(e) {
+        toastr.error(e.statusText, 'ERROR');
+      },
+        // statusCode: {
+        //   404: function() {
+        //     toastr.error('You are no longer logged in', 'Logged Out')
+        //   },
+        //   409: function(error) {
+        //     test = JSON.parse(JSON.parse(error.responseText).error.message);
+        //     toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
+        //     conflictResults = {};
+        //     conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
+        //     conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
+        //     conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
+        //     conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
+        //     conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
+        //     modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+        //   }.bind(this),
+        //   401: function() {
+        //     toastr.error('You are not authorized to perform this action', 'Not Authorized')
+        //   }
+        // }
+    })
+  }else{
+    toastr.error('Please correct the compile/syntax errors ('+ errorCount +')', 'Errors Found')
+    modal({headerClass:'danger' ,title: 'Syntax Error(s)', content: render('error', {count:errorCount, temp: template_errors, script: script_errors/*, css: css_errors*/})})//, footer:'<div class="btn btn-danger">Force Save</div>'})
+  }
+})
 
 // $('#import').on('click', function() {
 //     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
