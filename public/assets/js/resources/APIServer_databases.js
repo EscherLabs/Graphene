@@ -12,6 +12,7 @@ $.ajax({
 		];
 		tableConfig.data = data;
 		tableConfig.name = "databases";
+
 		bt = new berryTable(tableConfig)
 	}
 });

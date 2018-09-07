@@ -63,7 +63,7 @@ function load(app_version) {
   // },app_version)
 
   attributes= app_version;
-  // $('.navbar-header .nav a h4').html('Module - '+attributes.module.name);
+  $('.navbar-header .nav a h4').html('Module - '+module.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
 
@@ -82,7 +82,31 @@ function load(app_version) {
   //     ]}
   //   ]
   // })
-  
+    $('.dbs').berry({
+    actions:false,
+    name: 'dbs',
+    attributes:attributes,
+    inline:true,
+    fields:[
+      {
+        "name": "dbs_contain",
+        "legend": "Databases",
+        "fields": {
+          "databases": {
+            "label": false,
+            "multiple": {
+              "duplicate": true,
+            },
+            "fields": [
+              // "database": {}
+              {label: false, name:'database',type:'select', required: true,choices:'/api/proxy/databases',label_key:'name',value_key:'id'}
+              
+            ]
+          }
+        }
+      }
+    ]
+  })
 
   var tableConfig = {
 		entries: [25, 50, 100],
@@ -99,8 +123,25 @@ function load(app_version) {
     {label: 'Function Name', name:'function_name', required:true},
     // {label: 'Path',name:'path'},
     {label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
-    {label: 'Optional', name:'optional'},    
-    {label: 'Required', name:'required'},
+    {
+      "name": "parameters",
+      "label": "Parameters",
+      "template":'{{#attributes.params}}{{#required}}<b>{{/required}}{{name}}{{#required}}</b>{{/required}}<br> {{/attributes.params}}',
+      "fields": {
+        "params": {
+          "label": false,
+          "multiple": {
+            "duplicate": true
+          },
+          fields:[
+            {'name':'name','label':'Name',"inline":true,columns:8},
+            {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+          ]
+        }
+      }
+    }
+    // {label: 'Optional', name:'optional'},    
+    // {label: 'Required', name:'required'},
 
 
     // {label: 'Fetch', type: 'checkbox',name:'fetch'},
@@ -110,6 +151,38 @@ function load(app_version) {
   if(typeof bt !== 'undefined'){
     bt.destroy();
   }
+
+  tableConfig.events=[
+    {'name': 'params', 'label': '<i class="fa fa-info"></i> Parameters', callback: function(model){
+      $().berry({
+        model:model,
+        legend:'Parameters',
+        fields:[
+          {label: 'Description',name: 'description',type:'hidden'},
+          {label: 'Path', name:'path', type:'hidden'},
+          {label: 'Function Name', name:'function_name',type:'hidden'},
+          {label: 'Verb',name:'verb',type:'hidden',options:["ALL", "GET", "POST", "PUT", "DELETE"]},
+          {
+            "name": "parameters",
+            "label": false,
+            "fields": {
+              "params": {
+                "label": false,
+                "multiple": {
+                  "duplicate": true
+                },
+                fields:[
+                  {'name':'name','label':'Name',"inline":true,columns:8},
+                  {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+                ]
+              }
+            }
+          }
+        ]
+        })
+    }, multiEdit: false},
+
+  ]
   bt = new berryTable(tableConfig)
 
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;
@@ -223,7 +296,7 @@ $('#save').on('click',function() {
   var data = attributes;
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
-
+data.databases = _.uniq(_.pluck(Berries.dbs.toJSON().databases,'database'));
   var errorCount = script_errors.length;//+ css_errors.length
 
   if(!errorCount){
@@ -231,13 +304,16 @@ $('#save').on('click',function() {
     // var temp = formPage.toJSON();
     // data.code.forms = formPage.toJSON();
     data.updated_at = attributes.updated_at;
-
+    toastr.info('', 'Saving...')
+    
     $.ajax({
       url: '/api/proxy/module_versions/'+attributes.id,
       method: 'PUT',
       data: data,
       success:function(e) {
         attributes.updated_at = e.updated_at;
+        toastr.clear()
+        
         toastr.success('', 'Successfully Saved')
       },
       error:function(e) {

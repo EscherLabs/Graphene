@@ -12,7 +12,7 @@
   </button>
   <ul class="dropdown-menu">
     <li role="separator" class="divider"></li>
-    <li><a href="/api/apps/{!! $app_id !!}" target="_blank">Export</a></li>
+    <li><a href="/api/apps/{!! $id !!}" target="_blank">Export</a></li>
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
@@ -25,15 +25,19 @@
   <span class="label label-default" style="float:right;margin-right:15px;" id="version"></span>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#routes" aria-controls="routes" role="tab" data-toggle="tab"><i class="fa fa-routes"></i> <span class="hidden-xs hidden-sm">Routes<span></a></li>
-    <li role="presentation"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
+  <li role="presentation" class="active"><a href="#routes" aria-controls="routes" role="tab" data-toggle="tab"><i class="fa fa-route"></i> <span class="hidden-xs hidden-sm">Routes<span></a></li>
+  <li role="presentation"><a href="#dbs" aria-controls="dbs" role="tab" data-toggle="tab"><i class="fa fa-dbs"></i> <span class="hidden-xs hidden-sm">Databases<span></a></li>
+  <li role="presentation"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane scripts" id="scripts"></div>
     <div role="tabpanel" class="tab-pane active " id="routes">
-      <div class="row"><div class="col-md-12 routes "></div></div>
+    <div class="row"><div class="col-md-12 routes "></div></div>
+  </div>    
+  <div role="tabpanel" class="tab-pane" id="dbs">
+      <div class="row"><div class="col-md-12 dbs "></div></div>
     </div>
   </div>
 
@@ -67,7 +71,9 @@
       language: 'javascript'
     });
   </script>-->
-  <script>var loaded = {!! $app !!};</script>
+  <script>var loaded = {!! $module_version !!};
+          var module = {!! $module !!};
+  </script>
   <script type='text/javascript' src='/assets/js/APIServer_module_edit.js'></script>
 @endsection
 
