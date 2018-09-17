@@ -325,7 +325,7 @@ $('#publish').on('click', function() {
 
 $('#instances').on('click', function() {
   viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/app/{{group_id}}/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/appinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-  $.get('/api/appinstances/?app_id=' + loaded.app_id, function(data) {
+  $.get('/api/appinstances?app_id=' + loaded.app_id, function(data) {
     if(data.length > 0){
       modal({title: 'This App Instance was found on the following pages', content: viewTemplate.render({items: data})});
     }else{
