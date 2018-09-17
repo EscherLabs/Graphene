@@ -33,6 +33,7 @@ class Kernel extends HttpKernel
             // Disabling to See if Performance is Improved TJC 8/23/18
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ForceHTTPS::class,
             \App\Http\Middleware\ValidateUser::class,
         ],
         'api' => [

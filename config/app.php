@@ -30,6 +30,8 @@ return [
 
     'env' => env('APP_ENV', isset($_SERVER['APP_ENV'])?$_SERVER['APP_ENV']:'local'),
 
+    'force_https' => env('FORCE_HTTPS', isset($_SERVER['FORCE_HTTPS'])?$_SERVER['FORCE_HTTPS']:false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
