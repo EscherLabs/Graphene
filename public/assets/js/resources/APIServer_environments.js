@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Environments');
 // url = "/admin/apiserver/fetch/environments";
-url = "/api/proxy/environments";
+url = "/api/proxy/"+slug+"/environments";
 api=url;
 $.ajax({
 	url: url,		

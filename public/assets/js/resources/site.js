@@ -75,6 +75,23 @@ $.ajax({
 			}},
 		],attributes:{additional:arr}, actions:false, name:'cas_data_map_additional'})
 
+		$('#proxyserver_config .col-sm-9').berry({fields: [
+			{label: 'ProxyServer Config', name:'proxyserver_config', fields:{
+				config:{
+					label: false, name:'config',
+					multiple:{
+						"duplicate": true,
+						"min": 1
+					},fields: [
+						{label: 'Name',name:"name"},
+						{label: 'Slug',name:"slug"},
+						{label: 'Server',name:"server"},
+						{label: 'Password',name:"password"},
+						{label: 'Username',name:"username"},
+					],
+				}
+			}},
+		],attributes:{config:data.proxyserver_config}, actions:false, name:'proxyserver_config'})
 
 		data.templates.partials = _.map(data.templates.partials,function(item, key){
 			return {name:key,content:item||'',disabled:false}
@@ -97,7 +114,7 @@ $.ajax({
 			item.auth_config.cas_data_map = {};
 			item.auth_config.cas_data_map.default = Berries.cas_data_map_default.toJSON();
 			item.auth_config.cas_data_map.additional = _.zipObject(_.map(Berries.cas_data_map_additional.toJSON().additional, 'name'), _.map(Berries.cas_data_map_additional.toJSON().additional, 'value'))
-			
+			item.proxyserver_config = Berries.proxyserver_config.toJSON().config;
 			item.auth_config.external_user_lookup = Berries.external_user_lookup.toJSON();
 			var partials = templatePage.toJSON();
 				// var successCompile = false;

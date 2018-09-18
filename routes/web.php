@@ -268,10 +268,10 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     Route::get('/ellucianmobile/config','EllucianMobileController@config');
 
-    Route::get('/proxy/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller  
-    Route::post('/proxy/{route}/{object_id?}','APIServerController@fetch'); 
-    Route::put('/proxy/{route}/{object_id?}','APIServerController@fetch'); 
-    Route::delete('/proxy/{route}/{object_id?}','APIServerController@fetch'); 
+    Route::get('/proxy/{slug}/{route}/{object_id?}','APIServerController@fetch'); // Check Permissions in Controller  
+    Route::post('/proxy/{slug}/{route}/{object_id?}','APIServerController@fetch'); 
+    Route::put('/proxy/{slug}/{route}/{object_id?}','APIServerController@fetch'); 
+    Route::delete('/proxy/{slug}/{route}/{object_id?}','APIServerController@fetch'); 
   });
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
@@ -279,9 +279,8 @@ Route::get('/ellucianmobile/redirect/{base_64_redirect}','EllucianMobileControll
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
 
-
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin/apiserver'], function () {
-  Route::get('/{resource?}', 'APIServerController@index');    
-  Route::get('/services/{service_id}', 'APIServerController@service');    
+  Route::get('/{slug}/{resource?}', 'APIServerController@index');    
+  Route::get('/{slug}/services/{service_id}', 'APIServerController@service');    
 });
   

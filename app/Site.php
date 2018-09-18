@@ -9,7 +9,7 @@ class Site extends Model
 {
     use SoftDeletes;
     protected $dates = ['deleted_at'];
-    protected $fillable = ['domain','name','theme','templates','auth','auth_config'];
+    protected $fillable = ['domain','name','theme','templates','auth','auth_config','proxyserver_config'];
     protected $casts = ['theme' => 'object','templates' => 'object','auth_config' => 'object'];
 
     public function members() {
@@ -38,5 +38,54 @@ class Site extends Model
     public function remove_member(User $user)
     {
         SiteMember::where('site_id',$this->id)->where('user_id',$user->id)->delete();
+    }
+
+    public function getProxyserverConfigAttribute($config_string)
+    {
+      if (!is_null($config_string) && $config_string != '') {
+        $configs = json_decode($config_string);
+        if (is_array($configs)) {
+          foreach($configs as $index => $config) {
+            if (isset($config->password)) {
+              $configs[$index]->password = '*****';
+            }
+          }
+          return $configs;
+        } else {
+          return [];
+        }
+      } else {
+        return null;
+      }
+    }
+
+    public function setProxyserverConfigAttribute($configs)
+    {
+      if (is_array($configs)) {
+        foreach($configs as $index => $config) {
+          if (isset($config['password']) && $config['password'] != '*****') {
+            $configs[$index]['password'] = encrypt($config['password']);
+          }
+        }
+        $this->attributes['proxyserver_config'] = json_encode($configs);
+      }
+    }
+
+    public function get_proxyserver_by_slug($slug)
+    {
+      $config_string = $this->attributes['proxyserver_config'];
+      if (!is_null($config_string) && $config_string != '') {
+        $configs = json_decode($config_string);
+        if (is_array($configs)) {
+          foreach($configs as $config) {
+            if (isset($config->slug) && $config->slug == $slug) {
+              $config->password = decrypt($config->password);
+              return $config;
+            }
+          }
+        } 
+      } else {
+        return null;
+      }
     }
 }

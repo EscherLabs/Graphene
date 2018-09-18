@@ -14,6 +14,7 @@
   <script>
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
+    var slug = '{{ $slug }}';
     var group = {!! $group or "{}" !!};
     var user = {!! Auth::user() !!};
     // var url = '/admin/apiserver/fetch/'+route;
@@ -21,7 +22,7 @@
     //   url= '/api/groups/'+resource_id+'/'+route;
     // }
     // var api = '/api/'+route;
-    var api = '/api/proxy/'+route;
+    var api = '/api/proxy/'+slug+'/'+route;
 
     var tableConfig = {
       entries: [25, 50, 100],

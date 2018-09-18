@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Services');
 // url = "/admin/apiserver/fetch/services";
-url = "/api/proxy/services";
+url = "/api/proxy/"+slug+"/services";
 api = url;
 $.ajax({
 	url: url,		
@@ -14,7 +14,7 @@ $.ajax({
 		tableConfig.data = data;
 		tableConfig.name = "services";
 
-		tableConfig.click = function(model){window.location.href = '/admin/apiserver/services/'+model.attributes.id};
+		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/services/'+model.attributes.id};
 		bt = new berryTable(tableConfig)
 	}
 });

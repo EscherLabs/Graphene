@@ -20,6 +20,7 @@ class CreateSitesTable extends Migration
             $table->json('templates')->nullable();
             $table->string('auth')->nullalble()->default(null);
             $table->json('auth_config')->nullable();
+            $table->json('proxyserver_config')->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();
         });

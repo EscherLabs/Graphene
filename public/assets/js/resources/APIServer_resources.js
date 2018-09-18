@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Resources');
 // url = "/admin/apiserver/fetch/resource_instances";
-url = "/api/proxy/resources";
+url = "/api/proxy/"+slug+"/resources";
 api = url;
 $.ajax({
 	url: url,		
@@ -13,7 +13,7 @@ $.ajax({
 				{label: 'Oracle Resource', name:'oracle'},
 				{label: 'Constant', name:'constant'},
 			]},
-			{label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/resources',label_key:'name',value_key:'id'},
+			{label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
 			{name:'config',label:false, template:'{{attributes.config.name}}',fields:[
 				{label: 'Name',name: 'name',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
 				{label: 'Pass', name:'pass',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
