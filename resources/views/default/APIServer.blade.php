@@ -63,7 +63,7 @@
           <ul class="nav navbar-nav navbar-right visible-xs-block">
             @can('view_in_admin', 'App\Site')
             <li><a href="/admin/apiserver/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
-            <li><a href="/admin/apiserver/modules"><i class="fa fa-cloud fa-fw"></i>&nbsp; Modules</a></li>
+            <li><a href="/admin/apiserver/services"><i class="fa fa-cloud fa-fw"></i>&nbsp; Services</a></li>
             <li><a href="/admin/apiserver/databases"><i class="fa fa-cloud fa-fw"></i>&nbsp; Databases</a></li>
             @endcan  
           </ul>
@@ -78,11 +78,10 @@
         @can('view_in_admin', 'App\Site')
         <li><a href="/admin/apiserver/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
         <li><a href="/admin/apiserver/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
-        <li><a href="/admin/apiserver/modules"><i class="fa fa-cubes fa-fw"></i>&nbsp; Modules</a></li>
-        <li><a href="/admin/apiserver/module_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Modules Versions</a></li>
-        <li><a href="/admin/apiserver/module_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Module Instances</a></li>
-        <li><a href="/admin/apiserver/databases"><i class="fa fa-database fa-fw"></i>&nbsp; Databases</a></li>
-        <li><a href="/admin/apiserver/database_instances"><i class="fa fa-table fa-fw"></i>&nbsp; Database Instances</a></li>
+        <li><a href="/admin/apiserver/services"><i class="fa fa-cubes fa-fw"></i>&nbsp; Services</a></li>
+        <li><a href="/admin/apiserver/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Services Versions</a></li>
+        <li><a href="/admin/apiserver/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
+        <li><a href="/admin/apiserver/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
         @endcan  
       </ul>
     </div>

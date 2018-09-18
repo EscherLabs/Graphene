@@ -63,7 +63,7 @@ function load(app_version) {
   // },app_version)
 
   attributes= app_version;
-  $('.navbar-header .nav a h4').html('Module - '+module.name);
+  $('.navbar-header .nav a h4').html('Service - '+service.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
 
@@ -307,7 +307,7 @@ data.databases = _.uniq(_.pluck(Berries.dbs.toJSON().databases,'database'));
     toastr.info('', 'Saving...')
     
     $.ajax({
-      url: '/api/proxy/module_versions/'+attributes.id,
+      url: '/api/proxy/service_versions/'+attributes.id,
       method: 'PUT',
       data: data,
       success:function(e) {

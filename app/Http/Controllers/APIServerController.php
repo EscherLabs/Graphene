@@ -28,22 +28,21 @@ class APIServerController extends Controller
         if(isset($input['id']) && $input['id'] == '' ){
             unset($input['id']);
         }
-        
         $response = $httpHelper->http_fetch($url, $request->method(), $request->input(), config('apiserver.user'), config('apiserver.password'));
         return $response['content'];
     }
 
-    public function module($module_id) {
+    public function service($service_id) {
         $httpHelper = new HTTPHelper();
 
-        $url = config('apiserver.server')."/api/module_versions/".$module_id;        
-        $module_version = $httpHelper->http_fetch($url,"GET", array(), config('apiserver.user'), config('apiserver.password'));
+        $url = config('apiserver.server')."/api/service_versions/".$service_id;        
+        $service_version = $httpHelper->http_fetch($url,"GET", array(), config('apiserver.user'), config('apiserver.password'));
 
         $httpHelper = new HTTPHelper();
 
-        $url = config('apiserver.server')."/api/modules/".$module_id;                
-        $module = $httpHelper->http_fetch($url,"GET", array(), config('apiserver.user'), config('apiserver.password'));
-        // return $module;
-        return view('adminModule', ['resource'=>'APIServer_module_edit','id'=>$module['content']['id'], 'module'=>json_encode($module['content']),'module_version'=>json_encode($module_version['content'])]);
+        $url = config('apiserver.server')."/api/services/".$service_id;                
+        $service = $httpHelper->http_fetch($url,"GET", array(), config('apiserver.user'), config('apiserver.password'));
+        // return $service;
+        return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content'])]);
      } 
 }

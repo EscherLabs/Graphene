@@ -71,10 +71,10 @@
       language: 'javascript'
     });
   </script>-->
-  <script>var loaded = {!! $module_version !!};
-          var module = {!! $module !!};
+  <script>var loaded = {!! $service_version !!};
+          var service = {!! $service !!};
   </script>
-  <script type='text/javascript' src='/assets/js/APIServer_module_edit.js'></script>
+  <script type='text/javascript' src='/assets/js/APIServer_service_edit.js'></script>
 @endsection
 
 @section('bottom_page_styles')
