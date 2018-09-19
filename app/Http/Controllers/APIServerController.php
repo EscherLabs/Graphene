@@ -48,6 +48,6 @@ class APIServerController extends Controller
         $url = $api_config->server."/api/services/".$service_id;                
         $service = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
         // return $service;
-        return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content'])]);
+        return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content']),'slug'=>$slug]);
      } 
 }

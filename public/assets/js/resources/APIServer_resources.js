@@ -9,9 +9,9 @@ $.ajax({
 			{label: 'Name', name:'name', required: true},
 			{label: 'Type', name:'type', required: true, type:'select',
 			options:[
-				{label: 'mySQL Resource',name: 'mysql'},
-				{label: 'Oracle Resource', name:'oracle'},
-				{label: 'Constant', name:'constant'},
+				{label: 'mySQL Resource',value: 'mysql'},
+				{label: 'Oracle Resource', value:'oracle'},
+				{label: 'Constant', value:'constant'},
 			]},
 			{label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
 			{name:'config',label:false, template:'{{attributes.config.name}}',fields:[
@@ -27,24 +27,33 @@ $.ajax({
 
 		tableConfig.events=[
 			{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
+
+				var fields = [
+					{name: 'name',type: 'hidden'},
+					{name: 'id',type: 'hidden'},
+					{name: 'resource_id',type: 'hidden'},					
+				];
+				switch(model.attributes.type){
+					case 'mysql':
+					fields.push({name:'config',label:false,fields:[
+						{label: 'Name',name: 'name'},
+						{label: 'Pass', name:'pass'},
+						{label: 'User', name:'user'},
+						{label: 'Server', name:'server'}
+					]})
+					break;					
+					case 'constant':
+					fields.push({name:'config',label:false,fields:[
+						{label: 'Value',name: 'value'}
+					]})
+					break;
+				}
 				$().berry({
 					legend:'Config',
 					name:'config',
 					model:model,
 					"flatten": false,
-					
-					fields:[
-						{name: 'name',type: 'hidden'},
-						{name: 'id',type: 'hidden'},
-						{name: 'resource_id',type: 'hidden'},
-						
-						{name:'config',label:false,fields:[
-							{label: 'Name',name: 'name'},
-							{label: 'Pass', name:'pass'},
-							{label: 'User', name:'user'},
-							{label: 'Server', name:'server'}
-						]}
-					]
+					fields:fields
 					}).on('saved',function(){
 						// this.set(Berries.config.toJSON())			
 						this.owner.options.edit(this);

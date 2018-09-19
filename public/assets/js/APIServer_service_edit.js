@@ -82,24 +82,28 @@ function load(app_version) {
   //     ]}
   //   ]
   // })
-    $('.dbs').berry({
+    $('.resources').berry({
     actions:false,
-    name: 'dbs',
+    name: 'resources',
     attributes:attributes,
-    inline:true,
+    inline:false,
     fields:[
+      {type:'raw',name:'test',value:'<div></div>',label:false},
       {
-        "name": "dbs_contain",
-        "legend": "Databases",
+        "name": "resources_contain",
+        "legend": '',
+        "label": '',
         "fields": {
-          "databases": {
+          "resources": {
             "label": false,
             "multiple": {
               "duplicate": true,
             },
             "fields": [
               // "database": {}
-              {label: false, name:'database',type:'select', required: true,choices:'/api/proxy/databases',label_key:'name',value_key:'id'}
+              // {label: false, name:'database',type:'select', required: true,choices:'/api/proxy/databases',label_key:'name',value_key:'id'}
+              {label: 'Name', name:'name', required: true, columns:6},
+              {label: 'Type', name:'type', type:'select',options:['mysql','constant'], columns:6}
               
             ]
           }
@@ -296,7 +300,7 @@ $('#save').on('click',function() {
   var data = attributes;
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
-data.databases = _.uniq(_.pluck(Berries.dbs.toJSON().databases,'database'));
+data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database'));
   var errorCount = script_errors.length;//+ css_errors.length
 
   if(!errorCount){
