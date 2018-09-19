@@ -26,7 +26,7 @@ $.ajax({
 
 
 		tableConfig.events=[
-			{'name': 'config', 'label': '<i class="fa fa-map"></i> Map', callback: function(model){
+			{'name': 'config', 'label': '<i class="fa fa-map"></i> Resource Map', callback: function(model){
 				$().berry({
 					legend:'Map',
 					name:'map',
@@ -66,11 +66,58 @@ $.ajax({
 						// }				
 					]
 					}).on('saved',function(){
-						// this.set(Berries.config.toJSON())			
+						// this.set(Berries.map.toJSON())			
 						this.owner.options.edit(this);
 						this.owner.draw();
 					}.bind(model))
 			}, multiEdit: false},
+			{'name': 'config_users', 'label': '<i class="fa fa-map"></i> User Map', callback: function(model){
+				$().berry({
+					legend:'Map',
+					name:'map',
+					model:model,
+					"flatten": false,
+					fields:[
+						{name:'name', type:'hidden'},
+						{name:'slug', type:'hidden'},
+						{name:'environment_id', type:'hidden'},
+						{name:'service_id', type:'hidden'},
+						{name:'service_version_id', type:'hidden'},
+						{name: 'id', type:'hidden'},
+						{name:'container', label: false,  type: 'fieldset', fields:[
+							{"multiple": {"duplicate": false},label: '', name: 'route_user_map', type: 'fieldset', fields:[
+								{label:false, name: 'route',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
+								{name: 'api_user',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/api_users',label_key:'app_name'},
+								{label:false, name: 'route',columns:0, type:'hidden'}
+							]}
+						]},
+
+						// {
+						// 	"name": "resources",
+						// 	"label": false,
+						// 	"fields": {
+						// 	"resource": {
+						// 		"label": false,
+						// 		"multiple": {
+						// 		"duplicate": false
+						// 		},
+						// 		fields:[
+						// 		// {'name':'name','label':'Name',"inline":true,columns:8},
+						// 		// {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+						// 		]
+						// 	}
+							
+						// 	}
+						// }				
+					]
+					}).on('saved',function(){
+						// this.set(Berries.map.toJSON())	
+						debugger;		
+						this.owner.options.edit(this);
+						this.owner.draw();
+					}.bind(model))
+			}, multiEdit: false},
+	
 	
 		]
 

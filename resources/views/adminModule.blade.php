@@ -26,7 +26,7 @@
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
   <li role="presentation" class="active"><a href="#routes" aria-controls="routes" role="tab" data-toggle="tab"><i class="fa fa-route"></i> <span class="hidden-xs hidden-sm">Routes<span></a></li>
-  <li role="presentation"><a href="#dbs" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-dbs"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
+  <li role="presentation"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-dbs"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
   <li role="presentation"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
   </ul>
 
