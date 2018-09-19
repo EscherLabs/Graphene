@@ -65,7 +65,7 @@
             <li><a href="/admin/apiserver/{{$slug}}/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/services"><i class="fa fa-cubes fa-fw"></i>&nbsp; Services</a></li>
-            <!--<li><a href="/admin/apiserver/{{$slug}}/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Service Versions</a></li>-->
+            <li><a href="/admin/apiserver/{{$slug}}/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Service Versions</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
             @endcan  
@@ -82,7 +82,7 @@
         <li><a href="/admin/apiserver/{{$slug}}/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/services"><i class="fa fa-cubes fa-fw"></i>&nbsp; Services</a></li>
-        <!--<li><a href="/admin/apiserver/{{$slug}}/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Service Versions</a></li>-->
+        <li><a href="/admin/apiserver/{{$slug}}/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Service Versions</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
         @endcan  

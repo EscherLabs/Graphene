@@ -14,17 +14,20 @@ class APIServerController extends Controller
         // $this->middleware('auth');
     }
     
-    public function index($slug, $resource = null) {
-       return view('APIServer', ['resource'=>'APIServer_'.$resource,'id'=>'','slug'=>$slug]);
+    public function index($slug, $resource = null,$resource_id = '') {
+       return view('APIServer', ['resource'=>'APIServer_'.$resource,'id'=>$resource_id,'slug'=>$slug]);
     }    
 
-    public function fetch($slug, $route, $object_id=null, Request $request) {
+    public function fetch($slug, $route, $object_id=null, $action=null, Request $request) {
         $httpHelper = new HTTPHelper();
         $mysite = config('app.site')->select('proxyserver_config')->first();
         $api_config = $mysite->get_proxyserver_by_slug($slug);
         $url = $api_config->server."/api/".$route;
         if(!is_null($object_id)){
             $url .= '/'.$object_id;
+        }
+        if(!is_null($action)){
+            $url .= '/'.$action;
         }
         $input = $request->input();
         if(isset($input['id']) && $input['id'] == '' ){

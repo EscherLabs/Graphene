@@ -73,7 +73,8 @@
   </script>-->
   <script>var loaded = {!! $service_version !!};
           var service = {!! $service !!};
-  </script>
+          var slug = "{!! $slug !!}";
+          </script>
   <script type='text/javascript' src='/assets/js/APIServer_service_edit.js'></script>
 @endsection
 

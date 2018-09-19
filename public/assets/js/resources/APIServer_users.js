@@ -6,6 +6,7 @@ $.ajax({
 	success: function(data){
 		tableConfig.schema = [
 			{label: 'Name', name:'app_name', required: true},
+			{label: 'Password', name:'app_secret', required: true},
 			{name: 'id', type:'hidden'}
 		];
 		if(resource_id !== ''){

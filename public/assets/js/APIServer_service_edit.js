@@ -300,7 +300,8 @@ $('#save').on('click',function() {
   var data = attributes;
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
-data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database'));
+// data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database'));
+data.resources = Berries.resources.toJSON().resources;
   var errorCount = script_errors.length;//+ css_errors.length
 
   if(!errorCount){
@@ -311,7 +312,7 @@ data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database')
     toastr.info('', 'Saving...')
     
     $.ajax({
-      url: '/api/proxy/service_versions/'+attributes.id,
+      url: '/api/proxy/'+slug+'/service_versions/'+attributes.id,
       method: 'PUT',
       data: data,
       success:function(e) {
@@ -366,27 +367,27 @@ data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database')
 //   });
 // });
 
-// $('#publish').on('click', function() {
-//     $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Microapp',fields: [	
-//         {label: 'Summary', required: true},
-//         {label: 'Description', type: 'textarea'}
-//       ]}).on('save', function() {
-//         if(Berries.publish.validate()){
-//           $.ajax({
-//             url: root + attributes.app_id + '/publish',
-//             data: this.toJSON(),
-//             method: 'PUT',
-//             success: function() {
-//               Berries.publish.trigger('close');
-//               toastr.success('', 'Successfully Published')
-//             },
-//             error: function(e){
-//               toastr.error(e.responseJSON.message, 'ERROR');
-//             }
-//           })
-//         }
-//   });
-// });
+$('#publish').on('click', function() {
+    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Service',fields: [	
+        {label: 'Summary', required: true},
+        {label: 'Description', type: 'textarea'}
+      ]}).on('save', function() {
+        if(Berries.publish.validate()){
+          $.ajax({
+            url: '/api/proxy/'+slug+'/services/'+attributes.id+'/publish',
+            data: this.toJSON(),
+            method: 'PUT',
+            success: function() {
+              Berries.publish.trigger('close');
+              toastr.success('', 'Successfully Published')
+            },
+            error: function(e){
+              toastr.error(e.responseJSON.message, 'ERROR');
+            }
+          })
+        }
+  });
+});
 
 // $('#instances').on('click', function() {
 //   viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/app/{{group_id}}/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/appinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
