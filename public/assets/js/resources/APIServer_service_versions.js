@@ -9,7 +9,7 @@ $.ajax({
 			{label: 'Service', name:'service_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
 			{label: 'Summary', name:'summary',required:true},
 			{label: 'Description', name:'description', type:"textarea"},			
-			{label: 'Stable', name:'stable',type:'checkbox'},
+			{label: 'Stable', name:'stable',type:'checkbox',truestate:1,falsestate:0},
 			{name: 'id', type:'hidden'}
 		];
 		tableConfig.data = data;

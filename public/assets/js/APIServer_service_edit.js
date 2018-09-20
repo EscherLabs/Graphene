@@ -312,7 +312,7 @@ data.resources = Berries.resources.toJSON().resources;
     toastr.info('', 'Saving...')
     
     $.ajax({
-      url: '/api/proxy/'+slug+'/service_versions/'+attributes.id,
+      url: '/api/proxy/'+slug+'/service/'+attributes.id+'/code',
       method: 'PUT',
       data: data,
       success:function(e) {

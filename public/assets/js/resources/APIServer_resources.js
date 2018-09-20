@@ -14,7 +14,7 @@ $.ajax({
 				{label: 'Constant', value:'constant'},
 			]},
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
-			{name:'config',label:false, template:'{{attributes.config.name}}',fields:[
+			{name:'config',label:'Config', template:'{{attributes.config.value}}{{attributes.config.name}}',fields:[
 				{label: 'Name',name: 'name',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
 				{label: 'Pass', name:'pass',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
 				{label: 'User', name:'user',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
