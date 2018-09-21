@@ -88,7 +88,6 @@ $.ajax({
 		},
 		events:[
 			{'name': 'params', 'label': '<i class="fa fa-info"></i> Parameters', callback: function(model){
-				debugger;
 				$().berry({
 					name:'param_form',
 					attributes:model.attributes,
@@ -173,6 +172,24 @@ $.ajax({
 		// 	})
 
 		}});
+
+		$('body').on('click','#version', function(){
+			
+					$().berry({name:'versionForm',attributes:service,legend:'Select Version',fields:[
+							{label: 'Version', name:'service_version_id', required:true, choices:'/api/proxy/'+slug+'/service_versions',type:'select', value_key:'id',label_key:'label'},
+					]}).on('save',function(){
+
+						$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),
+						success:function(data) {
+							window.location.reload(true);
+						},
+						error:function(e) {
+							toastr.error(e.statusText, 'ERROR');
+						}
+					});
+					},this)
+		})	
+
 
 
 		$('#save').on('click',function(){

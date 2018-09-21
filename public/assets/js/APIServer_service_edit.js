@@ -128,21 +128,22 @@ function load(app_version) {
     // {label: 'Path',name:'path'},
     {label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
     {
+      "show":false,
       "name": "parameters",
       "label": "Parameters",
       "template":'{{#attributes.params}}{{#required}}<b>{{/required}}{{name}}{{#required}}</b>{{/required}}<br> {{/attributes.params}}',
-      "fields": {
-        "params": {
-          "label": false,
-          "multiple": {
-            "duplicate": true
-          },
-          fields:[
-            {'name':'name','label':'Name',"inline":true,columns:8},
-            {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
-          ]
-        }
-      }
+      // "fields": {
+      //   "params": {
+      //     "label": false,
+      //     "multiple": {
+      //       "duplicate": true
+      //     },
+      //     fields:[
+      //       {'name':'name','label':'Name',"inline":true,columns:8},
+      //       {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+      //     ]
+      //   }
+      // }
     }
     // {label: 'Optional', name:'optional'},    
     // {label: 'Required', name:'required'},
@@ -177,7 +178,7 @@ function load(app_version) {
                 },
                 fields:[
                   {'name':'name','label':'Name',"inline":true,columns:8},
-                  {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+                  {'name':'required','label':'Required?','type':'checkbox',falsestate:0,"inline":true,columns:4},
                 ]
               }
             }
@@ -301,21 +302,23 @@ $('#save').on('click',function() {
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
 // data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database'));
-data.resources = Berries.resources.toJSON().resources;
+  data.resources = Berries.resources.toJSON().resources;
   var errorCount = script_errors.length;//+ css_errors.length
 
   if(!errorCount){
     data.code = scriptPage.toJSON();
     // var temp = formPage.toJSON();
     // data.code.forms = formPage.toJSON();
+    debugger;
     data.updated_at = attributes.updated_at;
     toastr.info('', 'Saving...')
     
     $.ajax({
-      url: '/api/proxy/'+slug+'/service/'+attributes.id+'/code',
+      url: '/api/proxy/'+slug+'/services/'+attributes.service_id+'/code',
       method: 'PUT',
       data: data,
       success:function(e) {
+        debugger;
         attributes.updated_at = e.updated_at;
         toastr.clear()
         

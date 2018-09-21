@@ -5,6 +5,7 @@ api = url;
 $.ajax({
 	url: url,
 	success: function(data){
+		if(typeof data !== 'object'){ data = []; }
 		tableConfig.schema = [
 			{label: 'Name', name:'name', required: true},
 			{label: 'Type', name:'type', required: true, type:'select',

@@ -43,7 +43,7 @@ class APIServerController extends Controller
         $mysite = config('app.site')->select('proxyserver_config')->first();
         $api_config = $mysite->get_proxyserver_by_slug($slug);
 
-        $url = $api_config->server."/api/service_versions/".$service_id;        
+        $url = $api_config->server."/api/services/".$service_id.'/versions/latest';        
         $service_version = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
 
         $httpHelper = new HTTPHelper();

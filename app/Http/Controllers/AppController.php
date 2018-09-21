@@ -63,7 +63,7 @@ class AppController extends Controller
         $first = Carbon::parse($post_data['updated_at']);
         $second = Carbon::parse($app_version->updated_at);
 
-        if($app_version->stable){
+        if(is_null($app_version) || $app_version->stable){
             $app_version = new AppVersion();
             $app_version->app_id = $app->id;
         }else if(!($first->gte($second) || isset($post_data['force']))){
