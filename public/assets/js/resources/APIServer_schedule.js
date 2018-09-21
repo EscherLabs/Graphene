@@ -9,7 +9,7 @@ $.ajax({
 			{label: 'Name', name:'name', required: true},
 			{label: 'Schedule', name:'cron', required: true},
 			{label: 'Verb',name:'verb', type:'select', options:["GET", "POST", "PUT", "DELETE"]},			
-			{label: 'Type', name:'type', type:'select', options:['dev','test','prod'], required: true},			
+			{label: 'Environment Type', name:'type', type:'select', options:['dev','test','prod'], required: true},			
 			{label: 'Service Instance', name:'service_instance_id', required: true,type:'select', choices:'/api/proxy/'+slug+'/service_instances',label_key:'summary',value_key:'id'},			
 			{label: 'Route', name:'route', required: true},
 			{label: 'Enabled', name:'enabled',value:true,type:'checkbox',truestate:1,falsestate:0},			

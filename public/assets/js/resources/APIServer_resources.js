@@ -8,12 +8,14 @@ $.ajax({
 		if(typeof data !== 'object'){ data = []; }
 		tableConfig.schema = [
 			{label: 'Name', name:'name', required: true},
-			{label: 'Type', name:'type', required: true, type:'select',
+			{label: 'Type', name:'resource_type', required: true, type:'select',
 			options:[
 				{label: 'mySQL Resource',value: 'mysql'},
 				{label: 'Oracle Resource', value:'oracle'},
 				{label: 'Constant', value:'constant'},
-			]},
+			]},			
+			{label: 'Environment Type', name:['dev','test','prod'], required: true},
+			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
 			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}',fields:[
 				{label: 'Name',name: 'name',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
