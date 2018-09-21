@@ -18,7 +18,7 @@ class Initialization
      */
     public function handle($request, Closure $next)
     {
-        $current_site = Site::select('id','domain','name','auth','auth_config')->where('domain','=',$request->server('SERVER_NAME'))->first();
+        $current_site = Site::select('id','domain','name','auth','auth_config','proxyserver_config')->where('domain','=',$request->server('SERVER_NAME'))->first();
 
         /* Site does not exist */
         if (is_null($current_site)) {
