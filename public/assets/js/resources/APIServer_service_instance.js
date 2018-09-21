@@ -15,12 +15,12 @@ $.ajax({
 					"flatten": true,			
 					actions:false,
 					fields:[
-				{label: 'Name', name:'name', required: true},
-				{label: 'Slug', name:'slug', required: true},
-				{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
-				
-				{label: 'Service', name:'service_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
-				{label: 'Service Version', name:'service_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
+						{label: 'Name', name:'name', required: true},
+						{label: 'Slug', name:'slug', required: true},
+						{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
+						
+						{label: 'Service', name:'service_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
+						{label: 'Service Version', name:'service_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
 					]})
 
 				$('.resources').berry({

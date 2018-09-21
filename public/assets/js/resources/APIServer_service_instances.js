@@ -8,7 +8,7 @@ $.ajax({
 			{label: 'Name', name:'name', required: true},
 			{label: 'Slug', name:'slug', required: true},
 			{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
-			
+			{label: 'Type', name:['dev','test','prod'], required: true},
 			{label: 'Service', name:'service_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
 			{label: 'Service Version', name:'service_version_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
 			{name:'container',show:false, label: 'Resources',

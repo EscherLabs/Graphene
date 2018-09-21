@@ -61,7 +61,7 @@
                     <li><a href="/admin/apiserver/{{ $config->slug }}/environments"><i class="fa fa-server"></i> {{ $config->name }}</a></li>
                 @endforeach
                 @endcan  
-                <li><a href="/admin/groups"><i class="fa fa-gear"></i> Admin</a></li>
+                <li><a href="/admin/sites/{{ config('app.site')->id }}"><i class="fa fa-gear"></i> Admin</a></li>
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
             </li>

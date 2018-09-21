@@ -8,6 +8,7 @@ $.ajax({
 		tableConfig.schema = [
 			{label: 'Name', name:'name', required: true},
 			{label: 'Domain', name:'domain', required: true},
+			{label: 'Type', name:['dev','test','prod'], required: true},
 			{name: 'id', type:'hidden'}
 		];
 		tableConfig.data = data;
