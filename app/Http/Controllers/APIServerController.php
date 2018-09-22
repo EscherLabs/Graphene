@@ -33,7 +33,7 @@ class APIServerController extends Controller
         if(isset($input['id']) && $input['id'] == '' ){
             unset($input['id']);
         }
-        $response = $httpHelper->http_fetch($url, $request->method(), $request->input(), $api_config->username, $api_config->password);
+        $response = $httpHelper->http_fetch($url, $request->method(), array_merge($request->input(),['user_id'=>Auth::user()->unique_id]), $api_config->username, $api_config->password);
         return $response['content'];
     }
 
