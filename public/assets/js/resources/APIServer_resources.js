@@ -14,7 +14,7 @@ $.ajax({
 				{label: 'Oracle Resource', value:'oracle'},
 				{label: 'Constant', value:'constant'},
 			]},			
-			{label: 'Environment Type', name:['dev','test','prod'], required: true},
+			{label: 'Environment Type', name:'type', options:['dev','test','prod'], required: true},
 			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
 			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}',fields:[
