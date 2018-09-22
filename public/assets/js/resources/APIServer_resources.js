@@ -36,7 +36,7 @@ $.ajax({
 					{name: 'id',type: 'hidden'},
 					{name: 'resource_id',type: 'hidden'},					
 				];
-				switch(model.attributes.type){
+				switch(model.attributes.resource_type){
 					case 'mysql':
 					fields.push({name:'config',label:false,fields:[
 						{label: 'Name',name: 'name'},
