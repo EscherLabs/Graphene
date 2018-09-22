@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Group;
 use App\App;
 use App\Libraries\HTTPHelper;
+use Illuminate\Support\Facades\Auth;
 
 class APIServerController extends Controller
 {
