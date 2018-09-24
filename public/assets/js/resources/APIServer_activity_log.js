@@ -1,0 +1,82 @@
+$('.navbar-header .nav a h4').html('Activity Log');
+// url = "/admin/apiserver/fetch/service_versions";
+url = "/api/proxy/"+slug+"/activity_log";
+api = url;
+$.ajax({
+	url: url,		
+	success: function(data){
+		
+		tableConfig.add = false;
+		tableConfig.delete = false;
+		tableConfig.edit = false;
+		tableConfig.upload = false,
+		tableConfig.schema = [
+			{label: 'Event Type', name:'event'},			
+			{label: 'Event', name:'event_id', template:'{{attributes.event}}.{{attributes.event_id}}'},
+			{label: 'Type', name:'type', options:['dev','test','prod']},			
+			{label: 'User', name:'user_id',type:'select', choices:'/api/sites/1/admins',value_key:'unique_id',label_key:'last_name'},
+			{label: 'Comment', name:'comment'},
+			// {label: 'Old', name:'old', template:'<pre>{{old}}</pre>'},
+			// {label: 'New', name:'new', template:'<pre>{{new}}</pre>'},
+			{label: 'Created At', name:'created_at', showColumn: false},
+			{label: 'Updated At', name:'updated_at', showColumn: false},
+			{name: 'id', type:'hidden'}
+		];
+
+		tableConfig.preDraw = function(model){
+			model.old = JSON.stringify(model.attributes.old , null,'\t');
+			model.new = JSON.stringify(model.attributes.new , null,'\t');
+		}
+
+
+		tableConfig.click = function(model){
+			model.last_response = model.attributes.last_response;
+			// model.scheduled_times = _.map(model.attributes.next_runtimes,function(item){return {text:moment(item).fromNow(),value:item}})
+			
+			// if(typeof model.last_response == 'object'){
+			// 	model.last_response = JSON.stringify(model.last_response, null,'\t');
+			// }
+			var templateString = Hogan.compile('Old: <pre>{{old}}</pre><br>New: <pre>{{new}}</pre><br>').render(model)
+			
+			modal({title:'Status Summary', content:templateString})
+			// window.location.href = '/admin/appinstances/'+model.attributes.id
+		
+		};		
+
+
+
+		tableConfig.data = data;
+		tableConfig.name = "service_versions";
+		tableConfig.add = false;
+		bt = new berryTable(tableConfig)
+	}
+});
+
+
+// "id": 1,
+// "event_id": 1,
+// "action": "PUT",
+// "event": "Environment",
+// "type": "prod",
+// "user_id": "B00505893",
+// "comment": "",
+// "new": {
+// "id": 1,
+// "name": "localdev",
+// "type": "prod",
+// "domain": "localhost:8000",
+// "created_at": "2018-09-21 22:58:26",
+// "deleted_at": null,
+// "updated_at": "2018-09-21 22:58:36"
+// },
+// "old": {
+// "id": 1,
+// "name": "localdev",
+// "type": "dev",
+// "domain": "localhost:8000",
+// "created_at": "2018-09-21 22:58:26",
+// "deleted_at": null,
+// "updated_at": "2018-09-21 22:58:26"
+// },
+// "created_at": "2018-09-21 22:58:36",
+// "updated_at": "2018-09-21 22:58:36"

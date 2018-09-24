@@ -60,6 +60,12 @@ class SiteController extends Controller
     {
         return $site->list_members();
     }
+
+    public function list_admins(Site $site)
+    {
+        return $site->list_admins();
+    }
+
     public function add_member(Site $site, User $user, Request $request)
     {
         return $site->add_member($user,$request->site_admin, $request->developer);

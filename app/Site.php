@@ -26,18 +26,24 @@ class Site extends Model
     }
     public function list_members()
     {
-        return $this->members()->with('user')->get();
+      return $this->members()->with('user')->get();
     }
+
+    public function list_admins()
+    {
+      return $this->members()->with('user')->where('site_admin','=',1)->get()->pluck('user');
+    }
+
     public function add_member(User $user, $site_admin = false, $site_developer = false)
     {
-        self::remove_member($user); // First Delete the member from the site
-        $site_member = SiteMember::create(['site_id'=>$this->id,'user_id'=>$user->id,
-          'site_developer'=>$site_developer?1:0,'site_admin'=>$site_admin?1:0]);
-        return $site_member;
+      self::remove_member($user); // First Delete the member from the site
+      $site_member = SiteMember::create(['site_id'=>$this->id,'user_id'=>$user->id,
+        'site_developer'=>$site_developer?1:0,'site_admin'=>$site_admin?1:0]);
+      return $site_member;
     }
     public function remove_member(User $user)
     {
-        SiteMember::where('site_id',$this->id)->where('user_id',$user->id)->delete();
+      SiteMember::where('site_id',$this->id)->where('user_id',$user->id)->delete();
     }
 
     public function getProxyserverConfigAttribute($config_string)

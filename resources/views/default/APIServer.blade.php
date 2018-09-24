@@ -75,6 +75,7 @@
             <li><a href="/admin/apiserver/{{$slug}}/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/schedule"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</a></li>
+            <li><a href="/admin/apiserver/{{$slug}}/activity_log"><i class="fa fa-file fa-fw"></i>&nbsp; Log</a></li>
             @endcan  
           </ul>
           <!--form class="navbar-form navbar-right">
@@ -93,6 +94,7 @@
         <li><a href="/admin/apiserver/{{$slug}}/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/schedule"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</a></li>
+        <li><a href="/admin/apiserver/{{$slug}}/activity_log"><i class="fa fa-file fa-fw"></i>&nbsp; Log</a></li>
         @endcan  
       </ul>
     </div>
