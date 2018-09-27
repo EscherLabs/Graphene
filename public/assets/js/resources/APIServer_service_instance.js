@@ -1,10 +1,12 @@
 $('.navbar-header .nav a h4').html('Service Instance');
 url = "/api/proxy/"+slug+"/service_instances/"+resource_id;
 api = url;
+myservice = {};
 $.ajax({
 	url: url,		
 	success: function(service){
-
+		debugger;
+		myservice = service;
 		$('#table').html(templates.service_instance.render(service));
 		$.ajax({
 			url: "/api/proxy/"+slug+"/service_versions/"+service.service_version_id,		
@@ -193,23 +195,36 @@ $.ajax({
 
 
 		$('#save').on('click',function(){
-			$.extend(service,Berries.main.toJSON());
-			service.resources =  Berries.resources.toJSON().resources;
-			// var temp = Berries.permissions.toJSON().container.route_user_map;
-			// service.route_user_map = _.each(temp,function(item){
-			// 	item.params = item.parameters.params;
-			// 	delete item.parameters;
-			// })
-			service.route_user_map = _.pluck(bt.models,'attributes')
-			
-			$.ajax({url: url, type: 'PUT', data: service, success:function(){
-					toastr.success('', 'Successfully updated Service Instance')
-				}.bind(this),
-				error:function(e) {
-					toastr.error(e.statusText, 'ERROR');
-				}
-			});
+			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:myservice.environment_id}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
 
+        $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+				service.comment = this.toJSON().comment;
+				$.extend(service,Berries.main.toJSON());
+				service.resources =  Berries.resources.toJSON().resources;
+				// var temp = Berries.permissions.toJSON().container.route_user_map;
+				// service.route_user_map = _.each(temp,function(item){
+				// 	item.params = item.parameters.params;
+				// 	delete item.parameters;
+				// })
+				service.route_user_map = _.pluck(bt.models,'attributes')
+				
+				
+				$.ajax({url: url, type: 'PUT', data: service, success:function(){
+						toastr.success('', 'Successfully updated Service Instance')
+					}.bind(this),
+					error:function(e) {
+						toastr.error(e.statusText, 'ERROR');
+					}
+				});
+				this.trigger('close')
+			})
+
+
+
+
+
+
+			}
 		})
 	}
 });

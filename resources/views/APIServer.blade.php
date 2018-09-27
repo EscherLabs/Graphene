@@ -30,29 +30,50 @@
       autoSize: -20,
       container: '#table', 
       berry: {flatten: false},
-      add: function(model){$.ajax({url: api, type: 'POST', data: model.attributes,
-        success:function(data) {
-          model.set(data);
-          Berries.modal.trigger('close')
-          toastr.success('', 'Successfully Added')
-        }.bind(model),
-        error:function(e) {
-          toastr.error(e.statusText, 'ERROR');
-        }
-      });},
+      add: function(model){
+        $().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+          model.attributes.comment = this.toJSON().comment;
+
+          $.ajax({url: api, type: 'POST', data: model.attributes,
+            success:function(data) {
+              model.set(data);
+              // Berries.modal.trigger('close')
+              toastr.success('', 'Successfully Added')
+            }.bind(model),
+            error:function(e) {
+              toastr.error(e.statusText, 'ERROR');
+            }
+          });
+
+          this.trigger('close')
+        }).on('cancel',function(){
+          model.delete();
+          model.owner.draw();
+        })
+    },
       edit: function(model){
-        debugger;
-        $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
-        success:function(data) {
-          model.set(data);
-          toastr.success('', 'Successfully Updated')
-        },
-        error:function(e) {
-          toastr.error(e.statusText, 'ERROR');
-        }
-      });},
+        $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+            model.attributes.comment = this.toJSON().comment;
+
+            $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+            success:function(data) {
+              model.set(data);
+              toastr.success('', 'Successfully Updated')
+            },
+            error:function(e) {
+              toastr.error(e.statusText, 'ERROR');
+            }
+
+            
+          });
+          this.trigger('close')
+        }).on('cancel',function(){
+          model.undo();
+          model.owner.draw()
+          
+        })
+    },
       delete: function(model){ 
-        debugger;
         $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
         success:function() {
           toastr.success('', 'Successfully Deleted')

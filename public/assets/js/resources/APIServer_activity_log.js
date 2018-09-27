@@ -12,20 +12,28 @@ $.ajax({
 		tableConfig.upload = false,
 		tableConfig.schema = [
 			{label: 'Event Type', name:'event'},			
-			{label: 'Event', name:'event_id', template:'{{attributes.event}}.{{attributes.event_id}}'},
+			{label: 'Event', name:'event_id', template:'{{event}}'},
 			{label: 'Type', name:'type', options:['dev','test','prod']},			
 			{label: 'User', name:'user_id',type:'select', choices:'/api/sites/1/admins',value_key:'unique_id',label_key:'last_name'},
-			{label: 'Comment', name:'comment'},
+			{label: 'Comment', name: 'comment'},
 			// {label: 'Old', name:'old', template:'<pre>{{old}}</pre>'},
 			// {label: 'New', name:'new', template:'<pre>{{new}}</pre>'},
-			{label: 'Created At', name:'created_at', showColumn: false},
-			{label: 'Updated At', name:'updated_at', showColumn: false},
+			{label: 'Time Stamp', name:'created_at',},
+			// {label: 'Updated At', name:'updated_at', showColumn: false},
 			{name: 'id', type:'hidden'}
 		];
 
 		tableConfig.preDraw = function(model){
 			model.old = JSON.stringify(model.attributes.old , null,'\t');
 			model.new = JSON.stringify(model.attributes.new , null,'\t');
+			model.event = model.attributes.old.name;
+			if(model.attributes.old.name !== model.attributes.new.name){
+				if(typeof model.attributes.old.name !== 'undefined'){
+					model.event = '('+model.event+') '+model.attributes.new.name;
+				}else{
+					model.event = model.attributes.new.name;
+				}
+			}
 		}
 
 
