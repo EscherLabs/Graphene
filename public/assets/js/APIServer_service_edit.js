@@ -88,6 +88,7 @@ function load(app_version) {
   //     ]}
   //   ]
   // })
+  debugger;
     $('.resources').berry({
     actions:false,
     name: 'resources',
@@ -305,7 +306,6 @@ function modalForm(form, name, onSave) {
 $('#save').on('click',function() {
   script_errors =scriptPage.errors();
   var data = attributes;
-  
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
 // data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database'));
@@ -316,7 +316,6 @@ $('#save').on('click',function() {
     data.code = scriptPage.toJSON();
     // var temp = formPage.toJSON();
     // data.code.forms = formPage.toJSON();
-    debugger;
     data.updated_at = attributes.updated_at;
     toastr.info('', 'Saving...')
     
@@ -325,8 +324,9 @@ $('#save').on('click',function() {
       method: 'PUT',
       data: data,
       success:function(e) {
-        debugger;
-        attributes.updated_at = e.updated_at;
+        if(typeof e.updated_at !== 'undefined'){
+          attributes.updated_at = e.updated_at;
+        }
         toastr.clear()
         
         toastr.success('', 'Successfully Saved')

@@ -5,7 +5,6 @@ myservice = {};
 $.ajax({
 	url: url,		
 	success: function(service){
-		debugger;
 		myservice = service;
 		$('#table').html(templates.service_instance.render(service));
 		$.ajax({
@@ -24,23 +23,26 @@ $.ajax({
 						{label: 'Service', name:'service_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
 						{label: 'Service Version', name:'service_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
 					]})
-
-				$('.resources').berry({
-					name: 'resources',
-					attributes: service,
-					"flatten": true,			
-					actions:false,
-					
-					fields:[
-						{name:'container', label: false,  type: 'fieldset', fields:[
-							{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
-								{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
-								{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
-								{label:false, name: 'name',columns:0, type:'hidden'}
-							]}
-						]},			
-				]
-				})
+				if(service.resources != null){
+					$('.resources').berry({
+						name: 'resources',
+						attributes: service,
+						"flatten": true,			
+						actions:false,
+						
+						fields:[
+							{name:'container', label: false,  type: 'fieldset', fields:[
+								{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
+									{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
+									{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
+									{label:false, name: 'name',columns:0, type:'hidden'}
+								]}
+							]},			
+					]
+					})
+				}else{
+					$('#resourcestab').hide();
+				}
 
 		var routes_partials = []
 		_.map(_.pluck(version.routes,'path'),function(item){
@@ -54,7 +56,7 @@ $.ajax({
 			}
 		})
 
-
+debugger;
 		var options = {
 			container: '.permissions',
 		// inlineEdit:true,
@@ -129,7 +131,7 @@ $.ajax({
 		],
 		schema:[
 			{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/api_users',label_key:'app_name'},
-							{label:'Path', name: 'route', options:_.uniq(routes_partials)},
+							{label:'Path', name: 'route', type:'select', options:_.uniq(routes_partials)},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{ value }}<br>{{/attributes.params}}'}
 		], data: service.route_user_map}
