@@ -202,7 +202,9 @@ debugger;
         $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
 				service.comment = this.toJSON().comment;
 				$.extend(service,Berries.main.toJSON());
-				service.resources =  Berries.resources.toJSON().resources;
+				if(typeof Berries.resources !== 'undefined'){
+					service.resources =  Berries.resources.toJSON().resources;
+				}
 				// var temp = Berries.permissions.toJSON().container.route_user_map;
 				// service.route_user_map = _.each(temp,function(item){
 				// 	item.params = item.parameters.params;
