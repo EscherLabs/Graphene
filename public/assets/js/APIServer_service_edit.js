@@ -65,7 +65,8 @@ function load(app_version) {
   attributes= app_version;
   debugger;
 
-  attributes = $.extend(true, {code:[{name:'Main',content:'', disabled: true}]},attributes)
+  attributes.code = $.extend(true, [{name:'Main',content:'', disabled: true}],attributes.code)
+
 
 
   $('.navbar-header .nav a h4').html('Service - '+service.name);
