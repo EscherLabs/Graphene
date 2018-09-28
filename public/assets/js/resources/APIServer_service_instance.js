@@ -56,7 +56,6 @@ $.ajax({
 			}
 		})
 
-debugger;
 		var options = {
 			container: '.permissions',
 		// inlineEdit:true,
@@ -116,7 +115,6 @@ debugger;
 						}
 					]
 					}).on('save',function(){
-						// debugger;
 						var temp = this.attributes;
 						temp.params = Berries.param_form.toJSON().params
 						this.set(temp)

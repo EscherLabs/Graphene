@@ -54,7 +54,7 @@ $.ajax({
 
 
 		tableConfig.data = data;
-		tableConfig.name = "service_versions";
+		tableConfig.name = "activity_log";
 		tableConfig.add = false;
 		bt = new berryTable(tableConfig)
 	}
