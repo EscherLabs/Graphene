@@ -16,7 +16,11 @@ class APIServerController extends Controller
     }
     
     public function index($slug, $resource = null,$resource_id = '') {
-       return view('APIServer', ['resource'=>'APIServer_'.$resource,'id'=>$resource_id,'slug'=>$slug]);
+       $mysite = config('app.site')->select('proxyserver_config')->first();
+
+       $api_config = $mysite->get_proxyserver_by_slug($slug);
+
+       return view('APIServer', ['resource'=>'APIServer_'.$resource,'id'=>$resource_id,'slug'=>$slug,'config'=>$api_config]);
     }    
 
     public function fetch($slug, $route, $object_id=null, $action=null, Request $request) {
@@ -52,6 +56,6 @@ class APIServerController extends Controller
         $url = $api_config->server."/api/services/".$service_id;                
         $service = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
         // return $service;
-        return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content']),'slug'=>$slug]);
+        return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content']),'slug'=>$slug,'config'=>$api_config]);
      } 
 }

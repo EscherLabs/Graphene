@@ -41,7 +41,7 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" style="background-color:#2d8cc3" href="/">
-            &nbsp;{{ config('app.site')->name }}
+            &nbsp;{{ $config->name }}
           </a>
           <ul class="nav navbar-nav navbar-right hidden-xs">
             <li><a href="#"><h4 style="margin:0"></h4></a></li>

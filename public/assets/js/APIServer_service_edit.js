@@ -377,7 +377,7 @@ $('#publish').on('click', function() {
       ]}).on('save', function() {
         if(Berries.publish.validate()){
           $.ajax({
-            url: '/api/proxy/'+slug+'/services/'+attributes.id+'/publish',
+            url: '/api/proxy/'+slug+'/services/'+attributes.service_id+'/publish',
             data: this.toJSON(),
             method: 'PUT',
             success: function() {
