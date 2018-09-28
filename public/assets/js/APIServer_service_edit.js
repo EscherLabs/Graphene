@@ -63,6 +63,11 @@ function load(app_version) {
   // },app_version)
 
   attributes= app_version;
+  debugger;
+
+  attributes = $.extend(true, {code:[{name:'Main',content:'', disabled: true}]},attributes)
+
+
   $('.navbar-header .nav a h4').html('Service - '+service.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
@@ -299,6 +304,7 @@ function modalForm(form, name, onSave) {
 $('#save').on('click',function() {
   script_errors =scriptPage.errors();
   var data = attributes;
+  
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
 // data.databases = _.uniq(_.pluck(Berries.resources.toJSON().resources,'database'));
