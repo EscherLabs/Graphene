@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_DRIVER', 'mysql'),
+    'default' => env('CACHE_DRIVER', 'file'),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,16 +38,16 @@ return [
         //     'driver' => 'array',
         // ],
 
-        'mysql' => [
-            'driver' => 'mysql',
-            'table' => 'cache',
-            'connection' => null,
-        ],
-
-        // 'file' => [
-        //     'driver' => 'file',
-        //     'path' => storage_path('framework/cache'),
+        // 'mysql' => [
+        //     'driver' => 'mysql',
+        //     'table' => 'cache',
+        //     'connection' => null,
         // ],
+
+        'file' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cache'),
+        ],
 
         // 'memcached' => [
         //     'driver' => 'memcached',

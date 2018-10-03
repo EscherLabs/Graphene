@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Libraries\NoSaveDatabaseSessionHandler;
-use App\Libraries\MySQLStore;
+// use App\Libraries\MySQLStore;
 use Illuminate\Cache\DatabaseStore;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
@@ -33,9 +33,9 @@ class AppServiceProvider extends ServiceProvider
             return new NoSaveDatabaseSessionHandler($connection, $table, $minutes);
         });    
         
-        Cache::extend('mysql', function ($app) {
-            return Cache::repository(new MySQLStore(DB::connection(),'cache',''));
-        });
+        // Cache::extend('mysql', function ($app) {
+        //     return Cache::repository(new MySQLStore(DB::connection(),'cache',''));
+        // });
     }
 
     /**
