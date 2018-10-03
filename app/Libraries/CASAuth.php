@@ -32,6 +32,11 @@ class CASAuth
         // Map Default Parameters
         foreach(config('cas.cas_data_map')->default as $attribute_name => $attribute_value) {
             $user->$attribute_name = $m->render($attribute_value, $user_attributes);
+
+            // Allow null emails but not empty string email
+            if ($attribute_name === 'email' && $user->email === '') {
+                $user->email = null;
+            }
         }
         // Map Additional Parameters
         $attributes = [];
@@ -123,7 +128,8 @@ class CASAuth
     {
         // Only run if we're not already authenticated
         if (!Auth::check()) {
-            // try {
+            $cas_msg = '';
+            try {
                 ob_start(); // Suppress CAS Error Messages
                 $is_authenticated = $this->cas->isAuthenticated();
                 ob_end_clean();
@@ -142,10 +148,13 @@ class CASAuth
                         ob_end_clean();
                     }
                 }
-            // } catch (\Exception $e) {
-            //     ob_end_clean();
-            //     abort(401);
-            // }
+            } catch (\Exception $e) {
+                $cas_errors = ob_get_contents();
+                if ($cas_errors) {
+                    ob_end_clean();
+                }
+                abort(401,$e->getMessage().$cas_errors);
+            }
         }
         return true;
     }

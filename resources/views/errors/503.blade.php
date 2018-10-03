@@ -15,6 +15,7 @@
         @isset($exception)
         <div class="row" style="margin-top:15px">
             <div class="col-sm-offset-2 col-sm-8 collapse" id="stack-trace">
+                <h5>{{ $exception->getMessage() }}</h5>
                 <pre style="max-height:200px">{{ $exception }}</pre>
             </div>
         </div>
