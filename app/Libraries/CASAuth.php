@@ -123,7 +123,7 @@ class CASAuth
     {
         // Only run if we're not already authenticated
         if (!Auth::check()) {
-            try {
+            // try {
                 ob_start(); // Suppress CAS Error Messages
                 $is_authenticated = $this->cas->isAuthenticated();
                 ob_end_clean();
@@ -142,10 +142,10 @@ class CASAuth
                         ob_end_clean();
                     }
                 }
-            } catch (\Exception $e) {
-                ob_end_clean();
-                abort(401);
-            }
+            // } catch (\Exception $e) {
+            //     ob_end_clean();
+            //     abort(401);
+            // }
         }
         return true;
     }
