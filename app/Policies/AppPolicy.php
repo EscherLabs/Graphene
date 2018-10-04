@@ -73,7 +73,7 @@ class AppPolicy
 
     public function list_all_developers(User $user)
     {
-        if ($user->site_developer || $user->site_admin) {
+        if ($user->site_developer || $user->site_admin || $user->app_developer()) {
             return true;
         }
     }
