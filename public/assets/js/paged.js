@@ -29,6 +29,7 @@ var paged = function(selector, options){
     $(selector+' .list-group').empty().html(templates.pages_listgroupitem.render(this.options));
     $('[href="#'+this.active+'"]').click();
   }
+  this.sorter = new Sortable($(selector+' .list-group')[0],{draggable:'.sortable'})
 
   $(selector+' .actions .pages_delete,'+selector+' .actions .pages_edit,'+selector+' .actions .pages_new,'+selector+' .pages_extra').on('click', function(e){
     var currentItem = _.findWhere(this.options.items, {key: this.active});
@@ -89,15 +90,33 @@ var paged = function(selector, options){
   return {
     toJSON:function(){
       var options = this.options;
-      var temp = _.map(this.berry.toJSON(),function(item,i){
-        var cachedItem = _.findWhere(options.items, {key:i});
+
+      var data = this.berry.toJSON();
+      var order = _.map($(selector+' .list-group').children(),function(item){return $(item).attr('name')})
+
+      var temp = _.map(order,function(item){
+      var cachedItem = _.findWhere(options.items, {key:item});
         
         if(typeof cachedItem !== 'undefined' && !cachedItem.removed){
-          return {name: _.findWhere(options.items, {key:i}).name, content: item};
+          return {name: _.findWhere(options.items, {key:item}).name, content: data[item]};
         }else{
           return false;
         }
       });
+
+
+      // var temp = _.map(this.berry.toJSON(),function(item,i){
+      //   var cachedItem = _.findWhere(options.items, {key:i});
+        
+      //   if(typeof cachedItem !== 'undefined' && !cachedItem.removed){
+      //     return {name: _.findWhere(options.items, {key:i}).name, content: item};
+      //   }else{
+      //     return false;
+      //   }
+      // });
+
+
+
       return _.filter(temp, function(item){return item;});
     }.bind(this),
     getCurrent:this.getCurrent.bind(this),

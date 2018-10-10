@@ -1,1 +1,1 @@
-{{#items}}{{^removed}}<a class="list-group-item tab" href="#{{key}}" name="{{key}}" aria-controls="{{key}}" data-toggle="tab">{{#disabled}}<i class="fa fa-ban"></i>{{/disabled}} {{name}}</a>{{/removed}}{{/items}}
+{{#items}}{{^removed}}<a class="list-group-item tab {{^disabled}}sortable{{/disabled}}" href="#{{key}}" name="{{key}}" aria-controls="{{key}}" data-toggle="tab">{{#disabled}}<i class="fa fa-ban"></i>{{/disabled}} {{name}}</a>{{/removed}}{{/items}}
