@@ -59,7 +59,9 @@
                 @can('view_in_admin', 'App\Site')
                 @if(!is_null(config('app.site')->proxyserver_config))
                 @foreach (config('app.site')->proxyserver_config as $config)
+                    @if($config->slug != '' && $config->name != '')
                     <li><a href="/admin/apiserver/{{ $config->slug }}/environments"><i class="fa fa-server"></i> {{ $config->name }}</a></li>
+                    @endif
                 @endforeach
                 @endif
                 @endcan  
