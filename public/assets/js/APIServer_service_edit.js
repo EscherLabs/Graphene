@@ -363,22 +363,23 @@ $('#save').on('click',function() {
   }
 })
 
-// $('#import').on('click', function() {
-//     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
-//       $.ajax({
-//         url: root+attributes.app_id+'/code',
-//         data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
-//         method: 'PUT',
-//         success: function(){
-//           Berries.update.trigger('close');
-//           window.location.reload();
-//         },
-//         error: function(e){
-//           toastr.error(e.statusText, 'ERROR');
-//         }
-//       })
-//   });
-// });
+$('#import').on('click', function() {
+    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
+      $.ajax({
+        url: '/api/proxy/'+slug+'/services/'+attributes.service_id+'/code',
+        method: 'PUT',
+        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
+        success:function(e) {
+          Berries.update.trigger('close');
+          window.location.reload()
+        },
+        error:function(e) {
+          toastr.error(e.statusText, 'ERROR');
+        }
+
+      })
+  });
+});
 
 $('#publish').on('click', function() {
     $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Service',fields: [	
@@ -402,55 +403,56 @@ $('#publish').on('click', function() {
   });
 });
 
-// $('#instances').on('click', function() {
-//   viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/app/{{group_id}}/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/appinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-//   $.get('/api/appinstances/?app_id=' + loaded.app_id, function(data) {
-//     if(data.length > 0){
-//       modal({title: 'This App Instance was found on the following pages', content: viewTemplate.render({items: data})});
-//     }else{
-//       modal({title: 'No pages Found', content: 'This App Instance is not currently placed on any pages.'});
-//     }
-//   })
-// });
+$('#instances').on('click', function() {
+  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="'+server+'/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/service_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
+  $.get('/api/proxy/bu/service_instances', function(data) {
+    data = _.where(data, {service_id:service.id})
+    debugger;
+    if(data.length > 0){
+      modal({title: 'This Service has the following instances', content: viewTemplate.render({items: data})});
+    }else{
+      modal({title: 'No instances Found', content: 'This App not currently instantiated.'});
+    }
+  })
+});
 
-// $('#versions').on('click', function() {
-//   $.ajax({
-//     url: root + loaded.app_id + '/versions',
-//     success: function(data) {
-//       console.log(data);
-//       if(!orig.stable) {
-//         data.unshift({id:orig.id,label:'Working Version'})
-//       }
-//       Berry.btn.switch={
-//         label: 'Switch',
-//         icon:'reply',
-//         id: 'berry-submit',
-//         modifier: 'success pull-right',
-//         click: function() {
-//           if(this.options.autoDestroy) {
-//             this.on('saved', this.destroy);
-//           }
-//           this.trigger('save');
-//         }
-//       }
-
-//       $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
-//         {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
-//       ]}).on('save', function() {
-//         //switch version
-//         $.ajax({
-//           url: root+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
-//           method: 'get',
-//           data: data,
-//           success:function(data) {
-//             data.app = loaded.app;
-//             loaded = data;
-//             load(loaded.code);
-//             Berries.modal.trigger('close');
-//           }
-//         })
-//       })
-//     }
-//   })
-// })
+$('#versions').on('click', function() {
+  $.ajax({
+    url: "/api/proxy/"+slug+"/services/"+service.id+"/versions",
+    success: function(data) {
+      console.log(data);
+      data = _.where(data,{stable:1})
+      if(!orig.stable) {
+        data.unshift({id:orig.id,summary:'Working Version'})
+      }
+      Berry.btn.switch={
+        label: 'Switch',
+        icon:'reply',
+        id: 'berry-submit',
+        modifier: 'success pull-right',
+        click: function() {
+          if(this.options.autoDestroy) {
+            this.on('saved', this.destroy);
+          }
+          this.trigger('save');
+        }
+      }
+      $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
+        {label: 'Version', name:'service_version_id', options:data,type:'select', value_key:'id',label_key:'summary'},
+      ]}).on('save', function() {
+        // switch version
+        $.ajax({
+          url: '/api/proxy/'+slug+'/service_versions/'+this.toJSON().service_version_id,
+          method: 'get',
+          // data: data,
+          success:function(data) {
+            loaded = data;
+            load(loaded);
+            Berries.modal.trigger('close');
+          }
+        })
+      })
+    }
+  })
+})
 

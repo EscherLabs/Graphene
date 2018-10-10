@@ -6,6 +6,7 @@ $.ajax({
 	url: url,		
 	success: function(service){
 		myservice = service;
+		service.server = server;
 		$('#table').html(templates.service_instance.render(service));
 		$.ajax({
 			url: "/api/proxy/"+slug+"/service_versions/"+service.service_version_id,		

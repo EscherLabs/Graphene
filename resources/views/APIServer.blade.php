@@ -17,6 +17,9 @@
     var slug = '{{ $slug }}';
     var group = {!! $group or "{}" !!};
     var user = {!! Auth::user() !!};
+
+    var server = "{{ $config->server }}";
+
     // var url = '/admin/apiserver/fetch/'+route;
     // if(resource_id !== ''){
     //   url= '/api/groups/'+resource_id+'/'+route;

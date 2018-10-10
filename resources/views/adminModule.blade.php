@@ -10,9 +10,8 @@
     <span class="caret"></span>
     <span class="sr-only">Toggle Dropdown</span>
   </button>
-  <ul class="dropdown-menu">
-    <li role="separator" class="divider"></li>
-    <li><a href="/api/apps/{!! $id !!}" target="_blank">Export</a></li>
+  <ul class="dropdown-menu">    
+    <li><a href="/api/proxy/{{ $slug }}/services/{!! $id !!}/versions/latest" target="_blank">Export</a></li>
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
@@ -76,6 +75,8 @@
   <script>var loaded = {!! $service_version !!};
           var service = {!! $service !!};
           var slug = "{!! $slug !!}";
+          var server = "{{ $config->server }}";
+
           </script>
   <script type='text/javascript' src='/assets/js/APIServer_service_edit.js'></script>
 @endsection

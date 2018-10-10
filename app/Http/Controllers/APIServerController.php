@@ -23,7 +23,7 @@ class APIServerController extends Controller
        return view('APIServer', ['resource'=>'APIServer_'.$resource,'id'=>$resource_id,'slug'=>$slug,'config'=>$api_config]);
     }    
 
-    public function fetch($slug, $route, $object_id=null, $action=null, Request $request) {
+    public function fetch($slug, $route, $object_id=null, $action=null,$selection=null, Request $request) {
         $httpHelper = new HTTPHelper();
         $mysite = config('app.site')->select('proxyserver_config')->first();
         $api_config = $mysite->get_proxyserver_by_slug($slug);
@@ -33,6 +33,9 @@ class APIServerController extends Controller
         }
         if(!is_null($action)){
             $url .= '/'.$action;
+        }
+        if(!is_null($selection)){
+            $url .= '/'.$selection;
         }
         $input = $request->input();
         if(isset($input['id']) && $input['id'] == '' ){
