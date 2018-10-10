@@ -57,9 +57,11 @@
               </a>
               <ul class="dropdown-menu">
                 @can('view_in_admin', 'App\Site')
+                @if(!is_null(config('app.site')->proxyserver_config))
                 @foreach (config('app.site')->proxyserver_config as $config)
                     <li><a href="/admin/apiserver/{{ $config->slug }}/environments"><i class="fa fa-server"></i> {{ $config->name }}</a></li>
                 @endforeach
+                @endif
                 @endcan  
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
