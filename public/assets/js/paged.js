@@ -18,7 +18,7 @@ var paged = function(selector, options){
     }
     options.attributes[item.key] = item.content; 
   })
-  options.default ={label: false,type:'ace',mode:options.mode || 'ace/mode/handlebars'}
+  options.default ={label: false,type:'ace',mode:options.mode || 'ace/mode/handlebars', inlinemode:options.inlinemode}
   this.options = $.extend(true,{editable: true,},options);
   this.active = this.options.items[0].key;
 

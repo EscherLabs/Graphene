@@ -2355,8 +2355,8 @@ Berry.prototype.events.initialize.push({
 
 			this.editor = ace.edit(this.id+"container");
 	    this.editor.setTheme(this.item.theme || "ace/theme/chrome");
-	    this.editor.getSession().setMode(this.item.mode || "ace/mode/handlebars");
-
+	    this.editor.getSession().setMode({path:this.item.mode || "ace/mode/handlebars", inline:this.item.inlinemode});
+			
 		},
 		setValue: function(value){
 			if(typeof this.lastSaved === 'undefined'){

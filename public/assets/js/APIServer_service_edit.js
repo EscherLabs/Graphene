@@ -63,10 +63,10 @@ function load(app_version) {
   // },app_version)
 
   attributes= app_version;
-  debugger;
 
   attributes.code = $.extend(true, [{name:'Main',content:'', disabled: true}],attributes.code)
-
+  attributes.functions = $.extend(true, [{name:'Constructor',content:'', disabled: true}],attributes.functions)
+  
 
 
   $('.navbar-header .nav a h4').html('Service - '+service.name);
@@ -202,7 +202,8 @@ function load(app_version) {
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
 
   // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
-  scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code, mode:'ace/mode/php', label:'Script'});
+  filepage = new paged('.files',{name:'scripts', items:attributes.code, mode:'ace/mode/php', label:'File'});
+  functionpage = new paged('.functions',{name:'functions', items:attributes.functions, mode:'ace/mode/php', label:'Function', inlinemode:true});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
   //   item.content = this.berry.fields[this.active].toJSON();
@@ -304,7 +305,8 @@ function modalForm(form, name, onSave) {
 }
 
 $('#save').on('click',function() {
-  script_errors =scriptPage.errors();
+  script_errors =filepage.errors();
+  script_errors +=functionpage.errors();
   var data = attributes;
   // data.code.css = Berries.style.toJSON().code.css;
   data.routes = _.map(bt.models,'attributes');
@@ -313,7 +315,8 @@ $('#save').on('click',function() {
   var errorCount = script_errors.length;//+ css_errors.length
 
   if(!errorCount){
-    data.code = scriptPage.toJSON();
+    data.code = filepage.toJSON();
+    data.functions = functionpage.toJSON();
     // var temp = formPage.toJSON();
     // data.code.forms = formPage.toJSON();
     data.updated_at = attributes.updated_at;
