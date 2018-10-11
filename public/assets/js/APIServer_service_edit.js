@@ -64,7 +64,7 @@ function load(app_version) {
 
   attributes= app_version;
 
-  attributes.code = $.extend(true, [{name:'Main',content:'', disabled: true}],attributes.code)
+  attributes.files = $.extend(true, [{name:'Main',content:'', disabled: true}],attributes.files)
   attributes.functions = $.extend(true, [{name:'Constructor',content:'', disabled: true}],attributes.functions)
   
 
@@ -202,7 +202,7 @@ function load(app_version) {
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
 
   // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
-  filepage = new paged('.files',{name:'scripts', items:attributes.code, mode:'ace/mode/php', label:'File'});
+  filepage = new paged('.files',{name:'scripts', items:attributes.files, mode:'ace/mode/php', label:'File'});
   functionpage = new paged('.functions',{name:'functions', items:attributes.functions, mode:'ace/mode/php', label:'Function', inlinemode:true});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
@@ -315,7 +315,7 @@ $('#save').on('click',function() {
   var errorCount = script_errors.length;//+ css_errors.length
 
   if(!errorCount){
-    data.code = filepage.toJSON();
+    data.files = filepage.toJSON();
     data.functions = functionpage.toJSON();
     // var temp = formPage.toJSON();
     // data.code.forms = formPage.toJSON();
