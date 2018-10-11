@@ -29,7 +29,7 @@ class HTTPHelper {
             if(array_key_exists('scheme', $url_parts) && array_key_exists('host', $url_parts)) {
                 $url = $url_parts['scheme'].'://'.$url_parts['host'];
                 if(array_key_exists('port', $url_parts)) {
-                    $url .= ':'+$url_parts['port'];
+                    $url .= ':'.$url_parts['port'];
                 }
                 if(array_key_exists('path', $url_parts)) {
                     $url .= str_replace(' ', '%20', $url_parts['path']);
