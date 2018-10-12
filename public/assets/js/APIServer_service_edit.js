@@ -405,7 +405,7 @@ $('#publish').on('click', function() {
 
 $('#instances').on('click', function() {
   viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="'+server+'/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/service_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-  $.get('/api/proxy/bu/service_instances', function(data) {
+  $.get('/api/proxy/'+slug+'/service_instances', function(data) {
     data = _.where(data, {service_id:service.id})
     debugger;
     if(data.length > 0){
