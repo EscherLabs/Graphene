@@ -20,10 +20,9 @@ class ImageController extends Controller
     }
     
     public function get(Image $image) {
-        // session_write_close();
-        // response()->header('Cache-Control', 'no-cache, must-revalidate');
+        $max_age = 2592000; // Cache Images for 30 days
         $headers = [
-            "Cache-Control"=>"max-age=86400",
+            "Cache-Control"=>"max-age=".$max_age,
             "Pragma"=>"cache",
             "Content-Disposition"=>'inline; filename="'.$image->name.'.'.$image->ext.'"'
         ];
