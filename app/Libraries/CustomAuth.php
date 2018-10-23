@@ -25,7 +25,8 @@ class CustomAuth {
                 }
             }
        } else {
-        if(!$request->is('login*')){
+
+        if(!$skip && !$request->is('login*')){
           return redirect('/login?redirect='.urlencode(URL::full()));
         }
       }
