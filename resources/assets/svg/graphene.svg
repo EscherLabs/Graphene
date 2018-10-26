@@ -15,7 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="graphene.svg">
+   sodipodi:docname="graphene.svg"
+   inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"
+   inkscape:export-xdpi="35.571426"
+   inkscape:export-ydpi="35.571426">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.50050519"
-     inkscape:cx="136.5618"
-     inkscape:cy="-849.88989"
+     inkscape:cx="-422.87296"
+     inkscape:cy="-1009.7284"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -65,7 +68,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -95,5 +98,123 @@
          id="tspan8274"
          x="-173.97293"
          y="1783.2026">GRAPHENE</tspan></text>
+    <path
+       inkscape:export-filename="/Users/adam/Documents/graphene_small_white.png"
+       inkscape:export-ydpi="35.571426"
+       inkscape:export-xdpi="35.571426"
+       inkscape:connector-curvature="0"
+       d="m -293.49535,1926.7524 c -7.2256,0.1966 -12.96993,6.2622 -12.77333,13.4878 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26223,-12.9699 -13.48783,-12.7733 z m 0.12028,4.4208 c 4.83646,-0.1317 8.81524,3.6364 8.94683,8.4729 0.13158,4.8363 -3.63642,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.81525,-3.6364 -8.94684,-8.4729 -0.13159,-4.8364 3.63641,-8.8152 8.47289,-8.9467 z m 43.30491,20.651 c -7.22559,0.1966 -12.96956,6.2622 -12.77298,13.4879 0.19658,7.2255 6.26188,12.9699 13.48749,12.7733 7.2256,-0.1966 12.96992,-6.2623 12.77333,-13.4878 -0.1966,-7.2257 -6.26224,-12.97 -13.48784,-12.7734 z m 0.12028,4.4207 c 4.83646,-0.1315 8.81525,3.6364 8.94684,8.4729 0.13159,4.8365 -3.63643,8.8152 -8.47289,8.9468 -4.83647,0.1317 -8.8149,-3.6364 -8.94649,-8.4729 -0.13158,-4.8365 3.63609,-8.8152 8.47254,-8.9468 z m 43.30517,-29.4925 c -7.2256,0.1966 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2255 6.26223,12.9699 13.48783,12.7733 7.22559,-0.1966 12.96992,-6.2622 12.77333,-13.4878 -0.19659,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94684,8.4729 0.13158,4.8364 -3.63642,8.8152 -8.47288,8.9468 -4.83648,0.1316 -8.81526,-3.6365 -8.94684,-8.4729 -0.13159,-4.8364 3.63642,-8.8153 8.47288,-8.9468 z m -86.971,-54.5641 c -7.2256,0.1967 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19658,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12028,4.4208 c 4.83646,-0.1316 8.81524,3.6365 8.94683,8.4729 0.13158,4.8364 -3.63642,8.8153 -8.47289,8.9468 -4.83646,0.1316 -8.81524,-3.6365 -8.94683,-8.4728 -0.13159,-4.8365 3.63642,-8.8154 8.47289,-8.9469 z m 86.73036,-4.4207 c -7.2256,0.1966 -12.96958,6.2622 -12.77299,13.4879 0.19659,7.2255 6.26188,12.9699 13.48748,12.7733 7.2256,-0.1966 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26224,-12.9698 -13.48783,-12.7733 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94683,8.4729 0.13159,4.8364 -3.63641,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.8149,-3.6364 -8.94649,-8.4728 -0.13159,-4.8364 3.63608,-8.8153 8.47254,-8.9468 z M -250.07,1851.5377 c -7.2256,0.1967 -12.96992,6.262 -12.77334,13.4875 0.1966,7.2257 6.26224,12.97 13.48784,12.7734 7.2256,-0.1966 12.96993,-6.2623 12.77333,-13.4879 -0.19659,-7.2255 -6.26222,-12.9695 -13.48783,-12.773 z m 0.12028,4.4208 c 4.83647,-0.1316 8.81525,3.6361 8.94683,8.4725 0.13159,4.8365 -3.63642,8.8153 -8.47289,8.9469 -4.83647,0.1315 -8.81524,-3.6364 -8.94683,-8.4729 -0.13159,-4.8365 3.63643,-8.8149 8.47289,-8.9465 z m 33.8623,42.6182 0,32.4694 19.60004,0 0,-32.4694 -19.60004,0 z m -2.75327,37.238 -28.1186,16.2342 9.80001,16.9743 28.11861,-16.2342 -9.80002,-16.9743 z m -61.74649,0 -9.80002,16.9743 28.12344,16.2369 9.80001,-16.9743 -28.12343,-16.2369 z m -22.35088,-37.2366 0,32.4694 19.60003,0 0,-32.4694 -19.60003,0 z m 40.67188,-37.9767 -28.1186,16.2342 9.80001,16.9739 28.11861,-16.2341 -9.80002,-16.974 z m 25.10484,0 -9.80002,16.974 28.12275,16.2366 9.79967,-16.974 -28.1224,-16.2366 z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000004;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="path8295" />
+    <text
+       inkscape:export-filename="/Users/adam/Documents/graphene_small_white.png"
+       inkscape:export-ydpi="35.571426"
+       inkscape:export-xdpi="35.571426"
+       sodipodi:linespacing="125%"
+       id="text8297"
+       y="1954.3594"
+       x="-173.97293"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:123.54418182px;line-height:125%;font-family:Chalkduster;-inkscape-font-specification:Chalkduster;letter-spacing:0px;word-spacing:0px;opacity:0.93000004;fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       xml:space="preserve"><tspan
+         y="1954.3594"
+         x="-173.97293"
+         id="tspan8299"
+         sodipodi:role="line">GRAPHENE</tspan></text>
+    <path
+       inkscape:export-filename="/Users/adam/Documents/graphene_white.png"
+       inkscape:export-ydpi="35.571426"
+       inkscape:export-xdpi="35.571426"
+       inkscape:connector-curvature="0"
+       d="m -301.82359,2073.0835 c -7.2256,0.1966 -12.96993,6.2622 -12.77333,13.4878 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26223,-12.9699 -13.48783,-12.7733 z m 0.12028,4.4208 c 4.83646,-0.1317 8.81524,3.6364 8.94683,8.4729 0.13158,4.8363 -3.63642,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.81525,-3.6364 -8.94684,-8.4729 -0.13159,-4.8364 3.63641,-8.8152 8.47289,-8.9467 z m 43.30491,20.651 c -7.22559,0.1966 -12.96956,6.2622 -12.77298,13.4879 0.19658,7.2255 6.26188,12.9699 13.48749,12.7733 7.2256,-0.1966 12.96992,-6.2623 12.77333,-13.4878 -0.1966,-7.2257 -6.26224,-12.97 -13.48784,-12.7734 z m 0.12028,4.4207 c 4.83646,-0.1315 8.81525,3.6364 8.94684,8.4729 0.13159,4.8365 -3.63643,8.8152 -8.47289,8.9468 -4.83647,0.1317 -8.8149,-3.6364 -8.94649,-8.4729 -0.13158,-4.8365 3.63609,-8.8152 8.47254,-8.9468 z m 43.30517,-29.4925 c -7.2256,0.1966 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2255 6.26223,12.9699 13.48783,12.7733 7.22559,-0.1966 12.96992,-6.2622 12.77333,-13.4878 -0.19659,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94684,8.4729 0.13158,4.8364 -3.63642,8.8152 -8.47288,8.9468 -4.83648,0.1316 -8.81526,-3.6365 -8.94684,-8.4729 -0.13159,-4.8364 3.63642,-8.8153 8.47288,-8.9468 z m -86.971,-54.5641 c -7.2256,0.1967 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19658,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12028,4.4208 c 4.83646,-0.1316 8.81524,3.6365 8.94683,8.4729 0.13158,4.8364 -3.63642,8.8153 -8.47289,8.9468 -4.83646,0.1316 -8.81524,-3.6365 -8.94683,-8.4728 -0.13159,-4.8365 3.63642,-8.8154 8.47289,-8.9469 z m 86.73036,-4.4207 c -7.2256,0.1966 -12.96958,6.2622 -12.77299,13.4879 0.19659,7.2255 6.26188,12.9699 13.48748,12.7733 7.2256,-0.1966 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26224,-12.9698 -13.48783,-12.7733 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94683,8.4729 0.13159,4.8364 -3.63641,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.8149,-3.6364 -8.94649,-8.4728 -0.13159,-4.8364 3.63608,-8.8153 8.47254,-8.9468 z m -43.54547,-29.4923 c -7.2256,0.1967 -12.96992,6.262 -12.77334,13.4875 0.1966,7.2257 6.26224,12.97 13.48784,12.7734 7.2256,-0.1966 12.96993,-6.2623 12.77333,-13.4879 -0.19659,-7.2255 -6.26222,-12.9695 -13.48783,-12.773 z m 0.12028,4.4208 c 4.83647,-0.1316 8.81525,3.6361 8.94683,8.4725 0.13159,4.8365 -3.63642,8.8153 -8.47289,8.9469 -4.83647,0.1315 -8.81524,-3.6364 -8.94683,-8.4729 -0.13159,-4.8365 3.63643,-8.8149 8.47289,-8.9465 z m 33.8623,42.6182 0,32.4694 19.60004,0 0,-32.4694 -19.60004,0 z m -2.75327,37.238 -28.1186,16.2342 9.80001,16.9743 28.11861,-16.2342 -9.80002,-16.9743 z m -61.74649,0 -9.80002,16.9743 28.12344,16.2369 9.80001,-16.9743 -28.12343,-16.2369 z m -22.35088,-37.2366 0,32.4694 19.60003,0 0,-32.4694 -19.60003,0 z m 40.67188,-37.9767 -28.1186,16.2342 9.80001,16.9739 28.11861,-16.2341 -9.80002,-16.974 z m 25.10484,0 -9.80002,16.974 28.12275,16.2366 9.79967,-16.974 -28.1224,-16.2366 z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000004;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#d85e16;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="path4148" />
+    <text
+       inkscape:export-filename="/Users/adam/Documents/graphene_white.png"
+       inkscape:export-ydpi="35.571426"
+       inkscape:export-xdpi="35.571426"
+       sodipodi:linespacing="125%"
+       id="text4150"
+       y="2100.6904"
+       x="-182.30116"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:123.54418182px;line-height:125%;font-family:Chalkduster;-inkscape-font-specification:Chalkduster;letter-spacing:0px;word-spacing:0px;opacity:0.93000004;fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       xml:space="preserve"><tspan
+         y="2100.6904"
+         x="-182.30116"
+         id="tspan4152"
+         sodipodi:role="line">GRAPHENE</tspan></text>
+    <path
+       inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
+       inkscape:export-ydpi="35.571426"
+       inkscape:export-xdpi="35.571426"
+       inkscape:connector-curvature="0"
+       d="m -301.82153,2252.3715 c -7.2256,0.1966 -12.96993,6.2622 -12.77333,13.4878 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26223,-12.9699 -13.48783,-12.7733 z m 0.12028,4.4208 c 4.83646,-0.1317 8.81524,3.6364 8.94683,8.4729 0.13158,4.8363 -3.63642,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.81525,-3.6364 -8.94684,-8.4729 -0.13159,-4.8364 3.63641,-8.8152 8.47289,-8.9467 z m 43.30491,20.651 c -7.22559,0.1966 -12.96956,6.2622 -12.77298,13.4879 0.19658,7.2255 6.26188,12.9699 13.48749,12.7733 7.2256,-0.1966 12.96992,-6.2623 12.77333,-13.4878 -0.1966,-7.2257 -6.26224,-12.97 -13.48784,-12.7734 z m 0.12028,4.4207 c 4.83646,-0.1315 8.81525,3.6364 8.94684,8.4729 0.13159,4.8365 -3.63643,8.8152 -8.47289,8.9468 -4.83647,0.1317 -8.8149,-3.6364 -8.94649,-8.4729 -0.13158,-4.8365 3.63609,-8.8152 8.47254,-8.9468 z m 43.30517,-29.4925 c -7.2256,0.1966 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2255 6.26223,12.9699 13.48783,12.7733 7.22559,-0.1966 12.96992,-6.2622 12.77333,-13.4878 -0.19659,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94684,8.4729 0.13158,4.8364 -3.63642,8.8152 -8.47288,8.9468 -4.83648,0.1316 -8.81526,-3.6365 -8.94684,-8.4729 -0.13159,-4.8364 3.63642,-8.8153 8.47288,-8.9468 z m -86.971,-54.5641 c -7.2256,0.1967 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19658,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12028,4.4208 c 4.83646,-0.1316 8.81524,3.6365 8.94683,8.4729 0.13158,4.8364 -3.63642,8.8153 -8.47289,8.9468 -4.83646,0.1316 -8.81524,-3.6365 -8.94683,-8.4728 -0.13159,-4.8365 3.63642,-8.8154 8.47289,-8.9469 z m 86.73036,-4.4207 c -7.2256,0.1966 -12.96958,6.2622 -12.77299,13.4879 0.19659,7.2255 6.26188,12.9699 13.48748,12.7733 7.2256,-0.1966 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26224,-12.9698 -13.48783,-12.7733 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94683,8.4729 0.13159,4.8364 -3.63641,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.8149,-3.6364 -8.94649,-8.4728 -0.13159,-4.8364 3.63608,-8.8153 8.47254,-8.9468 z m -43.54547,-29.4923 c -7.2256,0.1967 -12.96992,6.262 -12.77334,13.4875 0.1966,7.2257 6.26224,12.97 13.48784,12.7734 7.2256,-0.1966 12.96993,-6.2623 12.77333,-13.4879 -0.19659,-7.2255 -6.26222,-12.9695 -13.48783,-12.773 z m 0.12028,4.4208 c 4.83647,-0.1316 8.81525,3.6361 8.94683,8.4725 0.13159,4.8365 -3.63642,8.8153 -8.47289,8.9469 -4.83647,0.1315 -8.81524,-3.6364 -8.94683,-8.4729 -0.13159,-4.8365 3.63643,-8.8149 8.47289,-8.9465 z m 33.8623,42.6182 0,32.4694 19.60004,0 0,-32.4694 -19.60004,0 z m -2.75327,37.238 -28.1186,16.2342 9.80001,16.9743 28.11861,-16.2342 -9.80002,-16.9743 z m -61.74649,0 -9.80002,16.9743 28.12344,16.2369 9.80001,-16.9743 -28.12343,-16.2369 z m -22.35088,-37.2366 0,32.4694 19.60003,0 0,-32.4694 -19.60003,0 z m 40.67188,-37.9767 -28.1186,16.2342 9.80001,16.9739 28.11861,-16.2341 -9.80002,-16.974 z m 25.10484,0 -9.80002,16.974 28.12275,16.2366 9.79967,-16.974 -28.1224,-16.2366 z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000004;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#1690d8;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="path4154" />
+    <g
+       id="g4218"
+       transform="translate(0,-0.4549926)">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.16164398px;line-height:125%;font-family:Chalkduster;-inkscape-font-specification:Chalkduster;letter-spacing:0px;word-spacing:0px;opacity:0.93000034;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="-181.34637"
+         y="2219.9229"
+         id="text4156"
+         sodipodi:linespacing="125%"
+         inkscape:export-xdpi="35.571426"
+         inkscape:export-ydpi="35.571426"
+         inkscape:export-filename="/Users/adam/Documents/graphene_small.png"><tspan
+           sodipodi:role="line"
+           id="tspan4158"
+           x="-181.34637"
+           y="2219.9229">GRAPHENE</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4160"
+         y="2293.6699"
+         x="-188.04324"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="2293.6699"
+           x="-188.04324"
+           id="tspan4162"
+           sodipodi:role="line">FORMS</tspan></text>
+    </g>
+    <path
+       id="path4174"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.9300001;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#94d816;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m -301.82153,2394.1038 c -7.2256,0.1966 -12.96993,6.2622 -12.77333,13.4878 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26223,-12.9699 -13.48783,-12.7733 z m 0.12028,4.4208 c 4.83646,-0.1317 8.81524,3.6364 8.94683,8.4729 0.13158,4.8363 -3.63642,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.81525,-3.6364 -8.94684,-8.4729 -0.13159,-4.8364 3.63641,-8.8152 8.47289,-8.9467 z m 43.30491,20.651 c -7.22559,0.1966 -12.96956,6.2622 -12.77298,13.4879 0.19658,7.2255 6.26188,12.9699 13.48749,12.7733 7.2256,-0.1966 12.96992,-6.2623 12.77333,-13.4878 -0.1966,-7.2257 -6.26224,-12.97 -13.48784,-12.7734 z m 0.12028,4.4207 c 4.83646,-0.1315 8.81525,3.6364 8.94684,8.4729 0.13159,4.8365 -3.63643,8.8152 -8.47289,8.9468 -4.83647,0.1317 -8.8149,-3.6364 -8.94649,-8.4729 -0.13158,-4.8365 3.63609,-8.8152 8.47254,-8.9468 z m 43.30517,-29.4925 c -7.2256,0.1966 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2255 6.26223,12.9699 13.48783,12.7733 7.22559,-0.1966 12.96992,-6.2622 12.77333,-13.4878 -0.19659,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94684,8.4729 0.13158,4.8364 -3.63642,8.8152 -8.47288,8.9468 -4.83648,0.1316 -8.81526,-3.6365 -8.94684,-8.4729 -0.13159,-4.8364 3.63642,-8.8153 8.47288,-8.9468 z m -86.971,-54.5641 c -7.2256,0.1967 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19658,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12028,4.4208 c 4.83646,-0.1316 8.81524,3.6365 8.94683,8.4729 0.13158,4.8364 -3.63642,8.8153 -8.47289,8.9468 -4.83646,0.1316 -8.81524,-3.6365 -8.94683,-8.4728 -0.13159,-4.8365 3.63642,-8.8154 8.47289,-8.9469 z m 86.73036,-4.4207 c -7.2256,0.1966 -12.96958,6.2622 -12.77299,13.4879 0.19659,7.2255 6.26188,12.9699 13.48748,12.7733 7.2256,-0.1966 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26224,-12.9698 -13.48783,-12.7733 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94683,8.4729 0.13159,4.8364 -3.63641,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.8149,-3.6364 -8.94649,-8.4728 -0.13159,-4.8364 3.63608,-8.8153 8.47254,-8.9468 z m -43.54547,-29.4923 c -7.2256,0.1967 -12.96992,6.262 -12.77334,13.4875 0.1966,7.2257 6.26224,12.97 13.48784,12.7734 7.2256,-0.1966 12.96993,-6.2623 12.77333,-13.4879 -0.19659,-7.2255 -6.26222,-12.9695 -13.48783,-12.773 z m 0.12028,4.4208 c 4.83647,-0.1316 8.81525,3.6361 8.94683,8.4725 0.13159,4.8365 -3.63642,8.8153 -8.47289,8.9469 -4.83647,0.1315 -8.81524,-3.6364 -8.94683,-8.4729 -0.13159,-4.8365 3.63643,-8.8149 8.47289,-8.9465 z m 33.8623,42.6182 0,32.4694 19.60004,0 0,-32.4694 -19.60004,0 z m -2.75327,37.238 -28.1186,16.2342 9.80001,16.9743 28.11861,-16.2342 -9.80002,-16.9743 z m -61.74649,0 -9.80002,16.9743 28.12344,16.2369 9.80001,-16.9743 -28.12343,-16.2369 z m -22.35088,-37.2366 0,32.4694 19.60003,0 0,-32.4694 -19.60003,0 z m 40.67188,-37.9767 -28.1186,16.2342 9.80001,16.9739 28.11861,-16.2341 -9.80002,-16.974 z m 25.10484,0 -9.80002,16.974 28.12275,16.2366 9.79967,-16.974 -28.1224,-16.2366 z"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="35.571426"
+       inkscape:export-ydpi="35.571426"
+       inkscape:export-filename="/Users/adam/Documents/graphene_small.png" />
+    <g
+       id="g4224"
+       transform="translate(0,0.38720867)">
+      <text
+         inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
+         inkscape:export-ydpi="35.571426"
+         inkscape:export-xdpi="35.571426"
+         sodipodi:linespacing="125%"
+         id="text4176"
+         y="2361.655"
+         x="-181.34637"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.16164398px;line-height:125%;font-family:Chalkduster;-inkscape-font-specification:Chalkduster;letter-spacing:0px;word-spacing:0px;opacity:0.93000034;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="2361.655"
+           x="-181.34637"
+           id="tspan4178"
+           sodipodi:role="line">GRAPHENE</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="-181.69827"
+         y="2435.4021"
+         id="text4180"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4182"
+           x="-181.69827"
+           y="2435.4021">TABLES</tspan></text>
+    </g>
   </g>
 </svg>
