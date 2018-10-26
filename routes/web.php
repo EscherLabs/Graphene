@@ -193,7 +193,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     // Search all users
     Route::get('/users/search/{search_string?}','UserController@search')->middleware('can:get_all,App\User');
     // Impersonate a user
-    Route::any('/users/{user}/impersonate','UserController@impersonate')->middleware('can:impersonate,user');
+    Route::get('/users/{user}/impersonate','UserController@impersonate')->middleware('can:impersonate,user');
 
 
     // Lookup specific user by user_id
