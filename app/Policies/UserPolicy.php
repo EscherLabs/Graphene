@@ -39,6 +39,14 @@ class UserPolicy
         }
     }
 
+    public function impersonate(User $user, User $the_user)
+    {
+        // User must be a site administrator
+        if ($user->site_admin) {
+            return true;
+        }
+    }
+
     public function update(User $user, User $the_user)
     {
         // User must be a site_admin or the user

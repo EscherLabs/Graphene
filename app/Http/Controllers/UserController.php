@@ -182,6 +182,12 @@ class UserController extends Controller
         return $user;
     }
 
+    public function impersonate(Request $request, User $user)
+    {
+        Auth::login($user, true);
+        return $user;
+    }
+
     public function destroy(User $user)
     {
         if ($user->delete()) {
