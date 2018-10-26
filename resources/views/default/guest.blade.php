@@ -88,6 +88,7 @@
       </div>
     </nav>
     @endif
+    <br>
     @yield('sidemenu')
     <div class="container-fluid" id="main-container">
       <div class="row">

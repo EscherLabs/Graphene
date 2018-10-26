@@ -6,8 +6,8 @@ Guest
 
 
 @section('sidemenu')
-    @if(count($links)>0))
-    <div class="col-sm-3 col-md-2 sidebar">
+    @if(count($links)>0)
+    <!-- <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         @if(isset($links))
         @foreach ($links as $app)
@@ -24,7 +24,7 @@ Guest
         @endforeach
         @endif
       </ul>
-    </div>
+    </div> -->
     @endif
 @endsection
 

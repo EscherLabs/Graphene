@@ -97,7 +97,11 @@ $.ajax({
 				}
 				if(typeof data.app.code.resources !== 'undefined' && data.app.code.resources[0].name !== '') {	
 					$('#resoucestab').show();
-					var attributes = $.extend(true, [], data.resources,data.app.code.resources);
+					var attributes = _.map(data.app.code.resources,function(resource){
+						resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
+						return resource
+					}.bind({resources:data.resources}))
+					// var attributes = $.extend(true, [], data.resources,data.app.code.resources);
 
 					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
 						{name:'container', label: false,  type: 'fieldset', fields:[

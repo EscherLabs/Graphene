@@ -614,3 +614,5 @@ thead .form-group{margin-bottom:0;}
 .table tr.filter{background:#f4feff !important}
 
 .table-well{background:#fff}
+
+.filterable.nodisplay{display: none !important;}
