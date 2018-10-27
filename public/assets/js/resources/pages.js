@@ -50,15 +50,19 @@ $.ajax({
 
 
 			tableConfig.add = function(model){
-				model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
+				model.attributes.groups = _.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)});
 				if(!model.attributes.limit){
-					model.attributes.groups = '[]';
+					model.attributes.groups = [];
 				}
 				$.ajax({url: api, type: 'POST', data: model.attributes,
 				success:function(data) {
 					data.composites = {composite:{groups:data.groups}};
 					data.limit = !!(data.groups||[]).length;
+					if(!data.limit){
+						data.composites.composite.groups = [];
+					}
 					model.set(data);
+					model.owner.draw();
 					Berries.modal.trigger('close')
 					toastr.success('', 'Successfully Added')
 				}.bind(model),
@@ -67,15 +71,21 @@ $.ajax({
 				}
 			});}
 			tableConfig.edit = function(model){
-				model.attributes.groups = JSON.stringify(_.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)}));
+				model.attributes.groups = _.map(model.attributes.composites.composite.groups, function(item){return parseInt(item)});
 				if(!model.attributes.limit){
-					model.attributes.groups = '[]';
+					model.attributes.groups = [];
 				}
+				model.attributes.groups = JSON.stringify(model.attributes.groups);
 				$.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
 				success:function(data) {
 					data.composites = {composite:{groups:data.groups}};
 					data.limit = !!(data.groups||[]).length;
+					if(!data.limit){
+						data.composites.composite.groups = [];
+					}
 					model.set(data);
+					model.owner.draw();
+					
 					toastr.success('', 'Successfully Updated')
 				},
 				error:function(e) {
