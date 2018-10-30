@@ -5,9 +5,13 @@
   </head>
   <body id="page">
     {{> header}}
-    {{>menu}}
+  	{{> menu }}
     {{> core_container}}
     {{> footer}}
     {{> core_engine}}
+    <script>
+        $('.navbar-nav > li.community_{{group.id}}').addClass('active')
+        $('.page_{{id}}').addClass('active')
+    </script>
   </body>
 </html>
