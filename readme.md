@@ -43,7 +43,7 @@ From mysql (within the database you set up previously), run the following (subst
 
     use crazystairs;
     update users set email = 'user@example.com' where id = 1;
-    updates sites set auth = 'basic' where id = 1;
+    update sites set auth = 'basic' where id = 1;
 Note: This will set your username as the default user, and disable CAS Authentication (use basic authentication instead).
 ### Modify your /etc/hosts File
 The default site for graphene (as created by the initial database seed) is graphenedev.local.  You will need to point this to 127.0.0.1 in your /etc/hosts file.  
