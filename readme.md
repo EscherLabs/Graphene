@@ -19,7 +19,7 @@ Note: This project is in the process of merging with the Binghamton University O
 ### Setup the Database
 From mysql, create the "crazystairs" database with the correct access permissions:
 
-    create database crazystairs
+    create database crazystairs;
     GRANT ALL ON crazystairs.* TO 'crazystairs'@'127.0.0.1' IDENTIFIED BY 'crazystairs';
 Note: you can change the database name, username, and password, etc in the ".env" file in the root of the Graphene application.  The .env file does not exist by default, so you will need to create one if you want to change the following defaults::
 
