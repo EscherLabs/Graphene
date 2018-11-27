@@ -1,4 +1,5 @@
 $('.navbar-header .nav a h4').html('Group');
+$('[href="/admin/groups"]').parent().addClass('active');
 
 $.ajax({
 	url: '/api/'+route+'s/'+resource_id+'/summary',

@@ -98,7 +98,7 @@
               <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
             @endcan
             @can('view_in_admin', 'App\APIUser')
-              <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; Manage API Accounts</a></li>
+              <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; API Accounts</a></li>
             @endcan  
             @can('view_in_admin', 'App\Site')
               <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>
@@ -140,7 +140,7 @@
           <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
         @endcan
         @can('view_in_admin', 'App\APIUser')
-          <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; Manage API Accounts</a></li>
+          <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; API Accounts</a></li>
         @endcan  
         @can('view_in_admin', 'App\Site')
           <li><a href="/admin/sites"><i class="fa fa-cloud fa-fw"></i>&nbsp; Sites</a></li>

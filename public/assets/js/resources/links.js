@@ -1,5 +1,7 @@
 $('.navbar-header .nav a h4').html('Links');
-
+if(resource_id !== ''){
+$('[href="/admin/groups"]').parent().addClass('active');
+}
 $.ajax({
 	url: url,		
 	success: function(data){

@@ -1,4 +1,6 @@
 $('.navbar-header .nav a h4').html('App Instance');
+$('[href="/admin/appinstances"]').parent().addClass('active');
+
 $.ajax({
 	url: '/api/appinstances/'+resource_id,
 	success: function(data) {

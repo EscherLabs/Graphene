@@ -50,6 +50,8 @@
 }( jQuery ));
 
 attributes = {};
+$('[href="/admin/apps"]').parent().addClass('active');
+
 var root = '/api/apps/';
 function load(app_version) {
 

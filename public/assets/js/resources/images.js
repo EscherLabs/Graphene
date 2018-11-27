@@ -1,4 +1,5 @@
 $('.navbar-header .nav a h4').html('Images');
+$('[href="/admin/groups"]').parent().addClass('active');
 
 $.ajax({
 	url: url,
