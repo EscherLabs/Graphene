@@ -61,8 +61,8 @@ function modal(options) {
 };
 
 
-function processFilter(){
-	var	currentTarget = this.currentTarget;
+function processFilter(options){
+	var	currentTarget = options.currentTarget || this.currentTarget;
 	var collection;
 	if(this.selector){
 		collection = $(this.selector).find('.filterable')
@@ -72,7 +72,7 @@ function processFilter(){
 	collection.each(
 	function(){
     if($.score($(this).text().replace(/\s+/g, " ").toLowerCase(), $(currentTarget).val().toLowerCase() ) > ($(currentTarget).data('score') || 0.40)){
-			$(this).removeClass('nodisplay');
+      $(this).removeClass('nodisplay');
 		}else{
 			$(this).addClass('nodisplay');
 		}

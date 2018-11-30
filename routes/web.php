@@ -34,6 +34,7 @@ Route::group(['middleware' => ['custom.auth']], function () {
 });
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
+  Route::get('/', 'AdminController@dashboard');
 
   Route::get('/{resource?}', 'AdminController@index');
   Route::get('/apps/{app}', 'AppController@admin')->middleware('can:get,app');
@@ -53,6 +54,7 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
   Route::get('/apps/{app}/developers', 'AdminController@developers')->middleware('can:list_developers,app');
   Route::get('/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
   Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
+
 });
 
 Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {

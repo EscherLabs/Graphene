@@ -40,7 +40,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">
+          <a class="navbar-brand" href="/admin">
             &nbsp;{{ config('app.site')->name }}
           </a>
           <ul class="nav navbar-nav navbar-right hidden-xs">
@@ -65,6 +65,7 @@
                 @endforeach
                 @endif
                 @endcan  
+                <li><a href="/"><i class="fa fa-arrow-left"></i> Back to {{ config('app.site')->name }}</a></li>
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-times-circle"></i> Logout</a></li>
               </ul>
             </li>

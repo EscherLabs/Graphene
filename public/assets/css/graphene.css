@@ -619,3 +619,8 @@ thead .form-group{margin-bottom:0;}
 .table-well{background:#fff}
 
 .filterable.nodisplay{display: none !important;}
+a:hover {
+  text-decoration: none;
+}
+
+

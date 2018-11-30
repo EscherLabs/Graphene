@@ -1,0 +1,154 @@
+  <div class="row">
+    <div class="col-md-9">  
+    <div class="pull-right" style="width: 300px;height: 40px;" id="search"></div>
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#uapps" aria-controls="uapps" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> <span class="hidden-xs hidden-sm">My &mu;Apps<span></a></li>
+        <li role="presentation"><a href="#memberships" aria-controls="memberships" role="tab" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs hidden-sm">My Memberships</span></a></li>
+        <li role="presentation"><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
+        <!-- <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li> -->
+        <!-- <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li> -->
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane uapps active" id="uapps">
+        <div class="masonry-grid">
+        {{#app_developers}}
+        <div class="filterable grid-item" style="display:inline-block;">
+        		<div class="panel panel-default" style="border-top: solid 3px #4d87b9;">
+            <div class="avatar">AS</div>
+            <a href="/admin/apps/{{app.id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
+
+            <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777">{{app.name}}</div>
+            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{app.updated_at}}" title="{{app.updated_at}}"></time></div>
+				      {{! <div class="panel-heading"> </div> }}
+              <div class="panel-content" style="padding:15px 10px 10px">
+                {{! <ul class="list-group"> }}
+                <p style="color: #666;font-size: small;">{{app.description}}</p>
+                  {{#app.app_instances}}
+                  <div class="appInstance">
+                 
+                  <div class="dropdown parent-hover pull-right">
+  <a id="dLabel" href="javascript:void(0);" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fa fa-ellipsis-v"></i>
+    {{! <span class="caret"></span> }}
+  </a>
+  
+  <ul class="dropdown-menu" aria-labelledby="dLabel">
+     <li><a target="_blank" href="/admin/appinstances/{{id}}"><i class="fa fa-pencil"></i> Edit</a></li>
+     <li><a target="_blank" href="/app/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i> Visit</a></li>
+     <li><a href="javascript:void(0);" class="find" data-id="{{id}}"><i class="fa fa-file-o"></i> Pages</a></li>
+  </ul>
+</div>
+                  <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
+<div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
+
+{{#unlisted}}
+<i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
+{{/unlisted}}
+{{^unlisted}}
+<i title="Listed" data-toggle="tooltip" data-placement="top" class="fa fa-link"></i>
+{{/unlisted}}
+{{#public}}
+<i title="Public" data-toggle="tooltip" data-placement="top" class="text-success fa fa-eye"></i>
+{{/public}}
+{{^public}}
+<i title="Private" data-toggle="tooltip" data-placement="top" class="text-danger fa fa-eye-slash"></i>
+{{/public}}
+
+{{#composite_limit}}
+<i title="Limited To Composites" data-toggle="tooltip" data-placement="top"  class="fa fa-user"></i>
+{{/composite_limit}}
+{{^composite_limit}}
+<i title="Open to Group Members" data-toggle="tooltip" data-placement="top"  class="fa fa-users"></i>
+{{/composite_limit}}
+
+{{^hidden_xs}}
+<i class="pull-right fa fa-phone"></i>
+{{/hidden_xs}}
+{{^hidden_sm}}
+<i class="pull-right fa fa-mobile"></i>
+{{/hidden_sm}}
+{{^hidden_md}}
+<i class="pull-right fa fa-desktop"></i>
+{{/hidden_md}}
+
+<!--i class="pull-right device_{{device}}"></i-->
+
+
+</div>
+</a>
+<div class="collapse" id="collapseExample{{id}}">
+
+  <div style="background: #ffffff;padding: 10px 15px 5px;overflow:scroll">
+  <table style="margin-bottom:5px">
+    {{#resources.length}}
+    <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+    {{#resources}}
+    <tr>
+    <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
+    </tr>
+    {{/resources}} 
+    {{/resources.length}}
+  </table>
+  <table style="margin-bottom:5px">
+
+    {{#options.length}}
+    <tr><th colspan="2" style="color:#666">Admin Options</th><tr>
+    {{#options}}
+    <tr>
+    <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
+    </tr>
+    {{/options}}   
+    {{/options.length}}
+ 
+  </table>
+  <table style="margin-bottom:5px">
+    {{#user_options_default.length}}
+    <tr><th colspan="2" style="color:#666">Default User Options</th><tr>
+    {{#user_options_default}}
+    <tr>
+    <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
+    </tr>
+    {{/user_options_default}}
+    {{/user_options_default.length}}
+ 
+  </table>
+  </div>
+</div>
+                  
+                  
+                  
+                  </div>
+                    
+                  {{/app.app_instances}}
+                {{! </ul> }}
+                {{#app.tags}}
+                  <div class="label label-default">{{.}}</div>
+                  {{/app.tags}}
+
+              </div>
+				    </div>
+            </div>
+        {{/app_developers}}
+        </div>
+        </div>
+        <div role="tabpanel" class="tab-pane memberships" id="memberships">
+        <div class="list-group" style="margin-bottom:0;overflow: auto;">
+          {{^group_members.length}}None{{/group_members.length}}{{#group_members}}<div class="list-group-item filterable" style="padding: 8px 15px;position:relative">{{group.name}}</div>{{/group_members}}</div>
+        </div>
+        <div role="tabpanel" class="tab-pane groups" id="groups">
+          <div class="list-group" style="margin-bottom:0;">{{^group_admins.length}}None{{/group_admins.length}}{{#group_admins}}<div class="list-group-item filterable" style="padding: 8px 15px;position:relative">{{group.name}}{{#apps_admin}}<i class="fa fa-cubes text-info" style="position:absolute;top:10px;right:10px"></i>{{/apps_admin}}{{#content_admin}}<i class="fa fa-file text-info" style="position:absolute;top:10px;right:40px"></i>{{/content_admin}}</div>{{/group_admins}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+    <h4>{{first_name}} {{last_name}}</h4>
+    <h5>{{unique_id}}</h5>
+    <h6>{{email}}</h6>
+    {{#tags_array}}<div><b>{{name}}:</b> {{value}}</div>{{/tags_array}}
+    </div>
+  </div>
+  

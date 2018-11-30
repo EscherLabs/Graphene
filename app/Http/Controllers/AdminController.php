@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Group;
 use App\App;
@@ -58,5 +59,40 @@ class AdminController extends Controller
     }
     public function summary(Group $group) {
         return view('admin', ['resource'=>'group','id'=>$group->id,'group'=>$group]);
+    }
+
+    public function dashboard(Request $request) {
+        $user = Auth::user();
+        // $user->load(array('site_members'=>function($query){
+        //     $query->where('site_id','=',config('app.site')->id);
+        // }));
+        $user->load(array('app_developers'=>function($query){
+            //$query->where('site_id','=',config('app.site')->id)->with('app');;
+            $query->with(array('app'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->with(array('app_instances'=>function($q){
+                    $q->with(array('appVersion'=>function($q){
+                        $q->select('id','code->resources as resources','code->forms as forms');
+                    }));
+                },'user'=>function($q){
+                    // $q->with(array('appVersion'=>function($q){
+                    //     $q->select('id','code->resources as resources','code->forms as forms');
+                    // }));
+                }));//->select('id','site_id','name','user_id');
+            }))->select('app_id','user_id');
+        }));
+        $user->load(array('group_admins'=>function($query){
+            $query->with(array('group'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug')->with('endpoints');
+            }) )->select('group_id','user_id','content_admin','apps_admin');
+        }));
+        $user->load(array('group_members'=>function($query){
+            $query->with(array('group'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
+            }))->select('group_id','user_id');
+        }));
+        return view('adminDashboard', ['user'=>$user]);
+        return $user;
+
+        // return Group::where('site_id', config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->orderBy('order')->get();
     }
 }

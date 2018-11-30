@@ -1,11 +1,12 @@
 	$('.navbar-header .nav a h4').html('Users');
-	$('#table').html('<div style="margin:40px 20px"><div class="col-md-6 well" id="search"></div><div class="col-md-6" id="user"></div></div>')
+	$('#table').html('<div style="margin:40px 20px"><div class="col-md-5" id="search"></div><div class="col-md-7" style="border-left:solid 2px #ccc" id="user"></div></div>')
 	$('#search').berry({
 				name:'user_search',
 				actions:false,
+				inline:true,
 				label:false,
 				fields:[
-					{name:'query',label:'Search'},
+					{name:'query',label:false,placeholder:'Search', pre:'<i class="fa fa-filter"></i>',help:"Start typing a name to search i.e. john <hr>"},
 					{type:'raw',value:'',name:'results',label:false}
 				]}).on('change',function(){
 
@@ -35,7 +36,7 @@
 					{name:'site_admin',label:'Site Admin',type:'custom_radio',options:[{label:'Yes',value:1},{label:'No',value:0}]},
 					{name:'site_developer',label:'Site Developer',type:'custom_radio',options:[{label:'Yes',value:1},{label:'No',value:0}]}
 				]},						
-				{name:'group_members',label:'Member Of',inline:true, type:'raw',template:'<div class="list-group" style="margin-bottom:0;max-height: 200px;overflow: auto;">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{group.name}}</div>{{/value}}</div>'},
+				{name:'group_members',label:'Memberships',inline:true, type:'raw',template:'<div class="list-group" style="margin-bottom:0;max-height: 200px;overflow: auto;">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{group.name}}</div>{{/value}}</div>'},
 				{name:'app_developers',label:"App Developer",inline:true, type:'raw',template:'<div class="list-group" style="margin-bottom:0;max-height: 200px;overflow: auto;">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{app.name}}</div>{{/value}}</div>'},
 				{name:'group_admins',label:"Admin Of",inline:true, type:'raw',template:'<div class="list-group" style="margin-bottom:0;">{{^value.length}}None{{/value.length}}{{#value}}<div class="list-group-item" style="padding: 8px 15px;position:relative">{{group.name}}{{#apps_admin}}<i class="fa fa-cubes text-info" style="position:absolute;top:10px;right:10px"></i>{{/apps_admin}}{{#content_admin}}<i class="fa fa-file text-info" style="position:absolute;top:10px;right:40px"></i>{{/content_admin}}</div>{{/value}}</div>'},
 
