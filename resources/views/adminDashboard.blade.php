@@ -282,19 +282,12 @@
 }));
 </script>
   <script>var loaded = {!! $user !!};
-//   var endpoints = [];
-// _.each(loaded.group_admins,function(group){
-//   endpoints.push(group.group.endpoints)
-// }
-//   )
-//   debugger;
+
 loaded.params = _.map(loaded.params, function(param,i){
   return {key: i, value: param};
 })
-debugger;
 loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, item){
     item.app.app_instances = _.map(item.app.app_instances, function(loaded, instance){
-      // debugger;
       instance.options = _.each(instance.options, function(option, i){
         return {key: i, value: option};
       })
@@ -302,9 +295,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
         return {key: i, value: user_option};
       })
       if(instance.version !== null) {
-        // instance.version.resources = JSON.parse(instance.version.resources)
-        // instance.version.forms = JSON.parse(instance.version.forms)
-
         instance.resources = _.map(instance.resources, function(loaded, instance, resource, i){
           var group = _.find(loaded.group_admins,{group_id:instance.group_id})
           if(typeof group !== 'undefined'){
@@ -312,8 +302,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
             
           }
           resource.resource = _.find(instance.version.resources,{name:resource.name})
-          // debugger;
-          // return {key: i, value: user_option};
           return resource;
         }.bind(null, loaded, instance))
       }
@@ -323,12 +311,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
 
     item.app.user = item.app.user || {first_name:'',last_name:"", unknown:'#ffb8b8'};
     item.app.user.initials = item.app.user.first_name.substr(0,1)+item.app.user.last_name.substr(0,1)
-
-    // item.app.tags = _.map(item.app.tags,function(tag){
-    //   var temp = tag.split(':');
-
-    //   return {name:temp[0],value:temp[1]}
-    // })
     return item;
   }.bind(null,loaded))
   </script>

@@ -41,9 +41,8 @@
                         <li><a href="javascript:void(0);" class="find" data-id="{{id}}"><i class="fa fa-file-o"></i> Pages</a></li>
                       </ul>
                     </div>
-                    <span class="pull-right text-muted">{{group.name}}</span>
 
-                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
+                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
                       <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
 
                       {{#unlisted}}
