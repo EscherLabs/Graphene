@@ -48,13 +48,13 @@ class GroupController extends Controller
             })
         )
         ->with(array('pages'=>function($query){
-            $query->select('id','group_id', 'name', 'slug', 'public')->orderBy('order');
+            $query->select('id','group_id', 'name', 'slug', 'public')->orderBy('updated_at');
         }))
         ->with(array('app_instances'=>function($query){
             $query->select('id','group_id','app_id','name', 'public', 'slug')
             ->with(array('app'=>function($query){
                 $query->select('id','name');
-            }))->orderBy('order');
+            }))->orderBy('updated_at');
         }))
         ->with(array('tags'=>function($query){
             $query->select('id','group_id','name', 'value');

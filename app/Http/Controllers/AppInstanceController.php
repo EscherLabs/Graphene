@@ -70,18 +70,20 @@ class AppInstanceController extends Controller
         $pages = Page::with('group')->where('group_id', '=',  $app_instance->group_id)->get();
 		$page_list = [];
 		foreach($pages as $page){
-			$sections = $page->content;
-			foreach($sections->sections as $section){
-				foreach($section as $widget){
-					if($widget->widgetType === 'uApp'){
-						if($widget->app_id == $app_instance->id){
-							unset($page->content);
-							$page_list[] = $page;
-							break 2;
-						}
-					}
-				}
-			}
+            $sections = $page->content;
+            if(isset($sections)){
+                foreach($sections->sections as $section){
+                    foreach($section as $widget){
+                        if($widget->widgetType === 'uApp'){
+                            if(isset($widget->app_id) && $widget->app_id == $app_instance->id){
+                                unset($page->content);
+                                $page_list[] = $page;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
 		}
 		return $page_list;
 	}

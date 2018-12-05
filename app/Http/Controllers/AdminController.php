@@ -70,24 +70,59 @@ class AdminController extends Controller
             //$query->where('site_id','=',config('app.site')->id)->with('app');;
             $query->with(array('app'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->with(array('app_instances'=>function($q){
-                    $q->with(array('appVersion'=>function($q){
-                        $q->select('id','code->resources as resources','code->forms as forms');
-                    }));
+                    // $q->with(array('appVersion'=>function($q){
+                    //     $q->select('id','code->resources as resources','code->forms as forms');
+                    // }));
+                    $q->with(array('group'=>function($q){
+                        $q->select('id','name');
+                    }))->orderBy('updated_at', 'desc');
                 },'user'=>function($q){
                     // $q->with(array('appVersion'=>function($q){
                     //     $q->select('id','code->resources as resources','code->forms as forms');
                     // }));
-                }));//->select('id','site_id','name','user_id');
-            }))->select('app_id','user_id');
+                }))->currentVersion();//->select('id','site_id','name','user_id');
+            }))->select('app_id','user_id') ;
         }));
         $user->load(array('group_admins'=>function($query){
             $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug')->with('endpoints');
+                $query->where('site_id','=',config('app.site')->id)->select('id', 'site_id' ,'name' ,'slug')->with(
+                    array('composites'=>function($query){
+                        $query->with(array('group'=>function($query){
+                                $query->select('slug', 'id'); 
+                            })
+                        );
+                    })
+                )
+                ->with(array('pages'=>function($query){
+                    $query->select('id','group_id', 'name', 'slug', 'public')->orderBy('order');
+                }))
+                ->with(array('app_instances'=>function($query){
+                    $query->select('id','group_id','app_id','name', 'public', 'slug')
+                    ->with(array('app'=>function($query){
+                        $query->select('id','name');
+                    }))->orderBy('order');
+                }))
+                ->with(array('tags'=>function($query){
+                    $query->select('id','group_id','name', 'value');
+                }))
+                ->with(array('links'=>function($query){
+                    $query->select('id','group_id','title','link')->orderBy('title');
+                }))
+                ->with('membersCount')
+                ->with('adminsCount')
+                ->with('imagesCount')
+                ->with('endpointsCount')
+                ->with('pagesCount')
+                ->with('appinstancesCount')
+                ->with('linksCount');
+                // ->find($group->id);
+
+
             }) )->select('group_id','user_id','content_admin','apps_admin');
         }));
         $user->load(array('group_members'=>function($query){
             $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
+                $query->where('site_id','=',config('app.site')->id)->select('id', 'site_id', 'name', 'slug');
             }))->select('group_id','user_id');
         }));
         return view('adminDashboard', ['user'=>$user]);

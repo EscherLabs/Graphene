@@ -4,25 +4,24 @@
 
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#uapps" aria-controls="uapps" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> <span class="hidden-xs hidden-sm">My &mu;Apps<span></a></li>
-        <li role="presentation"><a href="#memberships" aria-controls="memberships" role="tab" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs hidden-sm">My Memberships</span></a></li>
-        <li role="presentation"><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
+        {{#app_developers.length}}<li role="presentation" class="active"><a href="#uapps" aria-controls="uapps" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> <span class="hidden-xs hidden-sm">My &mu;Apps<span></a></li>{{/app_developers.length}}
+        <li role="presentation" {{^app_developers.length}} class="active"{{/app_developers.length}}><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
         <!-- <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li> -->
         <!-- <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li> -->
       </ul>
 
       <!-- Tab panes -->
       <div class="tab-content">
-        <div role="tabpanel" class="tab-pane uapps active" id="uapps">
+        <div role="tabpanel" class="tab-pane uapps {{#app_developers.length}}active{{/app_developers.length}}" id="uapps">
         <div class="masonry-grid">
         {{#app_developers}}
         <div class="filterable grid-item" style="display:inline-block;">
         		<div class="panel panel-default" style="border-top: solid 3px #4d87b9;">
-            <div class="avatar">AS</div>
+            <div class="avatar" style="background:{{app.user.unknown}}">{{app.user.initials}}</div>
             <a href="/admin/apps/{{app.id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
 
             <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777">{{app.name}}</div>
-            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{app.updated_at}}" title="{{app.updated_at}}"></time></div>
+            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{app.versions.0.updated_at}}" title="{{app.updated_at}}"></time></div>
 				      {{! <div class="panel-heading"> </div> }}
               <div class="panel-content" style="padding:15px 10px 10px">
                 {{! <ul class="list-group"> }}
@@ -30,96 +29,96 @@
                   {{#app.app_instances}}
                   <div class="appInstance">
                  
-                  <div class="dropdown parent-hover pull-right">
-  <a id="dLabel" href="javascript:void(0);" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="fa fa-ellipsis-v"></i>
-    {{! <span class="caret"></span> }}
-  </a>
-  
-  <ul class="dropdown-menu" aria-labelledby="dLabel">
-     <li><a target="_blank" href="/admin/appinstances/{{id}}"><i class="fa fa-pencil"></i> Edit</a></li>
-     <li><a target="_blank" href="/app/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i> Visit</a></li>
-     <li><a href="javascript:void(0);" class="find" data-id="{{id}}"><i class="fa fa-file-o"></i> Pages</a></li>
-  </ul>
-</div>
-                  <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
-<div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
+                    <div class="dropdown parent-hover pull-right">
+                      <a id="dLabel" href="javascript:void(0);" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-ellipsis-v"></i>
+                        {{! <span class="caret"></span> }}
+                      </a>
+                      
+                      <ul class="dropdown-menu" aria-labelledby="dLabel">
+                        <li><a target="_blank" href="/app/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i> Visit</a></li>
+                        <li><a href="/admin/appinstances/{{id}}"><i class="fa fa-pencil"></i> Edit</a></li>
+                        <li><a href="javascript:void(0);" class="find" data-id="{{id}}"><i class="fa fa-file-o"></i> Pages</a></li>
+                      </ul>
+                    </div>
+                    <span class="pull-right text-muted">{{group.name}}</span>
 
-{{#unlisted}}
-<i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
-{{/unlisted}}
-{{^unlisted}}
-<i title="Listed" data-toggle="tooltip" data-placement="top" class="fa fa-link"></i>
-{{/unlisted}}
-{{#public}}
-<i title="Public" data-toggle="tooltip" data-placement="top" class="text-success fa fa-eye"></i>
-{{/public}}
-{{^public}}
-<i title="Private" data-toggle="tooltip" data-placement="top" class="text-danger fa fa-eye-slash"></i>
-{{/public}}
+                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
+                      <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
 
-{{#composite_limit}}
-<i title="Limited To Composites" data-toggle="tooltip" data-placement="top"  class="fa fa-user"></i>
-{{/composite_limit}}
-{{^composite_limit}}
-<i title="Open to Group Members" data-toggle="tooltip" data-placement="top"  class="fa fa-users"></i>
-{{/composite_limit}}
+                      {{#unlisted}}
+                      <i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
+                      {{/unlisted}}
+                      {{^unlisted}}
+                      <i title="Listed" data-toggle="tooltip" data-placement="top" class="fa fa-link"></i>
+                      {{/unlisted}}
+                      {{#public}}
+                      <i title="Public" data-toggle="tooltip" data-placement="top" class="text-success fa fa-eye"></i>
+                      {{/public}}
+                      {{^public}}
+                      <i title="Private" data-toggle="tooltip" data-placement="top" class="text-danger fa fa-eye-slash"></i>
+                      {{/public}}
 
-{{^hidden_xs}}
-<i class="pull-right fa fa-phone"></i>
-{{/hidden_xs}}
-{{^hidden_sm}}
-<i class="pull-right fa fa-mobile"></i>
-{{/hidden_sm}}
-{{^hidden_md}}
-<i class="pull-right fa fa-desktop"></i>
-{{/hidden_md}}
+                      {{#composite_limit}}
+                      <i title="Limited To Composites" data-toggle="tooltip" data-placement="top"  class="fa fa-user"></i>
+                      {{/composite_limit}}
+                      {{^composite_limit}}
+                      <i title="Open to Group Members" data-toggle="tooltip" data-placement="top"  class="fa fa-users"></i>
+                      {{/composite_limit}}
 
-<!--i class="pull-right device_{{device}}"></i-->
+                      {{^hidden_xs}}
+                      <i class="pull-right fa fa-phone"></i>
+                      {{/hidden_xs}}
+                      {{^hidden_sm}}
+                      <i class="pull-right fa fa-mobile"></i>
+                      {{/hidden_sm}}
+                      {{^hidden_md}}
+                      <i class="pull-right fa fa-desktop"></i>
+                      {{/hidden_md}}
+
+                      <!--i class="pull-right device_{{device}}"></i-->
 
 
-</div>
-</a>
-<div class="collapse" id="collapseExample{{id}}">
+                      </div>
+                    </a>
+                    <div class="collapse" id="collapseExample{{id}}">
 
-  <div style="background: #ffffff;padding: 10px 15px 5px;overflow:scroll">
-  <table style="margin-bottom:5px">
-    {{#resources.length}}
-    <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
-    {{#resources}}
-    <tr>
-    <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
-    </tr>
-    {{/resources}} 
-    {{/resources.length}}
-  </table>
-  <table style="margin-bottom:5px">
+                      <div style="background: #ffffff;padding: 10px 15px 5px;overflow:scroll">
+                      <table style="margin-bottom:5px">
+                        {{#resources.length}}
+                        <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+                        {{#resources}}
+                        <tr>
+                        <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
+                        </tr>
+                        {{/resources}} 
+                        {{/resources.length}}
+                      </table>
+                      <table style="margin-bottom:5px">
 
-    {{#options.length}}
-    <tr><th colspan="2" style="color:#666">Admin Options</th><tr>
-    {{#options}}
-    <tr>
-    <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
-    </tr>
-    {{/options}}   
-    {{/options.length}}
- 
-  </table>
-  <table style="margin-bottom:5px">
-    {{#user_options_default.length}}
-    <tr><th colspan="2" style="color:#666">Default User Options</th><tr>
-    {{#user_options_default}}
-    <tr>
-    <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
-    </tr>
-    {{/user_options_default}}
-    {{/user_options_default.length}}
- 
-  </table>
-  </div>
-</div>
-                  
-                  
+                        {{#options.length}}
+                        <tr><th colspan="2" style="color:#666">Admin Options</th><tr>
+                        {{#options}}
+                        <tr>
+                        <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
+                        </tr>
+                        {{/options}}   
+                        {{/options.length}}
+                    
+                      </table>
+                      <table style="margin-bottom:5px">
+                        {{#user_options_default.length}}
+                        <tr><th colspan="2" style="color:#666">Default User Options</th><tr>
+                        {{#user_options_default}}
+                        <tr>
+                        <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
+                        </tr>
+                        {{/user_options_default}}
+                        {{/user_options_default.length}}
+                    
+                      </table>
+                      </div>
+                    </div>
                   
                   </div>
                     
@@ -135,20 +134,111 @@
         {{/app_developers}}
         </div>
         </div>
-        <div role="tabpanel" class="tab-pane memberships" id="memberships">
-        <div class="list-group" style="margin-bottom:0;overflow: auto;">
-          {{^group_members.length}}None{{/group_members.length}}{{#group_members}}<div class="list-group-item filterable" style="padding: 8px 15px;position:relative">{{group.name}}</div>{{/group_members}}</div>
+
+        <div role="tabpanel" class="tab-pane groups {{^app_developers.length}}active{{/app_developers.length}}" id="groups">
+        <div class="masonry-grid">
+        {{#group_admins}}
+        <div class="filterable grid-item" style="display:inline-block;">
+        		<div class="panel panel-default" style="border-top: solid 3px #b796d6;padding:5px 10px 20px">
+            
+            <a href="/admin/groups/{{group.id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
+
+            <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777">{{group.name}}</div>
+            {{#content_admin}}
+            <span class="badge" style="background:#71ad48;opacity:.7">Content Admin</span>
+            {{/content_admin}}
+            {{#apps_admin}}
+            <span class="badge" style="background:#6495ed;opacity:.7;float:right">App Admin</span>
+            {{/apps_admin}}
+            <div style="margin:10px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
+
+              <div class="group-info">
+
+                <a href="/admin/groups/{{group.id}}/members" class="text-success" style="padding:5px;font-size:20px;">
+                  <span class="fa fa-user" title="Members" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.members_count.aggregate}}{{^group.members_count.aggregate}}0{{/group.members_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/admins" class="text-danger" style="padding:5px;font-size:20px;">
+                  <span class="fa fa-lock" title="Admins" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.admins_count.aggregate}}{{^group.admins_count.aggregate}}0{{/group.admins_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/pages" class="text-info" style="padding:5px;font-size:20px;">
+                  <span class="fa fa-file" title="Pages" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.pages_count.aggregate}}{{^group.pages_count.aggregate}}0{{/group.pages_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/appinstances" class="text-primary" style="padding:5px;font-size:20px;">
+                  <span class="fa fa-cubes" title="MicroApps" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.appinstances_count.aggregate}}{{^group.appinstances_count.aggregate}}0{{/group.appinstances_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/endpoints" class="text-warning" style="padding:5px;font-size:20px;">
+                  <span class="fa fa-crosshairs" title="Endpoints" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.endpoints_count.aggregate}}{{^group.endpoints_count.aggregate}}0{{/group.endpoints_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/images" class="text-default" style="padding:5px;font-size:20px;color:#666">
+                  <span class="fa fa-photo" title="Images" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.images_count.aggregate}}{{^group.images_count.aggregate}}0{{/group.images_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/links" class="text-default" style="padding:5px;font-size:20px;color:#666">
+                  <span class="fa fa-link" title="Links" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.links_count.aggregate}}{{^group.links_count.aggregate}}0{{/group.links_count.aggregate}}</span>
+
+                <a href="/admin/groups/{{group.id}}/composites" class="text-default" style="padding:5px;font-size:20px;color:#666">
+                  <span class="fa fa-puzzle-piece" title="Composites" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+                <span class="badge badge-notify">{{group.composites.length}}</span>
+
+              </div>
+               {{#group.tags.length}}
+              <div style="padding:15px 0 0">
+                  <h6 style="display:inline-block"><a href="/admin/groups/{{group.id}}/tags"><i class="fa fa-tags"></i> Tags</a></h6> - 
+                 {{#group.tags}}
+                  <div class="label label-default">{{name}}:&nbsp;{{value}}</div>
+                  {{/group.tags}}
+              </div>
+               {{/group.tags.length}}
+				    </div>
+          </div>
+        {{/group_admins}}
         </div>
-        <div role="tabpanel" class="tab-pane groups" id="groups">
-          <div class="list-group" style="margin-bottom:0;">{{^group_admins.length}}None{{/group_admins.length}}{{#group_admins}}<div class="list-group-item filterable" style="padding: 8px 15px;position:relative">{{group.name}}{{#apps_admin}}<i class="fa fa-cubes text-info" style="position:absolute;top:10px;right:10px"></i>{{/apps_admin}}{{#content_admin}}<i class="fa fa-file text-info" style="position:absolute;top:10px;right:40px"></i>{{/content_admin}}</div>{{/group_admins}}</div>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3" style="border-left: solid 1px #ddd;">
     <h4>{{first_name}} {{last_name}}</h4>
     <h5>{{unique_id}}</h5>
     <h6>{{email}}</h6>
-    {{#tags_array}}<div><b>{{name}}:</b> {{value}}</div>{{/tags_array}}
+
+    {{#site_admin}}
+    <span class="badge" style="background:#639">Site Admin</span>
+    {{/site_admin}}
+    {{#site_developer}}
+    <span class="badge" style="background:#6495ed">Site Developer</span>
+    {{/site_developer}}
+        <div style="margin:12px 0 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
+
+    <br>
+    <h5>Tags</h5>
+    <div style="margin:2px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
+    <table>
+    {{#tags_array}}<tr><td>{{name}}:&nbsp;</td><td> {{value}}</td></tr>{{/tags_array}}
+    </table>
+    <br>
+    <h5>Params</h5>
+    <div style="margin:2px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
+    <table>
+    {{#params}}<tr><td>{{key}}:&nbsp;</td><td> {{value}}</td></tr>{{/params}}
+    </table>
+        <br>
+    <h5>Memberships</h5>
+    <div style="margin:2px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
+          {{^group_members.length}}None{{/group_members.length}}{{#group_members}}<div>{{group.name}}</div>{{/group_members}}
     </div>
   </div>
   

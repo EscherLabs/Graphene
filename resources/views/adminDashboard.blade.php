@@ -288,6 +288,10 @@
 // }
 //   )
 //   debugger;
+loaded.params = _.map(loaded.params, function(param,i){
+  return {key: i, value: param};
+})
+debugger;
 loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, item){
     item.app.app_instances = _.map(item.app.app_instances, function(loaded, instance){
       // debugger;
@@ -297,21 +301,29 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
       instance.user_options_default = _.map(instance.options, function(user_option, i){
         return {key: i, value: user_option};
       })
+      if(instance.version !== null) {
+        // instance.version.resources = JSON.parse(instance.version.resources)
+        // instance.version.forms = JSON.parse(instance.version.forms)
 
-      instance.app_version.resources = JSON.parse(instance.app_version.resources)
-      instance.app_version.forms = JSON.parse(instance.app_version.forms)
-
-      instance.resources = _.map(instance.resources, function(loaded, instance, resource, i){
-        resource.endpoint = _.find(_.find(loaded.group_admins,{group_id:instance.group_id}).group.endpoints,{id:parseInt(resource.endpoint)})
-        resource.resource = _.find(instance.app_version.resources,{name:resource.name})
-        // debugger;
-        // return {key: i, value: user_option};
-        return resource;
-      }.bind(null, loaded, instance))
-
+        instance.resources = _.map(instance.resources, function(loaded, instance, resource, i){
+          var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+          if(typeof group !== 'undefined'){
+            resource.endpoint = _.find(group.group.endpoints,{id:parseInt(resource.endpoint)})
+            
+          }
+          resource.resource = _.find(instance.version.resources,{name:resource.name})
+          // debugger;
+          // return {key: i, value: user_option};
+          return resource;
+        }.bind(null, loaded, instance))
+      }
       return instance;
     }.bind(null, loaded))
     item.app.tags = item.app.tags.split(',');
+
+    item.app.user = item.app.user || {first_name:'',last_name:"", unknown:'#ffb8b8'};
+    item.app.user.initials = item.app.user.first_name.substr(0,1)+item.app.user.last_name.substr(0,1)
+
     // item.app.tags = _.map(item.app.tags,function(tag){
     //   var temp = tag.split(':');
 
@@ -513,6 +525,19 @@ div.masonry-grid .grid-item {
 .appInstance a{color:#666;text-decoration:none}
 .tab-pane{padding-top:15px}
 .panel-default >.panel-heading .badge{background:#8391f3}
+.badge-notify{
+  background: #afafaf;
+  position: relative;
+  top: 10px;
+  left: -18px;
+  margin-right: -18px;
+}
+.group-info{
+  opacity:.8;
+}
+.grid-item:hover .group-info{
+  opacity:1
+}
 
   fieldset hr{display:none}
   fieldset > legend{font-size: 30px}

@@ -48,4 +48,11 @@ class App extends Model
         AppDeveloper::where('app_id', $this->id)->where('user_id',$user->id)->delete();
     }
 
+    public function scopeCurrentVersion($query)
+    {
+        return $query->with(array('versions'=>function($q){
+            $q->orderBy('created_at', 'desc');
+            $q->select('id','updated_at','created_at','app_id');
+        }));
+    }
 }

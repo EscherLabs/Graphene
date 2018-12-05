@@ -8,9 +8,8 @@ class AppInstance extends Model
 {
     protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon', 'app_version_id', 'unlisted','groups'];
     protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object','groups'=>'array'];
-    protected $appends = ['hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
-    // protected $hidden = ['groups'];
-    
+    protected $appends = ['version','hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
+
     /* Transient Properties not saved in the database */
     public $hidden_xs = false;
     public $hidden_sm = false;
@@ -58,16 +57,40 @@ class AppInstance extends Model
     public function getCompositeLimitAttribute() {
         return (is_array($this->groups) && count($this->groups) > 0);
     }
-    
+    public function getVersionAttribute() {
+        $myAppVersion;
+        
+        if(is_null($this->app_version_id)){
+            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->orderBy('created_at', 'desc')->select('app_id','id','code->resources as resources','code->forms as forms')->first();
+        }else if($this->app_version_id == 0){
+            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->where('stable','=',1)->orderBy('created_at', 'desc')->select('app_id','created_at', 'id','stable','code->resources as resources','code->forms as forms')->first();
+        }else{
+            $myAppVersion = AppVersion::where('id','=',$this->app_version_id)->select('id','app_id','code->resources as resources','code->forms as forms')->first();
+        }
+
+        if(isset($myAppVersion->resources)){
+            $myAppVersion->resources = JSON_decode($myAppVersion->resources);
+        }
+        if(isset($myAppVersion->forms)){
+            $myAppVersion->forms = JSON_decode($myAppVersion->forms);
+            foreach($myAppVersion->forms as $form){
+                $form->content = JSON_decode($form->content);
+            }
+        }
+
+        return $myAppVersion;
+    }
     public function findVersion() {
         $myAppVersion;
-        if(is_null($this->app_version_id)){
-            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->orderBy('created_at', 'desc')->first();
-        }else if($this->app_version_id == 0){
-            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->where('stable','=',1)->orderBy('created_at', 'desc')->first();
-        }else{
-            $myAppVersion = AppVersion::where('id','=',$this->app_version_id)->first();
-        }
+        // if(is_null($this->app_version_id)){
+        //     $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->orderBy('created_at', 'desc')->first();
+        // }else if($this->app_version_id == 0){
+        //     $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->where('stable','=',1)->orderBy('created_at', 'desc')->first();
+        // }else{
+        //     $myAppVersion = AppVersion::where('id','=',$this->app_version_id)->first();
+        // }
+        $myAppVersion = AppVersion::where('id','=',$this->version['id'])->first();
+        
         $this->app->code = $myAppVersion->code;
         $this->app->version = $myAppVersion->id;
     }
