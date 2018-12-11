@@ -15,23 +15,24 @@
         <div role="tabpanel" class="tab-pane uapps {{#app_developers.length}}active{{/app_developers.length}}" id="uapps">
         <div class="masonry-grid">
         {{#app_developers}}
+        {{#app}}
         <div class="filterable grid-item" style="display:inline-block;">
         		<div class="panel panel-default" style="border-top: solid 3px #4d87b9;">
-            <div class="avatar" style="background:{{app.user.unknown}}">{{app.user.initials}}</div>
-            <a href="/admin/apps/{{app.id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
+            <div class="avatar" title="{{user.first_name}} {{user.last_name}}" data-toggle="tooltip" data-placement="top" style="background:{{user.unknown}}">{{user.initials}}</div>
+            <a href="/admin/apps/{{id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
 
-            <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777">{{app.name}}</div>
-            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{app.versions.0.updated_at}}" title="{{app.versions.0.updated_at}}"></time></div>
+            <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777">{{name}}</div>
+            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{versions.0.updated_at}}" title="{{app.versions.0.updated_at}}"></time></div>
 				      {{! <div class="panel-heading"> </div> }}
               <div class="panel-content" style="padding:15px 10px 10px">
                 {{! <ul class="list-group"> }}
-                <p style="color: #666;font-size: small;">{{app.description}}</p>
-                  {{#app.app_instances}}
+                <p style="color: #666;font-size: small;">{{description}}</p>
+                  {{#app_instances}}
                   <div class="appInstance">
                  
                     <div class="dropdown parent-hover pull-right">
                       <a id="dLabel" href="javascript:void(0);" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-ellipsis-v"></i>
+                        <i style="padding: 5px 10px;" class="fa fa-ellipsis-v"></i>
                         {{! <span class="caret"></span> }}
                       </a>
                       
@@ -121,15 +122,16 @@
                   
                   </div>
                     
-                  {{/app.app_instances}}
+                  {{/app_instances}}
                 {{! </ul> }}
-                {{#app.tags}}
+                {{#tags}}
                   <div class="label label-default">{{.}}</div>
-                  {{/app.tags}}
+                  {{/tags}}
 
               </div>
 				    </div>
             </div>
+        {{/app}}
         {{/app_developers}}
         </div>
         </div>
@@ -209,7 +211,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3" style="border-left: solid 1px #ddd;">
+    <div class="col-md-3" style="border-left: solid 1px #ddd;max-height:80vh;overflow:scroll">
     <h4>{{first_name}} {{last_name}}</h4>
     <h5>{{unique_id}}</h5>
     <h6>{{email}}</h6>

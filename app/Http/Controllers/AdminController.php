@@ -68,7 +68,7 @@ class AdminController extends Controller
         // }));
         $user->load(array('app_developers'=>function($query){
             //$query->where('site_id','=',config('app.site')->id)->with('app');;
-            $query->with(array('app'=>function($query){
+            $query->whereHas('app')->with(array('app'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->with(array('app_instances'=>function($q){
                     // $q->with(array('appVersion'=>function($q){
                     //     $q->select('id','code->resources as resources','code->forms as forms');

@@ -287,7 +287,9 @@ loaded.params = _.map(loaded.params, function(param,i){
   return {key: i, value: param};
 })
 loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, item){
+    if(item.app !== null){
     item.date = item.app.versions[0].updated_at;
+    
     item.app.app_instances = _.map(item.app.app_instances, function(loaded, instance){
       instance.options = _.each(instance.options, function(option, i){
         return {key: i, value: option};
@@ -310,8 +312,9 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
     }.bind(null, loaded))
     item.app.tags = item.app.tags.split(',');
 
-    item.app.user = item.app.user || {first_name:'',last_name:"", unknown:'#ffb8b8'};
+    item.app.user = item.app.user || {first_name:'Not',last_name:"Assigned", unknown:'#ffb8b8'};
     item.app.user.initials = item.app.user.first_name.substr(0,1)+item.app.user.last_name.substr(0,1)
+  }
     return item;
   }.bind(null,loaded))
 
