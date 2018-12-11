@@ -64,6 +64,9 @@ class HTTPHelper {
                 $response_code = $header_exploded[1];
             }
         }
+        if ($response_code[0] === '5') {
+            Log::error($response_code.' response code received for URL: '.$url);
+        }
         return ['content'=>$response_data,'code'=>$response_code,'headers'=>$http_response_header];
     }
 }
