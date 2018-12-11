@@ -300,6 +300,7 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
       if(instance.version !== null) {
         instance.resources = _.map(instance.resources, function(loaded, instance, resource, i){
           var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+          debugger;
           if(typeof group !== 'undefined'){
             resource.endpoint = _.find(group.group.endpoints,{id:parseInt(resource.endpoint)})
             

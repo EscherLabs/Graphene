@@ -61,11 +61,11 @@ class AppInstance extends Model
         $myAppVersion;
         
         if(is_null($this->app_version_id)){
-            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->orderBy('created_at', 'desc')->select('app_id','id','code->resources as resources','code->forms as forms')->first();
+            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->orderBy('created_at', 'desc')->select('app_id','id','summary','description','code->resources as resources','code->forms as forms')->first();
         }else if($this->app_version_id == 0){
-            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->where('stable','=',1)->orderBy('created_at', 'desc')->select('app_id','created_at', 'id','stable','code->resources as resources','code->forms as forms')->first();
+            $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->where('stable','=',1)->orderBy('created_at', 'desc')->select('app_id','created_at','summary','description', 'id','stable','code->resources as resources','code->forms as forms')->first();
         }else{
-            $myAppVersion = AppVersion::where('id','=',$this->app_version_id)->select('id','app_id','code->resources as resources','code->forms as forms')->first();
+            $myAppVersion = AppVersion::where('id','=',$this->app_version_id)->select('id','app_id','summary','description','code->resources as resources','code->forms as forms')->first();
         }
 
         if(isset($myAppVersion->resources)){

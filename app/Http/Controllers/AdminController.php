@@ -112,6 +112,7 @@ class AdminController extends Controller
                 ->with('adminsCount')
                 ->with('imagesCount')
                 ->with('endpointsCount')
+                ->with('endpoints')
                 ->with('pagesCount')
                 ->with('appinstancesCount')
                 ->with('linksCount');

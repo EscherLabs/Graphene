@@ -45,7 +45,6 @@
 
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
                       <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
-
                       {{#unlisted}}
                       <i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
                       {{/unlisted}}
@@ -84,39 +83,51 @@
                     <div class="collapse" id="collapseExample{{id}}">
 
                       <div style="background: #ffffff;padding: 10px 15px 5px;overflow:scroll">
-                      <table style="margin-bottom:5px">
+                      <h5>{{version.summary}}</h5>
+                      <p class="text-muted">{{version.description}}</p>
+
                         {{#resources.length}}
+                        <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+                        <table>
                         <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
                         {{#resources}}
                         <tr>
                         <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
                         </tr>
                         {{/resources}} 
-                        {{/resources.length}}
                       </table>
-                      <table style="margin-bottom:5px">
+                        {{/resources.length}}
 
-                        {{#options.length}}
+
+                        {{#options.length}}                      
+                        <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+
+                        <table>
                         <tr><th colspan="2" style="color:#666">Admin Options</th><tr>
                         {{#options}}
                         <tr>
                         <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
                         </tr>
-                        {{/options}}   
+                        {{/options}}                         
+                        </table>                      
+
                         {{/options.length}}
                     
-                      </table>
-                      <table style="margin-bottom:5px">
+
                         {{#user_options_default.length}}
+                        <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+
+                        <table>
                         <tr><th colspan="2" style="color:#666">Default User Options</th><tr>
                         {{#user_options_default}}
                         <tr>
                         <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
                         </tr>
                         {{/user_options_default}}
+                        </table>
+
                         {{/user_options_default.length}}
                     
-                      </table>
                       </div>
                     </div>
                   
