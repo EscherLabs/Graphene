@@ -5,7 +5,7 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         {{#app_developers.length}}<li role="presentation" class="active"><a href="#uapps" aria-controls="uapps" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> <span class="hidden-xs hidden-sm">My &mu;Apps<span></a></li>{{/app_developers.length}}
-        <li role="presentation" {{^app_developers.length}} class="active"{{/app_developers.length}}><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
+        <li role="presentation" {{^app_developers.length}} class="active" {{/app_developers.length}}><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
         <!-- <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li> -->
         <!-- <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li> -->
       </ul>
@@ -21,7 +21,7 @@
             <a href="/admin/apps/{{app.id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
 
             <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777">{{app.name}}</div>
-            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{app.versions.0.updated_at}}" title="{{app.updated_at}}"></time></div>
+            <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{app.versions.0.updated_at}}" title="{{app.versions.0.updated_at}}"></time></div>
 				      {{! <div class="panel-heading"> </div> }}
               <div class="panel-content" style="padding:15px 10px 10px">
                 {{! <ul class="list-group"> }}
