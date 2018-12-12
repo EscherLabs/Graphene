@@ -33,17 +33,17 @@ class Templater {
         foreach($data['apps_pages'] as $index => $group_apps_pages) {
             $data['apps_pages'][$index]['slug'] = strtolower($data['apps_pages'][$index]['slug']);
             foreach($group_apps_pages->pages as $page_index => $page) {
-                unset($data['apps_pages'][$index]->pages[$page_index]['groups']);
+                // unset($data['apps_pages'][$index]->pages[$page_index]['groups']);
                 $data['apps_pages'][$index]->pages[$page_index]['slug'] = strtolower($data['apps_pages'][$index]->pages[$page_index]['slug']);
                 if (Auth::user()!==null && !Auth::user()->can('get', $page)) {
-                    unset($data['apps_pages'][$index]->pages[$page_index]);
+                    $data['apps_pages'][$index]->pages->forget($page_index);
                 }
             }
             foreach($group_apps_pages->app_instances as $app_instance_index => $app_instance) {
-                unset($data['apps_pages'][$index]->app_instances[$app_instance_index]['groups']);
+                // unset($data['apps_pages'][$index]->app_instances[$app_instance_index]['groups']);
                 $data['apps_pages'][$index]->app_instances[$app_instance_index]['slug'] = strtolower($data['apps_pages'][$index]->app_instances[$app_instance_index]['slug']);
                 if (Auth::user()!==null && !Auth::user()->can('fetch', $app_instance)) {
-                    unset($data['apps_pages'][$index]->app_instances[$app_instance_index]);
+                    $data['apps_pages'][$index]->app_instances->forget($app_instance_index);
                 }
             }
         }
@@ -72,6 +72,8 @@ class Templater {
             if (count($link['app_instances'])>0 || count($link['pages'])>0) {
                 $data['apps_pages'][$index]['has_apps_or_pages'] = true;
             }  
+            $data['apps_pages'][$index]['pages'] = array_values($link['pages']);
+            $data['apps_pages'][$index]['app_instances'] = array_values($link['app_instances']);
         }
 
         // TJC -- 2/10/18 -- Should make slice size configurable at the site level
@@ -126,7 +128,7 @@ class Templater {
     if (!isset($data['template'])) {
         $data['template'] = 'main';
     }   
-        $tpl = $m->loadTemplate($data['template']);
+    $tpl = $m->loadTemplate($data['template']);
         return $tpl->render($data);
     }
 }
