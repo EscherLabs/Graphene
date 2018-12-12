@@ -62,6 +62,7 @@ function modal(options) {
 
 
 function processFilter(options){
+  options = options || {};
 	var	currentTarget = options.currentTarget || this.currentTarget;
 	var collection;
 	if(this.selector){
