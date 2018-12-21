@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Closure;
 use App\Site;
+use Illuminate\Http\Response;
 
 class Initialization
 {
@@ -22,7 +23,10 @@ class Initialization
 
         /* Site does not exist */
         if (is_null($current_site)) {
-            abort(500, 'The Current Site Does Not Exist');
+            // abort(500, 'The Current Site Does Not Exist');
+            // return abort(200,'stuff');
+            return new Response(view('setup'));
+
         }
 
         config(['app.site' => $current_site]);
