@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Site;
+use App\Group;
 use App\SiteMember;
 use Illuminate\Http\Request;
 use App\Libraries\NicknameLookup;
@@ -160,6 +161,28 @@ class UserController extends Controller
         return $user;
     }
     
+    public function init(Request $request)
+    {
+        $site = Site::find(config('app.site')->id);
+        if(!count(User::get())){
+          if(!empty($request->first_name) && !empty($request->last_name) && !empty($request->password && !empty($request->unique_id))){
+            $user = new User($request->all());
+            $user->save();
+    
+            
+            $site->add_member($user,1, 1);
+            $group = Group::first();
+            $group->add_member($user,1);
+
+            Auth::login($user, true);
+            return $user;
+    
+          }
+          return $request->first_name;
+        }
+        
+    }
+
 
     public function create(Request $request)
     {

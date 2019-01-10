@@ -5,6 +5,7 @@ use App\Libraries\CASAuth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CustomAuth {
 
@@ -28,6 +29,11 @@ class CustomAuth {
 
         if(!$skip && !$request->is('login*')){
           return redirect('/login?redirect='.urlencode(URL::full()));
+        }else{
+            if(!$request->is('api/usersetup*')){
+              // return new Response();
+              return new Response(view('setupuser'));
+            }
         }
       }
     }

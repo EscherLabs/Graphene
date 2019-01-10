@@ -16,11 +16,18 @@ Auth::routes();
 
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
+
+
+
+
+
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
 Route::get('/css','UserDashboardController@css')->middleware('no.save.session');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
+
+
 Route::get('/ar/{renderer}/{group}/{slug}', 'AppInstanceController@render');
 Route::get('/page/{group}/{slug}', 'PageController@run');
 Route::get('/page/{group}','PageController@redirect')->middleware('no.save.session');
@@ -58,6 +65,7 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
 });
 
 Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {
+    Route::post('/usersetup', 'UserController@init');
 
     /***** Dashboard  *****/
     Route::post('/dashboard','UserDashboardController@update');
@@ -168,6 +176,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/sites/{site}','SiteController@show')->middleware('can:get,site');
     // Create a new site
     Route::post('/sites','SiteController@create')->middleware('can:create,App\Site');
+    Route::post('/sites/init','SiteController@init');
     // Update an existing site by site_id
     Route::put('/sites/{site}','SiteController@update')->middleware('can:update,site');
     // Delete an existing site by site_id
