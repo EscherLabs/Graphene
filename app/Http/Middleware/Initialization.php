@@ -35,6 +35,7 @@ class Initialization
                 /* site data has been passed in for creation */
                 if(!empty($request->domain)&& !empty($request->name)){
                     $site = new Site($request->all());
+                    $site->templates = array("partials"=>[]);
                     $site->save();
 
                     $group = new Group(array('name'=>'default','slug'=>'default'));

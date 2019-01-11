@@ -32,12 +32,12 @@ Guest
 <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
     <!-- <script src='/assets/js/vendor/berrytables.full.js'></script>  -->
     <script>
-      $('#user').berry({name:'user',actions:['save'],legend:"Create a User",fields:[{name:'first_name',label:"First Name"},{name:'last_name',label:"Last Name"},{name:'password',label:"Password"},{name:'unique_id',label:"Unique ID"}]}).on('save',function(){
+      $('#user').berry({name:'user',actions:['save'],legend:"Create a User",fields:[{name:'first_name',label:"First Name"},{name:'last_name',label:"Last Name"},{name:'email',label:"Email"},{name:'password',label:"Password"},{name:'unique_id',label:"Unique ID"}]}).on('save',function(){
     //   $('#site').berry({name:'site',actions:['save'],legend:"Create a site",fields:[{name:'domain',label:"Domain",value:window.location.hostname},{name:'name',label:"Name"},{name:'auth', label:'Authentication Type',type:'radio',options:['Default'],value:'Default'}]}).on('save',function(){
         $.post('/api/usersetup',this.toJSON(),function(response){
-          if(response.site==Berries.site.toJSON().domain){
+        //   if(response.site==Berries.site.toJSON().domain){
             location.reload();
-          }
+        //   }
         });
       })
     </script>

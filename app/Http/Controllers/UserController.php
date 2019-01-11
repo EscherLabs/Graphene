@@ -165,8 +165,10 @@ class UserController extends Controller
     {
         $site = Site::find(config('app.site')->id);
         if(!count(User::get())){
-          if(!empty($request->first_name) && !empty($request->last_name) && !empty($request->password && !empty($request->unique_id))){
+          if(!empty($request->first_name) && !empty($request->last_name) && !empty($request->email) && !empty($request->password && !empty($request->unique_id))){
             $user = new User($request->all());
+            $user->password = bcrypt($request->password);
+
             $user->save();
     
             

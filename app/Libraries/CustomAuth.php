@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\User;
 
 class CustomAuth {
 
@@ -32,7 +33,9 @@ class CustomAuth {
         }else{
             if(!$request->is('api/usersetup*')){
               // return new Response();
+              if(!count(User::get())){
               return new Response(view('setupuser'));
+              }
             }
         }
       }
