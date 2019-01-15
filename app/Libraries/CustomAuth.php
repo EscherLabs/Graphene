@@ -34,7 +34,8 @@ class CustomAuth {
             if(!$request->is('api/usersetup*')){
               // return new Response();
               if(!count(User::get())){
-              return new Response(view('setupuser'));
+              return new Response(view('setup',array('mode'=>'user')));
+
               }
             }
         }

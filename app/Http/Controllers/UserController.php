@@ -171,10 +171,10 @@ class UserController extends Controller
 
             $user->save();
     
-            
             $site->add_member($user,1, 1);
             $group = Group::first();
             $group->add_member($user,1);
+            $group->add_admin($user,1);
 
             Auth::login($user, true);
             return $user;
