@@ -31,8 +31,13 @@ class Initialization
                 \Artisan::call('migrate', array('--force' => true));
             }
             catch(\Illuminate\Database\QueryException $e) {
-                return new Response(view('setup',array('mode'=>'db')));
 
+                if(!$request->is('setup')){
+                    return redirect('/setup');
+                }else{
+                    /* present form for creating initial site */
+                    return new Response(view('setup',array('mode'=>'db')));
+                }
             }
         }
         /* Site does not exist */
@@ -56,8 +61,12 @@ class Initialization
 
                     return new Response(array('site'=>$request->domain));
                 }
-                /* present form for creating initial site */
-                return new Response(view('setup',array('mode'=>'site')));
+                if(!$request->is('setup')){
+                    return redirect('/setup');
+                }else{
+                    /* present form for creating initial site */
+                    return new Response(view('setup',array('mode'=>'site')));
+                }
             }
             /* site does not exist in db - how to handle this? */
         }
