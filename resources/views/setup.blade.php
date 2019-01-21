@@ -212,7 +212,7 @@ DB_PASSWORD={{#password}}{{password}}{{/password}}{{^password}}CHANGE TO VALID P
       @endif
       @if($mode == 'environment')
             environment = {};
-            @if(env('APP_DEBUG') == 1)
+            @if(config('app.debug') == 1)
                 environment.APP_DEBUG = "{{ config('app.debug') }}";
                 environment.APP_ENV = "{{ config('app.env') }}";
                 @if(config('app.key') === 'CHANGEMECHANGEMECHANGEMECHANGEME')
