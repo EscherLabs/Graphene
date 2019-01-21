@@ -108,7 +108,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY',isset($_SERVER['APP_KEY'])?$_SERVER['APP_KEY']:''),
+    'key' => env('APP_KEY',isset($_SERVER['APP_KEY'])?$_SERVER['APP_KEY']:'CHANGEMECHANGEMECHANGEMECHANGEME'),
     'cipher' => 'AES-256-CBC',
 
     'key_portal' => env('APP_KEY_PORTAL',isset($_SERVER['APP_KEY_PORTAL'])?$_SERVER['APP_KEY_PORTAL']:''),

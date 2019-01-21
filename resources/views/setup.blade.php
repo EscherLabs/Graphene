@@ -215,7 +215,7 @@ DB_PASSWORD={{#password}}{{password}}{{/password}}{{^password}}CHANGE TO VALID P
             @if(env('APP_DEBUG') == 1)
                 environment.APP_DEBUG = "{{ config('app.debug') }}";
                 environment.APP_ENV = "{{ config('app.env') }}";
-                @if(config('app.key') === '')
+                @if(config('app.key') === 'CHANGEMECHANGEMECHANGEMECHANGEME')
                     environment.APP_KEY = "base64:{{ base64_encode(md5(microtime())) }}";
                 @else
                     environment.APP_KEY = "";

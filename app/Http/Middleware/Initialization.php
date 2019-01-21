@@ -93,7 +93,7 @@ class Initialization
                 }
                 if(!$request->is('setup')){
                     return redirect('/setup');
-                } else if (config('app.key') === '') {
+                } else if (config('app.key') === 'CHANGEMECHANGEMECHANGEMECHANGEME') {
                     /* present form for setting up initial environment config */
                     return new Response(view('setup',array('mode'=>'environment')));
                 } else {
