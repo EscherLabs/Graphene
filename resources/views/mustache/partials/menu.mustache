@@ -1,28 +1,18 @@
-<div class="col-sm-3 col-md-2 sidebar">
-  <ul class="nav nav-sidebar">
-    {{#apps_pages}}
-      {{#.}}
-        {{^unlisted}}
-          {{#has_apps_or_pages}}
-            <li><a data-toggle="collapse" href="#group{{ id }}">{{ name }}</a></li>
-            <ul class="collapse"  id="group{{ id }}">
-            {{#pages}}
-              {{^unlisted}}
-                <li class="page{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/page/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}file{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-              {{/unlisted}}
-            {{/pages}}
-            {{#app_instances}}
-              {{^unlisted}}
-                <li class="app{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/app/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-              {{/unlisted}}
-            {{/app_instances}}
-            </ul>
-          {{/has_apps_or_pages}}
-          {{^has_apps_or_pages}}
-            <li><a href="/page/{{group_slug}}">{{ name }}</a></li>
-          {{/has_apps_or_pages}}
-        {{/unlisted}}
-      {{/.}}
-    {{/apps_pages}}
-  </ul>
-</div>
+{{#apps_pages.0}}
+	{{^unlisted}}
+		<li class="community_{{id}}"><a href="/page/{{slug}}"> <span data-i18n="{{name}}">{{name}}</span> </a></li>
+	{{/unlisted}}
+{{/apps_pages.0}}
+{{!other groups}}
+{{#apps_pages.1.0}}
+	<li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Other <span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+	    {{#apps_pages.1}}
+			{{^unlisted}}
+				<li class="community_{{id}}"><a href="/page/{{slug}}"></i> <span data-i18n="{{name}}">{{name}}</span> </a></li>
+			{{/unlisted}}
+		{{/apps_pages.1}}
+        </ul>
+    </li>
+{{/apps_pages.1.0}}

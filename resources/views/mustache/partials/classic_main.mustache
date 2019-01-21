@@ -2,21 +2,16 @@
 <html lang="en">
   <head>
     {{> core_head}}
-    <style>
-        .page_{{id}} a{
-    		background-color: #b7bbba !important;
-        	color: #fff/*e2ea66*/ !important;
-    	}
-    </style>
   </head>
   <body id="page">
     {{> header}}
-	{{> pagemenu }}
+  	{{> menu }}
     {{> core_container}}
     {{> footer}}
     {{> core_engine}}
     <script>
         $('.navbar-nav > li.community_{{group.id}}').addClass('active')
+        $('.page_{{id}}').addClass('active')
     </script>
   </body>
 </html>
