@@ -46,7 +46,35 @@ class Initialization
                 /* site data has been passed in for creation */
                 if(!empty($request->domain)&& !empty($request->name)){
                     $site = new Site($request->all());
-                    $site->templates = array("partials"=>[]);
+                    $site->theme = ['css' => '','icon'=>'file'];
+                    $site->templates = ['main'=>(object)[],'partials'=>(object)[
+                        'footer'=>''
+                    ]];
+                    $site->auth = 'Default';
+                    $site->proxyserver_config = [];
+                    $site->auth_config = [
+                        'cas_hostname'        => '',
+                        'cas_real_hosts'      => '',
+                        'cas_port'            => 443,
+                        'cas_uri'             => '/cas',
+                        'cas_login_url'       => '',
+                        'cas_logout_url'      => '',
+                        'cas_enable_saml'     => 'true',
+                        'cas_data_map'        => [
+                            "default"=> [
+                                "email"=> "{{mail}}", 
+                                "last_name"=> "{{lastname}}", 
+                                "unique_id"=> "{{UDC_IDENTIFIER}}", 
+                                "first_name"=> "{{firstname}}",
+                            ],
+                            "additional"=> []
+                        ],
+                        "external_user_lookup" => [
+                            "url" => "", 
+                            "verb" => "GET", 
+                            "enabled" => 'false'
+                        ]
+                    ];
                     $site->save();
 
                     $group = new Group(array('name'=>'Default','slug'=>'default'));
