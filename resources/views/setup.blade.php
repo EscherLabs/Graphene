@@ -16,31 +16,63 @@ Guest
             <div class="panel-heading">Graphene Setup Wizard</div>
             <div class="panel-body">
             @if($mode == 'site')
+            <h4 class="text-danger">No Sites Detected</h4>
             <div class="alert alert-danger">
-                Note: Please read this page carefully before submitting the form below!  Submitting this form 
+                This instance of Graphene does not have any sites.  Create one using the form below.<br><br>
+                Note: Read this page carefully before submitting the form below!  Submitting this form 
                 without the correct DNS / Server Configuration in place could make this Graphene instance unreachable!
+            </div>
+            @endif
+
+            @if($mode == 'user')
+            <h4 class="text-danger">No Users Detected</h4>
+            <div class="alert alert-danger">
+                This Graphene site does not have any Users or Admins.  Create one using the form below.
+            </div>
+            @endif
+
+
+            @if($mode == 'environment')
+            <h4 class="text-danger">No Application Key Detected</h4>
+            <div class="alert alert-danger">
+                You are seeing this page because you have not yet configured your APP_KEY cryptographic key.  <br>
+                While you're setting the APP_KEY, please review / configure some of the other environment variables below.<br>
+                Once you have configured these values, restart your webserver, and refresh this page.
             </div>
             @endif
 
             <div id="form">
 
             @if($mode == 'db')
-            <h3 class="text-danger">Graphene is unable to connect to your database.</h4>
-            Your database may not be set up and / or your Graphene .env file may not be properly configured.<br>
-            Please address these issues, restart your webserver, and refresh this page.
-            <br><br>
-            The current Graphene database configuration is as follows:<br>
-            (Please make any necessary corrections)
-            <br>
-
+            <h4 class="text-danger">Graphene Cannot Connect To The Database</h4>
+            <div class="alert alert-danger">
+                The database may not be set up and / or the Graphene .env file may not be properly configured.<br>
+                Please review and update the configuration below.  Once you have addressed these issues, 
+                restart your webserver, and refresh this page.
+            </div>
             <table class="table">
-            <tr><td style="width:120px"><b>DB_HOST</b></td><td data-inline="host"></td></tr>
-            <tr><td><b>DB_PORT</b></td><td data-inline="port"></td></tr>
-            <tr><td><b>DB_DATABASE</b></td><td data-inline="database"></td></tr>
-            <tr><td><b>DB_USERNAME</b></td><td data-inline="username"></td></tr>
-            <tr><td><b>DB_PASSWORD</b></td><td data-inline="password"></span></div>
+                <tr><td style="width:120px"><b>DB_HOST</b></td><td data-inline="host"></td></tr>
+                <tr><td><b>DB_PORT</b></td><td data-inline="port"></td></tr>
+                <tr><td><b>DB_DATABASE</b></td><td data-inline="database"></td></tr>
+                <tr><td><b>DB_USERNAME</b></td><td data-inline="username"></td></tr>
+                <tr><td><b>DB_PASSWORD</b></td><td data-inline="password"></span></div>
             </table>
             @endif
+
+            @if($mode == 'environment')
+            <table class="table">
+            <tr><td><b>APP_KEY</b></td><td data-inline="APP_KEY"></td></tr>
+            <tr><td><b>APP_DEBUG</b></td><td data-inline="APP_DEBUG"></td></tr>
+            <tr><td><b>APP_ENV</b></td><td data-inline="APP_ENV"></td></tr>
+            <tr><td><b>APP_LOG</b></td><td data-inline="APP_LOG"></span></div>
+            <tr><td><b>APP_LOG_LEVEL</b></td><td data-inline="APP_LOG_LEVEL"></span></div>
+            <tr><td><b>APP_TIMEZONE</b></td><td data-inline="APP_TIMEZONE"></span></div>
+            <tr><td><b>FILE_STORAGE_PATH</b></td><td data-inline="FILE_STORAGE_PATH"></span></div>
+            <tr><td><b>FORCE_HTTPS</b></td><td data-inline="FORCE_HTTPS"></span></div>
+            <tr><td><b>SESSION_LIFETIME</b></td><td data-inline="SESSION_LIFETIME"></span></div>
+            </table>
+            @endif
+
             </div>
             <div id="instructions"></div>
             </div>
@@ -58,6 +90,7 @@ Guest
 <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
     <!-- <script src='/assets/js/vendor/berrytables.full.js'></script>  -->
     <script>
+    _.findWhere = _.find;
       @if($mode == 'site')
       $('#form').berry({name:'form',actions:['save'],legend:"Create A Site",fields:[{name:'domain',label:"Domain",value:window.location.hostname,required:true},{name:'name',label:"Name",required:true},{name:'auth', label:'Authentication Type',required:true,type:'radio',options:['Default'],value:'Default'}]}).on('save',function(){
         if(this.validate()){
@@ -115,7 +148,6 @@ php artisan serve --host={{domain}}
       @endif
 
       @if($mode == 'db')
-
             mysql = {};
             @if(env('APP_DEBUG') == 1)
 
@@ -147,7 +179,7 @@ php artisan serve --host={{domain}}
     based on the form above:
     </div>
 <pre>
-$ mysql -u root
+$ mysql -u root -h {{host}} -P {{port}}
 > CREATE DATABASE {{database}};
 > GRANT ALL ON {{database}}.* TO '{{username}}'@'{{host}}' IDENTIFIED BY '{{#password}}{{password}}{{/password}}{{^password}}CHANGE TO VALID PASSWORD{{/password}}';
 </pre>
@@ -178,6 +210,68 @@ DB_PASSWORD={{#password}}{{password}}{{/password}}{{^password}}CHANGE TO VALID P
         }).trigger('change')
       
       @endif
+      @if($mode == 'environment')
+            environment = {};
+            @if(env('APP_DEBUG') == 1)
+                environment.APP_DEBUG = "{{ config('app.debug') }}";
+                environment.APP_ENV = "{{ config('app.env') }}";
+                @if(config('app.key') === '')
+                    environment.APP_KEY = "base64:{{ base64_encode(md5(microtime())) }}";
+                @else
+                    environment.APP_KEY = "";
+                @endif
+                environment.APP_LOG = "{{ env('APP_LOG') }}";
+                environment.APP_LOG_LEVEL = "{{ env('APP_LOG_LEVEL') }}";
+                environment.APP_TIMEZONE = "{{ config('app.timezone') }}";
+                environment.FILE_STORAGE_PATH = "{{ config('filesystems.disks.local.root') }}";
+                environment.FORCE_HTTPS = "{{ env('FORCE_HTTPS') }}";
+                environment.SESSION_LIFETIME = "{{ config('session.lifetime') }}";
+           @endif
+
+
+      $('#form').berry({name:'form',attributes:environment,actions:false,renderer:'inline',fields:[
+        {label:'APP_DEBUG', name:'APP_DEBUG', type:'select', options:['1','0'], help:'Enable / Disable Debug.  Note: APP_DEBUG should never be enabled in production environments!', validate: {required: true}},
+        {label:'APP_ENV', name:'APP_ENV', type:'select', options:['local','AWS'], help:'Unless you are using AWS (Amazon Web Services), select "local"', validate: {required: true}},
+        {label:'APP_KEY', name:'APP_KEY', help:'This is a randomly generated 32 Character string used to encrypt sessions, endpoint credentials, and other data.  Once set, it cannot be (easily) changed!', validate: {required: true}},
+        {label:'APP_LOG', name:'APP_LOG', type:'select', options:['stack','single','daily','slack','syslog','errorlog','monolog','custom'], help:'More Info: https://laravel.com/docs/5.7/logging', validate: {required: true}},
+        {label:'APP_LOG_LEVEL', name:'APP_LOG_LEVEL', type:'select', options:['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'], help:'More Info: https://laravel.com/docs/5.7/logging', validate: {required: true}},
+        {label:'APP_TIMEZONE', name:'APP_TIMEZONE', help:'Enter the local timezone.  List of supported values here: http://php.net/manual/en/timezones.php', validate: {required: true}},
+        {label:'FILE_STORAGE_PATH', name:'FILE_STORAGE_PATH', help:'This is the path to where images and other files are uploaded.  Note: This directory must be writeable by the web server process!', validate: {required: true}},
+        {label:'FORCE_HTTPS', name:'FORCE_HTTPS', type:'select', options:['0','1'], help:'Enable / Disable Force HTTPS', validate: {required: true}},
+        {label:'SESSION_LIFETIME', name:'SESSION_LIFETIME', help:'Length of Session in Minutes', validate: {required: true}}
+        ]}).on('change',function(){
+            if (this.validate()) {
+                @verbatim
+                //generate instructions here
+                var config_help = `
+                <h4 class="text-info">.env File Environment Config</h3>
+                <div>Please copy and paste the following
+                lines into the ".env" file at the root of your "Graphene" installation.  
+                </div>
+<pre>
+APP_KEY={{#APP_KEY}}{{APP_KEY}}{{/APP_KEY}}{{^APP_KEY}}EXISTING_SECRET_KEY_CHANGE_ME{{/APP_KEY}}
+APP_DEBUG={{APP_DEBUG}}
+APP_ENV={{APP_ENV}}
+APP_LOG={{APP_LOG}}
+APP_LOG_LEVEL={{APP_LOG_LEVEL}}
+APP_TIMEZONE={{APP_TIMEZONE}}
+FILE_STORAGE_PATH={{FILE_STORAGE_PATH}}
+FORCE_HTTPS={{FORCE_HTTPS}}
+SESSION_LIFETIME={{SESSION_LIFETIME}}
+</pre>
+<div class="alert alert-warning">
+    Note: This is the same file you created in the database configuration step!  Do not overwrite the Database Config!
+</div>
+
+                `;
+                $('#instructions').html(Hogan.compile(config_help).render(this.toJSON()));
+                @endverbatim
+            }
+
+        }).trigger('change')
+      
+      @endif
+
         $('form').on('keydown', function(event) {
             try {
                 if (event.keyCode == 13) {

@@ -26,17 +26,19 @@ class Initialization
             $current_site = Site::select('id','domain','name','auth','auth_config','proxyserver_config')->where('domain','=',$request->server('SERVER_NAME'))->first();
         }
         catch(\Illuminate\Database\QueryException $e) {
-            /* attempt to to seed database */
-            try{
-                \Artisan::call('migrate', array('--force' => true));
-            }
-            catch(\Illuminate\Database\QueryException $e) {
-
-                if(!$request->is('setup')){
-                    return redirect('/setup');
-                }else{
-                    /* present form for creating initial site */
-                    return new Response(view('setup',array('mode'=>'db')));
+            // Only run Setup if APP_DEBUG is true, otherwise fail through for normal Debugging
+            if (config('app.debug') == true) {
+                /* attempt to to seed database */
+                try{
+                    \Artisan::call('migrate', array('--force' => true));
+                }
+                catch(\Illuminate\Database\QueryException $e) {
+                    if(!$request->is('setup')){
+                        return redirect('/setup');
+                    }else{
+                        /* present form for creating initial site */
+                        return new Response(view('setup',array('mode'=>'db')));
+                    }
                 }
             }
         }
@@ -91,7 +93,10 @@ class Initialization
                 }
                 if(!$request->is('setup')){
                     return redirect('/setup');
-                }else{
+                } else if (config('app.key') === '') {
+                    /* present form for setting up initial environment config */
+                    return new Response(view('setup',array('mode'=>'environment')));
+                } else {
                     /* present form for creating initial site */
                     return new Response(view('setup',array('mode'=>'site')));
                 }
