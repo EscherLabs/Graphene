@@ -49,11 +49,11 @@ class Initialization
                     $site->templates = array("partials"=>[]);
                     $site->save();
 
-                    $group = new Group(array('name'=>'default','slug'=>'default'));
+                    $group = new Group(array('name'=>'Default','slug'=>'default'));
                     $group->site_id = $site->id;
                     $group->save();
 
-                    $page = new Page(array('name'=>'welcome','slug'=>'welcome','group_id'=>$group->id,
+                    $page = new Page(array('name'=>'Welcome','slug'=>'welcome','group_id'=>$group->id,
                     'content'=>json_decode('{"sections": [[], [{"guid": "d2ad8c55-408c-4b4d-ad82-af5c90904061", "text": "Lets get started! <br><br>Click the `Edit` button to begin configuring this page.", "group": {"ids": [""]}, "limit": false, "title": "Welcome to Graphene!", "device": "widget", "editor": "contenteditable", "titlebar": true, "collapsed": false, "container": true, "enable_min": false, "widgetType": "Content"}], []]}')
                 
                 ));
@@ -69,6 +69,9 @@ class Initialization
                 }
             }
             /* site does not exist in db - how to handle this? */
+            $alt_site = Site::select('domain')->first();
+            return response("Site at Domain: ".$request->server('SERVER_NAME')." cannot be resolved.  <br>Do you mean ".$alt_site->domain."?", 404)
+                ->header('Content-Type', 'text/html');
         }
 
         config(['app.site' => $current_site]);
