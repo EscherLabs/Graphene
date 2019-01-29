@@ -164,11 +164,11 @@ php artisan serve --host={{domain}}
 
 
       $('#form').berry({name:'form',attributes:mysql,actions:false,renderer:'inline',fields:[
-        {label:'DB_HOST', name:'host', help:'This is the hostname of the mysql server.  If the mysql server is running on the same machine as the Graphene web server, this is typically "127.0.0.1" or "localhost"', validate: {required: true}},
-        {label:'DB_PORT', name:'port', help:'This is the port that the mysql server listens on.  Unless you have reason to change this, keep it as "3306"',validate: {required: true}},
-        {label:'DB_DATABASE', name:'database', help:'This is the name of the Graphene database', validate: {required: true}},
-        {label:'DB_USERNAME', name:'username', help:'This is the username used to connect to the Graphene database', validate: {required: true}},
-        {label:'DB_PASSWORD', name:'password', help:'This is the password used to connect to the Graphene database'}
+        {label:'DB_HOST', name:'host', value:'127.0.0.1', help:'This is the hostname of the mysql server.  If the mysql server is running on the same machine as the Graphene web server, this is typically "127.0.0.1" or "localhost"', validate: {required: true}},
+        {label:'DB_PORT', name:'port', value:'3306', help:'This is the port that the mysql server listens on.  Unless you have reason to change this, keep it as "3306"',validate: {required: true}},
+        {label:'DB_DATABASE', name:'database', value:'graphene', help:'This is the name of the Graphene database', validate: {required: true}},
+        {label:'DB_USERNAME', name:'username', value:'graphene', help:'This is the username used to connect to the Graphene database', validate: {required: true}},
+        {label:'DB_PASSWORD', name:'password', placeholder:'Set me to something Secure!', help:'This is the password used to connect to the Graphene database'}
         ]}).on('change',function(){
             if (this.validate()) {
                 @verbatim
