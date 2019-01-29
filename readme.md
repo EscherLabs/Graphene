@@ -12,34 +12,7 @@ Graphene is a fully featured 'Low Code Development' and 'Content Management' Pla
  - PHP 7.1 or Later 
  - Composer (Latest)
 ## Installation Instructions
-### Clone the Code:
-     git clone https://github.com/EscherLabs/Graphene.git
-
-### Install All Dependencies
-From within the root directory of the Graphene application run:
-
-    composer install
-
-### Modify your /etc/hosts File
-For a production installation of Graphene, you will want to create a 'CNAME' or an 'A' DNS record
-which resolves back to the appropriate IP.  For a local installation, however (and simiplicty),
-add the following to your /etc/hosts file:
-
-    # Add the following line
-    127.0.0.1       graphenedev.local
-
-### Serve up the Application with Artisan
-For a production installation of Graphene, you will want to use a proper webserver. 
-(for example: Apache)  For a local installation, however (and simplicity), run the following command
-from within the root Graphene directory:
-
-    php artisan serve --host=graphenedev.local
-
-### Visit the site in your Web Browser
-1. Open up a web browser and navigate to http://graphenedev.local:8000/
-2. Follow the steps to create the Graphene Database and configure your .env file
-3. Follow the steps to create your Graphene Site
-4. Follow the steps to create the initial Graphene user / Site Admin
+ [Reference the Installation Instructions in the Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
 
 ## License
 
