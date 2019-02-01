@@ -112,6 +112,8 @@
       </div>
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
+    <div style="margin-top:15px;width: 120px;" class="btn btn-lg btn-new" id="new"><i class="fa fa-plus fa-lg"></i> New</div>
+
       <ul class="nav nav-sidebar">
         @can('view_in_admin','App\Group')
           <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
@@ -174,7 +176,199 @@
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
     <script src='/assets/js/vendor/berrytables.full.js'></script> 
+    <script src='/assets/js/vendor/state-machine.js'></script>
+
     @yield('end_body_scripts_bottom')
+    @verbatim
+    <script>
+      $('.btn-new').popover({container:'body',html:true,title:"Create New",content:`<div class='list-group' style='width:250px'>
+      <a href='#' class='list-group-item' data-key='app'><i class='fa fa-cube' style='color:#d85e16'></i> Micro App</a>
+      <a href='#' class='list-group-item' data-key='instance'><i class='fa fa-cubes text-info'></i> App Instance</a>
+      <a href='#' class='list-group-item' data-key='page'><i class='fa fa-file text-primary'></i> Page</a>
+      <a href='#' class='list-group-item' data-key='endpoint'><i class='fa fa-crosshairs text-warning'></i> Endpoint</a>
+      <a href='#' class='list-group-item' data-key='image'><i class='fa fa-image' style='color:#555'></i> Image</a>
+      </div>`})
+
+
+  
+
+
+      $('body').on('click','[data-key]',function(e){
+        $('.btn-new').popover('hide')
+        if(e.currentTarget.dataset.key == 'app'){
+          mymodal = modal({title: '<span style="color:#d85e16"><i class="fa fa-cube"></i>  New Micro App</span>',name:"app", fields:[
+            {label: 'Name', name:'name', required: true},
+            {label: 'Description', name:'description', required: false, type:'textarea'},
+            {label: 'Tags', name:'tags', required: false},
+            {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
+            {name: 'id', type:'hidden'}
+          ]})
+          Berries.app.on('save',function(){
+            $.ajax({url: '/api/apps', type: 'POST', data: this.toJSON(),
+              success:function(data) {
+                // model.set(data);
+                // Berries.modal.trigger('close')
+                toastr.success('', 'Successfully Added')
+              },
+              error:function(e) {
+                toastr.error(e.statusText, 'ERROR');
+              }
+            });
+          })
+        }
+        if(e.currentTarget.dataset.key == 'instance'){
+          mymodal = modal({title: '<span class="text-info"><i class="fa fa-cubes"></i> New Micro App Instance</span>',content:'<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>',
+            footer:'<span class="btn btn-default pull-left" data-action="previous"><i class="fa fa-arrow-left"></i> Back</span><span class="btn btn-success" data-action="next"><i class="fa fa-arrow-right"></i> Next</span><span class="btn btn-danger" data-action="complete"><i class="fa fa-check"></i> Finish</span>'})
+var setactions = function(){
+
+mymodal.ref.find('.modal-footer').find('[data-action]').each( function(item){
+  item = mymodal.ref.find('.modal-footer').find('[data-action]')[item]
+    if(this.transitions().indexOf($(item).attr('data-action')) == -1){
+      $(item).hide()
+    }else{
+      $(item).show()
+    } 
+  }.bind(this) 
+) 
+
+
+}
+var reset = function(){mymodal.ref.find('.modal-body').html('<cente style="height:300px"r><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>');}
+instanceData = {};
+fsm = new StateMachine({
+    init: 'group',
+    transitions: [
+      { name: 'next',     from: 'group',  to: 'instance' },
+      { name: 'next',     from: 'instance',  to: 'composite' },
+      { name: 'complete',     from: 'composite', to: 'complete'  },
+      { name: 'previous', from: 'instance', to: 'group'    },
+      { name: 'previous', from: 'composite', to: 'instance'    },
+      // { name: 'condense', from: 'gas',    to: 'liquid' }
+    ],
+    methods: {
+      onInstance: function(){
+        $.ajax({
+              url: '/api/apps/'+instanceData.app_id+'/versions',
+              success: function(data) {
+                console.log(data);
+                data.unshift({id:0,label:'Latest Stable'})
+                data.unshift({id:-1,label:'Latest (working or stable)'})
+  
+                mymodal.ref.find('.modal-body').berry({
+                    name:"modal", fields:[
+                    {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
+                    {label: 'Name', name:'name', required: true},
+                    {label: 'Slug', name:'slug', required: true},
+                    {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+                    {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+                    {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
+                    // {name: 'app', type:'hidden'},
+                    {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
+                    {name: 'id', type:'hidden'}
+                  ],actions:false
+                  // ,actionTarget:mymodal.ref.find('.modal-footer')
+                })
+              }
+            })
+      },
+      onGroup: function(){
+        mymodal.ref.find('.modal-body').berry({
+            name:"modal", fields:[
+              {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+              {label: 'App', name:'app_id', type:'select', choices:'/api/apps'},
+              {name: 'id', type:'hidden'}
+            ],actions:false
+          })
+      },     
+
+
+      
+      onComposite: function(){
+        $.ajax({
+              url: '/api/groups/'+instanceData.group_id+'/composites',
+              success: function(data) {
+                
+
+        composites = data;//_.map(data,function(item){ return item.group})
+
+
+        mymodal.ref.find('.modal-body').berry({
+            name:"modal", fields:[
+              {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+				{label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
+						matches: {
+							name: 'limit',
+							value: true
+						}
+					},fields:[
+						{label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
+							{label: false, name: 'groups', type: 'select', options: composites}
+						]}
+							// {label: false, name: 'ids', type: 'select', options: composites}
+					],
+					template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
+				}
+            ],actions:false
+          })
+        }
+
+            })
+      },     
+
+
+
+
+
+      
+      onNext: setactions,onPrevious: setactions,
+      onBeforeNext: reset, 
+      onBeforePrevious: reset,
+      onLeaveGroup :function(){
+        $.extend(instanceData,Berries.modal.toJSON())
+        Berries.modal.destroy();
+      },
+      onLeaveInstance :function(){
+        $.extend(instanceData,Berries.modal.toJSON())
+        Berries.modal.destroy();
+      },
+      onLeaveComposite :function(){
+        $.extend(instanceData,Berries.modal.toJSON())
+        Berries.modal.destroy();
+      }
+
+    }
+  });
+  setactions.call(fsm)
+
+
+          $('body').on('click','[data-action]',function(e){
+            fsm[e.currentTarget.dataset.action]()
+          })
+          // Berries.instance_start.on('save',function(){
+          //   debugger;
+          //   Berries.instance_start.destroy();
+          //   // $.ajax({url: '/api/apps', type: 'POST', data: this.toJSON(),
+          //   //   success:function(data) {
+          //   //     // model.set(data);
+          //   //     // Berries.modal.trigger('close')
+          //   //     toastr.success('', 'Successfully Added')
+          //   //   },
+          //   //   error:function(e) {
+          //   //     toastr.error(e.statusText, 'ERROR');
+          //   //   }
+          //   // });
+          // }.bind(mymodal))
+
+
+
+        }
+
+
+      })
+
+    </script>
+    @endverbatim
+
     @yield('bottom_page_styles')
   </body>
 </html>
