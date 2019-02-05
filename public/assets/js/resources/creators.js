@@ -1,5 +1,7 @@
 $('.btn-new').popover({container:'body',html:true,title:"Create New",content:`<div class='list-group' style='width:250px'>
 <a href='#' class='list-group-item' data-key='app'><i class='fa fa-cube' style='color:#d85e16'></i> Micro App</a>
+<a href='#' class='list-group-item' data-key='group'><i class='fa fa-users' style='color:#44a77f'></i> Group</a>
+<a href='#' class='list-group-item' data-key='user'><i class='fa fa-user' style='color:#333'></i> User</a>
 <a href='#' class='list-group-item' data-key='instance'><i class='fa fa-cubes text-info'></i> App Instance</a>
 <a href='#' class='list-group-item' data-key='page'><i class='fa fa-file text-primary'></i> Page</a>
 <a href='#' class='list-group-item' data-key='endpoint'><i class='fa fa-crosshairs text-warning'></i> Endpoint</a>
@@ -7,8 +9,19 @@ $('.btn-new').popover({container:'body',html:true,title:"Create New",content:`<d
 </div>`})
 
 
-var reset = function(){Berries.modal.destroy();mymodal.ref.find('.modal-body').html('<cente style="height:300px"r><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>');}
+var reset = function(){
+  if(typeof Berries.modal !== 'undefined'){
+    Berries.modal.destroy();
+  }
+  mymodal.ref.find('.modal-body').html('<cente style="height:300px"r><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>');
+}
 instanceData = {};
+if(typeof group !== 'undefined'){
+  instanceData.group_id = group.id;
+}
+if(typeof loaded !== 'undefined' && typeof loaded.app !== 'undefined' ){
+  instanceData.app_id = loaded.app.id;
+}
 
 
 $('body').on('click','[data-key]',function(e){
@@ -23,6 +36,8 @@ $('body').on('click','[data-key]',function(e){
     methods: {
       onAppCreate: function(){
         mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+
           name:"modal", fields:[
             {label: 'Name', name:'name', required: true},
             {label: 'Description', name:'description', required: false, type:'textarea'},
@@ -33,9 +48,34 @@ $('body').on('click','[data-key]',function(e){
         ],actions:false
       })
 
+      },      
+      onGroupCreate: function(){
+        mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+
+          name:"modal", fields:[
+            {label: 'Name', name:'name', required: true},        
+            {label: 'Slug', name:'slug', required: true}
+          // {name: 'id', type:'hidden'}
+        ],actions:false
+      })
+      },
+      onUserCreate: function(){
+        mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+
+          name:"modal", fields:[
+            {name:'first_name',label:"First Name"},{name:'last_name',label:"Last Name"},{name:'email',label:"Email",required:true,type:'email'},{name:'password',label:"Password",type:"password"},{name:'unique_id',label:"Unique ID",required:true}
+
+          // {name: 'id', type:'hidden'}
+        ],actions:false
+      })
+
       },
       onPage: function(){
         mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+
           name:"modal", fields:[
             {label: 'Name', name:'name', required: true},
             {label: 'Slug', name:'slug', required: true},
@@ -48,6 +88,8 @@ $('body').on('click','[data-key]',function(e){
       },   
       onImage: function(){
         mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+
           name:"modal", fields:[
             // {label: 'Name', name:'name', required: true}
             // {label: 'Group', name:'group_id', type:'hidden',value:instanceData.group_id},
@@ -66,6 +108,7 @@ $('body').on('click','[data-key]',function(e){
       onEndpoint: function(){
         mymodal.ref.find('.modal-body').berry({
           flatten:false,
+          attributes:instanceData,
           name:"modal", fields:[
             {label: 'Name', name:'name', required: true},
             {label: 'Auth Type', name:'type', type: 'select', choices:[
@@ -93,6 +136,8 @@ $('body').on('click','[data-key]',function(e){
                 data.unshift({id:-1,label:'Latest (working or stable)'})
 
                 mymodal.ref.find('.modal-body').berry({
+                    attributes:instanceData,
+
                     name:"modal", fields:[
                     {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
                     {label: 'Name', name:'name', required: true},
@@ -110,8 +155,9 @@ $('body').on('click','[data-key]',function(e){
       },
       onGroup: function(){
         mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
             name:"modal", fields:[
-              {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+              {label: 'Group', name:'group_id', required: true, type:'select',value:instanceData.group_id, choices: '/api/groups?limit=true', default:{"label":"Choose One","value":""}},
               // {label: 'App', name:'app_id', type:'select', choices:'/api/apps'},
               // {name: 'id', type:'hidden'}
             ],actions:false
@@ -119,9 +165,10 @@ $('body').on('click','[data-key]',function(e){
       },           
       onApp: function(){
         mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
             name:"modal", fields:[
               // {label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
-              {label: 'App', name:'app_id', type:'select', choices:'/api/apps'},
+              {label: 'App', name:'app_id', type:'select',required:true, choices:'/api/apps', default:{"label":"Choose One","value":""}},
               // {name: 'id', type:'hidden'}
             ],actions:false
           })
@@ -134,6 +181,7 @@ $('body').on('click','[data-key]',function(e){
           success: function(data) {
             composites = data;
             mymodal.ref.find('.modal-body').berry({
+              attributes:instanceData,
               name:"modal", fields:[
                 {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
                 {label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
@@ -156,7 +204,7 @@ $('body').on('click','[data-key]',function(e){
         })
       },     
       onComplete:function(){
-
+        location.reload();
       },
       onAfterTransition: function(){
         mymodal.ref.find('.modal-footer').find('[data-action]').each( function(item){
@@ -186,6 +234,8 @@ $('body').on('click','[data-key]',function(e){
               toastr.error(e.statusText, 'ERROR');
             }
           });
+          }else{
+            return false;
           }
         }
 
@@ -194,6 +244,7 @@ $('body').on('click','[data-key]',function(e){
       },
       onBeforeNext: function(){
         if(typeof Berries.modal !== 'undefined'){
+          debugger;
           if(!Berries.modal.validate()){
             return false
           }else{
@@ -246,7 +297,7 @@ switch(e.currentTarget.dataset.key){
 
     }
     break;
-  case 'app':
+    case 'app':
     options.legend = '<span style="color:#d85e16"><i class="fa fa-cube"></i> New Micro App</span>';
     options.init = 'appCreate';
     options.transitions = [
@@ -258,6 +309,30 @@ switch(e.currentTarget.dataset.key){
 
     }
     break;
+    case 'group':
+    options.legend = '<span style="color:#44a77f"><i class="fa fa-users"></i> New Group</span>';
+    options.init = 'groupCreate';
+    options.transitions = [
+      { name: 'complete', from: 'groupCreate', to: 'complete'  }
+      // { name: 'condense', from: 'gas',    to: 'liquid' }
+    ]
+    options.url = '/api/groups';
+    options.callback = function(){
+
+    }
+    break;
+  case 'user':
+  options.legend = '<span style="color:#333"><i class="fa fa-user"></i> New User</span>';
+  options.init = 'userCreate';
+  options.transitions = [
+    { name: 'complete', from: 'userCreate', to: 'complete'  }
+    // { name: 'condense', from: 'gas',    to: 'liquid' }
+  ]
+  options.url = '/api/users';
+  options.callback = function(){
+
+  }
+  break;
   case 'instance':
     options.legend = '<span class="text-info"><i class="fa fa-cubes"></i> New Micro App Instance</span>';
     options.transitions = [

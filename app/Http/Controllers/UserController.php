@@ -190,6 +190,9 @@ class UserController extends Controller
     {
         $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);
         $user = new User($request->all());
+        if(!empty($user->password)){
+            $user->password = bcrypt($request->password);
+        }
         $user->save();
 
         $site = Site::find(Auth::user()->site->id);
