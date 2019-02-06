@@ -291,18 +291,21 @@
     {{/site_developer}}
         <div style="margin:12px 0 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
 
-    <br>
+    {{#tags_array.length}}<br>
     <h5>Tags</h5>
     <div style="margin:2px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
     <table>
     {{#tags_array}}<tr><td>{{name}}:&nbsp;</td><td> {{value}}</td></tr>{{/tags_array}}
     </table>
+    {{/tags_array.length}}
+    {{#params.length}}
     <br>
     <h5>Params</h5>
     <div style="margin:2px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
     <table>
     {{#params}}<tr><td>{{key}}:&nbsp;</td><td> {{value}}</td></tr>{{/params}}
     </table>
+    {{/params.length}}
         <br>
     <h5>Memberships</h5>
     <div style="margin:2px 0;border-top:solid 1px #ddd;border-bottom:solid 1px #fff"></div>
