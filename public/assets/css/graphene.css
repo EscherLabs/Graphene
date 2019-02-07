@@ -642,3 +642,19 @@ a:hover {
   background: #7eb37e;
   box-shadow: 0 0 10px #fff;
 }
+
+a.list-group-action:hover {
+background:#eee;
+}
+a.list-group-action {
+  display: inline-block;
+  color: #666;
+  width: 180px;
+  /* float: left; */
+  border: solid 1px #aaa;
+  margin: 4px;
+  /* border-left: solid 4px; #f16919; */
+  border-left-width: 4px;
+  border-radius: 4px;
+  padding: 12px;
+}
