@@ -38,6 +38,24 @@
 <script src='/assets/js/templates/widget.js'></script>
 <script src='/assets/js/lib.js'></script> 
 <script src='/assets/js/vendor/json_formatter.js'></script> 
+{{#is_admin}}
+    <script src='/assets/js/vendor/state-machine.js'></script>
+
+<script src="/assets/js/resources/creators.js"></script>
+
+
+    <script>
+
+     startContent = "<div>"+
+      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
+      "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
+      "<a href='#' style='border-left-color:#555' class='list-group-action' data-action='createimage'><i class='fa fa-image'></i> Image</a>"+
+      "<a href='#' style='' class='list-group-action' data-action='createlink'><i class='fa fa-link'></i> Link</a>"+
+      "</div>";
+    </script>
+
+
+{{/is_admin}}
 <!-- Included Scripts -->
 {{#scripts}}
 <script name="{{name}}" src='{{src}}'></script> 
