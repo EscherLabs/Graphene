@@ -196,11 +196,11 @@
       @can('create','App\Group')
       "<a href='#' style='border-left-color:#44a77f' class='list-group-action' data-action='creategroup'><i class='fa fa-users'></i> Group</a>"+
       @endcan   
-      @can('create','App\AppInstance')
-      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
-      @endcan   
       @can('create','App\Page')
       "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
+      @endcan   
+      @can('create','App\AppInstance')
+      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
       @endcan   
       @can('create','App\Endpoint')
       "<a href='#' style='border-left-color:#8a6d3b' class='list-group-action' data-action='createendpoint'><i class='fa fa-crosshairs'></i> Endpoint</a>"+
@@ -208,12 +208,14 @@
       @can('create','App\Image')
       "<a href='#' style='border-left-color:#555' class='list-group-action' data-action='createimage'><i class='fa fa-image'></i> Image</a>"+
       @endcan   
-      @can('create','App\Link')
-      "<a href='#' style='' class='list-group-action' data-action='createlink'><i class='fa fa-link'></i> Link</a>"+
-      @endcan   
       @can('create','App\User')
       "<a href='#' style='border-left-color:#333' class='list-group-action' data-action='createuser'><i class='fa fa-user'></i> User</a>"+
       @endcan   
+      @can('create','App\Link')
+      "<a href='#' style='' class='list-group-action' data-action='createlink'><i class='fa fa-link'></i> Link</a>"+
+      @endcan   
+      // "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a>"+
+
       "</div>";
     </script>
     <script src='/assets/js/resources/creators.js'></script>

@@ -1,10 +1,11 @@
+
 var reset = function(){
   if(typeof Berries.modal !== 'undefined'){
     Berries.modal.destroy();
   }
   mymodal.ref.find('.modal-body').html('<center style="height:300px"><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>');
 }
-var selectGroup = function(){
+var selectGroup = function(e){
   mymodal.ref.find('.modal-body').berry({
     attributes:instanceData,
       name:"modal", fields:[
@@ -18,30 +19,37 @@ var selectComposite = function(){
   $.ajax({
     url: '/api/groups/'+instanceData.group_id+'/composites',
     success: function(data) {
-      composites = data;
-      mymodal.ref.find('.modal-body').berry({
-        attributes:instanceData,
-        name:"modal", fields:[
-          {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
-          {label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
-              matches: {
-                name: 'limit',
-                value: true
-              }
-            },fields:[
-              {label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
-                {label: false, name: 'groups', type: 'select', options: composites}
-              ]}
-            ],
-            template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
-          }
-        ],actions:false
-      })
+      if(data.length){
+        composites = data;
+        mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+          name:"modal", fields:[
+            {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+            {label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
+                matches: {
+                  name: 'limit',
+                  value: true
+                }
+              },fields:[
+                {label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
+                  {label: false, name: 'groups', type: 'select', options: composites}
+                ]}
+              ],
+              template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
+            }
+          ],actions:false
+        })
+      }else{
+        mymodal.ref.find('.modal-body').html('There are no Composites for this group. This step is complete.');
+
+      }
     }
   })
 }
-
 instanceData = {};
+if(typeof group_id !== 'undefined'){
+  instanceData.group_id = group_id;
+}
 if(typeof group !== 'undefined'){
   instanceData.group_id = group.id;
 }
@@ -57,7 +65,7 @@ var createEngine = function(e){
   var options =  {
     init: 'start',
     complete:"Successfully Created",
-    legend:'Create New',
+    legend:'<span class="btn btn-default btn-sm" data-action="cancel"><i class="fa fa-th"></i></span> Create New',
     transitions: [
       //page
       { name: 'createpage',     from: '*',  to: 'pagegroup' },
@@ -66,53 +74,48 @@ var createEngine = function(e){
       { name: 'submit',   from: 'pagecomposite', to: 'submit'  },
       { name: 'previous', from: 'page', to: 'pagegroup'  },
       { name: 'previous', from: 'pagecomposite', to: 'page' },
-      { name: 'complete', from: 'submit', to: 'complete'  },
+      { name: 'complete', from: 'success', to: 'complete'  },
       //endpoint
       { name: 'createendpoint',     from: '*',  to: 'endpointgroup' },
       { name: 'next',     from: 'endpointgroup',  to: 'endpoint' },
       { name: 'submit', from: 'endpoint', to: 'submit'  },
       { name: 'previous', from: 'endpoint', to: 'endpointgroup'  },
-      // { name: 'complete', from: 'submit', to: 'complete'  },
       //link
       { name: 'createlink',     from: '*',  to: 'linkgroup' },
       { name: 'next',     from: 'linkgroup',  to: 'link' },
       { name: 'submit', from: 'link', to: 'submit'  },
       { name: 'previous', from: 'link', to: 'linkgroup'  },
-      // { name: 'complete', from: 'submit', to: 'complete'  },
       //image
       { name: 'createimage',     from: '*',  to: 'imagegroup' },
       { name: 'next',     from: 'imagegroup',  to: 'image' },
       { name: 'previous', from: 'image', to: 'imagegroup'  },
-      // { name: 'complete', from: 'image', to: 'complete'  },
       //app
       { name: 'createapp',     from: 'start',  to: 'appCreate' },
       { name: 'submit', from: 'appCreate', to: 'submit'  },
-      // { name: 'complete', from: 'submit', to: 'complete'  },
       //group
-      { name: 'creategroup',     from: '*',  to: 'groupCreate' },
+      { name: 'creategroup',     from: 'start',  to: 'groupCreate' },
       { name: 'submit', from: 'groupCreate', to: 'submit'  },
-      // { name: 'complete', from: 'submit', to: 'complete'  },
       //user
       { name: 'createuser',     from: 'start',  to: 'userCreate' },
       { name: 'submit', from: 'userCreate', to: 'submit'  },
-      // { name: 'complete', from: 'submit', to: 'complete'  },
       //instance
       { name: 'createinstance',     from: '*',  to: 'instancegroup' },
       { name: 'next',     from: 'instancegroup',  to: 'app' },
+      
       { name: 'next',     from: 'app',  to: 'instance' },
       { name: 'next',     from: 'instance',  to: 'instancecomposite' },
       { name: 'submit', from: 'instancecomposite', to: 'submit'  },
       { name: 'previous', from: 'instance', to: 'app' },
       { name: 'previous', from: 'app', to: 'instancegroup' },
       { name: 'previous', from: 'instancecomposite', to: 'instance'    },
-      // { name: 'complete', from: 'submit', to: 'complete'  }
       //all
-      { name: 'cancel',     from: '*',  to: 'start' }
+      { name: 'cancel',     from: '*',  to: 'start' },
+      { name: 'success',     from: '*',  to: 'success' },
+      { name: 'other',     from: 'success',  to: 'start' },
     ],
     methods: {
       onStart: function(){
         mymodal.ref.find('.modal-body').html(startContent);
-
       },
       onAppCreate: function(){
 
@@ -122,10 +125,7 @@ var createEngine = function(e){
         //     {label: 'Tags', name:'tags', required: false},
         //     {label: 'Lead Developer', name:'user_id', type:'select', options: '/api/apps/developers', required: false, format:{label:'{{first_name}} {{last_name}}',value:'{{id}}'}},
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
-
-        options.url = '/api/apps';    
-        options.complete = "Successfully Created an App!<br><br> Here are some next steps you may want to take:"+startContent
-
+        options.url = '/api/apps';
         mymodal.ref.find('.modal-body').berry({
           attributes:instanceData,
           name:"modal", fields:[
@@ -138,7 +138,7 @@ var createEngine = function(e){
       },      
       onGroupCreate: function(){
         options.url = '/api/groups';
-        options.complete = "Successfully Created a Group!<br><br> Here are some next steps you may want to take:"+startContent
+        options.complete = "Successfully Created a Group!<br><br> Here are some next steps you may want to take:"
 
         mymodal.ref.find('.modal-body').berry({
           attributes:instanceData,
@@ -165,7 +165,7 @@ var createEngine = function(e){
       },
       onPage: function(){
         options.url = '/api/pages';
-        options.complete = "Successfully Created a Page!<br><br> Here are some next steps you may want to take:"+startContent
+        options.complete = "Successfully Created a Page!<br><br> Here are some next steps you may want to take:"
 
         mymodal.ref.find('.modal-body').berry({
           attributes:instanceData,
@@ -214,7 +214,7 @@ var createEngine = function(e){
       },
       onInstance: function(){
         options.url = '/api/appinstances';
-        options.complete = "Successfully Created an Instance!<br><br> Here are some next steps you may want to take:"+startContent
+        options.complete = "Successfully Created an Instance!<br><br> Here are some next steps you may want to take:"
 
         $.ajax({
               url: '/api/apps/'+instanceData.app_id+'/versions',
@@ -237,7 +237,6 @@ var createEngine = function(e){
               }
             })
       },
-      // onGroup: selectGroup,    
       onPagegroup: selectGroup,
       onEndpointgroup: selectGroup,
       onLinkgroup: selectGroup,
@@ -254,7 +253,6 @@ var createEngine = function(e){
             ],actions:false
           })
       },     
-
 
       onInstancecomposite: selectComposite,
       onPagecomposite: selectComposite,
@@ -274,42 +272,72 @@ var createEngine = function(e){
 
       } ,
       onComplete:function(){
-        location.reload()
-
+        location.reload();
       },
-      onAfterTransition: function(){
+      onAfterTransition: function(e){
         mymodal.ref.find('.modal-footer').find('[data-action]').each( function(item){
           item = mymodal.ref.find('.modal-footer').find('[data-action]')[item]
           if(this.transitions().indexOf($(item).attr('data-action')) == -1){
-            $(item).hide()
+            $(item).hide();
           }else{
-            $(item).show()
+            $(item).show();
           } 
           }.bind(this) 
         )
+
       },
-      onBeforeSubmit: function(){
+      onBeforeSubmit: function(e){
         if(typeof Berries.modal !== 'undefined'){
           if(Berries.modal.validate()){
             $.extend(instanceData,Berries.modal.toJSON())
-            $.ajax({url: options.url, type: 'POST', data: instanceData,
-            success:function() {
-              toastr.success('', 'Successfully Added')
-              // Berries.modal.destroy();
-              // mymodal.ref.modal('hide')
-            },
-            error:function(e) {
-              toastr.error(e.statusText, 'ERROR');
-            }
-          });
+   
           }else{
             return false;
           }
         }
+        $.ajax({url: options.url, type: 'POST', data: instanceData,
+          success:function(e) {
+            toastr.success('', 'Successfully Added')
+            fsm.success(this,e);
+          }.bind(e),
+          error:function(e) {
+            toastr.error(e.statusText, 'ERROR');
+          }
+        });
       },
       onSubmit:function(){
         reset();
-        mymodal.ref.find('.modal-body').html('<center>'+options.complete+'</center>');
+      },
+      onAfterSuccess:function(e,history,item){
+        var link = "";
+        switch(history.from){
+          case "appCreate":
+          // $.extend(instanceData,Berries.modal.toJSON())
+          instanceData.app_id = item.id;
+          // options.complete+=''
+          options.complete = "Successfully Created an App!<br><br> Here are some next steps you may want to take<div>"+
+          "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> Instanciate App</a>"+
+          "<a href='/admin/apps/"+item.id+"' class='list-group-action'><i class='fa fa-cube'></i> Edit App</a>"+
+          "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a></div>"
+          break;
+          case "groupCreate":
+          instanceData.group_id = item.id;
+          options.complete = "Successfully Created an App!<br><br> Here are some next steps you may want to take:<div>"+
+          startContent+
+          "<a href='/admin/groups/"+item.id+"' class='list-group-action'><i class='fa fa-users'></i> Manage Group</a>"+
+          "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a></div>"
+          break;
+          case "pagecomposite":
+          link = "<br><br> Here are some next steps you may want to take:<div><a href='/page/"+item.group_id+"/"+item.slug+"' class='list-group-action'><i class='fa fa-file'></i> Visit Page</a>";
+          default:
+          instanceData.group_id = item.group_id;
+          options.complete = "Created Successfully!"+
+          link+
+          "<div>Create New</div>"
+          startContent+
+          "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a></div>"
+        }
+        mymodal.ref.find('.modal-body').html(options.complete);
         mymodal.ref.find('.modal-body').find('[data-action]').each( function(item){
           item = mymodal.ref.find('.modal-body').find('[data-action]')[item]
           if(this.transitions().indexOf($(item).attr('data-action')) == -1){
@@ -331,7 +359,12 @@ var createEngine = function(e){
         reset();
       }, 
       onBeforePrevious: reset,
-      onBeforeCancel: reset
+      onBeforeCancel: function(e){
+        if(e.from !== e.to){
+          reset();
+        }
+      },
+      onBeforeOther: reset
     }
   };
 
@@ -347,7 +380,7 @@ var createEngine = function(e){
 
     mymodal = modal({title: options.legend,
       content:'<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>',
-      footer:'<span class="btn btn-warning pull-left" data-action="cancel"><i class="fa fa-times"></i> Cancel</span><span class="btn btn-default" data-action="previous"><i class="fa fa-arrow-left"></i> Back</span><span class="btn btn-info" data-action="next"><i class="fa fa-arrow-right"></i> Next</span><span class="btn btn-success" data-action="submit"><i class="fa fa-check"></i> Submit</span><span class="btn btn-primary" data-action="complete"><i class="fa fa-times"></i> Complete</span>'
+      footer:'<span class="btn btn-default" data-action="previous"><i class="fa fa-arrow-left"></i> Back</span><span class="btn btn-info" data-action="next"><i class="fa fa-arrow-right"></i> Next</span><span class="btn btn-success" data-action="submit"><i class="fa fa-check"></i> Create</span><span class="btn btn-primary" data-action="complete"><i class="fa fa-check"></i> Done</span>'
     })
     fsm = new StateMachine(options);
 }
