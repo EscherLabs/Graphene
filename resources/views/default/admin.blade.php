@@ -16,6 +16,8 @@
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
     <link href="/assets/css/graphene.css" rel="stylesheet">
+    <link href="/assets/css/admin.css" rel="stylesheet">
+
     <link href="/assets/css/dropzone.css" rel="stylesheet">
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->

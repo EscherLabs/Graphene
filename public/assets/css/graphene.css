@@ -118,12 +118,6 @@ body{
   width: 200px;
 }
 
-.navbar-inverse .navbar-brand,
-.navbar-inverse .navbar-brand:hover,
-.navbar-inverse .navbar-brand:focus {
-  background-color: #d85e16;
-  color:#eee;
-}
 
 .gravatar {
   border-radius:4px;
@@ -657,4 +651,13 @@ a.list-group-action {
   border-left-width: 4px;
   border-radius: 4px;
   padding: 12px;
+}
+.page-menu{margin:10px 0 -10px;}
+
+
+.gr-main{padding-top:20px}
+@media (min-width: 768px) {
+  body#page #main-container{
+    margin-left:0;
+  }
 }

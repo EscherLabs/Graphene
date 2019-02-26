@@ -2,43 +2,17 @@
 <html lang="en">
   <head>
     {{> core_head}}
-    <style>
-      /* TJC Added from graphene.escherlabs.com on 1/20/19 */
-      .gr-main{padding-top:20px}
-      @media (min-width: 768px) {
-        body#page #main-container{
-          margin-left:0;
-        }
-        .gr-main{padding-top:10px}
-      }
-      .navbar-inverse .navbar-brand{
-          background:transparent;
-      }
-      .list-group-item .handle{
-          margin:-15px 20px -15px -23px
-      }
-      .navbar .nav>li>a{font-size:14px}
-      .page-menu{margin:10px 0 -10px;}
-      .paginate-footer [name="count"]{margin-bottom:5px}
-      .page-menu .nav-pills{background:#f6f6f6}
-      .table-well{background:white}
-      .table tr.filter{background:#f8f8f8 !important}
-
-      /* Original CSS */
-      .page_{{id}} a{
-        background-color: #b7bbba !important;
-        color: #fff/*e2ea66*/ !important;
-    	}
-    </style>
   </head>
   <body id="page">
     {{> header}}
-	{{> pagemenu }}
+	  {{> pagemenu }}
     {{> core_container}}
     {{> footer}}
     {{> core_engine}}
     <script>
         $('.navbar-nav > li.community_{{group.id}}').addClass('active')
+        $('.page_{{id}}').addClass('active')
     </script>
   </body>
 </html>
+

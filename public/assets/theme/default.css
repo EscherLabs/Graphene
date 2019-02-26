@@ -1,0 +1,11 @@
+
+.navbar .nav>li>a{font-size:14px}
+.page-menu .nav-pills{background:#f6f6f6}
+.nav-pills>li.active>a{
+  background-color: #b7bbba !important;
+  color: #fff/*e2ea66*/ !important;
+}
+
+.paginate-footer [name="count"]{margin-bottom:5px}
+.table-well{background:white}
+.table tr.filter{background:#f8f8f8 !important}

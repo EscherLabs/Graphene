@@ -86,7 +86,6 @@
 @endsection
 
 @section('bottom_page_styles')
-  <link href="/assets/css/graphene.css" rel="stylesheet">
   <style>
   fieldset hr{display:none}
   fieldset > legend{font-size: 30px}
