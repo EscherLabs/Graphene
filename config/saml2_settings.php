@@ -24,7 +24,7 @@ return $settings = array(
      * which middleware group to use for the saml routes
      * Laravel 5.2 will need a group which includes StartSession
      */
-    'routesMiddleware' => [],
+    'routesMiddleware' => ['saml'],
 
     /**
      * Indicates how the parameters will be
@@ -155,7 +155,26 @@ return $settings = array(
             'url' => $idp_host . '/idp/profile/SAML2/Redirect/SLO',
         ),
         // Public x509 certificate of the IdP
-        'x509cert' => env('SAML2_IDP_x509', 'MIIDPzCCAiegAwIBAgIUNGqshJMfDRUUamC/0judzWfXRzMwDQYJKoZIhvcNAQELBQAwIDEeMBwGA1UEAwwVaWRwLmNjLmJpbmdoYW10b24uZWR1MB4XDTE2MDExNzAxNDk1NloXDTM2MDExNzAxNDk1NlowIDEeMBwGA1UEAwwVaWRwLmNjLmJpbmdoYW10b24uZWR1MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmHJJsNq34KLbeCFXoLuyWFE8WeCRfagWHcU9cJhA26IoscpS031mgj+KdnZIGKBG8Qvm2ob8giNRC9A6dblsbmMgGbEXgugFXHzh7BL4THE/5vCoVXyT8cEcpneA51Cy1OK3hqv2OKD6QgIRgbovElJeJB/M2V/2cpD9eq7klxkHgvSdm0/QYhpqx50cFcB0WHXE8Mpr2tneHkl9tyBjbcXTYU3Bl6IfgJMFJ+DF70gVSu/hQz6eOzV1ZGTKd+k2iqyZqQaCfIL+c1suMSFtk4wKLkBQDP9JsSayvyKngLcbmc4/V3fV/HquxNpxuAjHUv8LUbDgAN3q0OWbuy4OIwIDAQABo3EwbzAdBgNVHQ4EFgQURTv5CG3wzpfj/BDoWcL3UncfFWAwTgYDVR0RBEcwRYIVaWRwLmNjLmJpbmdoYW10b24uZWR1hixodHRwczovL2lkcC5jYy5iaW5naGFtdG9uLmVkdS9pZHAvc2hpYmJvbGV0aDANBgkqhkiG9w0BAQsFAAOCAQEAiCk13WUgaVpymalSbihawWqgkIxiiMclpWaWSY807rZFuIEUWJbnopgedt6H+BSIxX7A7w+GJfF4fS13mRRlEL2h9ONj4EwbznDNprCxcs+EG7FBpW6VKJd/gnj/VDss4JT6ZOLQodl3wQ5LvwZ1zEeu811FQxSQaEpf69GyaQ/FCs57MDOHqMiAWGux6mhUpGwo9S0bk2C8D6SapD1ZGWmqcyxudsabKDupSUKU2cwslxj8XVinRTx8zZuc6VkzTV9Rc4vzes6atMo8AD8L2+As/e7vxBbR8pu40t9LlPe7f2MalA8yCCxPOlEnljahXnbPNzvZc18kx0CUWRMMJQ=='),
+        'x509cert' => env('SAML2_IDP_x509', '
+        MIIDTzCCAjegAwIBAgIUeMjIeSGic93WTXOMaDGz929hL6EwDQYJKoZIhvcNAQEF
+        BQAwJDEiMCAGA1UEAxMZc2VjdXJldGVzdC5iaW5naGFtdG9uLmVkdTAeFw0xMTA2
+        MjAxNjI0NDdaFw0zMTA2MjAxNjI0NDdaMCQxIjAgBgNVBAMTGXNlY3VyZXRlc3Qu
+        YmluZ2hhbXRvbi5lZHUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCl
+        Qt8caDnEvoVM9dl6RATUsEtiQD9j/W2rN8gU8+0Qp3jl4+IQI3v7+jwArkZ5u4/1
+        GkU5lW0VGePCRwSMSAnlQHDmnIGZ9+PPz0rv8UbNvqojltJY0iTI6eatZ932peXz
+        Q2Y3OkV1fBd6KMf6zNZNrP2TwljUcjvhlx0cvXBEYHevIJ3W9yUiGsQcJDN/o2CS
+        Hze/oqryafg469jbR301mbrkM+hZ7rIBFhdI6UjYrcm+uKyCwtSfOyKxszNxp2t+
+        HjC2lCgW3U21osMaRsJxBaw0Y1YmI2mmlngHwqb3MPttvgYw7dYLZRIHfy+grQPZ
+        m+sM0Wcjc+c5iLvJ/c23AgMBAAGjeTB3MFYGA1UdEQRPME2CGXNlY3VyZXRlc3Qu
+        YmluZ2hhbXRvbi5lZHWGMGh0dHBzOi8vc2VjdXJldGVzdC5iaW5naGFtdG9uLmVk
+        dS9pZHAvc2hpYmJvbGV0aDAdBgNVHQ4EFgQUg1DrTRN4UbfA/+u52J05B5lE7AQw
+        DQYJKoZIhvcNAQEFBQADggEBAEDyIwpvoZdLtqQW9tx4lnlMeVJwz862wzKe1xLf
+        ZY6ciVFiAYndiiJerrjNbqXpw+rH/U0Sc4SEbdFKuujUcEHWjfm3NuNFOBFg+YXF
+        6xoizJk0tB62q7PdlQhGYx7ti7hRhNMP58niO/Pn8lv2qnnBnI97vDVq+QTlkXAE
+        kNjEJ0Xr+BuLwfbaVxavu+aibFW14dJw8STBFBBuGOu3JLNkkQBHRalzNwWAmcmW
+        HoSl1jfyez74SqXdOLyMugKWVeJ7FmlWYNwHKCa8BFTCS8XTA7kHSwvFQ/RMD82L
+        7tqoxUVFu+w7MOJCzyHnZMgBoXG78EoPnBOg7qQN9RoqNEM=
+        '),
         /*
          *  Instead of use the whole x509cert you can use a fingerprint
          *  (openssl x509 -noout -fingerprint -in "idp.crt" to generate it)

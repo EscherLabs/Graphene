@@ -74,6 +74,8 @@ class LoginController extends Controller
 
         if (config('app.site')->auth == 'CAS') {
             cas()->logout();
+        } else if (config('app.site')->auth == 'SAML2') {
+            \Aacotroneo\Saml2\Facades\Saml2Auth::logout();
         } else {
             return redirect()->back();
         }
