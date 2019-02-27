@@ -8,8 +8,8 @@ If you are interested in piloting Graphene at your campus, please contact [graph
  - PHP 7.1 or Later 
  - Composer (Latest)
 
-## Installation Instructions
- [Installation Instructions Available in the Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
+## Installation Instructions / Tutorials / Documentation
+ All documentation (including installation istructions and video tutorials) are available in the [Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
 
 ## License
 The Graphene Framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
