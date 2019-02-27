@@ -9,7 +9,7 @@ If you are interested in piloting Graphene at your campus, please contact [graph
  - Composer (Latest)
 
 ## Installation Instructions / Tutorials / Documentation
- All documentation (including installation istructions and video tutorials) are available in the [Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
+ All documentation (including installation instructions and video tutorials) is available in the [Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
 
 ## License
 The Graphene Framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
