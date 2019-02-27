@@ -11,9 +11,9 @@ $.ajax({
 		$('#main .col-sm-9').berry({fields: [
 			{label: 'Name', name:'name', required: true},
 			{label: 'Domain', name:'domain', required: true},
-			{label: 'Auth Type', name:'auth', required: true,type:"select",options:[
-				'Default','CAS'
-			],type:'select'},
+			// {label: 'Auth Type', name:'auth', required: true,type:"select",options:[
+			// 	'Default','CAS','SAML2'
+			// ],type:'select'},
 			{name: 'id', type:'hidden'},				
 		],attributes:data, actions:false, name:'main'})
 
@@ -22,34 +22,134 @@ $.ajax({
 			{label: 'CSS', name:'css', type:'ace', inline: true, mode:'ace/mode/css'},
 		],attributes:data.theme, actions:false, name:'theme'})
 
-		$('#cas_config .cas_config_form').berry({fields: [
-			{label: 'CAS Hostname', name:'cas_hostname', required: true},		
-			{label: 'CAS Real Hosts', name:'cas_real_hosts', required: true},
-			{label: 'CAS URI', name:'cas_uri', required: true, placeholder:'/cas'},
+		data.auth_config.auth_type = data.auth;
+		var hideshow = function() {
+			var attributes = sso_config_form.toJSON();
+			if (attributes.auth_type === "Default") {
+				$('#sso_config .external_user_lookup_form').hide();
+				$('#sso_config .cas_data_map_default_form').hide();
+				$('#sso_config .cas_data_map_additional_form').hide();
+			} else {
+				$('#sso_config .external_user_lookup_form').show();
+				$('#sso_config .cas_data_map_default_form').show();
+				$('#sso_config .cas_data_map_additional_form').show();
+			}
+		}
+		var sso_config_form = $('#sso_config .sso_config_form').berry({fields: [
+			{label: "Auth Type", name:"auth_type", required: true, type:"select",options:[
+				{value:"Default",label:"SSO Disabled / Default Auth"},"CAS","SAML2"
+			]},
+			{label: 'CAS Hostname', name:'cas_hostname', required: true,
+			"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},		
+			{label: 'CAS Real Hosts', name:'cas_real_hosts', required: true,"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},
+			{label: 'CAS URI', name:'cas_uri', required: true, placeholder:'/cas',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},
 			{label: 'CAS Port', name:'cas_port', required: true, type:'select',options:[
 				{name:'HTTP (80)', value:'80'},{name:'HTTPS (443)', value:'443'},
-			]},
-			{label: 'CAS Login URL', name:'cas_login_url', required: false},
-			{label: 'CAS Logout URL', name:'cas_logout_url', required: false},
+			],"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},
+			{label: 'CAS Login URL', name:'cas_login_url', required: false,"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},
+			{label: 'CAS Logout URL', name:'cas_logout_url', required: false,"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},
 			{label: 'CAS Enable SAML', name:'cas_enable_saml', required: true,options:[
 				{label:'Enabled',value:true},{label:'Disabled',value:false}
-			],type:'select'},
-		],attributes:data.auth_config, actions:false, name:'cas_config'})
+			],type:'select',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "CAS"
+				}
+			}},
+			{label: 'SP x509 Public Certificate', name:'sp.x509cert', required: true,type:'textarea',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "SAML2"
+				}
+			}},
+			{label: 'SP x509 Private Key', name:'sp.privateKey', required: true,type:'textarea',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "SAML2"
+				}
+			}},
+			{label: 'IDP x509 Public Certificate', name:'idp.x509cert', required: true,type:'textarea',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "SAML2"
+				}
+			}},
+			{label: 'IDP entityId', name:'idp.entityId', required: true,type:'text',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "SAML2"
+				}
+			}},
+			{label: 'IDP singleSignOnService Redirect Endpoint', name:'idp.singleSignOnService.url', required: true,type:'text',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "SAML2"
+				}
+			}},
+			{label: 'IDP singleLogoutService Redirect Endpoint', name:'idp.singleLogoutService.url', required: true,type:'text',"show": {
+				"matches": {
+					"name": "auth_type",
+					"value": "SAML2"
+				}
+			}},
+		],attributes:data.auth_config, actions:false, name:'sso_config'}).on('change',hideshow)
+		debugger;
+		hideshow();
 
-		$('#cas_config .external_user_lookup_form').berry({fields: [
+		$('#sso_config .external_user_lookup_form').berry({fields: [
 			{label: 'External User Lookup Enabled',name:"enabled",options:[
 				{label:'Enabled',value:true},{label:'Disabled',value:false}
 			],type:'select'},
-			{label: 'External User Lookup URL',name:"url"},
+			{label: 'External User Lookup URL',name:"url","show": {
+				"matches": {
+					"name": "enabled",
+					"value": "true"
+				}
+			}},
 			{label: 'External User Lookup Verb',name:"verb",type:"select",options:[
 				'POST','GET'
-			]},
+			],"show": {
+				"matches": {
+					"name": "enabled",
+					"value": "true"
+				}
+			}},
 		],attributes:data.auth_config.external_user_lookup, actions:false, name:'external_user_lookup'})
 
 		if (typeof data.auth_config.cas_data_map === 'undefined') {data.auth_config.cas_data_map = {
 			default:{},additional:{}
 		}}
-		$('#cas_config .cas_data_map_default_form').berry({fields: [
+		$('#sso_config .cas_data_map_default_form').berry({fields: [
 			{label: 'Email',name:"email"},
 			{label: 'First Name',name:"first_name"},
 			{label: 'Last Name',name:"last_name"},
@@ -60,7 +160,7 @@ $.ajax({
 		for (var key in data.auth_config.cas_data_map.additional) {
 			arr.push({name:key, value:data.auth_config.cas_data_map.additional[key]});
 		}
-		$('#cas_config .cas_data_map_additional_form').berry({fields: [
+		$('#sso_config .cas_data_map_additional_form').berry({fields: [
 			{label: 'CAS Data Map', name:'cas_data_map', fields:{
 				additional:{
 					label: false, name:'additional',
@@ -110,7 +210,8 @@ $.ajax({
 		$('#save').on('click',function(){
 			var item = Berries.main.toJSON();
 			item.theme = Berries.theme.toJSON();
-			item.auth_config = Berries.cas_config.toJSON();
+			item.auth_config = Berries.sso_config.toJSON();
+			item.auth = item.auth_config.auth_type;
 			item.auth_config.cas_data_map = {};
 			item.auth_config.cas_data_map.default = Berries.cas_data_map_default.toJSON();
 			item.auth_config.cas_data_map.additional = _.zipObject(_.map(Berries.cas_data_map_additional.toJSON().additional, 'name'), _.map(Berries.cas_data_map_additional.toJSON().additional, 'value'))
