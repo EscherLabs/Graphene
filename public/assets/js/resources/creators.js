@@ -14,6 +14,11 @@ var selectGroup = function(e){
         },value:instanceData.group_id, choices: '/api/groups?limit=true', default:{"label":"Choose One","value":""}},
       ],actions:false
     })
+  // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+  //   {label: 'Group', name:'group_id', required: true, type:'select',format:{label:"{{name}}",value:"id"},satisfied:function(value){
+  //     return (this.toJSON() !== "")
+  //   },value:instanceData.group_id, options: '/api/groups?limit=true', placeholder:{"name":"Choose One","id":""}}
+  // ], actions: false},mymodal.ref.find('.modal-body')[0]);
 }
 var selectComposite = function(){
   $.ajax({
@@ -119,12 +124,13 @@ var createEngine = function(e){
       },
       onAppCreate: function(){
 
-        // myForm = new gform({attributes: instanceData, fields:[
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
         //   {label: 'Name', name:'name', required: true},
         //     {label: 'Description', name:'description', required: false, type:'textarea'},
         //     {label: 'Tags', name:'tags', required: false},
         //     {label: 'Lead Developer', name:'user_id', type:'select', options: '/api/apps/developers', required: false, format:{label:'{{first_name}} {{last_name}}',value:'{{id}}'}},
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+
         options.url = '/api/apps';
         mymodal.ref.find('.modal-body').berry({
           attributes:instanceData,
@@ -135,10 +141,16 @@ var createEngine = function(e){
             {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
               ],actions:false
         })
+        
       },      
       onGroupCreate: function(){
         options.url = '/api/groups';
         options.complete = "Successfully Created a Group!<br><br> Here are some next steps you may want to take:"
+
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+        //     {label: 'Name', name:'name', required: true},        
+        //     {label: 'Slug', name:'slug', required: true}
+        // ], actions: false},mymodal.ref.find('.modal-body')[0]);
 
         mymodal.ref.find('.modal-body').berry({
           attributes:instanceData,
@@ -160,8 +172,17 @@ var createEngine = function(e){
             {name:'email',label:"Email",required:true,type:'email'},
             {name:'password',label:"Password",type:"password"},
             {name:'unique_id',label:"Unique ID",required:true}
-        ],actions:false
-      })
+          ],actions:false
+        })
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+        //   {name:'first_name',label:"First Name"},
+        //   {name:'last_name',label:"Last Name"},
+        //   {name:'email',label:"Email",required:true,type:'email'},
+        //   {name:'password',label:"Password",type:"password"},
+        //   {name:'unique_id',label:"Unique ID",required:true}
+        // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+
+
       },
       onPage: function(){
         options.url = '/api/pages';
@@ -178,6 +199,16 @@ var createEngine = function(e){
             {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
           ],actions:false
         })
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+        //   {label: 'Name', name:'name', required: true},
+        //   {label: 'Slug', name:'slug', required: true},
+        //   {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+        //   {label: 'Unlisted', name:'unlisted', type: 'checkbox', options:[0,1] },				
+        //   {label: 'Limit Device', name: 'device', format:{value:'{{index}}'}, value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+        //   {label: 'Public', name:'public', type: 'checkbox', options:[0,1], enabled:  {matches:{name:'limit', value: false}}}
+
+        // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+
       },   
       onImage: function(){
         options.url = '/api/images';
@@ -189,6 +220,10 @@ var createEngine = function(e){
             {type: 'upload', label: false, path: '/api/images?group_id='+instanceData.group_id, name: 'image_filename'}
           ],actions:false
         })
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+        //   {type: 'upload', label: false, path: '/api/images?group_id='+instanceData.group_id, name: 'image_filename'}
+        // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+
       },      
       onEndpoint: function(){
         options.url = '/api/endpoints';
@@ -211,6 +246,20 @@ var createEngine = function(e){
             ]}
           ],actions:false
         })
+
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+        //   {label: 'Name', name:'name', required: true},
+        //   {label: 'Auth Type', name:'type', type: 'select', choices:[
+        //     {label:'HTTP No Auth', value:'http_no_auth'}, 
+        //     {label:'HTTP Basic Auth', value:'http_basic_auth'}, 
+        //   ], required: true},
+        //   {label: 'Configuration', name:'config', showColumn:false, fields:[
+        //     {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
+        //     {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
+        //     {label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+        //     {label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+        //   ]}
+        // ], actions: false},mymodal.ref.find('.modal-body')[0]);
       },
       onInstance: function(){
         options.url = '/api/appinstances';
@@ -234,6 +283,17 @@ var createEngine = function(e){
                     {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
                   ],actions:false
                 })
+
+                // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+                //   {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
+                //   {label: 'Name', name:'name', required: true},
+                //   {label: 'Slug', name:'slug', required: true},
+                //   {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+                //   {label: 'Unlisted', name:'unlisted', type: 'checkbox', options:[0,1]},
+                //   {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
+                //   {label: 'Public', name:'public', type: 'checkbox', options:[0,1], enabled:  {matches:{name:'limit', value: false}}}
+                // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+      
               }
             })
       },
@@ -290,9 +350,14 @@ var createEngine = function(e){
         if(typeof Berries.modal !== 'undefined'){
           if(Berries.modal.validate()){
             $.extend(instanceData,Berries.modal.toJSON())
-   
           }else{
             return false;
+          }
+        }else if(typeof gform.instances.modal != 'undefined'){
+          if(!gform.instances.modal.validate()){
+            return false
+          }else{
+            $.extend(instanceData,gform.instances.modal.toJSON())
           }
         }
         $.ajax({url: options.url, type: 'POST', data: instanceData,
@@ -354,6 +419,12 @@ var createEngine = function(e){
             return false
           }else{
             $.extend(instanceData,Berries.modal.toJSON())
+          }
+        }else if(typeof gform.instances.modal != 'undefined'){
+          if(!gform.instances.modal.validate()){
+            return false
+          }else{
+            $.extend(instanceData,gform.instances.modal.toJSON())
           }
         }
         reset();
