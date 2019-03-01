@@ -149,14 +149,14 @@ php artisan serve --host={{domain}}
 
       @if($mode == 'db')
             mysql = {};
-            @if(env('APP_DEBUG') == 1)
+            @if(config('app.debug') == 1)
 
                 mysql.host = "{{ config('database.connections.mysql.host') }}";
                 mysql.port = "{{ config('database.connections.mysql.port') }}";
                 mysql.database = "{{ config('database.connections.mysql.database') }}";
                 mysql.username = "{{ config('database.connections.mysql.username') }}";
-                @if(config('database.connections.mysql.password') == 'crazystairs')
-                    mysql.password = "crazystairs";
+                @if(config('database.connections.mysql.password') == 'graphene')
+                    mysql.password = "graphene";
                 @else
                     mysql.password = "";
                 @endif
