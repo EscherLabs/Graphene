@@ -387,7 +387,7 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
 @endsection
 
 @section('bottom_page_styles')
-  <link href="/assets/css/graphene.css" rel="stylesheet">
+
   <style>
 
 

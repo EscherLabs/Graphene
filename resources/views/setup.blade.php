@@ -138,7 +138,7 @@ php artisan serve --host={{domain}}
       }).trigger('change')
       @endif
       @if($mode == 'user')
-      $('#form').berry({name:'form',actions:['save'],legend:"Create a User (Site Admin)",fields:[{name:'first_name',label:"First Name"},{name:'last_name',label:"Last Name"},{name:'email',label:"Email",required:true},{name:'password',label:"Password",type:"password",required:true},{name:'unique_id',label:"Unique ID",required:true}]}).on('save',function(){
+      $('#form').berry({name:'form',actions:['save'],legend:"Create a User (Site Admin)",fields:[{name:'first_name',label:"First Name"},{name:'last_name',label:"Last Name"},{name:'email',label:"Email",required:true,type:'email'},{name:'password',label:"Password",type:"password",required:true},{name:'unique_id',label:"Unique ID",required:true}]}).on('save',function(){
         if(this.validate()){
         $.post('/api/usersetup',this.toJSON(),function(response){
             location.reload();

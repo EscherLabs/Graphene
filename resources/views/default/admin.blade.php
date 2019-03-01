@@ -16,6 +16,8 @@
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
     <link href="/assets/css/graphene.css" rel="stylesheet">
+    <link href="/assets/css/admin.css" rel="stylesheet">
+
     <link href="/assets/css/dropzone.css" rel="stylesheet">
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -41,14 +43,19 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/admin">
-            &nbsp;{{ config('app.site')->name }}
+        <img style="height:25px" src="/assets/img/graphene_all_white.png">
           </a>
           <ul class="nav navbar-nav navbar-right hidden-xs">
+          </li>
             <li><a href="#"><h4 style="margin:0"></h4></a></li>
           </ul>
+          
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+          <li><a href="/"><h4 style="margin:0;">{{ config('app.site')->name }}</h4></a>
+
+
             <li class="dropdown">
               <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
                 <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?d=mm" /> 
@@ -112,6 +119,8 @@
       </div>
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
+    <div style="margin-top:15px;width: 120px;" class="btn btn-lg btn-new" id="new"><i class="fa fa-plus fa-lg"></i> New</div>
+
       <ul class="nav nav-sidebar">
         @can('view_in_admin','App\Group')
           <li><a href="/admin/groups"><i class="fa fa-users fa-fw"></i>&nbsp; Groups</a></li>
@@ -135,10 +144,10 @@
           <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
         @endcan
         @can('view_in_admin','App\AppInstance')
-          <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
+          <!-- <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li> -->
         @endcan
         @can('view_in_admin','App\Page')
-          <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
+          <!-- <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li> -->
         @endcan
         @can('view_in_admin', 'App\APIUser')
           <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; API Accounts</a></li>
@@ -174,7 +183,45 @@
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
     <script src='/assets/js/vendor/berrytables.full.js'></script> 
+    <script src='/assets/js/vendor/state-machine.js'></script>
+
     @yield('end_body_scripts_bottom')
+    <script src='/assets/js/vendor/gform.min.js'></script>
+    <script src='/assets/js/vendor/gform.bootstrap.js'></script>
+
+    <script>
+
+     startContent = "<div>"+
+       @can('create','App\App')
+      "<a href='#' style='border-left-color:#d85e16' class='list-group-action' data-action='createapp'><i class='fa fa-cube'></i> Micro App</a>"+
+      @endcan   
+      @can('create','App\Group')
+      "<a href='#' style='border-left-color:#44a77f' class='list-group-action' data-action='creategroup'><i class='fa fa-users'></i> Group</a>"+
+      @endcan   
+      @can('create','App\Page')
+      "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
+      @endcan   
+      @can('create','App\AppInstance')
+      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
+      @endcan   
+      @can('create','App\Endpoint')
+      "<a href='#' style='border-left-color:#8a6d3b' class='list-group-action' data-action='createendpoint'><i class='fa fa-crosshairs'></i> Endpoint</a>"+
+      @endcan   
+      @can('create','App\Image')
+      "<a href='#' style='border-left-color:#555' class='list-group-action' data-action='createimage'><i class='fa fa-image'></i> Image</a>"+
+      @endcan   
+      @can('create','App\User')
+      "<a href='#' style='border-left-color:#333' class='list-group-action' data-action='createuser'><i class='fa fa-user'></i> User</a>"+
+      @endcan   
+      @can('create','App\Link')
+      "<a href='#' style='' class='list-group-action' data-action='createlink'><i class='fa fa-link'></i> Link</a>"+
+      @endcan   
+      // "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a>"+
+
+      "</div>";
+    </script>
+    <script src='/assets/js/resources/creators.js'></script>
+
     @yield('bottom_page_styles')
   </body>
 </html>

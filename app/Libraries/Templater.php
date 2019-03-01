@@ -134,6 +134,7 @@ class Templater {
     if (!isset($data['template'])) {
         $data['template'] = 'main';
     }   
+    
     $tpl = $m->loadTemplate($data['template']);
         return $tpl->render($data);
     }
