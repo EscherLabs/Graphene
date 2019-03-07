@@ -1,6 +1,6 @@
 <div class="hidden-xs"> </div>
 
-<script src='/assets/js/berryApp.js'></script> 
+<script src='/assets/js/grapheneAppEngine.js'></script> 
 <script src='/assets/js/vendor/moment.js'></script>
 
 <script src='/assets/js/vendor/jquery.min.js'></script>
@@ -20,6 +20,7 @@
 <script src='/assets/js/vendor/bootstrap.cobler.js'></script> 
 <script src="/assets/js/vendor/lodash.min.js"></script>
 <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
+<script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
 
 <script src='/assets/js/vendor/ractive.min.js'></script>    
 <script src='/assets/js/vendor/lockr.min.js'></script>    
@@ -37,15 +38,15 @@
 <script src='/assets/js/cob/links.cob.js'></script>
 <script src='/assets/js/templates/widget.js'></script>
 <script src='/assets/js/lib.js'></script> 
-<script src='/assets/js/vendor/json_formatter.js'></script> 
+{{! <script src='/assets/js/vendor/json_formatter.js'></script>  }}
 {{#is_admin}}
     <script src='/assets/js/vendor/state-machine.js'></script>
 
 
 
     <script>
-
-     startContent = "<div>"+
+      Ractive.DEBUG = false;
+      startContent = "<div>"+
       "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
       "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
       "<a href='#' style='border-left-color:#555' class='list-group-action' data-action='createimage'><i class='fa fa-image'></i> Image</a>"+
@@ -343,12 +344,8 @@ function editMobileOrder(){
 	}
 
 
-(function() {
-   // your page initialization code here
-   // the DOM will be available here
-	load(true);
 
-})();
+ window.onload = load.bind(null,true);
 
 	$('body').keydown(function(event) {
 		switch(event.keyCode) {

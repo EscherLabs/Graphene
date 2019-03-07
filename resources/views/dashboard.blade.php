@@ -30,7 +30,11 @@
 
 
 @section('bottom_page_scripts')
-<script src='/assets/js/berryApp.js'></script> 
+<script src="/assets/js/vendor/lodash.min.js"></script>
+
+<script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
+
+<script src='/assets/js/grapheneAppEngine.js'></script> 
 
 		<link rel='stylesheet' type='text/css' href='/assets/css/graphene.css'>
 		<script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
