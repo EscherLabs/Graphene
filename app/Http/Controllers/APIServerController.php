@@ -61,4 +61,17 @@ class APIServerController extends Controller
         // return $service;
         return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content']),'slug'=>$slug,'config'=>$api_config]);
      } 
+
+     public function service_docs($slug, $service_instance_id) {
+        $httpHelper = new HTTPHelper();
+
+        $mysite = config('app.site')->select('proxyserver_config')->first();
+        $api_config = $mysite->get_proxyserver_by_slug($slug);
+
+        $url = $api_config->server."/api/service_docs/".$service_instance_id;        
+        $docs = $httpHelper->http_fetch($url,"GET", [], $api_config->username, $api_config->password);
+
+        return response($docs['content']['docs'], 200);
+    } 
+
 }

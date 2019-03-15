@@ -300,6 +300,7 @@ Route::get('/ellucianmobile/config','EllucianMobileController@config');
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin/apiserver'], function () {
   Route::get('/{slug}/services/{service_id}', 'APIServerController@service');    
+  Route::get('/{slug}/service_docs/{service_instance_id}', 'APIServerController@service_docs');     
   Route::get('/{slug}/{resource?}/{resource_id?}', 'APIServerController@index');    
 });
   
