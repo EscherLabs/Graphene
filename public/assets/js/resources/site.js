@@ -32,13 +32,13 @@ $.ajax({
 			{label: 'CAS Login URL', name:'cas_login_url', required: false},
 			{label: 'CAS Logout URL', name:'cas_logout_url', required: false},
 			{label: 'CAS Enable SAML', name:'cas_enable_saml', required: true,options:[
-				{label:'Enabled',value:true},{label:'Disabled',value:false}
+				{label:'Enabled',value:"true"},{label:'Disabled',value:"false"}
 			],type:'select'},
 		],attributes:data.auth_config, actions:false, name:'cas_config'})
 
 		$('#cas_config .external_user_lookup_form').berry({fields: [
 			{label: 'External User Lookup Enabled',name:"enabled",options:[
-				{label:'Enabled',value:true},{label:'Disabled',value:false}
+				{label:'Enabled',value:"true"},{label:'Disabled',value:"false"}
 			],type:'select'},
 			{label: 'External User Lookup URL',name:"url"},
 			{label: 'External User Lookup Verb',name:"verb",type:"select",options:[
