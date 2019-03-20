@@ -1,19 +1,19 @@
-$('.navbar-header .nav a h4').html('Service Instance');
-url = "/api/proxy/"+slug+"/service_instances/"+resource_id;
+$('.navbar-header .nav a h4').html('API Instance');
+url = "/api/proxy/"+slug+"/api_instances/"+resource_id;
 api = url;
-myservice = {};
+myapi = {};
 $.ajax({
 	url: url,		
-	success: function(service){
-		myservice = service;
-		service.server = server;
-		$('#table').html(templates.service_instance.render(service));
+	success: function(api){
+		myapi = api;
+		api.server = server;
+		$('#table').html(templates.api_instance.render(api));
 		$.ajax({
-			url: "/api/proxy/"+slug+"/service_versions/"+service.service_version_id,		
+			url: "/api/proxy/"+slug+"/api_versions/"+api.api_version_id,		
 			success: function(version){
 				$('.main').berry({
 					name:'main',
-					attributes:service,
+					attributes:api,
 					"flatten": true,			
 					actions:false,
 					fields:[
@@ -21,13 +21,13 @@ $.ajax({
 						{label: 'Slug', name:'slug', required: true},
 						{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
 						
-						{label: 'Service', name:'service_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
-						{label: 'Service Version', name:'service_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
+						{label: 'API', name:'api_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
+						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/api_versions',label_key:'summary',value_key:'id'},			
 					]})
-				if(service.resources != null){
+				if(api.resources != null){
 					$('.resources').berry({
 						name: 'resources',
-						attributes: service,
+						attributes: api,
 						"flatten": true,			
 						actions:false,
 						
@@ -133,13 +133,13 @@ $.ajax({
 							{label:'Path', name: 'route', type:'select', options:_.uniq(routes_partials)},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{ value }}<br>{{/attributes.params}}'}
-		], data: service.route_user_map}
+		], data: api.route_user_map}
 
 		bt = new berryTable(options)
 		// $('.permissions').berry({
 		// 	// legend:'Permissions',
 		// 	name:'permissions',
-		// 	attributes:service,
+		// 	attributes:api,
 		// 	"flatten": false,
 		// 	actions:false,
 		// 	fields:[
@@ -178,8 +178,8 @@ $.ajax({
 
 		$('body').on('click','#version', function(){
 			
-					$().berry({name:'versionForm',attributes:service,legend:'Select Version',fields:[
-							{label: 'Version', name:'service_version_id', required:true, choices:'/api/proxy/'+slug+'/service_versions',type:'select', value_key:'id',label_key:'label'},
+					$().berry({name:'versionForm',attributes:api,legend:'Select Version',fields:[
+							{label: 'Version', name:'api_version_id', required:true, choices:'/api/proxy/'+slug+'/api_versions',type:'select', value_key:'id',label_key:'label'},
 					]}).on('save',function(){
 
 						$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),
@@ -196,24 +196,24 @@ $.ajax({
 
 
 		$('#save').on('click',function(){
-			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:myservice.environment_id}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
+			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:myapi.environment_id}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
 
         $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-				service.comment = this.toJSON().comment;
-				$.extend(service,Berries.main.toJSON());
+				api.comment = this.toJSON().comment;
+				$.extend(api,Berries.main.toJSON());
 				if(typeof Berries.resources !== 'undefined'){
-					service.resources =  Berries.resources.toJSON().resources;
+					api.resources =  Berries.resources.toJSON().resources;
 				}
 				// var temp = Berries.permissions.toJSON().container.route_user_map;
-				// service.route_user_map = _.each(temp,function(item){
+				// api.route_user_map = _.each(temp,function(item){
 				// 	item.params = item.parameters.params;
 				// 	delete item.parameters;
 				// })
-				service.route_user_map = _.pluck(bt.models,'attributes')
+				api.route_user_map = _.pluck(bt.models,'attributes')
 				
 				
-				$.ajax({url: url, type: 'PUT', data: service, success:function(){
-						toastr.success('', 'Successfully updated Service Instance')
+				$.ajax({url: url, type: 'PUT', data: api, success:function(){
+						toastr.success('', 'Successfully updated API Instance')
 					}.bind(this),
 					error:function(e) {
 						toastr.error(e.statusText, 'ERROR');

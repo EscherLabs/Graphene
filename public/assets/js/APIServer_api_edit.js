@@ -69,7 +69,7 @@ function load(app_version) {
   
 
 
-  $('.navbar-header .nav a h4').html('Service - '+service.name);
+  $('.navbar-header .nav a h4').html('API - '+api.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
 
@@ -110,7 +110,7 @@ function load(app_version) {
               // "database": {}
               // {label: false, name:'database',type:'select', required: true,choices:'/api/proxy/databases',label_key:'name',value_key:'id'}
               {label: 'Name', name:'name', required: true, columns:6},
-              {label: 'Type', name:'type', type:'select',options:['mysql','constant'], columns:6}
+              {label: 'Type', name:'type', type:'select',options:['mysql','oracle','constant'], columns:6}
               
             ]
           }
@@ -323,7 +323,7 @@ $('#save').on('click',function() {
     toastr.info('', 'Saving...')
     
     $.ajax({
-      url: '/api/proxy/'+slug+'/services/'+attributes.service_id+'/code',
+      url: '/api/proxy/'+slug+'/apis/'+attributes.api_id+'/code',
       method: 'PUT',
       data: data,
       success:function(e) {
@@ -366,7 +366,7 @@ $('#save').on('click',function() {
 $('#import').on('click', function() {
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
       $.ajax({
-        url: '/api/proxy/'+slug+'/services/'+attributes.service_id+'/code',
+        url: '/api/proxy/'+slug+'/apis/'+attributes.api_id+'/code',
         method: 'PUT',
         data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
         success:function(e) {
@@ -382,13 +382,13 @@ $('#import').on('click', function() {
 });
 
 $('#publish').on('click', function() {
-    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Service',fields: [	
+    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish API',fields: [	
         {label: 'Summary', required: true},
         {label: 'Description', type: 'textarea'}
       ]}).on('save', function() {
         if(Berries.publish.validate()){
           $.ajax({
-            url: '/api/proxy/'+slug+'/services/'+attributes.service_id+'/publish',
+            url: '/api/proxy/'+slug+'/apis/'+attributes.api_id+'/publish',
             data: this.toJSON(),
             method: 'PUT',
             success: function() {
@@ -404,12 +404,12 @@ $('#publish').on('click', function() {
 });
 
 $('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="'+server+'/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/service_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-  $.get('/api/proxy/'+slug+'/service_instances', function(data) {
-    data = _.where(data, {service_id:service.id})
+  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="'+server+'/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/api_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
+  $.get('/api/proxy/'+slug+'/api_instances', function(data) {
+    data = _.where(data, {api_id:api.id})
     debugger;
     if(data.length > 0){
-      modal({title: 'This Service has the following instances', content: viewTemplate.render({items: data})});
+      modal({title: 'This API has the following instances', content: viewTemplate.render({items: data})});
     }else{
       modal({title: 'No instances Found', content: 'This App not currently instantiated.'});
     }
@@ -418,7 +418,7 @@ $('#instances').on('click', function() {
 
 $('#versions').on('click', function() {
   $.ajax({
-    url: "/api/proxy/"+slug+"/services/"+service.id+"/versions",
+    url: "/api/proxy/"+slug+"/apis/"+api.id+"/versions",
     success: function(data) {
       console.log(data);
       data = _.where(data,{stable:1})
@@ -438,11 +438,11 @@ $('#versions').on('click', function() {
         }
       }
       $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
-        {label: 'Version', name:'service_version_id', options:data,type:'select', value_key:'id',label_key:'summary'},
+        {label: 'Version', name:'api_version_id', options:data,type:'select', value_key:'id',label_key:'summary'},
       ]}).on('save', function() {
         // switch version
         $.ajax({
-          url: '/api/proxy/'+slug+'/service_versions/'+this.toJSON().service_version_id,
+          url: '/api/proxy/'+slug+'/api_versions/'+this.toJSON().api_version_id,
           method: 'get',
           // data: data,
           success:function(data) {

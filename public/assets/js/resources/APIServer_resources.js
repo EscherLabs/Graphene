@@ -72,4 +72,4 @@ $.ajax({
 	}
 });
 
-// {label: 'Service', name:'service_id',type:'select', required: true,choices:'/api/proxy/resources',label_key:'name',value_key:'id'},
+// {label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/resources',label_key:'name',value_key:'id'},

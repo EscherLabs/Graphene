@@ -1,5 +1,5 @@
-$('.navbar-header .nav a h4').html('Service Instances');
-url = "/api/proxy/"+slug+"/service_instances";
+$('.navbar-header .nav a h4').html('API Instances');
+url = "/api/proxy/"+slug+"/api_instances";
 api = url;
 $.ajax({
 	url: url,		
@@ -9,8 +9,8 @@ $.ajax({
 			{label: 'Slug', name:'slug', required: true},
 			{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
 			// {label: 'Type', name:['dev','test','prod'], required: true},
-			{label: 'Service', name:'service_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
-			{label: 'Service Version', name:'service_version_id', show: false,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
+			{label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
+			{label: 'API Version', name:'api_version_id', show: false,type:'select',choices:'/api/proxy/'+slug+'/api_versions',label_key:'summary',value_key:'id'},			
 			{name:'container',show:false, label: 'Resources',
 			"template":'{{#attributes.resources}}{{name}}<br> {{/attributes.resources}}',
 			type: 'fieldset', fields:[
@@ -23,7 +23,7 @@ $.ajax({
 		];
 		tableConfig.data = data;
 
-		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/service_instance/'+model.attributes.id};
+		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/api_instance/'+model.attributes.id};
 		
 		tableConfig.events=[
 			{'name': 'config', 'label': '<i class="fa fa-map"></i> Resource Map', callback: function(model){
@@ -50,7 +50,7 @@ $.ajax({
 		]
 
 
-		tableConfig.name = "service_instances";
+		tableConfig.name = "api_instances";
 		bt = new berryTable(tableConfig)
 	}
 });

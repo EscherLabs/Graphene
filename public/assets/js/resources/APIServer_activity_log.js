@@ -1,5 +1,5 @@
 $('.navbar-header .nav a h4').html('Activity Log');
-// url = "/admin/apiserver/fetch/service_versions";
+// url = "/admin/apiserver/fetch/api_versions";
 url = "/api/proxy/"+slug+"/activity_log";
 api = url;
 $.ajax({

@@ -1,6 +1,6 @@
-$('.navbar-header .nav a h4').html('Services');
-// url = "/admin/apiserver/fetch/services";
-url = "/api/proxy/"+slug+"/services";
+$('.navbar-header .nav a h4').html('APIs');
+// url = "/admin/apiserver/fetch/apis";
+url = "/api/proxy/"+slug+"/apis";
 api = url;
 $.ajax({
 	url: url,		
@@ -12,9 +12,9 @@ $.ajax({
 			{name: 'id', type:'hidden'}
 		];
 		tableConfig.data = data;
-		tableConfig.name = "services";
+		tableConfig.name = "apis";
 
-		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/services/'+model.attributes.id};
+		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/apis/'+model.attributes.id};
 		bt = new berryTable(tableConfig)
 	}
 });
