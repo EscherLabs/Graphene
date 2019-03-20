@@ -1,4 +1,5 @@
-![graphene logo](http://graphene.smallcomb.me/assets/img/graphene.png "Graphene Logo")<br><br>
+<div><img height="50px" src="https://docs.escherlabs.com/assets/images/products/graphene.png"></div>
+
 Graphene is a fully featured 'Micro Application' and 'Content Management' Platform with a robust web-based IDE (Integrated Development Environment).  Graphene is the primary engine behind [Binghamton University](https://www.binghamton.edu)'s [myBinghamton](https://my.binghamton.edu) portal.  
 
 If you are interested in piloting Graphene at your campus, please contact [graphenepilot@binghamton.edu](mailto:graphenepilot@binghamton.edu).
