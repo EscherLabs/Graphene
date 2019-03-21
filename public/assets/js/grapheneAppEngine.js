@@ -44,15 +44,17 @@ function App() {
 	}
 	function update(newData) {
 		$.extend(this.data, newData || {});
+		this.inline.set(this.data.user.options)
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
-		this.$el.off('click', selector, callback.bind(this));
-		this.$el.on('click', selector, callback.bind(this));
+		this.$el.off('click', selector, callback);
+		this.$el.on('click', selector, callback);
 	}
-	this.events = {initialize: []};
-	this.addSub = Berry.prototype.addSub;
+	this.handlers = {initialize: []};
+	// this.addSub = Berry.prototype.addSub;
+	this.forms = {};
 	return {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
@@ -67,12 +69,20 @@ function App() {
 		}.bind(this),		
 
 		update: update.bind(this),
+		// data:this.data,
+		// data: function(data){
+		// 	if(typeof data !== 'undefined'){
+		// 		this.update(data);
+		// 	}else{
+		// 		return this.data
+		// 	}
+		// }.bind(this),
 
-		click: click.bind(this),
+		click: click,
 
-		on: Berry.prototype.on.bind(this),
-		off: Berry.prototype.off.bind(this),
-		trigger: Berry.prototype.trigger.bind(this),
+		on: gform.prototype.sub.bind(this),
+		// off: Berry.prototype.off.bind(this),
+		trigger: gform.prototype.pub.bind(this),
 
 		$el:this.$el,
 
@@ -80,24 +90,24 @@ function App() {
 			return this.$el[0].querySelectorAll(selectors)
 		}.bind(this),
 		render:function(template, data){
-			return Hogan.compile(this.partials[template]).render(data || this.data);
+			return gform.m(this.partials[template],_.extend({}, this.partials, data));
+			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
     version: function(){return '1.1.0'},
-    form:{
-      render:function(form,){
+    form: function(name){
 
-      },
-      get:function(){
-        return 
-      },
-      toJSON:function(){},
-      submit:function(){},
-    }
-		// debug:function(text){
-		// 	if(this.data.user.site_developer){
-		// 		console.log(text)
-		// 	}
-		// }.bind(this)
+		},
+		log:function(text){
+			if(this.data.user.site_developer){
+				if(typeof text == 'string'){
+				console.log('%c'+this.config.title+': %c'+text,'color: #d85e16','color: #333')
+				}
+				if(typeof text == 'object'){
+					console.log('%c'+this.config.title+'','color: #d85e16')
+					console.log(text)
+				}
+			}
+		}.bind(this)
 		
 		//modal
 		//message
@@ -114,7 +124,10 @@ function App() {
 	}
 }
  
-grapheneAppEngine = function(options) {
+grapheneAppEngine = 
+function(options){
+
+  var temp = function(options) {
   this.load = function() {
 		this.partials = {};
 		for(var i in this.config.templates) {
@@ -154,7 +167,8 @@ grapheneAppEngine = function(options) {
 
     this.$el = this.options.$el;
     if(typeof this.app == 'undefined'){
-      this.app = App.call(this)
+			this.app = App.call(this)
+			app = this.app;
     }
 		this.draw()
 		if(typeof this.options.onLoad == 'function'){
@@ -223,8 +237,8 @@ grapheneAppEngine = function(options) {
   }
 	this.destroy = function() {
 		this.$el.off('click');
-		this.events = {initialize: [],refetch:[this.events.refetch[0]]};
-		if(typeof this.inline == 'object' && this.inline instanceof Berry) {
+		this.handlers = {initialize: [],refetch:[this.handlers.refetch[0]]};
+		if(typeof this.inline == 'object' && this.inline instanceof gform) {
 			this.inline.destroy();
 		}
 		this.app.trigger('destroy')
@@ -242,4 +256,10 @@ grapheneAppEngine = function(options) {
 		this.app.trigger('options');
 	}
 	setTimeout(this.load.bind(this), 0)
+}
+
+var newtemp =  new temp(options);
+
+var app = {};
+return newtemp;
 }

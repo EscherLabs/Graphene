@@ -313,29 +313,31 @@ function editMobileOrder(){
 
 	function editUserOptions(item){
 		if(typeof item.bae !== 'undefined'){
-			$().berry($.extend(true, {legend:'Edit Options', attributes: item.bae.data.user.options},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).on('save', function(){
+			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
 				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
 				if(typeof item.bae.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
 						url:url,
-						data: {'options': this.toJSON()},
+						data: {'options': e.form.get()},
 						success:function(data){
 							item.bae.app.update({user:{options:data.options}});
 							item.bae.optionsupdated();
-							this.trigger('close');
+							this.pub('close');
 							toastr.success('', 'Options Updated Successfully');
-						}.bind(this),
+						}.bind(e.form),
 						error:function(data){
 								toastr.error(data.statusText, 'An error occured updating options')
 						}
 					})
 				}else{
-					item.bae.app.update({user:{options:this.toJSON()}});
-					Lockr.set(url, {'options': this.toJSON()})
-					this.trigger('close');
+					item.bae.app.update({user:{options:e.form.get()}});
+					Lockr.set(url, {'options': e.form.get()})
+					e.form.pub('close');
 					toastr.success('', 'Options Updated Successfully');
 				}
+			}).on('cancel',function(e){
+				e.form.pub('close')
 			})
 		}
 	}

@@ -56,7 +56,7 @@ Cobler.types.uApp = function(container){
                 }
                 $.ajax({
                 url: '/api/fetch/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
-                // dataType : 'json',
+                dataType : 'json',
                 type: 'POST',
                 data: send_data,
                 error: function (data) {
@@ -104,7 +104,7 @@ Cobler.types.uApp = function(container){
                 })
               }.bind(this));
             }.bind(this)
-            this.bae = new grapheneAppEngine(opts);
+            this.bae = grapheneAppEngine(opts);
             
 
 
