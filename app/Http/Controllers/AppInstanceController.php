@@ -91,7 +91,9 @@ class AppInstanceController extends Controller
     public function create(Request $request) {
         $this->validate($request,['name'=>['required']]);
         $app_instance = new AppInstance($request->all());
-        $app_instance->app_version_id = AppVersion::where('app_id','=',$request->get('app_id'))->orderBy('id','desc')->pluck('id')->first();
+        // TJC 3/22/19 Defaunt New App Instances to NULL (latest working or published)
+        // $app_instance->app_version_id = AppVersion::where('app_id','=',$request->get('app_id'))->orderBy('id','desc')->pluck('id')->first();
+        $app_instance->app_version_id = null;
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
         $app_instance->save();
