@@ -39,12 +39,19 @@ $.ajax({
 				switch(model.attributes.resource_type){
 					case 'mysql':
 					fields.push({name:'config',label:false,fields:[
-						{label: 'Name',name: 'name'},
-						{label: 'Pass', name:'pass'},
-						{label: 'User', name:'user'},
+						{label: 'Database Name',name: 'name'},
+						{label: 'Username', name:'user'},
+						{label: 'Password', name:'pass'},
 						{label: 'Server', name:'server'}
 					]})
-					break;					
+					break;	
+					case 'oracle':
+					fields.push({name:'config',label:false,fields:[
+						{label: 'TNS_NAME',name: 'tns'},
+						{label: 'Username', name:'user'},
+						{label: 'Password', name:'pass'},
+					]})
+					break;									
 					case 'constant':
 					fields.push({name:'config',label:false,fields:[
 						{label: 'Value',name: 'value'}
