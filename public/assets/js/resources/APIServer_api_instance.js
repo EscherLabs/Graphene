@@ -22,12 +22,12 @@ $.ajax({
 						{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
 						
 						{label: 'API', name:'api_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
-						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/api_versions',label_key:'summary',value_key:'id'},			
+						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',label_key:'summary',value_key:'id'},			
 					]})
-				if(api.resources != null){
+				if(api.api_version.resources != null){
 					$('.resources').berry({
 						name: 'resources',
-						attributes: api,
+						attributes: _.merge(api,api.api_version),
 						"flatten": true,			
 						actions:false,
 						
@@ -51,10 +51,20 @@ $.ajax({
 			var parts = item.split('/')
 			for (var i = 0, len = parts.length; i < len; i++) {
 				if(parts[i]!== '*'){
-					thisTemp += parts[i]+'/';
-					routes_partials.push(thisTemp+'*');				
+					// if((i+1)<len){
+					// thisTemp += parts[i]+'/';
+					// }else{
+						thisTemp += parts[i]
+					// }
+					routes_partials.push(thisTemp);	
+					// routes_partials.push({value:thisTemp,label:thisTemp+'*'});	
+
+					thisTemp += '/';			
 				}		
 			}
+		})
+		routes_partials = _.map(_.uniq(routes_partials),function(item){
+			return {value:item,label:item+'*'}
 		})
 
 		var options = {
@@ -130,7 +140,7 @@ $.ajax({
 		],
 		schema:[
 			{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/api_users',label_key:'app_name'},
-							{label:'Path', name: 'route', type:'select', options:_.uniq(routes_partials)},
+							{label:'Path', name: 'route', type:'select', options:routes_partials},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{ value }}<br>{{/attributes.params}}'}
 		], data: api.route_user_map}
@@ -177,9 +187,9 @@ $.ajax({
 		}});
 
 		$('body').on('click','#version', function(){
-			
+			debugger;
 					$().berry({name:'versionForm',attributes:api,legend:'Select Version',fields:[
-							{label: 'Version', name:'api_version_id', required:true, choices:'/api/proxy/'+slug+'/api_versions',type:'select', value_key:'id',label_key:'label'},
+							{label: 'Version', name:'api_version_id', required:true, choices:'/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',type:'select', value_key:'id',label_key:'label'},
 					]}).on('save',function(){
 
 						$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),

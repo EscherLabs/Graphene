@@ -11,6 +11,7 @@ $.ajax({
 			// {label: 'Type', name:['dev','test','prod'], required: true},
 			{label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
 			{label: 'API Version', name:'api_version_id', show: false,type:'select',choices:'/api/proxy/'+slug+'/api_versions',label_key:'summary',value_key:'id'},			
+			{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},
 			{name:'container',show:false, label: 'Resources',
 			"template":'{{#attributes.resources}}{{name}}<br> {{/attributes.resources}}',
 			type: 'fieldset', fields:[

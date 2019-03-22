@@ -88,7 +88,6 @@ function load(app_version) {
   //     ]}
   //   ]
   // })
-  debugger;
     $('.resources').berry({
     actions:false,
     name: 'resources',
@@ -128,29 +127,62 @@ function load(app_version) {
 	}
 
 
+Berry.validations['validurlpath'] = {
+	method: function(value, args) {
+		if (!/^[\/][a-zA-Z0-9_\/-][a-zA-Z0-9]*$/.test(value)) {
+			return false;
+		}
+		return true;
+	},
+	message: 'Must be a valid url path begining with a / and ending in a number or letter. Please see examples in help text'
+}
+
+Berry.validations['phpclassname'] = {
+	method: function(value, args) {
+		if (!/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/.test(value)) {
+			return false;
+		}
+		return true;
+	},
+	message: 'API name must be a valid php class name'
+}
   tableConfig.schema = [
     {label: 'Description',name: 'description'},
-    {label: 'Path', name:'path', required:true},
-    {label: 'Function Name', name:'function_name', required:true},
+    {label: 'Path', name:'path', validate:{required:true,validurlpath:true}, help:'i.e. /example/route or /my-example_2'},
+    {label: 'Function Name', name:'function_name', validate:{required:true,phpclassname:true}},
     // {label: 'Path',name:'path'},
     {label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
     {
       "show":false,
       "name": "parameters",
       "label": "Parameters",
-      "template":'{{#attributes.params}}{{#required}}<b>{{/required}}{{name}}{{#required}}</b>{{/required}}<br> {{/attributes.params}}',
-      // "fields": {
-      //   "params": {
-      //     "label": false,
-      //     "multiple": {
-      //       "duplicate": true
-      //     },
-      //     fields:[
-      //       {'name':'name','label':'Name',"inline":true,columns:8},
-      //       {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
-      //     ]
-      //   }
-      // }
+      "template":'{{#attributes.required}}<b>{{name}}</b><br> {{/attributes.required}}{{#attributes.optional}}{{#name}}{{name}}<br>{{/name}} {{/attributes.optional}}',
+      "fields": {
+        "required": {
+          "label": false,
+          "multiple": {
+            "duplicate": true
+          },
+          fields:[
+            {'name':'name','label':'Name',"inline":true},
+            {'name':'description','label':'Description','type':'textarea',"inline":true},
+            {'name':'example','label':'Example',"inline":true}
+            // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+          ]
+        },
+        "optional": {
+          "label": false,
+          "multiple": {
+            "duplicate": true
+          },
+          fields:[
+            {'name':'name','label':'Name',"inline":true},
+            {'name':'description','label':'Description','type':'textarea',"inline":true},
+            {'name':'example','label':'Example',"inline":true}
+            // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+          ]
+        }
+      }
     }
     // {label: 'Optional', name:'optional'},    
     // {label: 'Required', name:'required'},
@@ -165,34 +197,100 @@ function load(app_version) {
   }
 
   tableConfig.events=[
-    {'name': 'params', 'label': '<i class="fa fa-info"></i> Parameters', callback: function(model){
+    {'name': 'required', 'label': '<i class="fa fa-lock"></i> Required Parameters', callback: function(model){
       $().berry({
         model:model,
-        legend:'Parameters',
+        legend:'Required Parameters',
+        name:'required',
         fields:[
           {label: 'Description',name: 'description',type:'hidden'},
           {label: 'Path', name:'path', type:'hidden'},
           {label: 'Function Name', name:'function_name',type:'hidden'},
           {label: 'Verb',name:'verb',type:'hidden',options:["ALL", "GET", "POST", "PUT", "DELETE"]},
           {
-            "name": "parameters",
+            "name": "params",
             "label": false,
             "fields": {
-              "params": {
+              "required": {
                 "label": false,
                 "multiple": {
                   "duplicate": true
                 },
                 fields:[
-                  {'name':'name','label':'Name',"inline":true,columns:8},
-                  {'name':'required','label':'Required?','type':'checkbox',falsestate:0,"inline":true,columns:4},
+                  {'name':'name','label':'Name',"inline":true,columns:6},
+                  {'name':'example','label':'Example',"inline":true, columns:6},
+                  {'name':'description','label':'Description','type':'textarea',"inline":true}
+                  // {'name':'required','label':'Required?','type':'checkbox',falsestate:0,"inline":true,columns:4},
+                ]
+              },
+              "optional": {
+                "show":false,
+                "label": false,
+                "multiple": {
+                  "duplicate": true
+                },
+                fields:[
+                  {'name':'name','label':'Name',"inline":true},
+                  {'name':'description','label':'Description','type':'textarea',"inline":true},
+                  {'name':'example','label':'Example',"inline":true}
+                  // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
                 ]
               }
             }
           }
         ]
-        })
-    }, multiEdit: false},
+        }).on('save',function(){
+          this.set(Berries.required.toJSON())
+          this.owner.draw();
+        },model)
+    }, multiEdit: false},    
+    {'name': 'optional', 'label': '<i class="fa fa-info"></i> Optional Parameters', callback: function(model){
+      $().berry({
+        model:model,
+        legend:'Optional Parameters',
+        name:'optional',
+        fields:[
+          {label: 'Description',name: 'description',type:'hidden'},
+          {label: 'Path', name:'path', type:'hidden'},
+          {label: 'Function Name', name:'function_name',type:'hidden'},
+          {label: 'Verb',name:'verb',type:'hidden',options:["ALL", "GET", "POST", "PUT", "DELETE"]},
+          {
+            "name": "params",
+            "label": false,
+            "fields": {
+              "required": {
+                "show":false,
+                "label": false,
+                "multiple": {
+                  "duplicate": true
+                },
+                fields:[
+                  {'name':'name','label':'Name',"inline":true},
+                  {'name':'description','label':'Description','type':'textarea',"inline":true},
+                  {'name':'example','label':'Example',"inline":true}
+                  // {'name':'required','label':'Required?','type':'checkbox',falsestate:0,"inline":true,columns:4},
+                ]
+              },
+              "optional": {
+                "label": false,
+                "multiple": {
+                  "duplicate": true
+                },
+                fields:[
+                  {'name':'name','label':'Name',"inline":true,columns:6},
+                  {'name':'example','label':'Example',"inline":true, columns:6},
+                  {'name':'description','label':'Description','type':'textarea',"inline":true}
+                  // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
+                ]
+              }
+            }
+          }
+        ]
+        }).on('save',function(){
+          this.set(Berries.optional.toJSON())
+          this.owner.draw();
+        },model)
+    }, multiEdit: false}
 
   ]
   bt = new berryTable(tableConfig)
