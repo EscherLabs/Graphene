@@ -123,13 +123,24 @@ function load(app_version) {
 		count: 25,
 		autoSize: -20,
 		container: '.routes',
-    edit:true,delete:true,add:true
+    edit:function(model){
+      var temp = model.attributes;
+      temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
+      temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
+      model.set(temp)
+      model.owner.draw();
+    },delete:true, add:function(model){
+      var temp = model.attributes;
+      temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
+      temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
+      model.set(temp)
+      model.owner.draw();    }
 	}
 
 
 Berry.validations['validurlpath'] = {
 	method: function(value, args) {
-		if (!/^[\/][a-zA-Z0-9_\/-][a-zA-Z0-9]*$/.test(value)) {
+		if (!/^[\/][a-zA-Z0-9_\/-]*[a-zA-Z0-9]$/.test(value)) {
 			return false;
 		}
 		return true;
@@ -199,7 +210,8 @@ Berry.validations['phpclassname'] = {
   tableConfig.events=[
     {'name': 'required', 'label': '<i class="fa fa-lock"></i> Required Parameters', callback: function(model){
       $().berry({
-        model:model,
+        // model:model,
+        attributes:model.attributes,
         legend:'Required Parameters',
         name:'required',
         fields:[
@@ -240,13 +252,18 @@ Berry.validations['phpclassname'] = {
           }
         ]
         }).on('save',function(){
-          this.set(Berries.required.toJSON())
+          var temp = Berries.required.toJSON();
+          temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
+          temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
+          this.set(temp)
           this.owner.draw();
+          Berries.required.trigger('close')
         },model)
     }, multiEdit: false},    
     {'name': 'optional', 'label': '<i class="fa fa-info"></i> Optional Parameters', callback: function(model){
       $().berry({
-        model:model,
+        // model:model,
+        attributes:model.attributes,
         legend:'Optional Parameters',
         name:'optional',
         fields:[
@@ -287,8 +304,13 @@ Berry.validations['phpclassname'] = {
           }
         ]
         }).on('save',function(){
-          this.set(Berries.optional.toJSON())
+          var temp = Berries.optional.toJSON();
+          temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
+          temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
+          this.set(temp)
           this.owner.draw();
+
+          Berries.optional.trigger('close')
         },model)
     }, multiEdit: false}
 
