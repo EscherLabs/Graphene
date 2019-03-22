@@ -24,7 +24,8 @@ $.ajax({
 						{label: 'API', name:'api_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
 						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',label_key:'summary',value_key:'id'},			
 					]})
-				if(api.api_version.resources != null){
+					// debugger;
+				if(api.api_version.resources.length >1 || api.api_version.resources[0].name.length){
 					$('.resources').berry({
 						name: 'resources',
 						attributes: _.merge(api,api.api_version),
@@ -187,9 +188,8 @@ $.ajax({
 		}});
 
 		$('body').on('click','#version', function(){
-			debugger;
 					$().berry({name:'versionForm',attributes:api,legend:'Select Version',fields:[
-							{label: 'Version', name:'api_version_id', required:true, choices:'/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',type:'select', value_key:'id',label_key:'label'},
+							{label: 'Version', name:'api_version_id', required:true, choices:'/api/proxy/'+slug+'/apis/'+api.api.id+'/versions',type:'select', value_key:'id',label_key:'label'},
 					]}).on('save',function(){
 
 						$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),

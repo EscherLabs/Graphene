@@ -144,7 +144,7 @@ Berry.validations['phpclassname'] = {
 		}
 		return true;
 	},
-	message: 'API name must be a valid php class name'
+	message: 'API name must be a valid php function name'
 }
   tableConfig.schema = [
     {label: 'Description',name: 'description'},
