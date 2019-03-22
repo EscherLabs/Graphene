@@ -9,8 +9,11 @@ $.ajax({
 		api.server = server;
 		$('#table').html(templates.api_instance.render(api));
 		$.ajax({
-			url: "/api/proxy/"+slug+"/api_versions/"+api.api_version_id,		
-			success: function(version){
+			url: '/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',		
+			success: function(versions){
+
+				versions.unshift({id:0,label:'Latest Published'})
+				versions.unshift({id:-1,label:'Latest (Working or Published)'})
 				$('.main').berry({
 					name:'main',
 					attributes:api,
@@ -22,9 +25,8 @@ $.ajax({
 						{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
 						
 						{label: 'API', name:'api_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
-						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',label_key:'summary',value_key:'id'},			
+						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,label_key:'label',value_key:'id'},			
 					]})
-					// debugger;
 				if(api.api_version.resources.length >1 || api.api_version.resources[0].name.length){
 					$('.resources').berry({
 						name: 'resources',
@@ -47,7 +49,7 @@ $.ajax({
 				}
 
 		var routes_partials = []
-		_.map(_.pluck(version.routes,'path'),function(item){
+		_.map(_.pluck(api.api_version.routes,'path'),function(item){
 			var thisTemp = '';
 			var parts = item.split('/')
 			for (var i = 0, len = parts.length; i < len; i++) {
@@ -185,23 +187,24 @@ $.ajax({
 		// 	]
 		// 	})
 
+			$('body').on('click','#version', function(){
+				$().berry({name:'versionForm',attributes:api,legend:'Select Version',fields:[
+						{label: 'Version', name:'api_version_id', required:true, options:versions,type:'select', value_key:'id',label_key:'label'},
+				]}).on('save',function(){
+
+					$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),
+					success:function(data) {
+						window.location.reload(true);
+					},
+					error:function(e) {
+						toastr.error(e.statusText, 'ERROR');
+					}
+				});
+				},this)
+			})	
+
 		}});
 
-		$('body').on('click','#version', function(){
-					$().berry({name:'versionForm',attributes:api,legend:'Select Version',fields:[
-							{label: 'Version', name:'api_version_id', required:true, choices:'/api/proxy/'+slug+'/apis/'+api.api.id+'/versions',type:'select', value_key:'id',label_key:'label'},
-					]}).on('save',function(){
-
-						$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),
-						success:function(data) {
-							window.location.reload(true);
-						},
-						error:function(e) {
-							toastr.error(e.statusText, 'ERROR');
-						}
-					});
-					},this)
-		})	
 
 
 
