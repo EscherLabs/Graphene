@@ -209,7 +209,7 @@ $.ajax({
 
 
 		$('#save').on('click',function(){
-			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:myapi.environment_id}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
+			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:parseInt(myapi.environment_id)}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
 
         $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
 				api.comment = this.toJSON().comment;
