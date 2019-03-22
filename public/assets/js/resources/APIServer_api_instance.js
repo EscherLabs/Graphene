@@ -22,12 +22,12 @@ $.ajax({
 					fields:[
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
-						{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
-						
+						{label: 'Environment', name:'environment_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
 						{label: 'API', name:'api_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
-						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,label_key:'label',value_key:'id'},			
+						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,label_key:'label',value_key:'id'},		
+						{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},	
 					]})
-				if(api.api_version.resources.length >1 || api.api_version.resources[0].name.length){
+				if(api.api_version.resources.length >1 && api.api_version.resources[0].name.length){
 					$('.resources').berry({
 						name: 'resources',
 						attributes: _.merge(api,api.api_version),
@@ -142,7 +142,7 @@ $.ajax({
 	
 		],
 		schema:[
-			{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/api_users',label_key:'app_name'},
+			{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',label_key:'app_name'},
 							{label:'Path', name: 'route', type:'select', options:routes_partials},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{ value }}<br>{{/attributes.params}}'}
