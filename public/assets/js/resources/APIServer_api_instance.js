@@ -27,7 +27,7 @@ $.ajax({
 						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,label_key:'label',value_key:'id'},		
 						{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},	
 					]})
-				if(api.api_version.resources.length >1 && api.api_version.resources[0].name.length){
+				if(api.api_version.resources.length >0 && api.api_version.resources[0].name.length){
 					$('.resources').berry({
 						name: 'resources',
 						attributes: _.merge(api,api.api_version),
