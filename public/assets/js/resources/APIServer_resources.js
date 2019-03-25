@@ -10,10 +10,11 @@ $.ajax({
 			{label: 'Name', name:'name', required: true},
 			{label: 'Type', name:'resource_type', required: true, type:'select',
 			options:[
-				{label: 'mySQL Resource',value: 'mysql'},
-				{label: 'Oracle Resource', value:'oracle'},
-				{label: 'Constant', value:'constant'},
-			]},			
+				{label: 'MySQL Database',value: 'mysql'},
+				{label: 'Oracle Database', value:'oracle'},
+				{label: 'Value', value:'value'},
+				{label: 'Secret Value (Encrypted at Rest)', value:'secret'}
+			]},
 			{label: 'Environment Type', name:'type', options:['dev','test','prod'], required: true},
 			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
@@ -22,7 +23,7 @@ $.ajax({
 				{label: 'Pass', name:'pass',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
 				{label: 'User', name:'user',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
 				{label: 'Server', name:'server',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Value', name:'value',type:'hidden',show:{matches:{name:'type',value:'constant'}}},
+				{label: 'Value', name:'value',type:'hidden',show:{multiMatch:[{name:'type',value:'secret'},{name:'type',value:'value'}]}},
 			]},
 			{name: 'id', type:'hidden'}
 		];
@@ -52,7 +53,8 @@ $.ajax({
 						{label: 'Password', name:'pass'},
 					]})
 					break;									
-					case 'constant':
+					case 'secret':
+					case 'value':
 					fields.push({name:'config',label:false,fields:[
 						{label: 'Value',name: 'value'}
 					]})

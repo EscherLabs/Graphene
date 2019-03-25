@@ -42,7 +42,7 @@ class APIServerController extends Controller
             unset($input['id']);
         }
         $response = $httpHelper->http_fetch($url, $request->method(), array_merge($request->input(),['user_id'=>Auth::user()->unique_id]), $api_config->username, $api_config->password);
-        return $response['content'];
+        return response($response['content'],$response['code']);
     }
 
     public function api($slug, $api_id) {
