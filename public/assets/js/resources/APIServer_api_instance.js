@@ -38,7 +38,7 @@ $.ajax({
 							{name:'container', label: false,  type: 'fieldset', fields:[
 								{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
 									{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
-									{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
+									{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources/type/'+api.environment.type},
 									{label:false, name: 'name',columns:0, type:'hidden'}
 								]}
 							]},			
