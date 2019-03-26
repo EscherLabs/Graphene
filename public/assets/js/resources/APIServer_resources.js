@@ -18,12 +18,12 @@ $.ajax({
 			{label: 'Environment Type', name:'type', options:['dev','test','prod'], required: true},
 			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
-			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}',fields:[
-				{label: 'Name',name: 'name',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Pass', name:'pass',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'User', name:'user',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Server', name:'server',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Value', name:'value',type:'hidden',show:{multiMatch:[{name:'type',value:'secret'},{name:'type',value:'value'}]}},
+			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}{{attributes.config.tns}}',fields:[
+				// {label: 'Name',name: 'name',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'Pass', name:'pass',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'User', name:'user',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'Server', name:'server',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'Value', name:'value',type:'hidden',parsable:'show',show:{multiMatch:[{name:'type',value:'secret'},{name:'type',value:'value'}]}},
 			]},
 			{name: 'id', type:'hidden'}
 		];

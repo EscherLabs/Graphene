@@ -109,12 +109,12 @@ function load(app_version) {
               // "database": {}
               // {label: false, name:'database',type:'select', required: true,choices:'/api/proxy/databases',label_key:'name',value_key:'id'}
               {label: 'Name', name:'name', required: true, columns:6},
-              {label: 'Type', name:'type', type:'select',options:[
-                {label: 'MySQL Database',value: 'mysql'},
-                {label: 'Oracle Database', value:'oracle'},
-                {label: 'Value', value:'value'},
-                {label: 'Secret Value (Encrypted at Rest)', value:'secret'}
-              ], columns:6}
+              // {label: 'Type', name:'type', type:'select',options:[
+              //   {label: 'MySQL Database',value: 'mysql'},
+              //   {label: 'Oracle Database', value:'oracle'},
+              //   {label: 'Value', value:'value'},
+              //   {label: 'Secret Value (Encrypted at Rest)', value:'secret'}
+              // ], columns:6}
               
             ]
           }
