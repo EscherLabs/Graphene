@@ -59,7 +59,7 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                @can('view_in_admin', 'App\Site')
+                @can('create', 'App\App')
                 @foreach (config('app.site')->proxyserver_config as $config)
                     <li><a href="/admin/apiserver/{{ $config->slug }}/environments"><i class="fa fa-server"></i> {{ $config->name }}</a></li>
                 @endforeach
@@ -70,7 +70,7 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            @can('view_in_admin', 'App\Site')
+            @can('create', 'App\App')
             <li><a href="/admin/apiserver/{{$slug}}/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/apis"><i class="fa fa-cubes fa-fw"></i>&nbsp; APIs</a></li>
@@ -89,7 +89,7 @@
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        @can('view_in_admin', 'App\Site')
+        @can('create', 'App\App')
         <li><a href="/admin/apiserver/{{$slug}}/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/apis"><i class="fa fa-cubes fa-fw"></i>&nbsp; APIs</a></li>

@@ -63,7 +63,7 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                @can('view_in_admin', 'App\Site')
+                @can('create', 'App\App')
                 @if(!is_null(config('app.site')->proxyserver_config))
                 @foreach (config('app.site')->proxyserver_config as $config)
                     @if($config->slug != '' && $config->name != '')

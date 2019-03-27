@@ -287,10 +287,10 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     Route::get('/ellucianmobile/config','EllucianMobileController@config');
 
-    Route::get('/proxy/{slug}/{route}/{object_id?}/{action?}/{selection?}','APIServerController@fetch'); // Check Permissions in Controller  
-    Route::post('/proxy/{slug}/{route}/{object_id?}/{action?/{selection?}','APIServerController@fetch'); 
-    Route::put('/proxy/{slug}/{route}/{object_id?}/{action?}/{selection?}','APIServerController@fetch'); 
-    Route::delete('/proxy/{slug}/{route}/{object_id?}/{action?}/{selection?}','APIServerController@fetch'); 
+    Route::get('/proxy/{slug}/{route}/{object_id?}/{action?}/{selection?}','APIServerController@fetch')->middleware('can:create,App\App');;  
+    Route::post('/proxy/{slug}/{route}/{object_id?}/{action?/{selection?}','APIServerController@fetch')->middleware('can:create,App\App');; 
+    Route::put('/proxy/{slug}/{route}/{object_id?}/{action?}/{selection?}','APIServerController@fetch')->middleware('can:create,App\App');; 
+    Route::delete('/proxy/{slug}/{route}/{object_id?}/{action?}/{selection?}','APIServerController@fetch')->middleware('can:create,App\App');; 
   });
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
@@ -299,8 +299,8 @@ Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin/apiserver'], function () {
-  Route::get('/{slug}/apis/{api_id}', 'APIServerController@api');    
-  Route::get('/{slug}/api_docs/{api_instance_id}', 'APIServerController@api_docs');     
-  Route::get('/{slug}/{resource?}/{resource_id?}', 'APIServerController@index');    
+  Route::get('/{slug}/apis/{api_id}', 'APIServerController@api')->middleware('can:create,App\App');
+  Route::get('/{slug}/api_docs/{api_instance_id}', 'APIServerController@api_docs')->middleware('can:create,App\App');
+  Route::get('/{slug}/{resource?}/{resource_id?}', 'APIServerController@index')->middleware('can:create,App\App');    
 });
   
