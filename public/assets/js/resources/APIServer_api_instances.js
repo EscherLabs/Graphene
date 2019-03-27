@@ -26,29 +26,30 @@ $.ajax({
 
 		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/api_instance/'+model.attributes.id};
 		
-		tableConfig.events=[
-			{'name': 'config', 'label': '<i class="fa fa-map"></i> Resource Map', callback: function(model){
-				$().berry({
-					legend:'Resource Map',
-					name:'map',
-					model:model,
-					"flatten": true,
-					fields:[
-						{name: 'id', type:'hidden'},
-						{name:'container', label: false,  type: 'fieldset', fields:[
-							{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
-								{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
-								{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
-								{label:false, name: 'name',columns:0, type:'hidden'}
-							]}
-						]},		
-					]
-					}).on('saved',function(){
-						this.owner.options.edit(this);
-						this.owner.draw();
-					}.bind(model))
-			}, multiEdit: false},
-		]
+		// TJC 3/26/19 -- Only Edit Resource Mapping from within API Instance (should limit resources to same type as environment!)
+		// tableConfig.events=[
+		// 	{'name': 'config', 'label': '<i class="fa fa-map"></i> Resource Map', callback: function(model){
+		// 		$().berry({
+		// 			legend:'Resource Map',
+		// 			name:'map',
+		// 			model:model,
+		// 			"flatten": true,
+		// 			fields:[
+		// 				{name: 'id', type:'hidden'},
+		// 				{name:'container', label: false,  type: 'fieldset', fields:[
+		// 					{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
+		// 						{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
+		// 						{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
+		// 						{label:false, name: 'name',columns:0, type:'hidden'}
+		// 					]}
+		// 				]},		
+		// 			]
+		// 			}).on('saved',function(){
+		// 				this.owner.options.edit(this);
+		// 				this.owner.draw();
+		// 			}.bind(model))
+		// 	}, multiEdit: false},
+		// ]
 
 
 		tableConfig.name = "api_instances";
