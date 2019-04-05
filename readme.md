@@ -5,9 +5,9 @@ Graphene is a fully featured 'Micro Application' and 'Content Management' Platfo
 If you are interested in piloting Graphene at your campus, please contact [graphenepilot@binghamton.edu](mailto:graphenepilot@binghamton.edu).
 
 ## Dependencies
- - MySQL 5.7.8 or Later
- - PHP 7.1 or Later 
- - Composer (Latest)
+ - MySQL 5.7.8+ or MariaDB 10.2+
+ - PHP 7.1+
+ - Composer
 
 ## Installation Instructions / Tutorials / Documentation
  All documentation (including installation instructions and video tutorials) is available in the [Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
