@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title>{{ config('app.site')->name }}</title>
+    <title>{{ config('app.site')->name }} | {{ $config->name }}</title>
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
     <link href="/assets/css/toastr.min.css" rel="stylesheet">
@@ -43,7 +43,7 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" style="background-color:#2d8cc3" href="/">
-            &nbsp;{{ $config->name }}
+          <img style="height:25px" src="/assets/img/graphene_all_white.png">
           </a>
           <ul class="nav navbar-nav navbar-right hidden-xs">
             <li><a href="#"><h4 style="margin:0"></h4></a></li>
@@ -51,6 +51,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+          <li><a href="/"><h4 style="margin:0;">{{ $config->name }}</h4></a>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle user-info" data-toggle="dropdown" role="button">
                 <img class="gravatar" src="https://www.gravatar.com/avatar/{{ md5(Auth::user()->email) }}?d=mm" /> 
@@ -58,7 +59,7 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                @can('view_in_admin', 'App\Site')
+                @can('create', 'App\App')
                 @foreach (config('app.site')->proxyserver_config as $config)
                     <li><a href="/admin/apiserver/{{ $config->slug }}/environments"><i class="fa fa-server"></i> {{ $config->name }}</a></li>
                 @endforeach
@@ -69,14 +70,14 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right visible-xs-block">
-            @can('view_in_admin', 'App\Site')
+            @can('create', 'App\App')
             <li><a href="/admin/apiserver/{{$slug}}/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
-            <li><a href="/admin/apiserver/{{$slug}}/services"><i class="fa fa-cubes fa-fw"></i>&nbsp; Services</a></li>
-            <!--<li><a href="/admin/apiserver/{{$slug}}/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Service Versions</a></li>-->
-            <li><a href="/admin/apiserver/{{$slug}}/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
+            <li><a href="/admin/apiserver/{{$slug}}/apis"><i class="fa fa-cubes fa-fw"></i>&nbsp; APIs</a></li>
+            <!--<li><a href="/admin/apiserver/{{$slug}}/api_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; API Versions</a></li>-->
+            <li><a href="/admin/apiserver/{{$slug}}/api_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; API Instances</a></li>
             <li><a href="/admin/apiserver/{{$slug}}/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
-            <li><a href="/admin/apiserver/{{$slug}}/schedule"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</a></li>
+            <!-- <li><a href="/admin/apiserver/{{$slug}}/schedule"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</a></li> -->
             <li><a href="/admin/apiserver/{{$slug}}/activity_log"><i class="fa fa-file fa-fw"></i>&nbsp; Activity Log</a></li>
             @endcan  
           </ul>
@@ -88,14 +89,14 @@
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        @can('view_in_admin', 'App\Site')
+        @can('create', 'App\App')
         <li><a href="/admin/apiserver/{{$slug}}/environments"><i class="fa fa-cloud fa-fw"></i>&nbsp; Environments</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/users"><i class="fa fa-users fa-fw"></i>&nbsp; Users</a></li>
-        <li><a href="/admin/apiserver/{{$slug}}/services"><i class="fa fa-cubes fa-fw"></i>&nbsp; Services</a></li>
-        <!--<li><a href="/admin/apiserver/{{$slug}}/service_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; Service Versions</a></li>-->
-        <li><a href="/admin/apiserver/{{$slug}}/service_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; Service Instances</a></li>
+        <li><a href="/admin/apiserver/{{$slug}}/apis"><i class="fa fa-cubes fa-fw"></i>&nbsp; APIs</a></li>
+        <!--<li><a href="/admin/apiserver/{{$slug}}/api_versions"><i class="fa fa-code-fork fa-fw"></i>&nbsp; API Versions</a></li>-->
+        <li><a href="/admin/apiserver/{{$slug}}/api_instances"><i class="fa fa-cube fa-fw"></i>&nbsp; API Instances</a></li>
         <li><a href="/admin/apiserver/{{$slug}}/resources"><i class="fa fa-database fa-fw"></i>&nbsp; Resources</a></li>
-        <li><a href="/admin/apiserver/{{$slug}}/schedule"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</a></li>
+        <!-- <li><a href="/admin/apiserver/{{$slug}}/schedule"><i class="fa fa-calendar fa-fw"></i>&nbsp; Schedule</a></li> -->
         <li><a href="/admin/apiserver/{{$slug}}/activity_log"><i class="fa fa-file fa-fw"></i>&nbsp; Activity Log</a></li>
         @endcan  
       </ul>
@@ -122,6 +123,15 @@
     <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
     <script src='/assets/js/vendor/toastr.min.js'></script> 
     <script src='/assets/js/lib.js'></script> 
+    <script src='/assets/js/vendor/htmldiff.js'></script> 
+    <style>
+    ins {
+      text-decoration: none; background-color: #d4fcbc;
+    }
+    del {
+      text-decoration: line-through; background-color: #fbb6c2; color: #555;
+    }
+    </style>
     @yield('end_body_scripts_top')
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 

@@ -71,6 +71,9 @@ class Site extends Model
         foreach($configs as $index => $config) {
           if (isset($config['password']) && $config['password'] != '*****') {
             $configs[$index]['password'] = encrypt($config['password']);
+          } else {
+            $orig_config = $this->get_proxyserver_by_slug($config['slug']);
+            $configs[$index]['password'] = encrypt($orig_config->password);
           }
         }
         $this->attributes['proxyserver_config'] = json_encode($configs);

@@ -10,19 +10,20 @@ $.ajax({
 			{label: 'Name', name:'name', required: true},
 			{label: 'Type', name:'resource_type', required: true, type:'select',
 			options:[
-				{label: 'mySQL Resource',value: 'mysql'},
-				{label: 'Oracle Resource', value:'oracle'},
-				{label: 'Constant', value:'constant'},
-			]},			
+				{label: 'MySQL Database',value: 'mysql'},
+				{label: 'Oracle Database', value:'oracle'},
+				{label: 'Value', value:'value'},
+				{label: 'Secret Value (Encrypted at Rest)', value:'secret'}
+			]},
 			{label: 'Environment Type', name:'type', options:['dev','test','prod'], required: true},
 			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
-			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}',fields:[
-				{label: 'Name',name: 'name',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Pass', name:'pass',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'User', name:'user',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Server', name:'server',type:'hidden',show:{matches:{name:'type',value:'mysql'}}},
-				{label: 'Value', name:'value',type:'hidden',show:{matches:{name:'type',value:'constant'}}},
+			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}{{attributes.config.tns}}',fields:[
+				// {label: 'Name',name: 'name',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'Pass', name:'pass',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'User', name:'user',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'Server', name:'server',type:'hidden',parsable:'show',show:{matches:{name:'type',value:'mysql'}}},
+				// {label: 'Value', name:'value',type:'hidden',parsable:'show',show:{multiMatch:[{name:'type',value:'secret'},{name:'type',value:'value'}]}},
 			]},
 			{name: 'id', type:'hidden'}
 		];
@@ -39,13 +40,21 @@ $.ajax({
 				switch(model.attributes.resource_type){
 					case 'mysql':
 					fields.push({name:'config',label:false,fields:[
-						{label: 'Name',name: 'name'},
-						{label: 'Pass', name:'pass'},
-						{label: 'User', name:'user'},
+						{label: 'Database Name',name: 'name'},
+						{label: 'Username', name:'user'},
+						{label: 'Password', name:'pass'},
 						{label: 'Server', name:'server'}
 					]})
-					break;					
-					case 'constant':
+					break;	
+					case 'oracle':
+					fields.push({name:'config',label:false,fields:[
+						{label: 'TNS_NAME',name: 'tns'},
+						{label: 'Username', name:'user'},
+						{label: 'Password', name:'pass'},
+					]})
+					break;									
+					case 'secret':
+					case 'value':
 					fields.push({name:'config',label:false,fields:[
 						{label: 'Value',name: 'value'}
 					]})
@@ -72,4 +81,4 @@ $.ajax({
 	}
 });
 
-// {label: 'Service', name:'service_id',type:'select', required: true,choices:'/api/proxy/resources',label_key:'name',value_key:'id'},
+// {label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/resources',label_key:'name',value_key:'id'},

@@ -16,7 +16,7 @@ class Templater {
         $data['url'] = [
             'root' => url('/'),
             'logout' => url('/logout'),
-            'admin' => url ('/admin/groups'),
+            'admin' => url ('/admin'),
             'login' => url ('/login'),
         ];
     }

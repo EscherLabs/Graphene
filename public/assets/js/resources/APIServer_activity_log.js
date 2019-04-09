@@ -1,5 +1,5 @@
 $('.navbar-header .nav a h4').html('Activity Log');
-// url = "/admin/apiserver/fetch/service_versions";
+// url = "/admin/apiserver/fetch/api_versions";
 url = "/api/proxy/"+slug+"/activity_log";
 api = url;
 $.ajax({
@@ -36,19 +36,13 @@ $.ajax({
 			}
 		}
 
-
 		tableConfig.click = function(model){
 			model.last_response = model.attributes.last_response;
 			// model.scheduled_times = _.map(model.attributes.next_runtimes,function(item){return {text:moment(item).fromNow(),value:item}})
 			
-			// if(typeof model.last_response == 'object'){
-			// 	model.last_response = JSON.stringify(model.last_response, null,'\t');
-			// }
-			var templateString = Hogan.compile('Old: <pre>{{old}}</pre><br>New: <pre>{{new}}</pre><br>').render(model)
-			
-			modal({title:'Status Summary', content:templateString})
-			// window.location.href = '/admin/appinstances/'+model.attributes.id
-		
+			// TJC -- This desperately needs to be cleaned up to better escape special characters
+			var templateString = '<pre>'+htmldiff(model.old.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;"),model.new.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;"))+'</pre>';
+			modal({title:'Status Summary', content:templateString})		
 		};		
 
 

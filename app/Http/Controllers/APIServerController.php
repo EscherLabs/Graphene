@@ -42,23 +42,36 @@ class APIServerController extends Controller
             unset($input['id']);
         }
         $response = $httpHelper->http_fetch($url, $request->method(), array_merge($request->input(),['user_id'=>Auth::user()->unique_id]), $api_config->username, $api_config->password);
-        return $response['content'];
+        return response($response['content'],$response['code']);
     }
 
-    public function service($slug, $service_id) {
+    public function api($slug, $api_id) {
         $httpHelper = new HTTPHelper();
 
         $mysite = config('app.site')->select('proxyserver_config')->first();
         $api_config = $mysite->get_proxyserver_by_slug($slug);
 
-        $url = $api_config->server."/api/services/".$service_id.'/versions/latest';        
-        $service_version = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
+        $url = $api_config->server."/api/apis/".$api_id.'/versions/latest';        
+        $api_version = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
 
         $httpHelper = new HTTPHelper();
 
-        $url = $api_config->server."/api/services/".$service_id;                
-        $service = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
-        // return $service;
-        return view('adminModule', ['resource'=>'APIServer_service_edit','id'=>$service['content']['id'], 'service'=>json_encode($service['content']),'service_version'=>json_encode($service_version['content']),'slug'=>$slug,'config'=>$api_config]);
+        $url = $api_config->server."/api/apis/".$api_id;                
+        $api = $httpHelper->http_fetch($url,"GET", array(), $api_config->username, $api_config->password);
+        // return $api;
+        return view('adminAPI', ['resource'=>'APIServer_api_edit','id'=>$api['content']['id'], 'api'=>json_encode($api['content']),'api_version'=>json_encode($api_version['content']),'slug'=>$slug,'config'=>$api_config]);
      } 
+
+     public function api_docs($slug, $api_instance_id) {
+        $httpHelper = new HTTPHelper();
+
+        $mysite = config('app.site')->select('proxyserver_config')->first();
+        $api_config = $mysite->get_proxyserver_by_slug($slug);
+
+        $url = $api_config->server."/api/api_docs/".$api_instance_id;        
+        $docs = $httpHelper->http_fetch($url,"GET", [], $api_config->username, $api_config->password);
+
+        return response($docs['content']['docs'], 200);
+    } 
+
 }

@@ -1,33 +1,36 @@
-$('.navbar-header .nav a h4').html('Service Instance');
-url = "/api/proxy/"+slug+"/service_instances/"+resource_id;
+$('.navbar-header .nav a h4').html('API Instance');
+url = "/api/proxy/"+slug+"/api_instances/"+resource_id;
 api = url;
-myservice = {};
+myapi = {};
 $.ajax({
 	url: url,		
-	success: function(service){
-		myservice = service;
-		service.server = server;
-		$('#table').html(templates.service_instance.render(service));
+	success: function(api){
+		myapi = api;
+		api.server = server;
+		$('#table').html(templates.api_instance.render(api));
 		$.ajax({
-			url: "/api/proxy/"+slug+"/service_versions/"+service.service_version_id,		
-			success: function(version){
+			url: '/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',		
+			success: function(versions){
+
+				versions.unshift({id:0,label:'Latest Published'})
+				versions.unshift({id:-1,label:'Latest (Working or Published)'})
 				$('.main').berry({
 					name:'main',
-					attributes:service,
+					attributes:api,
 					"flatten": true,			
 					actions:false,
 					fields:[
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
-						{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
-						
-						{label: 'Service', name:'service_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/services',label_key:'name',value_key:'id'},
-						{label: 'Service Version', name:'service_version_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/service_versions',label_key:'summary',value_key:'id'},			
+						{label: 'Environment', name:'environment_id', enabled: false,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
+						{label: 'API', name:'api_id',type:'select', enabled: false,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
+						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,label_key:'label',value_key:'id'},		
+						{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},	
 					]})
-				if(service.resources != null){
+				if(api.api_version.resources.length >0 && api.api_version.resources[0].name.length){
 					$('.resources').berry({
 						name: 'resources',
-						attributes: service,
+						attributes: _.merge(api,api.api_version),
 						"flatten": true,			
 						actions:false,
 						
@@ -35,7 +38,7 @@ $.ajax({
 							{name:'container', label: false,  type: 'fieldset', fields:[
 								{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
 									{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
-									{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
+									{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources/type/'+api.environment.type},
 									{label:false, name: 'name',columns:0, type:'hidden'}
 								]}
 							]},			
@@ -46,15 +49,25 @@ $.ajax({
 				}
 
 		var routes_partials = []
-		_.map(_.pluck(version.routes,'path'),function(item){
+		_.map(_.pluck(api.api_version.routes,'path'),function(item){
 			var thisTemp = '';
 			var parts = item.split('/')
 			for (var i = 0, len = parts.length; i < len; i++) {
 				if(parts[i]!== '*'){
-					thisTemp += parts[i]+'/';
-					routes_partials.push(thisTemp+'*');				
+					// if((i+1)<len){
+					// thisTemp += parts[i]+'/';
+					// }else{
+						thisTemp += parts[i]
+					// }
+					routes_partials.push(thisTemp);	
+					// routes_partials.push({value:thisTemp,label:thisTemp+'*'});	
+
+					thisTemp += '/';			
 				}		
 			}
+		})
+		routes_partials = _.map(_.uniq(routes_partials),function(item){
+			return {value:item,label:item+'*'}
 		})
 
 		var options = {
@@ -129,17 +142,17 @@ $.ajax({
 	
 		],
 		schema:[
-			{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/api_users',label_key:'app_name'},
-							{label:'Path', name: 'route', type:'select', options:_.uniq(routes_partials)},
+			{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',label_key:'app_name'},
+							{label:'Path', name: 'route', type:'select', options:routes_partials},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{ value }}<br>{{/attributes.params}}'}
-		], data: service.route_user_map}
+		], data: api.route_user_map}
 
 		bt = new berryTable(options)
 		// $('.permissions').berry({
 		// 	// legend:'Permissions',
 		// 	name:'permissions',
-		// 	attributes:service,
+		// 	attributes:api,
 		// 	"flatten": false,
 		// 	actions:false,
 		// 	fields:[
@@ -174,46 +187,46 @@ $.ajax({
 		// 	]
 		// 	})
 
+			$('body').on('click','#version', function(){
+				$().berry({name:'versionForm',attributes:api,legend:'Select Version',fields:[
+						{label: 'Version', name:'api_version_id', required:true, options:versions,type:'select', value_key:'id',label_key:'label'},
+				]}).on('save',function(){
+
+					$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),
+					success:function(data) {
+						window.location.reload(true);
+					},
+					error:function(e) {
+						toastr.error(e.statusText, 'ERROR');
+					}
+				});
+				},this)
+			})	
+
 		}});
 
-		$('body').on('click','#version', function(){
-			
-					$().berry({name:'versionForm',attributes:service,legend:'Select Version',fields:[
-							{label: 'Version', name:'service_version_id', required:true, choices:'/api/proxy/'+slug+'/service_versions',type:'select', value_key:'id',label_key:'label'},
-					]}).on('save',function(){
-
-						$.ajax({url: url, type: 'PUT', data: Berries.versionForm.toJSON(),
-						success:function(data) {
-							window.location.reload(true);
-						},
-						error:function(e) {
-							toastr.error(e.statusText, 'ERROR');
-						}
-					});
-					},this)
-		})	
 
 
 
 		$('#save').on('click',function(){
-			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:myservice.environment_id}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
+			if(_.findWhere(Berry.collection.get('/api/proxy/'+slug+'/environments'),{id:parseInt(myapi.environment_id)}).type !== 'prod' || confirm('CAUTION: You are about to make updates in a production environment.\n\nWould you like to proceed?')){
 
         $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-				service.comment = this.toJSON().comment;
-				$.extend(service,Berries.main.toJSON());
+				api.comment = this.toJSON().comment;
+				$.extend(api,Berries.main.toJSON());
 				if(typeof Berries.resources !== 'undefined'){
-					service.resources =  Berries.resources.toJSON().resources;
+					api.resources =  Berries.resources.toJSON().resources;
 				}
 				// var temp = Berries.permissions.toJSON().container.route_user_map;
-				// service.route_user_map = _.each(temp,function(item){
+				// api.route_user_map = _.each(temp,function(item){
 				// 	item.params = item.parameters.params;
 				// 	delete item.parameters;
 				// })
-				service.route_user_map = _.pluck(bt.models,'attributes')
+				api.route_user_map = _.pluck(bt.models,'attributes')
 				
 				
-				$.ajax({url: url, type: 'PUT', data: service, success:function(){
-						toastr.success('', 'Successfully updated Service Instance')
+				$.ajax({url: url, type: 'PUT', data: api, success:function(){
+						toastr.success('', 'Successfully updated API Instance')
 					}.bind(this),
 					error:function(e) {
 						toastr.error(e.statusText, 'ERROR');
