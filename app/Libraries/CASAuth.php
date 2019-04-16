@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Site;
 use App\Libraries\HTTPHelper;
+use Illuminate\Support\Facades\Log;
 
 class CASAuth
 {
@@ -31,10 +32,15 @@ class CASAuth
         $m = new \Mustache_Engine;
         // Map Default Parameters
         foreach(config('cas.cas_data_map')->default as $attribute_name => $attribute_value) {
-            $user->$attribute_name = $m->render($attribute_value, $user_attributes);
+            $new_attribute_value = $m->render($attribute_value, $user_attributes);
+            // If the user attribute had something before, but doesn't now -- ignore it.
+            if ($user->$attribute_name !== '' && $user->$attribute_name !== null && $new_attribute_value === '') {
+                continue;
+            }
 
+            $user->$attribute_name = $new_attribute_value;
             // Allow null emails but not empty string email
-            if ($attribute_name === 'email' && $user->email === '') {
+            if ($attribute_name === 'email' && $new_attribute_value === '') {
                 $user->email = null;
             }
         }
@@ -50,7 +56,7 @@ class CASAuth
         }
         /* Merge with existing attributes */
         $attributes = array_merge((array)$user->params,$attributes);
-        $user->params = $attributes;
+        $user->params = (Object)$attributes;
     }
 
     private function fetch_external_user_attributes($user_attributes) {
@@ -71,7 +77,12 @@ class CASAuth
                 $user_attributes,
                 $username,
                 $password);
-            return $response['content'];
+            if (isset($response['code']) && $response['code'] == 200 && is_array($response['content'])) {  
+                return $response['content'];
+            } else {
+                Log::error('SSO Auth Unable to fetch External Attributes from '.$url,$user_attributes);
+                return [];
+            }
         } else {
             return [];
         }
@@ -90,6 +101,9 @@ class CASAuth
             $user = new User();
         }
         $this->map_user_attributes($user,$user_attributes);
+        if (!isset($user->unique_id) || $user->unique_id === '' || $user->unique_id === null) {
+            abort(401,'Unable to Authenticate User.  (unique_id cannot be determined)');
+        }
         $user->save();
         if (!$user_exists) {
             config('app.site')->add_member($user,false,false);
@@ -98,25 +112,28 @@ class CASAuth
     }
 
     private function handle_generic() {
+        $m = new \Mustache_Engine;                                    
         $user_exists = true;
-        $default_attributes = ['id'=>cas()->user()];
+        $default_attributes = ['id'=>cas()->user(),'username'=>cas()->user()];
         $external_attributes = $this->fetch_external_user_attributes($default_attributes);
-        $user_attributes = array_merge($external_attributes,$default_attributes);        
-        $user = User::where('unique_id', '=', cas()->user())->first();
-        if ($user === null && (config('cas.external_user_lookup')->enabled ===false || config('cas.external_user_lookup')->enabled ==="false")) {
-            return response('Error: This account does not exist', 401);
-        } else if ($user === null)  {
+        $user_attributes = array_merge($external_attributes,$default_attributes);
+        $user = User::where('unique_id', '=', 
+            $m->render(config('cas.cas_data_map')->default->unique_id, $user_attributes))->first();
+        if ($user === null) {
             $user_exists = false;
             $user = new User();
-        } 
+        }
         $this->map_user_attributes($user,$user_attributes);
-        $user->unique_id = cas()->user(); // Make sure the unique id is the cas username
+        if (!isset($user->unique_id) || $user->unique_id === '' || $user->unique_id === null) {
+            abort(401,'Unable to Authenticate User.  (unique_id cannot be determined)');
+        }
         $user->save();
         if (!$user_exists) {
             config('app.site')->add_member($user,false,false);
         }
         Auth::login($user, true);
     }
+
     /**
      * Handle an incoming request.
      *
