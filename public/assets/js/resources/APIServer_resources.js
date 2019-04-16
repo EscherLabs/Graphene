@@ -15,7 +15,7 @@ $.ajax({
 				{label: 'Value', value:'value'},
 				{label: 'Secret Value (Encrypted at Rest)', value:'secret'}
 			]},
-			{label: 'Environment Type', name:'type', options:['dev','test','prod'], required: true},
+			{label: 'Environment Type', name:'type',type:"select", options:['dev','test','prod'], required: true},
 			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
 			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}{{attributes.config.tns}}',fields:[
@@ -77,8 +77,12 @@ $.ajax({
 
 
 		tableConfig.name = "resources";
-		bt = new berryTable(tableConfig)
-	}
+		tableConfig.actions = [
+			{'name':'delete'},'|',
+			{'name':'edit'},'|',
+			{'name':'create'}
+		]
+		bt = new GrapheneDataGrid(tableConfig)	}
 });
 
 // {label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/resources',label_key:'name',value_key:'id'},

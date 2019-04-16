@@ -7,11 +7,16 @@ $.ajax({
 		tableConfig.schema = [
 			{label: 'Name', name:'app_name', required: true},
 			{label: 'Password', name:'app_secret', required: true},
-			{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},		
+			{label: 'Environment', name:'environment_id', required: true,type:'select',options:'/api/proxy/'+slug+'/environments',format:{"label":'{{name}}',value:'{{id}}'}},		
 			{name: 'id', type:'hidden'}
 		];
 		tableConfig.data = data;
 		tableConfig.name = "api_users";
-		bt = new berryTable(tableConfig)
+		tableConfig.actions = [
+			{'name':'delete'},'|',
+			{'name':'edit'},'|',
+			{'name':'create'}
+		]
+		bt = new GrapheneDataGrid(tableConfig)
 	}
 });
