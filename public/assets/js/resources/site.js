@@ -23,14 +23,14 @@ $.ajax({
 		],attributes:data.theme, actions:false, name:'theme'})
 
 		$('#cas_config .cas_config_form').berry({fields: [
-			{label: 'CAS Hostname', name:'cas_hostname', required: true},		
-			{label: 'CAS Real Hosts', name:'cas_real_hosts', required: true},
+			{label: 'CAS Hostname', name:'cas_hostname', placeholder:'cas.example.com', required: true, },		
+			{label: 'CAS Real Hosts', name:'cas_real_hosts', placeholder:'cas.example.com', required: true},
 			{label: 'CAS URI', name:'cas_uri', required: true, placeholder:'/cas'},
 			{label: 'CAS Port', name:'cas_port', required: true, type:'select',options:[
 				{name:'HTTP (80)', value:'80'},{name:'HTTPS (443)', value:'443'},
 			]},
-			{label: 'CAS Login URL', name:'cas_login_url', required: false},
-			{label: 'CAS Logout URL', name:'cas_logout_url', required: false},
+			{label: 'CAS Login URL', name:'cas_login_url', placeholder:'https://cas.example.com/cas/login', required: false},
+			{label: 'CAS Logout URL', name:'cas_logout_url', placeholder:'https://cas.example.com/cas/logout', required: false},
 			{label: 'CAS Enable SAML', name:'cas_enable_saml', required: true,options:[
 				{label:'Enabled',value:"true"},{label:'Disabled',value:"false"}
 			],type:'select'},
@@ -40,8 +40,18 @@ $.ajax({
 			{label: 'External User Lookup Enabled',name:"enabled",options:[
 				{label:'Enabled',value:"true"},{label:'Disabled',value:"false"}
 			],type:'select'},
-			{label: 'External User Lookup URL',name:"url"},
-			{label: 'External User Lookup Verb',name:"verb",type:"select",options:[
+			{label: 'External User Lookup URL',name:"url",placeholder:"https://example.com/userlookup","show": {
+				"matches": {
+					"name": "enabled",
+					"value": "true"
+				}
+			}},
+			{label: 'External User Lookup Verb',name:"verb",type:"select","show": {
+				"matches": {
+					"name": "enabled",
+					"value": "true"
+				}
+			},options:[
 				'POST','GET'
 			]},
 		],attributes:data.auth_config.external_user_lookup, actions:false, name:'external_user_lookup'})
@@ -50,10 +60,10 @@ $.ajax({
 			default:{},additional:{}
 		}}
 		$('#cas_config .cas_data_map_default_form').berry({fields: [
-			{label: 'Email',name:"email"},
-			{label: 'First Name',name:"first_name"},
-			{label: 'Last Name',name:"last_name"},
-			{label: 'Unique ID',name:"unique_id"},
+			{label: 'Email',name:"email", placeholder:'{{email}}'},
+			{label: 'First Name',name:"first_name", placeholder:'{{first_name}}'},
+			{label: 'Last Name',name:"last_name", placeholder:'{{last_name}}'},
+			{label: 'Unique ID',name:"unique_id", placeholder:'{{unique_id}}'},
 		],attributes:data.auth_config.cas_data_map.default, actions:false, name:'cas_data_map_default'})
 
 		var arr = [];
