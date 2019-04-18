@@ -13,12 +13,8 @@ $.ajax({
 		];
 		tableConfig.data = data;
 		tableConfig.name = "environments";
-		tableConfig.actions = [
-			{'name':'delete'},'|',
-			{'name':'edit'},'|',
-			{'name':'create'}
-		]
-		bt = new GrapheneDataGrid(tableConfig)
+
+		grid = new GrapheneDataGrid(tableConfig)
 
 	}
 });

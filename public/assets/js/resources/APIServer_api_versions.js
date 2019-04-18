@@ -9,12 +9,16 @@ $.ajax({
 			{label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
 			{label: 'Summary', name:'summary',required:true},
 			{label: 'Description', name:'description', type:"textarea"},			
-			{label: 'Stable', name:'stable',type:'checkbox',truestate:1,falsestate:0},
+			{label: 'Stable', name:'stable',type:'checkbox',options:[0,1]},
 			{name: 'id', type:'hidden'}
 		];
 		tableConfig.data = data;
 		tableConfig.name = "api_versions";
-		tableConfig.add = false;
-		bt = new berryTable(tableConfig)
+		// tableConfig.add = false;
+		tableConfig.actions = [
+			{'name':'edit'},'|',
+			{'name':'delete'}
+		]
+		grid = new GrapheneDataGrid(tableConfig)
 	}
 });

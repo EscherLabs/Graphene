@@ -27,7 +27,11 @@ $.ajax({
 		tableConfig.data = data;
 		tableConfig.name = "apis";
 
-		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/apis/'+model.attributes.id};
-		bt = new berryTable(tableConfig)
+		// tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/apis/'+model.attributes.id};
+		// bt = new berryTable(tableConfig)
+
+		grid = new GrapheneDataGrid(tableConfig).on('click',function(e){
+			window.location.href = '/admin/apiserver/'+slug+'/apis/'+e.model.attributes.id
+		})
 	}
 });
