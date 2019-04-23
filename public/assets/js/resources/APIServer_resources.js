@@ -31,9 +31,9 @@ $.ajax({
 
 		tableConfig.name = "resources";
 		tableConfig.actions = [
-			{'name':'create'},'|',
-			{'name':'edit'},{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config'},'|',
-			{'name':'delete'}
+			{'name':'delete',max:1},'|',
+			{'name':'edit',max:1},{'name': 'config',max:1,min:1, 'label': '<i class="fa fa-cogs"></i> Config'},'|',
+			{'name':'create'}
 		]
 		grid = new GrapheneDataGrid(tableConfig)	
 		grid.on('model:config',function(e){
@@ -73,12 +73,10 @@ $.ajax({
 				data:model.attributes,
 				fields:fields
 				}).modal().on('save',function(e){
-					// debugger;
 					e.form.pub('close')
 					this.update(e.form.get());
-					// this.owner.options.edit(this);
 					this.dispatch('edited')
-					this.owner.draw();
+					this.draw();
 				}.bind(model))
 			// $().berry({
 			// 	legend:'Config',

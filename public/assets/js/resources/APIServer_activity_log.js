@@ -51,7 +51,7 @@ $.ajax({
 		tableConfig.name = "activity_log";
 		// tableConfig.add = false;
 		tableConfig.actions = false;
-		tableConfig.events={'draw':[function(e){
+		tableConfig.events={'model:draw':function(e){
 			e.model.old = JSON.stringify(e.model.attributes.old , null,'\t');
 			e.model.new = JSON.stringify(e.model.attributes.new , null,'\t');
 			e.model.event = e.model.attributes.old.name;
@@ -62,7 +62,8 @@ $.ajax({
 					e.model.event = e.model.attributes.new.name;
 				}
 			}
-		}]}			
+		}}			
+		tableConfig.hideCheck = true;
 		grid = new GrapheneDataGrid(tableConfig)
 		
 		grid.on('click',function(e){

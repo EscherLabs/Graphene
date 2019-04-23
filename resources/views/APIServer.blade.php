@@ -33,6 +33,11 @@
       autoSize: -20,
       container: '#table', 
       berry: {flatten: false},
+      actions:[{name:'delete',max:1 },
+      '|',
+      {name:'edit',max:1},
+      '|',
+      {name:'create'}],
       events:{
       "created":[
         function(e){
@@ -95,58 +100,58 @@
     }]
     
   },
-      add: function(model){
-        $().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-          model.attributes.comment = this.toJSON().comment;
+    //   add: function(model){
+    //     $().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+    //       model.attributes.comment = this.toJSON().comment;
 
-          $.ajax({url: api, type: 'POST', data: model.attributes,
-            success:function(data) {
-              model.set(data);
-              // Berries.modal.trigger('close')
-              toastr.success('', 'Successfully Added')
-            }.bind(model),
-            error:function(e) {
-              toastr.error(e.statusText, 'ERROR');
-            }
-          });
+    //       $.ajax({url: api, type: 'POST', data: model.attributes,
+    //         success:function(data) {
+    //           model.set(data);
+    //           // Berries.modal.trigger('close')
+    //           toastr.success('', 'Successfully Added')
+    //         }.bind(model),
+    //         error:function(e) {
+    //           toastr.error(e.statusText, 'ERROR');
+    //         }
+    //       });
 
-          this.trigger('close')
-        }).on('cancel',function(){
-          model.delete();
-          model.owner.draw();
-        })
-    },
-      edit: function(model){
-        $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-            model.attributes.comment = this.toJSON().comment;
+    //       this.trigger('close')
+    //     }).on('cancel',function(){
+    //       model.delete();
+    //       model.owner.draw();
+    //     })
+    // },
+    //   edit: function(model){
+    //     $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+    //         model.attributes.comment = this.toJSON().comment;
 
-            $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
-            success:function(data) {
-              model.set(data);
-              toastr.success('', 'Successfully Updated')
-            },
-            error:function(e) {
-              toastr.error(e.statusText, 'ERROR');
-            }
+    //         $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+    //         success:function(data) {
+    //           model.set(data);
+    //           toastr.success('', 'Successfully Updated')
+    //         },
+    //         error:function(e) {
+    //           toastr.error(e.statusText, 'ERROR');
+    //         }
 
             
-          });
-          this.trigger('close')
-        }).on('cancel',function(){
-          model.undo();
-          model.owner.draw()
+    //       });
+    //       this.trigger('close')
+    //     }).on('cancel',function(){
+    //       model.undo();
+    //       model.owner.draw()
           
-        })
-    },
-      delete: function(model){ 
-        $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
-        success:function() {
-          toastr.success('', 'Successfully Deleted')
-        },
-        error:function(e) {
-          toastr.error(e.statusText, 'ERROR');
-        }
-      });}
+    //     })
+    // },
+      // delete: function(model){ 
+      //   $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
+      //   success:function() {
+      //     toastr.success('', 'Successfully Deleted')
+      //   },
+      //   error:function(e) {
+      //     toastr.error(e.statusText, 'ERROR');
+      //   }
+      // });}
     }
 
     $('[href="/admin/'+route+'"]').parent().addClass('active');
