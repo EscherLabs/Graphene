@@ -29,7 +29,7 @@ var fileManager = function(selector, options){
     $(selector+' .list-group').empty().html(templates.pages_listgroupitem.render(this.options));
     $('[href="#'+this.active+'"]').click();
   }
-  this.sorter = new Sortable($(selector+' .list-group')[0],{draggable:'.sortable'})
+  this.sorter = new Sortable(document.querySelector(selector+' .list-group'),{draggable:'.sortable'})
 
   $(selector+' .actions .pages_delete,'+selector+' .actions .pages_edit,'+selector+' .actions .pages_new,'+selector+' .pages_extra').on('click', function(e){
     var currentItem = _.findWhere(this.options.items, {key: this.active});
@@ -45,18 +45,10 @@ var fileManager = function(selector, options){
         }, this);
       }else{
         if($(e.currentTarget).hasClass('pages_new')){
-          $().berry({name:'page_name', legend: 'New '+options.label,fields: {'Name': {}}}).on('save', function(){
-            var name = Berries.page_name.toJSON().name;
-            var key = this.options.u_id+name.toLowerCase().replace(/ /g,"_").split('.').join('_');;
-
-            this.options.items.push({name: name,key:key, content:""})
-            this.active = key;
-            this.$el.find('.tab-content').append(templates.pages_tabpanel.render({name: name,key:key, content:""}));
-            this.berry.createField($.extend({name:key},this.berry.options.default), this.$el.find('.tab-content').find('#'+key),null)
-            this.render();
-
-            Berries.page_name.trigger('close');
-          }, this);
+          new gform({name:'page_name', legend: 'New '+options.label,fields: {'Name': {}}}).on('save', function(e){
+            this.add(e.form.get().name,'')
+            e.dform.dispatch('close');
+          }.bind(this));
         }else{
           if($(e.currentTarget).hasClass('pages_extra')) {
             this.options.extra.call(this, currentItem);
@@ -86,7 +78,20 @@ var fileManager = function(selector, options){
   this.getCurrent = function(){
       return _.findWhere(this.options.items, {key: this.active});
   }
-
+  this.add = function(name, value){
+    var key = this.options.u_id+name.toLowerCase().replace(/ /g,"_").split('.').join('_');;
+    this.options.items.push({name: name,key:key, content:""})
+    this.$el.find('.tab-content').append(templates.pages_tabpanel.render({name: name,key:key, content:""}));
+    if(typeof this.berry.fields[key] == 'undefined'){
+      this.berry.createField($.extend({name:key},this.berry.options.default), this.$el.find('.tab-content').find('#'+key),null)
+    }else{      
+      var updateItem = _.findWhere(this.options.items, {name: name});
+      
+      updateItem.removed = false;
+    }
+    this.render();
+    this.berry.fields[key].setValue(value)
+  }
   return {
     toJSON:function(){
       var options = this.options;
@@ -129,20 +134,7 @@ var fileManager = function(selector, options){
       // updateItem.removed = true;
       this.render();      
     }.bind(this),
-    add: function(name, value){
-      var key = this.options.u_id+name.toLowerCase().replace(/ /g,"_").split('.').join('_');;
-      this.options.items.push({name: name,key:key, content:""})
-      this.$el.find('.tab-content').append(templates.pages_tabpanel.render({name: name,key:key, content:""}));
-      if(typeof this.berry.fields[key] == 'undefined'){
-        this.berry.createField($.extend({name:key},this.berry.options.default), this.$el.find('.tab-content').find('#'+key),null)
-      }else{      
-        var updateItem = _.findWhere(this.options.items, {name: name});
-        
-        updateItem.removed = false;
-      }
-      this.render();
-      this.berry.fields[key].setValue(value)
-    }.bind(this),
+    add: this.add.bind(this),
     errors: function(){
     	// var errors = 0;
     	var errors = [];
