@@ -50,7 +50,6 @@
   <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
   <script src='/assets/js/vendor/ractive.min.js'></script>    
 
-  <script src='/assets/js/fileManager.js'></script> 
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
@@ -61,6 +60,8 @@
 
   <script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
   <script src='/assets/js/vendor/gDataGrid.min.js'></script> 
+  <script src='/assets/js/fileManager.js'></script> 
+
 @endsection
 
 @section('end_body_scripts_bottom')
