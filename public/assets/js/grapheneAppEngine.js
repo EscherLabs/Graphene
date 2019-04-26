@@ -52,9 +52,11 @@ function App() {
 		this.$el.off('click', selector, callback);
 		this.$el.on('click', selector, callback);
 	}
-	this.handlers = {initialize: []};
+	// this.handlers = {initialize: []};
 	// this.addSub = Berry.prototype.addSub;
 	this.forms = {};
+	//{initialize: [],refetch:[this.handlers.refetch[0]]}
+	this.eventBus = new gform.eventBus({owner:'app',item:'resource',handlers:{}}, this);
 	return {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
@@ -80,9 +82,9 @@ function App() {
 
 		click: click,
 
-		on: gform.prototype.sub.bind(this),
+		on: this.eventBus.on,
 		// off: Berry.prototype.off.bind(this),
-		trigger: gform.prototype.pub.bind(this),
+		trigger: this.eventBus.dispatch,
 
 		$el:this.$el,
 
@@ -237,7 +239,11 @@ function(options){
   }
 	this.destroy = function() {
 		this.$el.off('click');
-		this.handlers = {initialize: [],refetch:[this.handlers.refetch[0]]};
+		// this.handlers = {initialize: [],refetch:[this.handlers.refetch[0]]};
+			//
+			this.eventBus.handlers = {};
+	// this.eventBus.handlers = {initialize: [],refetch:[this.eventBus.handlers.refetch[0]]};// = new gform.eventBus({owner:'app',item:'resource',handlers:{initialize: [],refetch:[this.eventBus.handlers.refetch[0]]}}, this);
+
 		if(typeof this.inline == 'object' && this.inline instanceof gform) {
 			this.inline.destroy();
 		}
