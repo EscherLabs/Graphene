@@ -43,7 +43,10 @@ function App() {
 		}
 	}
 	function update(newData) {
-		$.extend(this.data, newData || {});
+		_.assign(this.data, newData || {});
+		_.each(newData,function(i,name,content){
+			this.collections.update(name)
+		}.bind(this))
 		this.inline.set(this.data.user.options)
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
@@ -57,6 +60,8 @@ function App() {
 	this.forms = {};
 	//{initialize: [],refetch:[this.handlers.refetch[0]]}
 	this.eventBus = new gform.eventBus({owner:'app',item:'resource',handlers:{}}, this);
+	this.collections =  new gform.collectionManager(this.data)
+
 	return {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
@@ -68,26 +73,15 @@ function App() {
 
 		refetch: function(){
 			this.app.trigger('refetch');
-		}.bind(this),		
+		}.bind(this),
 
 		update: update.bind(this),
-		// data:this.data,
-		// data: function(data){
-		// 	if(typeof data !== 'undefined'){
-		// 		this.update(data);
-		// 	}else{
-		// 		return this.data
-		// 	}
-		// }.bind(this),
-
 		click: click,
-
 		on: this.eventBus.on,
 		// off: Berry.prototype.off.bind(this),
 		trigger: this.eventBus.dispatch,
-
 		$el:this.$el,
-
+		data:this.data,
 		find:function(selectors){
 			return this.$el[0].querySelectorAll(selectors)
 		}.bind(this),
@@ -95,11 +89,41 @@ function App() {
 			return gform.m(this.partials[template],_.extend({}, this.partials, data));
 			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
-    version: function(){return '1.1.0'},
-    form: function(name){
+    version: function(){return '1.2.0'},
+    form: function(name, target){
+		if(typeof this.forms[name] == 'undefined'){
+			if(typeof name == 'string'){
+				var form = _.find(this.options.config.forms,{name:name})
+				if(typeof form !== 'undefined'){
+					try{
+						var formOptions = JSON.parse(_.find(this.options.config.forms,{name:name}).content);
+						formOptions.private = true;
+						formOptions.collections = this.collections;
+						this.forms[name] = new gform(formOptions,this.app.find(target)[0])
+						return this.forms[name]
+					}catch(e){
+						
+					}
+				}
+			}else{
+				try{
+					var formOptions = name;
+					formOptions.private = true;
+					formOptions.collections = this.collections;
+					var newForm = new gform(formOptions,this.app.find(target)[0])
+					this.forms[newForm.name] = newForm;
+					return this.forms[newForm.name]
+				}catch(e){
+					
+				}
+			}
+		}else{return this.forms[name]}
 
-		},
-		log:function(text){
+		}.bind(this),
+		grid: function(name){
+
+		}.bind(this),
+		debug:function(text){
 			if(this.data.user.site_developer){
 				if(typeof text == 'string'){
 				console.log('%c'+this.config.title+': %c'+text,'color: #d85e16','color: #333')
