@@ -44,8 +44,9 @@ function App() {
 	}
 	function update(newData) {
 		_.assign(this.data, newData || {});
-		_.each(newData,function(i,name,content){
+		_.each(newData,function(i,name){
 			this.collections.update(name)
+			this.eventBus.dispatch(name,i);
 		}.bind(this))
 		this.inline.set(this.data.user.options)
 		this.ractive.set(this.data);
@@ -58,8 +59,9 @@ function App() {
 	// this.handlers = {initialize: []};
 	// this.addSub = Berry.prototype.addSub;
 	this.forms = {};
+	this.grids = {};
 	//{initialize: [],refetch:[this.handlers.refetch[0]]}
-	this.eventBus = new gform.eventBus({owner:'app',item:'resource',handlers:{}}, this);
+	this.eventBus = new gform.eventBus({owner:'app',item:'resource', handlers:{}}, this);
 	this.collections =  new gform.collectionManager(this.data)
 
 	return {
@@ -80,6 +82,29 @@ function App() {
 		on: this.eventBus.on,
 		// off: Berry.prototype.off.bind(this),
 		trigger: this.eventBus.dispatch,
+		options: function(newOptions){
+			
+			this.app.update( { user: $.extend(true,{},this.data.user,{ options: newOptions }  )});
+				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
+				if(typeof this.data.user.id !== 'undefined') {
+					$.ajax({
+						type: 'POST',
+						url:url,
+						data: {'options': newOptions},
+						success:function(data){
+							this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
+							this.app.trigger('options');
+						}.bind(this),
+						error:function(data) {
+							toastr.error(data.statusText, 'An error occured updating options')
+						}
+					})
+				}else{
+					Lockr.set(url, {'options': this.data.user.options})
+					this.app.trigger('options');
+				}
+
+		}.bind(this),
 		$el:this.$el,
 		data:this.data,
 		find:function(selectors){
@@ -89,17 +114,34 @@ function App() {
 			return gform.m(this.partials[template],_.extend({}, this.partials, data));
 			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
-    version: function(){return '1.2.0'},
+		version: function(){return '1.2.0'},
+		findForm:function(name){
+			var form = _.find(this.options.config.forms,{name:name})
+			if(typeof form !== 'undefined'){
+				try{
+					return JSON.parse(form.content);
+				}catch(e){}
+			}
+		}.bind(this),
     form: function(name, target){
 		if(typeof this.forms[name] == 'undefined'){
+
+			if(typeof target == 'string'){
+				target = this.app.find(target)[0];
+			}
 			if(typeof name == 'string'){
-				var form = _.find(this.options.config.forms,{name:name})
-				if(typeof form !== 'undefined'){
+				var formOptions = this.app.findForm(name);//_.find(this.options.config.forms,{name:name})
+				if(typeof formOptions !== 'undefined'){
 					try{
-						var formOptions = JSON.parse(_.find(this.options.config.forms,{name:name}).content);
+						// var formOptions = JSON.parse(form.content);
 						formOptions.private = true;
 						formOptions.collections = this.collections;
-						this.forms[name] = new gform(formOptions,this.app.find(target)[0])
+						formOptions.selector = target;
+						if(typeof target == 'string'){
+							target = this.app.find(target)[0];
+						}
+						this.forms[name] = new gform(formOptions,target)
+
 						return this.forms[name]
 					}catch(e){
 						
@@ -110,18 +152,49 @@ function App() {
 					var formOptions = name;
 					formOptions.private = true;
 					formOptions.collections = this.collections;
-					var newForm = new gform(formOptions,this.app.find(target)[0])
+					formOptions.selector = target;
+					var newForm = new gform(formOptions,target)
 					this.forms[newForm.name] = newForm;
 					return this.forms[newForm.name]
 				}catch(e){
 					
 				}
 			}
-		}else{return this.forms[name]}
+		}
+
+		return this.forms[name]
 
 		}.bind(this),
 		grid: function(name){
-
+			if(typeof this.grids[name] == 'undefined'){
+				if(typeof name == 'string'){
+					var form = _.find(this.options.config.forms,{name:name})
+					if(typeof form !== 'undefined'){
+						try{
+							var formOptions = JSON.parse(_.find(this.options.config.forms,{name:name}).content);
+							formOptions.private = true;
+							formOptions.collections = this.collections;
+							formOptions.selector = target;
+							this.grids[name] = new gform(formOptions,this.app.find(target)[0])
+							return this.grids[name]
+						}catch(e){
+							
+						}
+					}
+				}else{
+					try{
+						var formOptions = name;
+						formOptions.private = true;
+						formOptions.collections = this.collections;
+						formOptions.selector = target;
+						var newForm = new gform(formOptions,this.app.find(target)[0])
+						this.grids[newForm.name] = newForm;
+						return this.grids[newForm.name]
+					}catch(e){
+						
+					}
+				}
+			}else{return this.forms[name]}
 		}.bind(this),
 		debug:function(text){
 			if(this.data.user.site_developer){
@@ -133,18 +206,22 @@ function App() {
 					console.log(text)
 				}
 			}
-		}.bind(this)
+		}.bind(this),
 		
-		//modal
-		//message
+		modal:function(options,data){
+			
+			new gform({legend:options.title,fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:[{type:'cancel',"modifiers": "btn btn-danger pull-right"}]}).modal().on('cancel',function(e){
+				e.form.dispatch('close');
+				e.form.destroy();
+			});
+		}.bind(this),
+		message:function(options,data){
+			toastr[options.status||'info'](gform.m(options.content,_.extend({}, this.partials, data)),options.title )
+		}.bind(this)
 		//dialog
-		//debug
-		//form
-			//alert?
 
 		//state
-		//table
-		
+		//table/grid
 		//chart
 		//use promises and local fetch?
 	}
@@ -212,26 +289,27 @@ function(options){
 		if(this.$el.find('[data-inline]').length && this.options.config.forms[1].content.length) {//} > 0 && this.userEdit.length > 0){
 
 			this.inline = new gform({default:{hideLabel:true,type:'text',format:{label: '{{label}}', value: '{{value}}'}},clear:false,data:this.options.data.user.options,fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type},this.$el[0])
-			.on('save', function() {
-			this.app.update( { user: $.extend(true,{},this.data.user,{ options: this.inline.toJSON() }  )});
-				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
-				if(typeof this.data.user.id !== 'undefined') {
-					$.ajax({
-						type: 'POST',
-						url:url,
-						data: {'options': this.inline.toJSON()},
-						success:function(data){
-							this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
-							this.optionsupdated();
-						}.bind(this),
-						error:function(data) {
-							toastr.error(data.statusText, 'An error occured updating options')
-						}
-					})
-				}else{
-					Lockr.set(url, {'options': this.data.user.options})
-					this.optionsupdated();
-				}
+			.on('save', function(e) {
+				this.app.options(e.form.get())
+			// this.app.update( { user: $.extend(true,{},this.data.user,{ options: this.inline.toJSON() }  )});
+			// 	var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
+			// 	if(typeof this.data.user.id !== 'undefined') {
+			// 		$.ajax({
+			// 			type: 'POST',
+			// 			url:url,
+			// 			data: {'options': this.inline.toJSON()},
+			// 			success:function(data){
+			// 				this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
+			// 				this.optionsupdated();
+			// 			}.bind(this),
+			// 			error:function(data) {
+			// 				toastr.error(data.statusText, 'An error occured updating options')
+			// 			}
+			// 		})
+			// 	}else{
+			// 		Lockr.set(url, {'options': this.data.user.options})
+			// 		this.optionsupdated();
+			// 	}
 
 			}.bind(this));
 						// this.inline = this.$el.berry({attributes: this.options.data.user.options, renderer: 'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type})
@@ -245,7 +323,24 @@ function(options){
 			this.$el.find('[data-inline="submit"]').on('click', function(){
 				this.inline.pub('save');
 			}.bind(this) );
+			
+
+			this.$el.find('[data-form]').each(function(index, form){
+				this.app.form(form.dataset.form,form)
+			}.bind(this))
+
+			// _.each(this.forms,function(form, name){
+			// 	var selector = form.options.selector;
+			// 	form.destroy();
+			// 	delete this.forms[name];
+			// 	this.app.form(name,selector);
+			// }.bind(this))
 		}
+
+
+		// _.each(this.forms,function(form, name){
+		// }.bind(this))
+
 
 		if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
 	
@@ -271,6 +366,10 @@ function(options){
 		if(typeof this.inline == 'object' && this.inline instanceof gform) {
 			this.inline.destroy();
 		}
+		_.each(this.forms,function(form, name){
+			form.destroy();
+			delete this.forms[name];
+		}.bind(this))
 		this.app.trigger('destroy')
 		this.ractive.teardown();
 	}
@@ -280,10 +379,6 @@ function(options){
 
 	this.get = function() {
 		return this.data;
-	}
-
-	this.optionsupdated = function() {
-		this.app.trigger('options');
 	}
 	setTimeout(this.load.bind(this), 0)
 }
