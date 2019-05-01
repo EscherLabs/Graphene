@@ -43,6 +43,7 @@ function App() {
 		}
 	}
 	function update(newData) {
+		debugger;
 		_.assign(this.data, newData || {});
 		_.each(newData,function(i,name){
 			this.collections.update(name)
@@ -165,36 +166,34 @@ function App() {
 		return this.forms[name]
 
 		}.bind(this),
-		grid: function(name){
+		grid: function(name,options){
 			if(typeof this.grids[name] == 'undefined'){
 				if(typeof name == 'string'){
-					var form = _.find(this.options.config.forms,{name:name})
-					if(typeof form !== 'undefined'){
-						try{
-							var formOptions = JSON.parse(_.find(this.options.config.forms,{name:name}).content);
-							formOptions.private = true;
-							formOptions.collections = this.collections;
-							formOptions.selector = target;
-							this.grids[name] = new gform(formOptions,this.app.find(target)[0])
+					// var form = _.find(this.options.config.forms,{name:name})
+					// if(typeof form !== 'undefined'){
+						// try{
+							// var formOptions = JSON.parse(_.find(this.options.config.forms,{name:name}).content);
+
+							this.grids[name] = new GrapheneDataGrid(_.extend({collections:this.collections},options))//new gform(formOptions,this.app.find(target)[0])
 							return this.grids[name]
-						}catch(e){
+						// }catch(e){
 							
-						}
+						// }
 					}
-				}else{
-					try{
-						var formOptions = name;
-						formOptions.private = true;
-						formOptions.collections = this.collections;
-						formOptions.selector = target;
-						var newForm = new gform(formOptions,this.app.find(target)[0])
-						this.grids[newForm.name] = newForm;
-						return this.grids[newForm.name]
-					}catch(e){
+				// }else{
+				// 	try{
+				// 		var formOptions = name;
+				// 		formOptions.private = true;
+				// 		formOptions.collections = this.collections;
+				// 		formOptions.selector = target;
+				// 		var newForm = new gform(formOptions,this.app.find(target)[0])
+				// 		this.grids[newForm.name] = newForm;
+				// 		return this.grids[newForm.name]
+				// 	}catch(e){
 						
-					}
-				}
-			}else{return this.forms[name]}
+				// 	}
+				// }
+			}else{return this.grids[name]}
 		}.bind(this),
 		debug:function(text){
 			if(this.data.user.site_developer){
@@ -209,13 +208,30 @@ function App() {
 		}.bind(this),
 		
 		modal:function(options,data){
-			
-			new gform({legend:options.title,fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:[{type:'cancel',"modifiers": "btn btn-danger pull-right"}]}).modal().on('cancel',function(e){
+			var hClass = ''
+			switch(options.status){
+				case 'error':
+					hClass = 'bg-danger';
+					break;
+				case 'success':
+					hClass = 'bg-success';
+					break;
+				case 'primary':
+					hClass = 'bg-primary';
+					break;
+				case 'info':
+					hClass = 'bg-info';
+					break;
+				case 'warning':
+					hClass = 'bg-warning';
+					break;
+			}
+			new gform({legend:options.title,modal:{header_class:hClass},fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}]}).modal().on('cancel',function(e){
 				e.form.dispatch('close');
 				e.form.destroy();
 			});
 		}.bind(this),
-		message:function(options,data){
+		alert:function(options,data){
 			toastr[options.status||'info'](gform.m(options.content,_.extend({}, this.partials, data)),options.title )
 		}.bind(this)
 		//dialog
@@ -369,6 +385,11 @@ function(options){
 		_.each(this.forms,function(form, name){
 			form.destroy();
 			delete this.forms[name];
+		}.bind(this))
+
+		_.each(this.grids,function(grid, name){
+			grid.destroy();
+			delete this.grids[name];
 		}.bind(this))
 		this.app.trigger('destroy')
 		this.ractive.teardown();
