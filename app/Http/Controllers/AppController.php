@@ -194,12 +194,12 @@ class AppController extends Controller
         return $search_response;
     }
     public function versions(Request $request, App $app) { 
-        $app_versions = AppVersion::select('id','summary','created_at','user_id')
+        $app_versions = AppVersion::select('id','summary','created_at','updated_at','user_id')
             ->with('user')->where('app_id','=',$app->id)->where('stable','=',1)
             ->orderBy('created_at', 'desc')->get();
         foreach($app_versions as $i => $app_version) {
             $last_name = ($app_version->toArray()['user']['last_name'] != '')?'('.$app_version->toArray()['user']['last_name'].')':'';
-            $app_versions[$i]->label = $app_version->created_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
+            $app_versions[$i]->label = $app_version->updated_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
         }
         return $app_versions;
     }
