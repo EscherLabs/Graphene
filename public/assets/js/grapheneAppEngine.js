@@ -43,13 +43,14 @@ function App() {
 		}
 	}
 	function update(newData) {
-		debugger;
 		_.assign(this.data, newData || {});
 		_.each(newData,function(i,name){
 			this.collections.update(name)
 			this.eventBus.dispatch(name,i);
 		}.bind(this))
-		this.inline.set(this.data.user.options)
+		if(typeof this.inline == 'object' && this.inline instanceof gform) {
+			this.inline.set(this.data.user.options)
+		}
 		this.ractive.set(this.data);
 		this.app.trigger('updated')
 	}
@@ -168,32 +169,21 @@ function App() {
 		}.bind(this),
 		grid: function(name,options){
 			if(typeof this.grids[name] == 'undefined'){
-				if(typeof name == 'string'){
-					// var form = _.find(this.options.config.forms,{name:name})
-					// if(typeof form !== 'undefined'){
-						// try{
-							// var formOptions = JSON.parse(_.find(this.options.config.forms,{name:name}).content);
-
-							this.grids[name] = new GrapheneDataGrid(_.extend({collections:this.collections},options))//new gform(formOptions,this.app.find(target)[0])
-							return this.grids[name]
-						// }catch(e){
-							
-						// }
-					}
-				// }else{
-				// 	try{
-				// 		var formOptions = name;
-				// 		formOptions.private = true;
-				// 		formOptions.collections = this.collections;
-				// 		formOptions.selector = target;
-				// 		var newForm = new gform(formOptions,this.app.find(target)[0])
-				// 		this.grids[newForm.name] = newForm;
-				// 		return this.grids[newForm.name]
-				// 	}catch(e){
-						
-				// 	}
-				// }
-			}else{return this.grids[name]}
+				
+				this.grids[name] = new GrapheneDataGrid(_.extend({collections:this.collections,data:this.data[options.resource||name]},options))//new gform(formOptions,this.app.find(target)[0])
+				if(options.resource){
+					this.grids[name].on('model:created',function(e){
+						this.app.post(e.table.options.resource,e.model.attributes)
+					}.bind(this))
+					this.grids[name].on('model:edited',function(e){
+						this.app.put(e.table.options.resource,e.model.attributes)
+					}.bind(this))
+					this.grids[name].on('model:deleted',function(e){
+						this.app.delete(e.table.options.resource,e.model.attributes)
+					}.bind(this))
+				}
+			}
+			return this.grids[name]
 		}.bind(this),
 		debug:function(text){
 			if(this.data.user.site_developer){
@@ -378,7 +368,6 @@ function(options){
 			//
 			this.eventBus.handlers = {};
 	// this.eventBus.handlers = {initialize: [],refetch:[this.eventBus.handlers.refetch[0]]};// = new gform.eventBus({owner:'app',item:'resource',handlers:{initialize: [],refetch:[this.eventBus.handlers.refetch[0]]}}, this);
-
 		if(typeof this.inline == 'object' && this.inline instanceof gform) {
 			this.inline.destroy();
 		}

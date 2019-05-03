@@ -13,7 +13,7 @@ function GrapheneDataGrid(options) {
 	this.version = '0.0.3';
 	this.eventBus = new gform.eventBus({owner:'table',item:'model',handlers:options.events||{} }, this)
 	this.on = this.eventBus.on;
-	// this.dispatch = this.eventBus.dispatch;
+	this.trigger = this.eventBus.dispatch;
 
 	options = _.extend({filter: true,actions:[{'name':'create'},'|',{'name':'edit'},'|',{'name':'delete'}], sort: true, search: true, download: true, upload: true, columns: true, id:gform.getUID()}, options);
 	if(typeof options.actions == 'object' && options.actions.length){
@@ -685,7 +685,8 @@ function GrapheneDataGrid(options) {
 			}
 			// this.updateCount(this.summary.checked_count);
 			if(config.silent !== true){
-				this.eventBus.dispatch('created',newModel)
+        this.eventBus.dispatch('created',newModel)
+				this.eventBus.dispatch('model:created',newModel)
 			}
 			// if(typeof this.options.add == 'function'){
 			// 	this.options.add(newModel);
