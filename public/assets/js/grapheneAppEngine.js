@@ -43,7 +43,7 @@ function App() {
 		}
 	}
 	function update(newData) {
-		_.assign(this.data, newData || {});
+		_.merge(this.data, newData || {});
 		_.each(newData,function(i,name){
 			this.collections.update(name)
 			this.eventBus.dispatch(name,i);

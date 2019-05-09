@@ -321,12 +321,12 @@ function editMobileOrder(){
 						type: 'POST',
 						url:url,
 						data: {'options': e.form.get()},
-						success:function(data){
-							item.bae.app.update({user:{options:data.options}});
-							item.bae.optionsupdated();
-							this.pub('close');
-							toastr.success('', 'Options Updated Successfully');
-						}.bind(e.form),
+						success:function(app,data){
+							app.update({user:{options:data.options}});
+							app.trigger('options');
+							this.trigger('close');
+							app.alert({title:'Options Updated Successfully'})
+						}.bind(e.form,item.bae.app),
 						error:function(data){
 								toastr.error(data.statusText, 'An error occured updating options')
 						}
