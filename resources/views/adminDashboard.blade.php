@@ -300,7 +300,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
       if(instance.version !== null) {
         instance.resources = _.map(instance.resources, function(loaded, instance, resource, i){
           var group = _.find(loaded.group_admins,{group_id:instance.group_id})
-          debugger;
           if(typeof group !== 'undefined'){
             resource.endpoint = _.find(group.group.endpoints,{id:parseInt(resource.endpoint)})
             
@@ -341,7 +340,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
 					// 	Berries.user.destroy();
 					// }
 				}).delay('change:query',function(){
-          // debugger;
           processFilter({currentTarget:this.find('query').$el});
           // msnry.layout()
           // msnry.
@@ -372,7 +370,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
 	viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a target="_blank" href="/page/{{group.slug}}/{{slug}}">{{name}}</a></div>{{/items}}</div>');
 @endverbatim
   $('.find').on('click', function(e){
-    debugger;
     $.get('/api/appinstances/'+e.currentTarget.dataset.id+'/pages', function(data){
       if(data.length > 0){
         modal({title:'This App Instance was found on the following pages', content:viewTemplate.render({items:data})});

@@ -607,7 +607,6 @@ $('#instances').on('click', function() {
   viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="'+server+'/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/api_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
   $.get('/api/proxy/'+slug+'/api_instances', function(data) {
     data = _.where(data, {api_id:api.id})
-    debugger;
     if(data.length > 0){
       modal({title: 'This API has the following instances', content: viewTemplate.render({items: data})});
     }else{

@@ -696,7 +696,6 @@ function GrapheneDataGrid(options) {
 
 		}.bind(this));	
 		this.$el.on('click', '.reverse', function(e) {
-			debugger;
 			processSort(this.options.sort)
 		}.bind(this));
 
