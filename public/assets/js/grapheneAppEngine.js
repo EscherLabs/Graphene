@@ -339,11 +339,11 @@ function(options){
 
 			this.$el.find('form').on('submit', function(e){
 				e.preventDefault();
-				this.inline.pub('save');
+				this.inline.trigger('save');
 			}.bind(this) );
 
 			this.$el.find('[data-inline="submit"]').on('click', function(){
-				this.inline.pub('save');
+				this.inline.trigger('save');
 			}.bind(this) );
 			
 

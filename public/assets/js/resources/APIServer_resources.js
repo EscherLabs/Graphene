@@ -73,7 +73,7 @@ $.ajax({
 				data:model.attributes,
 				fields:fields
 				}).modal().on('save',function(e){
-					e.form.pub('close')
+					e.form.trigger('close')
 					this.update(e.form.get());
 					this.dispatch('edited')
 					this.draw();
