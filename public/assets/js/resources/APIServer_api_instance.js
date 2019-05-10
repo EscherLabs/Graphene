@@ -71,7 +71,7 @@ $.ajax({
 		})
 
 		var options = {
-			container: '.permissions',
+			el: '.permissions',
 
 		title:'Permissions',
 

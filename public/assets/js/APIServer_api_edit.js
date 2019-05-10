@@ -302,7 +302,7 @@ function load(app_version) {
 
   var options = {
     data: attributes.routes,
-		container: '.routes',
+		el: '.routes',
     schema:[
       {label: 'Description',name: 'description'},
       {label: 'Path', name:'path', validate:{required:true,validurlpath:true}, help:'i.e. /example/route or /my-example_2'},

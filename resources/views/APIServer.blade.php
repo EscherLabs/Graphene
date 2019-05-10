@@ -31,7 +31,7 @@
       entries: [25, 50, 100],
       count: 25,
       autoSize: -20,
-      container: '#table', 
+      el: '#table', 
       berry: {flatten: false},
       actions:[{name:'delete',max:1 },
       '|',
