@@ -56,7 +56,7 @@ function App() {
 	}
 	function click(selector, callback){
 		this.$el.off('click', selector, callback);
-		this.$el.on('click', selector, callback);
+		this.$el.on('click', selector, callback.bind(this));
 	}
 	// this.handlers = {initialize: []};
 	// this.addSub = Berry.prototype.addSub;
@@ -80,7 +80,7 @@ function App() {
 		}.bind(this),
 
 		update: update.bind(this),
-		click: click,
+		click: click.bind(this),
 		on: this.eventBus.on,
 		// off: Berry.prototype.off.bind(this),
 		trigger: this.eventBus.dispatch,
