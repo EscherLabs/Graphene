@@ -38,7 +38,7 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
           }
         //   this.update({value:this.get()},true);
         //   gform.types[this.type].focus.call(this)
-          this.owner.pub(['change:'+this.name,'change','input:'+this.name,'input'], this,{input:this.value});
+          this.owner.trigger(['change:'+this.name,'change','input:'+this.name,'input'], this,{input:this.value});
 
         //   this.owner.pub('change:'+this.name, this,{input:this.value});
         //   this.owner.pub('change', this,{input:this.value});

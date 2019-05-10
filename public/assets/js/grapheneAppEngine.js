@@ -63,7 +63,7 @@ function App() {
 	this.forms = {};
 	this.grids = {};
 	//{initialize: [],refetch:[this.handlers.refetch[0]]}
-	this.eventBus = new gform.eventBus({owner:'app',item:'resource', handlers:{}}, this);
+	this.eventBus = new gform.eventBus({owner:'instance',item:'resource', handlers:{}}, this);
 	this.collections =  new gform.collectionManager(this.data)
 
 	return {

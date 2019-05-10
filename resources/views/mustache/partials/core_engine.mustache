@@ -334,11 +334,11 @@ function editMobileOrder(){
 				}else{
 					item.bae.app.update({user:{options:e.form.get()}});
 					Lockr.set(url, {'options': e.form.get()})
-					e.form.pub('close');
+					e.form.trigger('close');
 					toastr.success('', 'Options Updated Successfully');
 				}
 			}).on('cancel',function(e){
-				e.form.pub('close')
+				e.form.trigger('close')
 			})
 		}
 	}

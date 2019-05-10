@@ -59,7 +59,7 @@
   <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
 
   <script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
-  <script src='/assets/js/vendor/gDataGrid.min.js'></script> 
+  <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script> 
   <script src='/assets/js/fileManager.js'></script> 
 
 @endsection
