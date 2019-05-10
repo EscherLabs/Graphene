@@ -323,8 +323,8 @@ function editMobileOrder(){
 						data: {'options': e.form.get()},
 						success:function(app,data){
 							app.update({user:{options:data.options}});
-							app.trigger('options');
 							this.trigger('close');
+							app.trigger('options');
 							app.alert({title:'Options Updated Successfully'})
 						}.bind(e.form,item.bae.app),
 						error:function(data){

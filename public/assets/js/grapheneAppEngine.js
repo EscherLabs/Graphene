@@ -238,7 +238,7 @@ function App() {
 			});
 		}.bind(this),
 		alert:function(options,data){
-			toastr[options.status||'info'](gform.m(options.content,_.extend({}, this.partials, data)),options.title )
+			toastr[options.status||'info'](gform.m(options.content||'',_.extend({}, this.partials, data)),options.title )
 		}.bind(this)
 		//dialog
 
