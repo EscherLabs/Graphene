@@ -8,7 +8,7 @@ $.ajax({
 		tableConfig.schema = [
 			{label: 'User', name:'user_id', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
 
-					{name:'apps_admin',label:'Application Admin',type: 'checkbox',truestate:1,falsestate:0 },
+					{name:'apps_admin',label:'App/Workflow Admin',type: 'checkbox',truestate:1,falsestate:0 },
 					{name:'content_admin',label:'Content Admin',type: 'checkbox',truestate:1,falsestate:0 }
 			// {name:'user', type:'hidden'}
 		];
@@ -68,10 +68,10 @@ $.ajax({
 				legend: '<i class="fa fa-page"></i> Admin Types',
 				attributes: model.attributes,
 				fields:[
-					// {name:'apps_admin',label:'Application Admin',type: 'checkbox'},
+					// {name:'apps_admin',label:'App/Workflow Admin',type: 'checkbox'},
 					// {name:'content_admin',label:'Content Admin',type: 'checkbox'}
 				
-					{name:'apps_admin',label:'Application Admin',type: 'checkbox',truestate:1,falsestate:0 },
+					{name:'apps_admin',label:'App/Workflow Admin',type: 'checkbox',truestate:1,falsestate:0 },
 					{name:'content_admin',label:'Content Admin',type: 'checkbox',truestate:1,falsestate:0 }
 				]}).on('save', function(){
 					var types = Berries.types.toJSON();
