@@ -75,10 +75,10 @@
       </ul>
       <ul class="nav navbar-nav navbar-right visible-xs-block">
         <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
-    {{#apps_pages}}
+    {{#mygroups}}
       {{#.}}
         {{^unlisted}}
-          {{#has_apps_or_pages}}
+          {{#hascontent}}
             <li><a data-toggle="collapse" href="#hgroup{{ id }}">{{ name }}</a></li>
             <ul class="collapse"  id="hgroup{{ id }}">
             {{#pages}}
@@ -91,14 +91,16 @@
                 <li class="app{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/app/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
               {{/unlisted}}
             {{/app_instances}}
+            {{#workflow_instances}}
+              {{^unlisted}}
+                <li class="app{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/workflow/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cog{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
+              {{/unlisted}}
+            {{/workflow_instances}}
             </ul>
-          {{/has_apps_or_pages}}
-          {{^has_apps_or_pages}}
-            <li><a href="/page/{{group_slug}}">{{ name }}</a></li>
-          {{/has_apps_or_pages}}
+          {{/hascontent}}
         {{/unlisted}}
       {{/.}}
-    {{/apps_pages}}
+    {{/mygroups}}
       </ul>
       <!--form class="navbar-form navbar-right">
         <input type="text" class="form-control" placeholder="Search...">

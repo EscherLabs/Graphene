@@ -53,7 +53,7 @@ class UserDashboardController extends Controller
         $template = new Templater();
 
         return $template->render([
-            'apps_pages'=>$group_links,
+            'mygroups'=>$group_links,
             'name'=>"Dashboard",
             'slug'=>'',
             'apps'=>AppInstance::whereIn('group_id',$groups)->with('app')->get(), 

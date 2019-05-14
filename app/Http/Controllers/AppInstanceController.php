@@ -185,7 +185,7 @@ class AppInstanceController extends Controller
         if($myApp != null) {
             $template = new Templater();
             return $template->render([
-                'apps_pages'=>$links,
+                'mygroups'=>$links,
                 'name'=>$myApp->name,
                 'slug'=>$myApp->slug,
                 'id'=>$myApp->id,

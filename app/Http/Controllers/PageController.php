@@ -194,7 +194,7 @@ class PageController extends Controller
             }
             $template = new Templater();
             return $template->render([
-                'apps_pages'=>$links, 
+                'mygroups'=>$links, 
                 'apps'=>$apps,
                 'name'=>$myPage->name, 
                 'slug'=>$myPage->slug, 
