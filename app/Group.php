@@ -50,6 +50,12 @@ class Group extends Model
 	  return $this->hasOne(AppInstance::class)
 	    ->selectRaw('group_id, count(*) as aggregate')
 	    ->groupBy('group_id');
+  }
+	public function workflowinstancesCount()
+	{
+	  return $this->hasOne(WorkflowInstance::class)
+	    ->selectRaw('group_id, count(*) as aggregate')
+	    ->groupBy('group_id');
 	}
 	public function linksCount()
 	{
@@ -59,6 +65,9 @@ class Group extends Model
 	}
     public function app_instances() {
       return $this->hasMany(AppInstance::class);
+    }
+    public function workflow_instances() {
+      return $this->hasMany(WorkflowInstance::class);
     }
     public function pages() {
       return $this->hasMany(Page::class);
@@ -156,6 +165,10 @@ class Group extends Model
     {
         return $this->app_instances()->get();
     }
+    public function list_workflowinstances()
+    {
+        return $this->workflow_instances()->get();
+    }
     public function list_endpoints()
     {
         return $this->endpoints()->get();
@@ -188,6 +201,9 @@ class Group extends Model
         ->orWhereHas('pages', function($q) {
             $q->where('public','=','1');
             $q->where('site_id','=',config('app.site')->id);
+        })->orWhereHas('workflow_instances', function($q) {
+            $q->where('public','=','1');
+            $q->where('site_id','=',config('app.site')->id);
         });
     }
     public function scopeAppsPages($query)
@@ -200,6 +216,10 @@ class Group extends Model
             $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
             $q->where('unlisted','=',0);
             $q->orderBy('order');
+        },'workflow_instances'=>function($q){
+          $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
+          $q->where('unlisted','=',0);
+          $q->orderBy('order');
         }))->whereIn('id', Auth::user()->groups);
     }
 }

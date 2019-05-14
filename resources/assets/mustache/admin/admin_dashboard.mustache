@@ -185,6 +185,11 @@
 											<i class="fa fa-cubes text-info"></i> <span class="text-info">App Instances</span> <span class="badge">{{appinstances_count.aggregate}}</span>
 										</a>
 										{{/appinstances_count}}
+                    {{#workflowinstances_count}}
+										<a href="/admin/groups/{{id}}/workflowinstances" class="list-group-item" style="border-left:solid #31708f">
+											<i class="fa fa-cubes text-info"></i> <span class="text-info">Workflow Instances</span> <span class="badge">{{workflowinstances_count.aggregate}}</span>
+										</a>
+										{{/workflowinstances_count}}
 										{{#endpoints_count}}
 										<a href="/admin/groups/{{id}}/endpoints" class="list-group-item" style="border-left:solid #8a6d3b">
 											<i class="fa fa-crosshairs text-warning"></i> <span class="text-warning">Endpoints</span> <span class="badge">{{endpoints_count.aggregate}}</span>

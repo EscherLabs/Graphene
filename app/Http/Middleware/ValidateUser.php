@@ -8,6 +8,7 @@ use Closure;
 use App\User;
 use App\Site;
 use App\App;
+use App\Workflow;
 use App\AppDeveloper;
 use App\GroupMember;
 use App\SiteMember;
@@ -54,7 +55,7 @@ class ValidateUser
             abort(403, 'Unauthorized action.');
         }
 
-        $developer_apps = []; $groups = []; $content_admin_groups = []; $apps_admin_groups = []; $is_developer = false; $is_admin = false;
+        $developer_workflows = []; $developer_apps = []; $groups = []; $content_admin_groups = []; $apps_admin_groups = []; $is_developer = false; $is_admin = false;
 
         // Store Critical User Info in Session for 1 Minute, Regenerate After
         if (Auth::user()->invalidate_cache !== true && session()->has('user_data_timestamp') && session('user_data_timestamp') + (1*60) >= time()) {
@@ -62,6 +63,7 @@ class ValidateUser
             Auth::user()->apps_admin_groups = session('apps_admin_groups');
             Auth::user()->groups = session('groups');
             Auth::user()->developer_apps = session('developer_apps');
+            Auth::user()->developer_workflows = session('developer_workflows');
             Auth::user()->tags_array = session('tags_array');
         } else {
             Auth::user()->content_admin_groups = Group::where('site_id', '=', $current_site->id )->whereHas('admins', function($q){
@@ -85,12 +87,17 @@ class ValidateUser
                 $q->where('user_id', '=',  Auth::user()->id);
             })->pluck('id')->toArray();
 
+            Auth::user()->developer_workflows = Workflow::where('site_id', '=', $current_site->id )->whereHas('developers', function($q){
+                $q->where('user_id', '=',  Auth::user()->id);
+            })->pluck('id')->toArray();
+
             Auth::user()->tags_array = Tag::whereIn('group_id',Auth::user()->groups)->get(['name','value'])->toArray();
             session([
                 'content_admin_groups' => Auth::user()->content_admin_groups,
                 'apps_admin_groups' => Auth::user()->apps_admin_groups,
                 'groups' => Auth::user()->groups,
                 'developer_apps' => Auth::user()->developer_apps,
+                'developer_workflows' => Auth::user()->developer_workflows,
                 'tags_array' => Auth::user()->tags_array,
                 'user_data_timestamp' => time()
             ]);  

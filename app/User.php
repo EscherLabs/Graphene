@@ -16,6 +16,7 @@ class User extends Authenticatable
 
     /* Transient Properties not saved in the database */
     public $developer_apps = [];
+    public $developer_workflows = [];
     public $groups = [];
     public $content_admin_groups = [];
     public $apps_admin_groups = [];
@@ -41,11 +42,20 @@ class User extends Authenticatable
     public function app_developers() {
       return $this->hasMany(AppDeveloper::class);
     }
+    public function workflow_developers() {
+      return $this->hasMany(WorkflowDeveloper::class);
+    }
     public function app_versions() {
       return $this->hasMany(AppVersion::class);
     }
+    public function workflow_versions() {
+      return $this->hasMany(WorkflowVersion::class);
+    }
     public function lead_developer_apps() {
       return $this->hasMany(App::class);
+    }
+    public function lead_developer_workflows() {
+      return $this->hasMany(Workflow::class);
     }
     public function getOptionsAttribute() {
         return $this->options;
@@ -102,5 +112,11 @@ class User extends Authenticatable
         return count($this->developer_apps)>0;
       }
       return in_array($app_id,$this->developer_apps);
-    }    
+    }
+    public function workflow_developer($workflow_id=null) {
+      if (is_null($workflow_id)) {
+        return count($this->developer_workflows)>0;
+      }
+      return in_array($workflow_id,$this->developer_workflows);
+    }
 }

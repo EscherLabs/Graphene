@@ -8,6 +8,7 @@ use App\User;
 use App\Group;
 use App\AppVersion;
 use App\AppInstance;
+use App\WorkflowInstance;
 use Illuminate\Http\Request;
 use App\Libraries\Templater;
 use App\Libraries\CustomAuth;
@@ -212,7 +213,6 @@ class PageController extends Controller
 
 
     public function redirect($group, Request $request) {
-        // dd('here');
         if(!is_numeric($group)) {
             $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
 		}else{
@@ -227,8 +227,13 @@ class PageController extends Controller
                 $myAppInstance = AppInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
                 if(!is_null($myAppInstance)){
                     return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
-                } else {
-                    abort(404);
+                }  else {
+                    $myWorkflowInstance = WorkflowInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+                    if(!is_null($myWorkflowInstance)){
+                        return redirect('/workflow/'.strtolower($groupObj->slug).'/'.strtolower($myWorkflowInstance->slug));
+                    } else {
+                        abort(404);
+                    }
                 }
             }
         } else {

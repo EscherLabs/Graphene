@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Developers');
 $.ajax({
-	url: '/api/apps/'+resource_id+'/'+route,
+	url: '/api/workflows/'+resource_id+'/developers',
 	success: function(data) {
 		tableConfig.schema = [
 			{label: 'User', name:'id', type:'select', template:'{{attributes.first_name}} {{attributes.last_name}} - {{attributes.email}}'}
@@ -8,7 +8,7 @@ $.ajax({
 		tableConfig.data = data;
 		tableConfig.add = function(model){
 			if(!model.owner.find({id:parseInt(model.attributes.id)}).length){
-				$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'POST', data: model.attributes,
+				$.ajax({url: '/api/workflows/'+resource_id+'/developers/'+model.attributes.id, type: 'POST', data: model.attributes,
 					success:function(data){
 						toastr.success('', 'Developer successfully Added')
 						this.set(data);
@@ -28,7 +28,7 @@ $.ajax({
 		},
 		tableConfig.edit = false,
 		tableConfig.delete = function(model){
-				$.ajax({url: '/api/apps/'+resource_id+'/developers/'+model.attributes.id, type: 'DELETE',
+				$.ajax({url: '/api/workflows/'+resource_id+'/developers/'+model.attributes.id, type: 'DELETE',
 					success:function(){
 						toastr.success('', 'Developer successfully Removed')
 					},

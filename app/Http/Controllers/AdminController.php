@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Group;
 use App\App;
+use App\Workflow;
 
 class AdminController extends Controller
 {
@@ -23,9 +24,12 @@ class AdminController extends Controller
     public function admins(Group $group) {
        return view('admin', ['resource'=>'admins','id'=>$group->id,'group'=>$group]);
     }
-    public function developers(App $app) {
-       return view('admin', ['resource'=>'developers','id'=>$app->id]);
+    public function appdevelopers(App $app) {
+       return view('admin', ['resource'=>'appdevelopers','id'=>$app->id]);
     }
+    public function workflowdevelopers(Workflow $workflow) {
+        return view('admin', ['resource'=>'workflowdevelopers','id'=>$workflow->id]);
+     } 
     public function composites(Group $group) {
         return view('admin', ['resource'=>'composites','id'=>$group->id,'group'=>$group]);
     }
@@ -53,6 +57,14 @@ class AdminController extends Controller
             }]);
         }]);
         return view('admin', ['resource'=>'appinstances','id'=>$group->id,'group'=>$group]);
+    }
+    public function workflowinstances(Group $group) {
+        $group->load(['composites'=>function($q){
+            $q->with(['group'=>function($qu){
+                $qu->select('id','name');
+            }]);
+        }]);
+        return view('admin', ['resource'=>'workflowinstances','id'=>$group->id,'group'=>$group]);
     }
     public function endpoints(Group $group) {
         return view('admin', ['resource'=>'endpoints','id'=>$group->id,'group'=>$group]);
@@ -115,6 +127,7 @@ class AdminController extends Controller
                 ->with('endpoints')
                 ->with('pagesCount')
                 ->with('appinstancesCount')
+                ->with('workflowinstancesCount')
                 ->with('linksCount');
                 // ->find($group->id);
 

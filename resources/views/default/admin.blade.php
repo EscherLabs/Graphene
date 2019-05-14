@@ -99,11 +99,14 @@
             @can('view_in_admin','App\App')
               <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
             @endcan
+            @can('view_in_admin','App\Workflow')
+              <li><a href="/admin/workflows"><i class="fa fa-cog fa-fw"></i>&nbsp; Workflows</a></li>
+            @endcan
             @can('view_in_admin','App\AppInstance')
-              <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li>
+              <!-- <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li> -->
             @endcan
             @can('view_in_admin','App\Page')
-              <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li>
+              <!-- <li><a href="/admin/pages"><i class="fa fa-file fa-fw"></i>&nbsp; Pages</a></li> -->
             @endcan
             @can('view_in_admin', 'App\APIUser')
               <li><a href="/admin/api_users"><i class="fa fa-plug fa-fw"></i>&nbsp; API Accounts</a></li>
@@ -142,6 +145,9 @@
         @endcan   
         @can('view_in_admin','App\App')
           <li><a href="/admin/apps"><i class="fa fa-cube fa-fw"></i>&nbsp; MicroApps</a></li>
+        @endcan
+        @can('view_in_admin','App\Workflow')
+              <li><a href="/admin/workflows"><i class="fa fa-cog fa-fw"></i>&nbsp; Workflows</a></li>
         @endcan
         @can('view_in_admin','App\AppInstance')
           <!-- <li><a href="/admin/appinstances"><i class="fa fa-cubes fa-fw"></i>&nbsp; App Instances</a></li> -->

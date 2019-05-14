@@ -68,6 +68,7 @@ class GroupController extends Controller
         ->with('endpointsCount')
         ->with('pagesCount')
         ->with('appinstancesCount')
+        ->with('workflowinstancesCount')
         ->with('linksCount')
         ->find($group->id);
     }
@@ -263,6 +264,10 @@ class GroupController extends Controller
     public function list_appinstances(Group $group)
     {
         return $group->list_appinstances();
+    }
+    public function list_workflowinstances(Group $group)
+    {
+        return $group->list_workflowinstances();
     }
     public function list_endpoints(Group $group)
     {
