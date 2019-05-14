@@ -47,7 +47,7 @@ class Templater {
                 }
             }
             $data['mygroups'][$index]->hascontent = $has_content;
-            /* Keeping this in for backwards compatibility */
+            /* !!NOTE!! Keeping this in for backwards compatibility */
             $data['mygroups'][$index]->has_apps_or_pages = $has_content;
             $data['mygroups'][$index]->group_id = $mygroup->id;
             $data['mygroups'][$index]->group_slug = strtolower($mygroup->slug);
@@ -60,6 +60,8 @@ class Templater {
         if (isset($data['group'])) {            
             $data['group'] = $data['group']->toArray();
             $data['group']['content'] = $data['mygroups']->where('id','=',$data['group']['id'])->first()->toArray();
+            /* !!NOTE!! Keeping this in for backwards compatibility */
+            $data['group']['apps_pages'] = $data['group']['content'];
             if(isset($data['user']) && isset($data['user']['content_admin_groups']) && isset($data['user']['apps_admin_groups'])){
                 $data['group']['admin'] = in_array($data['group']['id'], $data['user']['content_admin_groups']) || in_array($data['group']['id'], $data['user']['apps_admin_groups']);   
             }
@@ -70,7 +72,7 @@ class Templater {
         // TJC -- 2/10/18 -- Should make slice size configurable at the site level
         $slice_size = 5;
         $data['mygroups'] = [array_slice($data['mygroups'],0,$slice_size),array_slice($data['mygroups'],$slice_size)];
-        /* Keeping this in for backwards compatibility */
+        /* !!NOTE!! Keeping this in for backwards compatibility */
         $data['apps_pages'] = $data['mygroups'];
 
         /* Build "data" object */
