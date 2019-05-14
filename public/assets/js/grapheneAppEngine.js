@@ -122,7 +122,9 @@ function App() {
 			if(typeof form !== 'undefined'){
 				try{
 					return JSON.parse(form.content);
-				}catch(e){}
+				}catch(e){
+					this.app.debug('Failed to parse form:'+name )
+				}
 			}
 		}.bind(this),
     form: function(name, target){
@@ -134,7 +136,6 @@ function App() {
 			if(typeof name == 'string'){
 				var formOptions = this.app.findForm(name);//_.find(this.options.config.forms,{name:name})
 				if(typeof formOptions !== 'undefined'){
-					try{
 						// var formOptions = JSON.parse(form.content);
 						formOptions.private = true;
 						formOptions.collections = this.collections;
@@ -145,12 +146,8 @@ function App() {
 						this.forms[name] = new gform(formOptions,target)
 
 						return this.forms[name]
-					}catch(e){
-						
-					}
 				}
 			}else{
-				try{
 					var formOptions = name;
 					formOptions.private = true;
 					formOptions.collections = this.collections;
@@ -158,9 +155,6 @@ function App() {
 					var newForm = new gform(formOptions,target)
 					this.forms[newForm.name] = newForm;
 					return this.forms[newForm.name]
-				}catch(e){
-					
-				}
 			}
 		}
 
@@ -201,14 +195,14 @@ function App() {
 			}
 			return this.grids[name]
 		}.bind(this),
-		debug:function(text){
+		debug:function(text,type){
 			if(this.data.user.site_developer){
 				if(typeof text == 'string'){
 				console.log('%c'+this.config.title+': %c'+text,'color: #d85e16','color: #333')
 				}
 				if(typeof text == 'object'){
-					console.log('%c'+this.config.title+'','color: #d85e16')
-					console.log(text)
+					console[type||'log']('%c'+this.config.title+'','color: #d85e16')
+					console[type||'log'](text)
 				}
 			}
 		}.bind(this),
