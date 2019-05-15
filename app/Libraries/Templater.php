@@ -59,7 +59,12 @@ class Templater {
         /* Build current "group" object */
         if (isset($data['group'])) {            
             $data['group'] = $data['group']->toArray();
-            $data['group']['content'] = $data['mygroups']->where('id','=',$data['group']['id'])->first()->toArray();
+            $content = $data['mygroups']->where('id','=',$data['group']['id'])->first();
+            if (!is_null($content)) {
+                $data['group']['content'] = $content->toArray();
+            } else {
+                $data['group']['content'] = [];
+            }
             /* !!NOTE!! Keeping this in for backwards compatibility */
             $data['group']['apps_pages'] = $data['group']['content'];
             if(isset($data['user']) && isset($data['user']['content_admin_groups']) && isset($data['user']['apps_admin_groups'])){
