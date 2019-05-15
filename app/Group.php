@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use App\Events\UpdateUser;
 
 class Group extends Model
 {
@@ -102,15 +103,13 @@ class Group extends Model
         $group_admin = GroupAdmin::firstOrNew(['group_id'=>$this->id,'user_id'=>$user->id]);
         $group_admin->content_admin =$content_admin;
         $group_admin->apps_admin =$apps_admin;
-        // ,
-        //   ['content_admin'=>$content_admin?1:0,'apps_admin'=>$apps_admin?1:0,]);
         $group_admin->save();
         $group_admin->load('user');
         return $group_admin;
     }
     public function remove_admin(User $user)
     {
-        GroupAdmin::where('group_id',$this->id)->where('user_id',$user->id)->delete();
+      GroupAdmin::remove($this->id,$user->id);
     }
     public function list_members()
     {
@@ -126,7 +125,7 @@ class Group extends Model
     }
     public function remove_member(User $user)
     {
-        GroupMember::where('group_id',$this->id)->where('user_id',$user->id)->delete();
+        GroupMember::remove($this->id,$user->id);
     }
     public function list_composites()
     {
