@@ -28,14 +28,6 @@ class App extends Model
     {
       return $this->hasMany(AppVersion::class);
     }
-    // public function list_developers()
-    // {
-    //     $app_id = $this->id;
-    //     $developers = User::whereHas('app_developers', function($query) use ($app_id) {
-    //       $query->where('app_id','=',$app_id);
-    //     });
-    //     return $developers;
-    // }
     public function add_developer(User $user, $status = false)
     {
         self::remove_developer($user); // First Delete the developer from the app
@@ -45,7 +37,7 @@ class App extends Model
     }
     public function remove_developer(User $user)
     {
-        AppDeveloper::where('app_id', $this->id)->where('user_id',$user->id)->delete();
+        return AppDeveloper::remove($this->id,$user->id);
     }
 
     public function scopeCurrentVersion($query)

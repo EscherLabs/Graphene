@@ -109,7 +109,7 @@ class Group extends Model
     }
     public function remove_admin(User $user)
     {
-      GroupAdmin::remove($this->id,$user->id);
+      return GroupAdmin::remove($this->id,$user->id);
     }
     public function list_members()
     {
@@ -125,7 +125,7 @@ class Group extends Model
     }
     public function remove_member(User $user)
     {
-        GroupMember::remove($this->id,$user->id);
+        return GroupMember::remove($this->id,$user->id);
     }
     public function list_composites()
     {

@@ -10,7 +10,7 @@ class GroupMember extends Model
     protected $fillable = ['group_id','user_id','status'];
     protected $primaryKey = ['user_id', 'group_id'];
     public $incrementing = false;
-    protected $dispatchesEvents = ['saved'=>UpdateUser::class,'deleted'=>UpdateUser::class];
+    protected $dispatchesEvents = ['saved'=>UpdateUser::class];
 
     public function group() {
       return $this->belongsTo(Group::class);
@@ -24,7 +24,8 @@ class GroupMember extends Model
     }
 
     public static function remove($group_id, $user_id) {
-      GroupMember::where('group_id',$group_id)->where('user_id',$user_id)->delete();
+      $ret = GroupMember::where('group_id',$group_id)->where('user_id',$user_id)->delete();
       event(new UpdateUser((Object)['user_id'=>$user_id]));
+      return $ret;
     }
 }
