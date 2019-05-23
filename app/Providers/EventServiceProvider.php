@@ -13,8 +13,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\SomeEvent' => [
-            'App\Listeners\EventListener',
+        'App\Events\UpdateUser' => [
+            'App\Listeners\InvalidateUserCache',
         ],
     ];
 
@@ -27,6 +27,8 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        //
+        // Event::listen('eloquent.*', function () {
+        //     var_dump("Something happened!");
+        // });
     }
 }

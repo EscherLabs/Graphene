@@ -43,7 +43,7 @@ class Site extends Model
     }
     public function remove_member(User $user)
     {
-      SiteMember::where('site_id',$this->id)->where('user_id',$user->id)->delete();
+      return SiteMember::remove($this->id,$user->id);
     }
 
     public function getProxyserverConfigAttribute($config_string)
