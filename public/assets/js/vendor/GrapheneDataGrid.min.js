@@ -7,7 +7,7 @@ function GrapheneDataGrid(options) {
 
 	var actions = [{type:"danger",name:'delete',min:1,label:'<i class="fa fa-times"></i> Delete' },
 	'|',
-	{type:"primary",name:'edit',min:1,label:'<i class="fa fa-pencil"></i> edit' },
+	{type:"primary",name:'edit',min:1,label:'<i class="fa fa-pencil"></i> Edit' },
 	'|',
 	{type:"success",name:'create',min:0,label:'<i class="fa fa-pencil-square-o"></i> New' }];
 	this.version = '0.0.4';

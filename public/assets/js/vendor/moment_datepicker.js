@@ -27,7 +27,7 @@
 
 			// this.$el.timepicker(this.item.timepicker || {});
 
-      this.$el.datetimepicker($.extend({},{format: "h:m A"},this.item.timepicker));
+      this.$el.datetimepicker($.extend({},{format: "hh:mm A"},this.item.timepicker));
 
 			// this.$el.datetimepicker(this.item.timepicker || {format: "h:m A"});
 

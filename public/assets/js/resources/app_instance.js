@@ -71,7 +71,7 @@ $.ajax({
 					if(typeof Berries.resources !== 'undefined') {
 						item.resources = Berries.resources.toJSON().resources;
 					}
-					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', data: item, success:function(){
+					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', dataType : 'json', data: item, success:function(){
 							toastr.success('', 'Successfully updated App Instance')
 						}.bind(this),
 						error:function(e) {

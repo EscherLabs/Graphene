@@ -56,15 +56,15 @@ Cobler.types.uApp = function(container){
                 }
                 $.ajax({
                 url: '/api/fetch/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
-                dataType : 'json',
+                // dataType : 'text json',
                 type: 'POST',
                 data: send_data,
                 error: function (data) {
-                  if(typeof data.responseJSON !== 'undefined' && typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
-                    toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
-                  }else{
+                  // if(typeof data.responseJSON !== 'undefined' && typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
+                  //   toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
+                  // }else{
                     toastr.error(data.statusText, 'ERROR')
-                  }
+                  // }
                 }.bind(this),
                 success  : callback.bind(this)
                 });

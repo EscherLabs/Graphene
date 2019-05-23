@@ -85,12 +85,12 @@ function App() {
 		// off: Berry.prototype.off.bind(this),
 		trigger: this.eventBus.dispatch,
 		options: function(newOptions){
-			
 			this.app.update( { user: $.extend(true,{},this.data.user,{ options: newOptions }  )});
 				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
 				if(typeof this.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
+						dataType : 'json',
 						url:url,
 						data: {'options': newOptions},
 						success:function(data){

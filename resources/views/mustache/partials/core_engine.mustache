@@ -16,7 +16,7 @@
 <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
 <script src='/assets/js/vendor/berrytables.full.js'></script> 
 
-<script src='/assets/js/vendor/cobler.min.js'></script> 
+{{! <script src='/assets/js/vendor/cobler.min.js'></script>  }}
 <script src='/assets/js/vendor/bootstrap.cobler.js'></script> 
 <script src="/assets/js/vendor/lodash.min.js"></script>
 <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
@@ -316,9 +316,11 @@ function editMobileOrder(){
 		if(typeof item.bae !== 'undefined'){
 			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
 				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
+				debugger;
 				if(typeof item.bae.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
+						dataType : 'json',
 						url:url,
 						data: {'options': e.form.get()},
 						success:function(app,data){
