@@ -316,7 +316,6 @@ function editMobileOrder(){
 		if(typeof item.bae !== 'undefined'){
 			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
 				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
-				debugger;
 				if(typeof item.bae.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
