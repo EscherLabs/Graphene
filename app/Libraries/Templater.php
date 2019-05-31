@@ -107,6 +107,7 @@ class Templater {
 
         /* Build "user" object */
         $data['user'] = Auth::user();
+        $data['cache_bust_id'] = config('app.cache_bust_id');
 
         /* Setup Templates */
         $site_templates = config('app.site')->select('templates')->first()->templates;
