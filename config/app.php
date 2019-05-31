@@ -16,6 +16,7 @@ return [
     */
 
     'name' => 'Graphene',
+    'cache_bust_id' => isset($_SERVER['CACHE_BUST_ID'])?$_SERVER['CACHE_BUST_ID']:1,
 
     /*
     |--------------------------------------------------------------------------

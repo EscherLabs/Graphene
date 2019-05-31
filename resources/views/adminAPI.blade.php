@@ -50,7 +50,6 @@
   <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
   <script src='/assets/js/vendor/ractive.min.js'></script>    
 
-  <script src='/assets/js/paged.js'></script> 
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
@@ -58,6 +57,10 @@
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
+
+  <script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
+  <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script> 
+  <script src='/assets/js/fileManager.js'></script> 
 
 @endsection
 

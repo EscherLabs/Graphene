@@ -29,69 +29,65 @@ class Templater {
         $this->get_site_templates();
         $this->set_defaults($data);
 
-        // Strip Out App Instances and Pages User Doesn't Have Permission to See
-        foreach($data['apps_pages'] as $index => $group_apps_pages) {
-            $data['apps_pages'][$index]['slug'] = strtolower($data['apps_pages'][$index]['slug']);
-            foreach($group_apps_pages->pages as $page_index => $page) {
-                $data['apps_pages'][$index]->pages[$page_index]['slug'] = strtolower($data['apps_pages'][$index]->pages[$page_index]['slug']);
-                if (Auth::user()!==null && !Auth::user()->can('get', $page)) {
-                    $data['apps_pages'][$index]->pages->forget($page_index);
-                }
-                // Something about the model/mustache engine makes this blow up -- actively unsetting groups
-                if (isset($data['apps_pages'][$index]->pages[$page_index])) {
-                    unset($data['apps_pages'][$index]->pages[$page_index]['groups']);
-                }
-            }
-            foreach($group_apps_pages->app_instances as $app_instance_index => $app_instance) {
-                $data['apps_pages'][$index]->app_instances[$app_instance_index]['slug'] = strtolower($data['apps_pages'][$index]->app_instances[$app_instance_index]['slug']);
-                if (Auth::user()!==null && !Auth::user()->can('fetch', $app_instance)) {
-                    $data['apps_pages'][$index]->app_instances->forget($app_instance_index);
-                }
-                // Something about the model/mustache engine makes this blow up -- actively unsetting groups
-                if (isset($data['apps_pages'][$index]->app_instances[$app_instance_index])) {
-                    unset($data['apps_pages'][$index]->app_instances[$app_instance_index]['groups']);
+        /* Build / Cleanup "mygroups" object */
+        $content_types = ['pages','app_instances'];
+        foreach($data['mygroups'] as $index => $mygroup) {
+            $has_content = false;
+            foreach($content_types as $content_type) {
+                foreach($mygroup[$content_type] as $ctype_index => $page) {
+                    $data['mygroups'][$index][$content_type][$ctype_index]['slug'] = strtolower($data['mygroups'][$index][$content_type][$ctype_index]['slug']);
+                    if (Auth::user()!==null && !Auth::user()->can('get', $page)) {
+                        $data['mygroups'][$index][$content_type]->forget($ctype_index);
+                    }
+                    // Something about the model/mustache engine makes this blow up -- actively unsetting groups
+                    if (isset($data['mygroups'][$index][$content_type][$ctype_index])) {
+                        unset($data['mygroups'][$index][$content_type][$ctype_index]['groups']);
+                    }
+                    $has_content = true;
                 }
             }
+            $data['mygroups'][$index]->hascontent = $has_content;
+            /* !!NOTE!! Keeping this in for backwards compatibility */
+            $data['mygroups'][$index]->has_apps_or_pages = $has_content;
+            $data['mygroups'][$index]->group_id = $mygroup->id;
+            $data['mygroups'][$index]->group_slug = strtolower($mygroup->slug);
+            $data['mygroups'][$index]->slug = strtolower($mygroup->slug);
+            $data['mygroups'][$index]->pages = array_values($mygroup->pages->toArray());
+            $data['mygroups'][$index]->app_instances = array_values($mygroup->app_instances->toArray());
         }
 
-        // Build $data object
+        /* Build current "group" object */
         if (isset($data['group'])) {            
             $data['group'] = $data['group']->toArray();
-            $data['group']['apps_pages'] = $data['apps_pages']->where('id','=',$data['group']['id'])->first();
-            if(!is_null($data['group']['apps_pages'])){
-              $data['group']['apps_pages'] = $data['group']['apps_pages']->toArray();   
-            }else{
-              $data['group']['apps_pages'] =[];
+            $content = $data['mygroups']->where('id','=',$data['group']['id'])->first();
+            if (!is_null($content)) {
+                $data['group']['content'] = $content->toArray();
+            } else {
+                $data['group']['content'] = [];
             }
-            $data['group']['apps_pages']['group_id'] = $data['group']['id'];
-            $data['group']['apps_pages']['group_slug'] = strtolower($data['group']['slug']);
+            /* !!NOTE!! Keeping this in for backwards compatibility */
+            $data['group']['apps_pages'] = $data['group']['content'];
             if(isset($data['user']) && isset($data['user']['content_admin_groups']) && isset($data['user']['apps_admin_groups'])){
                 $data['group']['admin'] = in_array($data['group']['id'], $data['user']['content_admin_groups']) || in_array($data['group']['id'], $data['user']['apps_admin_groups']);   
             }
         }
 
-        $data['apps_pages'] = $data['apps_pages']->toArray();
-
-        foreach($data['apps_pages'] as $index => $link) {
-            $data['apps_pages'][$index]['group_id'] = $link['id'];
-            $data['apps_pages'][$index]['group_slug'] = strtolower($link['slug']);
-            if (count($link['app_instances'])>0 || count($link['pages'])>0) {
-                $data['apps_pages'][$index]['has_apps_or_pages'] = true;
-            }  
-            $data['apps_pages'][$index]['pages'] = array_values($link['pages']);
-            $data['apps_pages'][$index]['app_instances'] = array_values($link['app_instances']);
-        }
+        $data['mygroups'] = $data['mygroups']->toArray();
 
         // TJC -- 2/10/18 -- Should make slice size configurable at the site level
         $slice_size = 5;
-        $data['apps_pages'] = [array_slice($data['apps_pages'],0,$slice_size),array_slice($data['apps_pages'],$slice_size)];
+        $data['mygroups'] = [array_slice($data['mygroups'],0,$slice_size),array_slice($data['mygroups'],$slice_size)];
+        /* !!NOTE!! Keeping this in for backwards compatibility */
+        $data['apps_pages'] = $data['mygroups'];
 
+        /* Build "data" object */
         if (!isset($data['data'])) {
             $data['data'] = '';
         }else{
             $data['data'] = json_encode($data['data']);
         }
 
+        /* Build "apps" object */
         if (isset($data['apps']) && is_array($data['apps'])) {
             $data['apps'] = $data['apps']->toArray();
         }
@@ -104,15 +100,16 @@ class Templater {
             if(isset($data['user']) && isset($data['user']->developer_apps)){
                 $data['app']['developer'] = in_array ($data['app']['app_id'], $data['user']->developer_apps);   
             }
-
         }
 
         $data['config_json'] = json_encode($data['config']);
         $data['apps_json'] = json_encode($data['apps']);
 
-        // if(!(Auth::user()->app_developer() || Auth::user()->site_developer)) {
-        //     $data['apps_json'] = preg_replace('/(?:\s\s+)/', ' ', preg_replace('/(?:\\\n+|\\\t+)/', ' ', $data['apps_json']));            
-        // }
+        /* Build "user" object */
+        $data['user'] = Auth::user();
+        $data['cache_bust_id'] = config('app.cache_bust_id');
+
+        /* Setup Templates */
         $site_templates = config('app.site')->select('templates')->first()->templates;
 
         $loader = new \Mustache_Loader_CascadingLoader(array(
@@ -124,7 +121,6 @@ class Templater {
             new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
         ));
 
-        $data['user'] = Auth::user();
         // Render Template
         $m = new \Mustache_Engine([
             'loader' => $loader,
@@ -134,7 +130,6 @@ class Templater {
     if (!isset($data['template'])) {
         $data['template'] = 'main';
     }   
-    
     $tpl = $m->loadTemplate($data['template']);
         return $tpl->render($data);
     }

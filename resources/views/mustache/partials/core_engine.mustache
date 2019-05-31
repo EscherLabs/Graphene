@@ -1,51 +1,53 @@
 <div class="hidden-xs"> </div>
 
-<script src='/assets/js/berryApp.js'></script> 
-<script src='/assets/js/vendor/moment.js'></script>
+<script src='/assets/js/grapheneAppEngine.js?cb={{cache_bust_id}}'></script> 
+<script src='/assets/js/vendor/moment.js?cb={{cache_bust_id}}'></script>
 
-<script src='/assets/js/vendor/jquery.min.js'></script>
-<script src="/assets/js/vendor/bootstrap.min.js"></script>
-<script src='/assets/js/vendor/hogan.min.js'></script>
+<script src='/assets/js/vendor/jquery.min.js?cb={{cache_bust_id}}'></script>
+<script src="/assets/js/vendor/bootstrap.min.js?cb={{cache_bust_id}}"></script>
+<script src='/assets/js/vendor/hogan.min.js?cb={{cache_bust_id}}'></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
-<script src='/assets/js/vendor/summernote.min.js'></script>
+<!--<script src="../../assets/js/ie10-viewport-bug-workaround.js?cb={{cache_bust_id}}"></script>-->
+<script src='/assets/js/vendor/summernote.min.js?cb={{cache_bust_id}}'></script>
 
-<script src='/assets/js/vendor/berry.full.js'></script> 
-<script src='/assets/js/vendor/moment_datepicker.js'></script>
+<script src='/assets/js/vendor/berry.full.js?cb={{cache_bust_id}}'></script> 
+<script src='/assets/js/vendor/moment_datepicker.js?cb={{cache_bust_id}}'></script>
 
-<script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
-<script src='/assets/js/vendor/berrytables.full.js'></script> 
+<script src='/assets/js/vendor/bootstrap.full.berry.js?cb={{cache_bust_id}}'></script> 
+<script src='/assets/js/vendor/berrytables.full.js?cb={{cache_bust_id}}'></script> 
 
-<script src='/assets/js/vendor/cobler.min.js'></script> 
-<script src='/assets/js/vendor/bootstrap.cobler.js'></script> 
-<script src="/assets/js/vendor/lodash.min.js"></script>
+{{! <script src='/assets/js/vendor/cobler.min.js'></script>  }}
+<script src='/assets/js/vendor/bootstrap.cobler.js?cb={{cache_bust_id}}'></script> 
+<script src="/assets/js/vendor/lodash.min.js?cb={{cache_bust_id}}"></script>
 <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
+<script src='/assets/js/vendor/gform_bootstrap.min.js?cb={{cache_bust_id}}'></script> 
+<script src='/assets/js/vendor/GrapheneDataGrid.min.js?cb={{cache_bust_id}}'></script> 
 
-<script src='/assets/js/vendor/ractive.min.js'></script>    
-<script src='/assets/js/vendor/lockr.min.js'></script>    
-<script src='/assets/js/vendor/toastr.min.js'></script> 
-<script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
-<script src="/assets/js/vendor/jquery.nivo.slider.min.js" charset="utf-8"></script>
+<script src='/assets/js/vendor/ractive.min.js?cb={{cache_bust_id}}'></script>    
+<script src='/assets/js/vendor/lockr.min.js?cb={{cache_bust_id}}'></script>    
+<script src='/assets/js/vendor/toastr.min.js?cb={{cache_bust_id}}'></script> 
+<script src="/assets/js/vendor/ace/ace.js?cb={{cache_bust_id}}" charset="utf-8"></script>
+<script src="/assets/js/vendor/jquery.nivo.slider.min.js?cb={{cache_bust_id}}" charset="utf-8"></script>
 
 
-<script src="/assets/js/vendor/sortable.js"></script>
-<script src='/assets/js/cob/cob.js'></script>
-<script src='/assets/js/cob/content.cob.js'></script>
-<script src='/assets/js/cob/image.cob.js'></script>
+<script src="/assets/js/vendor/sortable.js?cb={{cache_bust_id}}"></script>
+<script src='/assets/js/cob/cob.js?cb={{cache_bust_id}}'></script>
+<script src='/assets/js/cob/content.cob.js?cb={{cache_bust_id}}'></script>
+<script src='/assets/js/cob/image.cob.js?cb={{cache_bust_id}}'></script>
 
-<script src='/assets/js/cob/uapp.cob.js'></script>
-<script src='/assets/js/cob/links.cob.js'></script>
-<script src='/assets/js/templates/widget.js'></script>
-<script src='/assets/js/lib.js'></script> 
-<script src='/assets/js/vendor/json_formatter.js'></script> 
+<script src='/assets/js/cob/uapp.cob.js?cb={{cache_bust_id}}'></script>
+<script src='/assets/js/cob/links.cob.js?cb={{cache_bust_id}}'></script>
+<script src='/assets/js/templates/widget.js?cb={{cache_bust_id}}'></script>
+<script src='/assets/js/lib.js?cb={{cache_bust_id}}'></script> 
+{{! <script src='/assets/js/vendor/json_formatter.js'></script>  }}
 {{#is_admin}}
-    <script src='/assets/js/vendor/state-machine.js'></script>
+    <script src='/assets/js/vendor/state-machine.js?cb={{cache_bust_id}}'></script>
 
 
 
     <script>
-
-     startContent = "<div>"+
+      Ractive.DEBUG = false;
+      startContent = "<div>"+
       "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
       "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
       "<a href='#' style='border-left-color:#555' class='list-group-action' data-action='createimage'><i class='fa fa-image'></i> Image</a>"+
@@ -312,29 +314,32 @@ function editMobileOrder(){
 
 	function editUserOptions(item){
 		if(typeof item.bae !== 'undefined'){
-			$().berry($.extend(true, {legend:'Edit Options', attributes: item.bae.data.user.options},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).on('save', function(){
+			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
 				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
 				if(typeof item.bae.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
+						dataType : 'json',
 						url:url,
-						data: {'options': this.toJSON()},
-						success:function(data){
-							item.bae.app.update({user:{options:data.options}});
-							item.bae.optionsupdated();
+						data: {'options': e.form.get()},
+						success:function(app,data){
+							app.update({user:{options:data.options}});
 							this.trigger('close');
-							toastr.success('', 'Options Updated Successfully');
-						}.bind(this),
+							app.trigger('options');
+							app.alert({title:'Options Updated Successfully'})
+						}.bind(e.form,item.bae.app),
 						error:function(data){
 								toastr.error(data.statusText, 'An error occured updating options')
 						}
 					})
 				}else{
-					item.bae.app.update({user:{options:this.toJSON()}});
-					Lockr.set(url, {'options': this.toJSON()})
-					this.trigger('close');
+					item.bae.app.update({user:{options:e.form.get()}});
+					Lockr.set(url, {'options': e.form.get()})
+					e.form.trigger('close');
 					toastr.success('', 'Options Updated Successfully');
 				}
+			}).on('cancel',function(e){
+				e.form.trigger('close')
 			})
 		}
 	}
@@ -343,12 +348,8 @@ function editMobileOrder(){
 	}
 
 
-(function() {
-   // your page initialization code here
-   // the DOM will be available here
-	load(true);
 
-})();
+ window.onload = load.bind(null,true);
 
 	$('body').keydown(function(event) {
 		switch(event.keyCode) {
@@ -484,4 +485,4 @@ function editMobileOrder(){
 			}
 		</script>
 
-		<script src="/assets/js/resources/creators.js"></script>
+		<script src="/assets/js/resources/creators.js?cb={{cache_bust_id}}"></script>

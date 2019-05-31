@@ -15,7 +15,7 @@ $.ajax({
 				{label: 'Value', value:'value'},
 				{label: 'Secret Value (Encrypted at Rest)', value:'secret'}
 			]},
-			{label: 'Environment Type', name:'type', options:['dev','test','prod'], required: true},
+			{label: 'Environment Type', name:'type',type:"select", options:['dev','test','prod'], required: true},
 			
 			// {label: 'Resource', name:'resource_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/resources',label_key:'name',value_key:'id'},
 			{name:'config',label:'Config',show:false, template:'{{attributes.config.value}}{{attributes.config.name}}{{attributes.config.tns}}',fields:[
@@ -29,55 +29,70 @@ $.ajax({
 		];
 		tableConfig.data = data;
 
-		tableConfig.events=[
-			{'name': 'config', 'label': '<i class="fa fa-cogs"></i> Config', callback: function(model){
-
-				var fields = [
-					{name: 'name',type: 'hidden'},
-					{name: 'id',type: 'hidden'},
-					{name: 'resource_id',type: 'hidden'},					
-				];
-				switch(model.attributes.resource_type){
-					case 'mysql':
-					fields.push({name:'config',label:false,fields:[
-						{label: 'Database Name',name: 'name'},
-						{label: 'Username', name:'user'},
-						{label: 'Password', name:'pass'},
-						{label: 'Server', name:'server'}
-					]})
-					break;	
-					case 'oracle':
-					fields.push({name:'config',label:false,fields:[
-						{label: 'TNS_NAME',name: 'tns'},
-						{label: 'Username', name:'user'},
-						{label: 'Password', name:'pass'},
-					]})
-					break;									
-					case 'secret':
-					case 'value':
-					fields.push({name:'config',label:false,fields:[
-						{label: 'Value',name: 'value'}
-					]})
-					break;
-				}
-				$().berry({
-					legend:'Config',
-					name:'config',
-					model:model,
-					"flatten": false,
-					fields:fields
-					}).on('saved',function(){
-						// this.set(Berries.config.toJSON())			
-						this.owner.options.edit(this);
-						this.owner.draw();
-					}.bind(model))
-			}, multiEdit: false},
-	
-		]
-
-
 		tableConfig.name = "resources";
-		bt = new berryTable(tableConfig)
+		tableConfig.actions = [
+			{'name':'delete',max:1},'|',
+			{'name':'edit',max:1},{'name': 'config',max:1,min:1, 'label': '<i class="fa fa-cogs"></i> Config'},'|',
+			{'name':'create'}
+		]
+		grid = new GrapheneDataGrid(tableConfig)	
+		grid.on('model:config',function(e){
+			
+			var model = e.model;
+
+			var fields = [
+				{name: 'name',type: 'hidden'},
+				{name: 'id',type: 'hidden'},
+				{name: 'resource_id',type: 'hidden'}			];
+			switch(model.attributes.resource_type){
+				case 'mysql':
+				fields.push({name:'config',type:'fieldset',label:false,fields:[
+					{label: 'Database Name',name: 'name'},
+					{label: 'Username', name:'user'},
+					{label: 'Password', name:'pass'},
+					{label: 'Server', name:'server'}
+				]})
+				break;	
+				case 'oracle':
+				fields.push({name:'config',type:'fieldset',label:false,fields:[
+					{label: 'TNS_NAME',name: 'tns'},
+					{label: 'Username', name:'user'},
+					{label: 'Password', name:'pass'},
+				]})
+				break;									
+				case 'secret':
+				case 'value':
+				fields.push({name:'config',type:'fieldset',label:false,fields:[
+					{label: 'Value',name: 'value'}
+				]})
+				break;
+			}
+			var config = new gform({
+				legend:'Config',
+				name:'config',
+				data:model.attributes,
+				fields:fields
+				}).modal().on('save',function(e){
+					e.form.trigger('close')
+					this.update(e.form.get());
+					this.dispatch('edited')
+					this.draw();
+				}.bind(model))
+			// $().berry({
+			// 	legend:'Config',
+			// 	name:'config',
+			// 	model:model,
+			// 	"flatten": false,
+			// 	fields:fields
+			// 	}).on('saved',function(){
+			// 		// this.set(Berries.config.toJSON())			
+			// 		this.owner.options.edit(this);
+			// 		this.owner.draw();
+			// 	}.bind(model))
+		
+
+
+		})
 	}
 });
 

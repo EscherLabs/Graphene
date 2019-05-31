@@ -31,30 +31,40 @@
       entries: [25, 50, 100],
       count: 25,
       autoSize: -20,
-      container: '#table', 
+      el: '#table', 
       berry: {flatten: false},
-      add: function(model){
-        $().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-          model.attributes.comment = this.toJSON().comment;
+      actions:[{name:'delete',max:1 },
+      '|',
+      {name:'edit',max:1},
+      '|',
+      {name:'create'}],
+      events:{
+      "created":[
+        function(e){
+			var model = e.model;
+			$().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+				model.attributes.comment = this.toJSON().comment;
 
-          $.ajax({url: api, type: 'POST', data: model.attributes,
-            success:function(data) {
-              model.set(data);
-              // Berries.modal.trigger('close')
-              toastr.success('', 'Successfully Added')
-            }.bind(model),
-            error:function(e) {
-              toastr.error(e.statusText, 'ERROR');
-            }
-          });
+				$.ajax({url: api, type: 'POST', data: model.attributes,
+					success:function(data) {
+						model.set(data);
+						toastr.success('', 'Successfully Added')
+					}.bind(model),
+					error:function(e) {
+						toastr.error(e.statusText, 'ERROR');
+					}
+				});
 
-          this.trigger('close')
-        }).on('cancel',function(){
-          model.delete();
-          model.owner.draw();
-        })
-    },
-      edit: function(model){
+				this.trigger('close')
+			}).on('cancel',function(){
+				model.delete();
+				model.owner.draw();
+			})
+
+    }],
+    'model:edited':[function(e){
+      var model = e.model;
+
         $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
             model.attributes.comment = this.toJSON().comment;
 
@@ -75,16 +85,73 @@
           model.owner.draw()
           
         })
-    },
-      delete: function(model){ 
-        $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
+    }],
+    'model:deleted':[function(e){
+      var model = e.model;
+
+      $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
         success:function() {
           toastr.success('', 'Successfully Deleted')
         },
         error:function(e) {
           toastr.error(e.statusText, 'ERROR');
         }
-      });}
+      });
+    }]
+    
+  },
+    //   add: function(model){
+    //     $().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+    //       model.attributes.comment = this.toJSON().comment;
+
+    //       $.ajax({url: api, type: 'POST', data: model.attributes,
+    //         success:function(data) {
+    //           model.set(data);
+    //           // Berries.modal.trigger('close')
+    //           toastr.success('', 'Successfully Added')
+    //         }.bind(model),
+    //         error:function(e) {
+    //           toastr.error(e.statusText, 'ERROR');
+    //         }
+    //       });
+
+    //       this.trigger('close')
+    //     }).on('cancel',function(){
+    //       model.delete();
+    //       model.owner.draw();
+    //     })
+    // },
+    //   edit: function(model){
+    //     $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
+    //         model.attributes.comment = this.toJSON().comment;
+
+    //         $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
+    //         success:function(data) {
+    //           model.set(data);
+    //           toastr.success('', 'Successfully Updated')
+    //         },
+    //         error:function(e) {
+    //           toastr.error(e.statusText, 'ERROR');
+    //         }
+
+            
+    //       });
+    //       this.trigger('close')
+    //     }).on('cancel',function(){
+    //       model.undo();
+    //       model.owner.draw()
+          
+    //     })
+    // },
+      // delete: function(model){ 
+      //   $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
+      //   success:function() {
+      //     toastr.success('', 'Successfully Deleted')
+      //   },
+      //   error:function(e) {
+      //     toastr.error(e.statusText, 'ERROR');
+      //   }
+      // });}
     }
 
     $('[href="/admin/'+route+'"]').parent().addClass('active');
@@ -94,6 +161,8 @@
 @section('end_body_scripts_bottom')
   <script src='/assets/js/paged.js'></script> 
   <script src='/assets/js/vendor/moment.js'></script>
+  <script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
+  <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script> 
 
   <script src='/assets/js/resources/{{ $resource }}.js'></script> 
 @endsection

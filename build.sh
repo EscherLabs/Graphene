@@ -1,2 +1,2 @@
-hulk resources/assets/mustache/admin/* > public/assets/js/templates/admin.js
-hulk resources/assets/mustache/widget/* > public/assets/js/templates/widget.js
+node_modules/hogan.js/bin/hulk resources/assets/mustache/admin/* > public/assets/js/templates/admin.js
+node_modules/hogan.js/bin/hulk resources/assets/mustache/widget/* > public/assets/js/templates/widget.js

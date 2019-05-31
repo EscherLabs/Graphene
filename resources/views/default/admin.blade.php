@@ -192,8 +192,7 @@
     <script src='/assets/js/vendor/state-machine.js'></script>
 
     @yield('end_body_scripts_bottom')
-    <script src='/assets/js/vendor/gform.min.js'></script>
-    <script src='/assets/js/vendor/gform.bootstrap.js'></script>
+    <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
 
     <script>
 

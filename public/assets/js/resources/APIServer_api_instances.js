@@ -7,16 +7,16 @@ $.ajax({
 		tableConfig.schema = [
 			{label: 'Name', name:'name', required: true},
 			{label: 'Slug', name:'slug', required: true},
-			{label: 'Environment', name:'environment_id', required: true,type:'select',choices:'/api/proxy/'+slug+'/environments',label_key:'name',value_key:'id'},
+			{label: 'Environment', name:'environment_id', required: true,type:'select',options:'/api/proxy/'+slug+'/environments',format:{label:"{{name}}",value:"{{id}}"}},
 			// {label: 'Type', name:['dev','test','prod'], required: true},
-			{label: 'API', name:'api_id',type:'select', required: true,choices:'/api/proxy/'+slug+'/apis',label_key:'name',value_key:'id'},
-			{label: 'API Version', name:'api_version_id', show: false,type:'select',choices:'/api/proxy/'+slug+'/api_versions',label_key:'summary',value_key:'id'},			
+			{label: 'API', name:'api_id',type:'select', required: true,options:'/api/proxy/'+slug+'/apis',format:{label:"{{name}}",value:"{{id}}"}},
+			{label: 'API Version', name:'api_version_id', show: false,type:'select',options:'/api/proxy/'+slug+'/api_versions',format:{label:"{{summary}}",value:"{{id}}"}},			
 			{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},
 			{name:'container',show:false, label: 'Resources',
 			"template":'{{#attributes.resources}}{{name}}<br> {{/attributes.resources}}',
 			type: 'fieldset', fields:[
 				{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
-					{name: 'resource',label:false,columns:8, type: 'select', choices: '/api/proxy/'+slug+'/resources'},
+					// {name: 'resource',label:false,columns:8, type: 'select', options: '/api/proxy/'+slug+'/resources'},
 					{label:false, name: 'name',columns:0, type:'hidden'}
 				]}
 			]},
@@ -24,7 +24,7 @@ $.ajax({
 		];
 		tableConfig.data = data;
 
-		tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/api_instance/'+model.attributes.id};
+		// tableConfig.click = function(model){window.location.href = '/admin/apiserver/'+slug+'/api_instance/'+model.attributes.id};
 		
 		// TJC 3/26/19 -- Only Edit Resource Mapping from within API Instance (should limit resources to same type as environment!)
 		// tableConfig.events=[
@@ -53,6 +53,8 @@ $.ajax({
 
 
 		tableConfig.name = "api_instances";
-		bt = new berryTable(tableConfig)
+		// bt = new berryTable(tableConfig)
+		grid = new GrapheneDataGrid(tableConfig).on('click',function(e){window.location.href = '/admin/apiserver/'+slug+'/api_instance/'+e.model.attributes.id})
+
 	}
 });
