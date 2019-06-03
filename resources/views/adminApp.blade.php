@@ -61,7 +61,7 @@
   <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
   <!-- TJC 4/22/18 Monaco Test -->
   <!--<script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
   <script src="/assets/js/vendor/vs/loader.js"></script>

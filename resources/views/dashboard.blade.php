@@ -43,6 +43,7 @@
 		<script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
 
 		<script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
+		<script type='text/javascript' src='/assets/js/cob/flow.cob.js'></script>
 		<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
 		<script type='text/javascript' src='/assets/js/templates/widget.js'></script>
 	    <script src='/assets/js/lib.js'></script> 

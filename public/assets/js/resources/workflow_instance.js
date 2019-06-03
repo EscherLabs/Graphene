@@ -80,48 +80,48 @@ $.ajax({
 					});
 
 				})
-				if(typeof data.workflow.code.forms !== 'undefined' && _.findWhere(data.workflow.code.forms,{name:"Options"}).content){
-					$('#optionstab').show();
-					var options = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.workflow.code.forms,{name:"Options"}).content)) 
-					$('#optionstab').toggle(!!options.fields.length);
-					options.attributes = data.options || {};
-					options.attributes.id = data.id;
-					options.name = 'options';
-					$('#options .col-sm-9').berry(options);
-				}
-				if(typeof data.workflow.code.forms !== 'undefined' && _.findWhere(data.workflow.code.forms,{name:"User Options"}).content){
-					var user_options_default = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.workflow.code.forms,{name:"User Options"}).content)) 
-					$('#useroptionstab').toggle(!!user_options_default.fields.length);
-					user_options_default.attributes = data.user_options_default || {};
-					user_options_default.attributes.id = data.id;
-					user_options_default.name = 'user_options_default';
-					$('#user_options_default .col-sm-9').berry(user_options_default);
-				}
-				if(typeof data.workflow.code.resources !== 'undefined' && data.workflow.code.resources[0].name !== '') {	
-					$('#resoucestab').show();
-					var attributes = _.map(data.workflow.code.resources,function(resource){
-						resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
-						return resource
-					}.bind({resources:data.resources}))
-					// var attributes = $.extend(true, [], data.resources,data.workflow.code.resources);
+				// if(typeof data.workflow.code.forms !== 'undefined' && _.findWhere(data.workflow.code.forms,{name:"Options"}).content){
+				// 	$('#optionstab').show();
+				// 	var options = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.workflow.code.forms,{name:"Options"}).content)) 
+				// 	$('#optionstab').toggle(!!options.fields.length);
+				// 	options.attributes = data.options || {};
+				// 	options.attributes.id = data.id;
+				// 	options.name = 'options';
+				// 	$('#options .col-sm-9').berry(options);
+				// }
+				// if(typeof data.workflow.code.forms !== 'undefined' && _.findWhere(data.workflow.code.forms,{name:"User Options"}).content){
+				// 	var user_options_default = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.workflow.code.forms,{name:"User Options"}).content)) 
+				// 	$('#useroptionstab').toggle(!!user_options_default.fields.length);
+				// 	user_options_default.attributes = data.user_options_default || {};
+				// 	user_options_default.attributes.id = data.id;
+				// 	user_options_default.name = 'user_options_default';
+				// 	$('#user_options_default .col-sm-9').berry(user_options_default);
+				// }
+				// if(typeof data.workflow.code.resources !== 'undefined' && data.workflow.code.resources[0].name !== '') {	
+				// 	$('#resoucestab').show();
+				// 	var attributes = _.map(data.workflow.code.resources,function(resource){
+				// 		resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
+				// 		return resource
+				// 	}.bind({resources:data.resources}))
+				// 	// var attributes = $.extend(true, [], data.resources,data.workflow.code.resources);
 
-					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
-						{name:'container', label: false,  type: 'fieldset', fields:[
+				// 	$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
+				// 		{name:'container', label: false,  type: 'fieldset', fields:[
 
-							{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
-								{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
-								{name: 'endpoint',label:false,columns:8, type: 'select',default: {name:'None', value:'none'}, choices: '/api/groups/'+data.group_id+'/endpoints'},
-								{label:false, name: 'name',columns:0, type:'hidden'}
-							]}
-						]},
-					]} ).on('change',function(item, b, c){
-						var item = Berries.resources.findByID(item.id)
-						var url = '';
-						url += (_.findWhere(Berry.collection.get('/api/groups/'+this.group_id+'/endpoints'),{id:parseInt(item.value)})||{config:{url:''} }).config.url;
-						url+=(_.findWhere(this.workflow.code.resources,{name:item.parent.children.name.instances[1].value})||{path:''}).path				
-						item.update({help:url, value:item.value}, true)
-					}.bind(data))
-				}
+				// 			{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
+				// 				{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
+				// 				{name: 'endpoint',label:false,columns:8, type: 'select',default: {name:'None', value:'none'}, choices: '/api/groups/'+data.group_id+'/endpoints'},
+				// 				{label:false, name: 'name',columns:0, type:'hidden'}
+				// 			]}
+				// 		]},
+				// 	]} ).on('change',function(item, b, c){
+				// 		var item = Berries.resources.findByID(item.id)
+				// 		var url = '';
+				// 		url += (_.findWhere(Berry.collection.get('/api/groups/'+this.group_id+'/endpoints'),{id:parseInt(item.value)})||{config:{url:''} }).config.url;
+				// 		url+=(_.findWhere(this.workflow.code.resources,{name:item.parent.children.name.instances[1].value})||{path:''}).path				
+				// 		item.update({help:url, value:item.value}, true)
+				// 	}.bind(data))
+				// }
 		
 			}.bind(null,data)
 		})

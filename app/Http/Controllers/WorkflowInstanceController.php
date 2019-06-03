@@ -150,16 +150,16 @@ class WorkflowInstanceController extends Controller
         $myWorkflow->findVersion();
         $scripts = [];
         $styles = [];
-
         if($myWorkflow != null) {
             $template = new Templater();
             return $template->render([
-                'apps_pages'=>$links,
+                'mygroups'=>$links,
                 'name'=>$myWorkflow->name,
                 'slug'=>$myWorkflow->slug,
                 'id'=>$myWorkflow->id,
                 'data'=>[],
-                'config'=>json_decode('{"sections":[[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Content","container":true,"titlebar":true,"text":"Workflow Goes Here??"}]],"layout":4}'),
+                'config'=>json_decode('{"sections":[[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}]],"layout":4}'),
+                // 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
@@ -170,6 +170,5 @@ class WorkflowInstanceController extends Controller
         }
         abort(404,'App not found');
     }
-
 
 }

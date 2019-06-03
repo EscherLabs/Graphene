@@ -59,6 +59,7 @@ class WorkflowInstance extends Model
     public function findVersion() {
         $myWorkflowVersion;
         $myWorkflowVersion = WorkflowVersion::where('id','=',$this->version['id'])->first();
+
         $this->workflow->code = $myWorkflowVersion->code;
         $this->workflow->version = $myWorkflowVersion->id;
     }
