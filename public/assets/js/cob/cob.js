@@ -5,7 +5,7 @@
 //		https://github.com/Cloverstone/Cobler
 
 function Cobler(options) {
-  var topics = {};
+	var topics = {};
 	this.options = options
 	this.options.active = this.options.active || 'widget_active';
 	this.options.itemContainer = this.options.itemContainer || 'itemContainer';
@@ -136,8 +136,9 @@ function Cobler(options) {
 				if(confirm('Are you sure you want to delete this widget?')){
 					var olditem = items.splice(getNodeIndex(referenceNode), 1);
 					target.removeChild(referenceNode);
-				 	cob.publish('remove', olditem);
-				 	cob.publish('change', olditem);
+					deactivate();
+					cob.publish('remove', olditem);
+					cob.publish('change', olditem);
 			 	}
 			}else if(classList.indexOf('duplicate-item') >= 0){
 				deactivate();
@@ -176,6 +177,7 @@ function Cobler(options) {
 			[].forEach.call(elems, function(el) {
 			    el.className = el.className.replace(cob.options.active, '');
 			});
+			cob.publish('deactivate');
 		}
 		function loadItems(obj) {
 			deactivate();
@@ -305,7 +307,9 @@ function Cobler(options) {
 		clear: applyToEach.call(this, 'clear'),
 		deactivate: applyToEach.call(this, 'deactivate'),
 		destroy: applyToEach.call(this, 'destroy'),
-		on: this.subscribe//,
+		on: this.subscribe,
+		version:'1.2.0'
+		//,
 		//trigger: this.publish.bind(this)
 	};
 }

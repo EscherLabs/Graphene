@@ -64,6 +64,7 @@
 {{/scripts}}
 <!-- End Included Scripts-->
 <script >
+		resource_type = "{{resource}}"||"page";
 	var config = {{{config_json}}};
 	var mobile_order = {{{data}}};
 	var apps = {{{apps_json}}};
@@ -74,26 +75,25 @@
 	if(group_admin){
 		$('body').addClass('admin');
 	}
+		appMode = false;
+		resource_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
+		
 	{{#app_mode}}
 		appMode = true;
-		resource_type = 'app_instance';
-
-		app_instance_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
-		$('.app'+app_instance_id).addClass('active');
-		var fields = JSON.parse(apps[0].app.code.forms[1].content || '{}').fields;
-		if(typeof fields !== 'undefined' && fields.length){
-			$('#edit_instance').show();
-			$('#edit_instance').on('click', function(){
-				editUserOptions(cb.collections[0].getItems()[0])    
-			})
+		if(resource_type == 'app'){
+			var fields = JSON.parse(apps[0].app.code.forms[1].content || '{}').fields;
+			if(typeof fields !== 'undefined' && fields.length){
+				$('#edit_instance').show();
+				$('#edit_instance').on('click', function(){
+					editUserOptions(cb.collections[0].getItems()[0])    
+				})
+			}
 		}
 	{{/app_mode}}
-	{{^app_mode}}
-		appMode = false;
-		resource_type = 'page';
-		page_id = {{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
-		$('.page'+page_id).addClass('active');
-	{{/app_mode}}
+
+
+		$('.'+resource_type+resource_id).addClass('active');
+
 	$('#group'+group_id).addClass('in');
 
 	layouts = [
@@ -301,7 +301,7 @@ function editMobileOrder(){
 		new_mobile_order = _.map($(mymodal.ref).find('.modal-content ol').find('li'), function(item){return item.dataset.guid});
 		$.ajax(
 			{
-				url: '/api/pages/' + page_id, 
+				url: '/api/pages/' + resource_id, 
 				data: {'mobile_order': JSON.stringify(new_mobile_order)},
 				method: 'PUT',
 				success: function(e){
@@ -473,7 +473,6 @@ function editMobileOrder(){
 				$('.view-as.group_'+groups[i]).click();
 			}
 						
-			if (resource_type === 'page') {resource_id = page_id;} else if (resource_type === 'app_instance') {resource_id = app_instance_id;} 
 			$.ajax({
 					url: '/api/visit/log_visit',
 					type: 'post',

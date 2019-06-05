@@ -11,7 +11,7 @@
     {{> core_engine}}
     <script>
         $('.navbar-nav > li.community_{{group.id}}').addClass('active')
-        $('.page_{{id}}').addClass('active')
+        $('.'+resource_type+'_{{id}}').addClass('active')
     </script>
   </body>
 </html>

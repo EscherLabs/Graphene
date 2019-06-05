@@ -58,7 +58,8 @@ class UserDashboardController extends Controller
             'slug'=>'',
             'apps'=>AppInstance::whereIn('group_id',$groups)->with('app')->get(), 
             'config'=>$config, 
-            'id'=>Auth::user()->id
+            'id'=>Auth::user()->id,
+            'resource'=>'dash'
         ]);
     }
 

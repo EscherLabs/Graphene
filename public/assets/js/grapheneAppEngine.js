@@ -31,7 +31,9 @@ function App() {
 					var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
 					data.user.options = (Lockr.get(url)|| {options:{}}).options;
 				}
-				this.app.update(data);
+				// this.app.update(data);
+				_.extend(this.data, data || {});
+				this.app.update();
 				this.load();
 			}.bind(this),
 				error:function(data){

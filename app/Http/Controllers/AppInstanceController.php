@@ -195,7 +195,8 @@ class AppInstanceController extends Controller
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
-                'template'=>$renderer
+                'template'=>$renderer,
+                'resource'=>'app'
             ]);
 
         }

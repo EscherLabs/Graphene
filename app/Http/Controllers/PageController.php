@@ -205,8 +205,10 @@ class PageController extends Controller
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
-                'template'=>$renderer
+                'template'=>$renderer,
+                'resource'=>'page'
             ]);
+            
         }
         abort(404,'Page not found');
     }

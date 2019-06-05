@@ -91,7 +91,6 @@ class Templater {
         if (isset($data['apps']) && is_array($data['apps'])) {
             $data['apps'] = $data['apps']->toArray();
         }
-
         if (isset($data['uapp'])) {
             $data['apps'] = [$data['uapp']];
             $data['app'] = $data['uapp']->toArray();

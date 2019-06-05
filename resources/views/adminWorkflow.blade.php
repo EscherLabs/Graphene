@@ -40,14 +40,25 @@
     <div role="tabpanel" class="tab-pane forms active" id="forms"></div>
     <!-- <div role="tabpanel" class="tab-pane scripts" id="scripts"></div> -->
     <!-- <div role="tabpanel" class="tab-pane templates" id="templates"></div> -->
-    <div role="tabpanel" class="tab-pane flow" id="flow">
+    <div role="tabpanel" class="tab-pane" id="flow" style="padding-top: 15px">
+        <div class="row">
+
+        <div class="col-sm-4">
+        <div id="graphDiv"></div>
+        </div>
+          <div class="col-sm-5 flow cobler_select cobler_container" id="floweditor"></div>
+          <div class="col-sm-3">
+            <ul id="sortableListflow" class="list-group ">
+            <li class="list-group-item" data-type="email">Email</li>
+            <li class="list-group-item" data-type="approval">Approval</li>
+            </ul>
+            <div class="flowform"></div>
+          </div>
+        </div>
       <!-- <div class="row"><div class="col-md-12 resources "></div></div> -->
     <!-- </div> -->
     <!-- <div role="tabpanel" class="tab-pane" id="styles">
-        <div class="row">
-          <div class="col-sm-9 styles"></div>
-          <div class="col-sm-3"></div>
-        </div>
+        
     </div> -->
   </div>
   <div role="tabpanel" class="tab-pane options" id="options">
@@ -70,6 +81,38 @@
   <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
+  <script type='text/javascript' src='/assets/js/cob/email_flow.cob.js'></script>
+  <script type="text/javascript" src="/assets/js/vendor/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+        startOnLoad:false
+    });
+    var element = document.querySelector("#graphDiv");
+
+var insertSvg = function(svgCode, bindFunctions){
+  debugger;
+    element.innerHTML = svgCode;
+};
+    myfunc=function(e){        // Example of using the API
+      debugger;
+ 
+
+        // var graphDefinition = e;
+        graph = mermaid.mermaidAPI.render('graphDiv'+(Math.floor(Math.random() * 10000)).toString(), e, insertSvg);
+      }
+
+    // $(function(){
+    //     // Example of using the API
+    //     var element = document.querySelector("#graphDiv");
+
+    //     var insertSvg = function(svgCode, bindFunctions){
+    //         element.innerHTML = svgCode;
+    //     };
+
+    //     var graphDefinition = 'graph TB\nA[Christmas] -->|Get money| B[Go shopping]';
+    //     var graph = mermaid.render('graphDiv', graphDefinition, insertSvg);
+    // });
+</script>
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
 @endsection
 

@@ -107,7 +107,6 @@ $(document).keydown(function(e) {
 });
 
 function modalForm(form, name, onSave) {
-
   if(typeof cb === 'undefined'){
     if(typeof form === 'string'){
       form = JSON.parse(form || '{}');
@@ -180,6 +179,89 @@ function modalForm(form, name, onSave) {
     cb.collections[0].load(temp.fields);
   }
 }
+
+
+function createFlow() {
+  // if(typeof cb === 'undefined'){
+  //   if(typeof form === 'string'){
+  //     form = JSON.parse(form || '{}');
+  //   }
+  //   form = form || {};
+  //   $('#myModal').remove();
+  //   this.onSave = onSave;
+  //   this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+  //   $(this.ref).appendTo('body');
+  //   this.ref.find('.modal-body').html(templates.formEditor.render());
+  //   this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
+  //   this.ref.on('hide.bs.modal', function(){
+  //     cb.destroy();
+  //     delete cb;
+  //   });
+  //   this.ref.find('#saveForm').on('click', function(){
+  //     this.onSave.call(this)
+  //     this.ref.modal('hide');
+      
+  //   }.bind(this))
+  //   this.ref.modal({backdrop: 'static'});
+
+    cb2 = new Cobler({formOptions:{inline:true},formTarget:$('.flowform'), disabled: false, targets: [document.getElementById('floweditor')],items:[[]]});
+    $('#flow').keydown(function(event) {
+      switch(event.keyCode) {
+        case 27://escape
+            event.stopPropagation();
+            cb2.deactivate();
+            return false;
+          break;
+      }
+    });
+    list2 = document.getElementById('sortableListflow');
+    cb2.addSource(list2);
+    cb2.on('activate', function(){
+      if(list2.className.indexOf('hidden') == -1){
+        list2.className += ' hidden';
+      }
+      $('.flowform').removeClass('hidden');
+    })
+    cb2.on('deactivate', function(){
+      list2.className = list2.className.replace('hidden', '');
+      $('.flowform').addClass('hidden');
+    })
+    document.getElementById('sortableListflow').addEventListener('click', function(e) {
+      cb2.collections[0].addItem(e.target.dataset.type);
+    })
+  // }
+
+  // if(typeof form !== 'undefined'){
+  //   var temp = $.extend(true, {}, form);
+  //   for(var i in temp.fields){
+
+  //     temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
+  //     switch(temp.fields[i].type) {
+  //       case "select":
+  //       case "radio":
+  //         temp.fields[i].widgetType = 'select';
+  //         break;
+  //       case "checkbox":
+  //         temp.fields[i].widgetType = 'checkbox';
+  //         break;
+  //       default:
+  //         temp.fields[i].widgetType = 'textbox';
+  //     }
+
+  //   }
+
+    list2.className = list2.className.replace('hidden', '');
+  //   cb.collections[0].load(temp.fields);
+  // }
+}
+
+
+
+
+
+
+createFlow();
+
 
 $('#save').on('click',function() {
   // template_errors = templatePage.errors();

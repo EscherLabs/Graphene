@@ -8,8 +8,7 @@ Cobler.types.Workflow = function(container){
 	var fields = {
 		Title: {},
 		'Workflow ID': {type: 'select', choices: '/api/groups/'+group_id+'/workflowinstances'},
-    'User Options':{name:'user_edit',type:'checkbox'},
-		// 'Template': {}
+    'User Options':{name:'user_edit',type:'checkbox'}
 	}
 	return {
     container:container,
@@ -17,7 +16,22 @@ Cobler.types.Workflow = function(container){
 		render: function() {
       var temp = get();
       temp.workflow_admin = group_admin;
-			return templates['widgets_microapp'].render(temp, templates);
+      // return templates['widgets_microapp'].render(temp, templates);
+      return gform.renderString(`
+      <h2></h2>
+      {{#container}}
+      <div class="panel panel-default">
+      {{>widgets__header}}
+        <div class="collapsible panel-body">
+          <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
+      </div>
+      {{/container}}
+      {{^container}}
+        <div class="collapsible">
+        </div>
+      {{/container}}`,temp);
+
 		},
 		edit: berryEditor.call(this, container),
 		toJSON: get,
@@ -35,84 +49,48 @@ Cobler.types.Workflow = function(container){
       }
       $.ajax({
         url:'/api/workflowinstances/'+this.get().workflow_id,
-
-      //     url: '/api/fetch/'+this.get().app_id,
-          dataType : 'json',
-					type: 'GET',
-      //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
-					success  : function(data){
-            // debugger;
-            $(el).find('.collapsible').berry(JSON.parse(data.version.code.forms[0].content)            )
-          }
-      //       if(typeof data.user.id == 'undefined') {
-      //         var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
-      //         data.user.options = (Lockr.get(url)|| {options:{}}).options;
-      //       }
-
-
-      //       var opts = {
-      //         template: this.get().template || 'dashboard',
-      //         $el: $(el).find('.collapsible'),
-      //         crud: function(name, data, callback, verb){
-      //           var send_data = {request: data};
-      //           if(typeof this.data.user.id == 'undefined') {
-      //             send_data.options = this.data.user.options;
-      //           }
-      //           $.ajax({
-      //           url: '/api/fetch/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
-      //           // dataType : 'text json',
-      //           type: 'POST',
-      //           data: send_data,
-      //           error: function (data) {
-      //             // if(typeof data.responseJSON !== 'undefined' && typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
-      //             //   toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
-      //             // }else{
-      //               toastr.error(data.statusText, 'ERROR')
-      //             // }
-      //           }.bind(this),
-      //           success  : callback.bind(this)
-      //           });
-      //         }
-      //       }
-      //       opts.data = data;
-      //       opts.config = (_.find(apps, {id: parseInt(this.get().app_id,10)}) || _.find(Berry.collection.get('/api/groups/'+group_id+'/appinstances'), {id: parseInt(this.get().app_id,10)})).app.code || {};
-      //       // opts.config = _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)}).app.code;
-      //       opts.config.app_instance_id = this.get().app_id;
-      //       opts.config.title = this.get().title;
-      //       $('style[name="'+opts.config.app_instance_id+'"]').remove();
-      //       if(opts.config.css.length){
-      //         $('body').append('<style name="'+opts.config.app_instance_id+'">'+opts.config.css+'</style>');
-      //       }
-      //       opts.onLoad = function(){
-      //         this.bae.app.on('refetch', function(data){
-      //           var options;
-      //           if(typeof this.bae.data.user.id == 'undefined') {
-      //             options =  (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}});
-      //           }
-
-      //           $.ajax({
-      //             type: 'POST',
-      //             url:'/api/fetch/'+this.get().app_id,
-      //             data:options,
-      //             success:function(data){
-      //                 if(typeof data.user.id == 'undefined') {
-      //                   var url = '/api/apps/instances/'+this.get().app_id+'/user_options';
-      //                   data.user.options = (Lockr.get(url)|| {options:{}}).options;
-      //                 }
-      //               this.bae.app.update(data);
-      //               // toastr.success('', 'Data refetched Successfully');
-      //             }.bind(this),
-      //             error:function(data){
-      //                 toastr.error(data.statusText, 'An error occured updating App')
-      //             }
-      //           })
-      //         }.bind(this));
-      //       }.bind(this)
-      //       this.bae = grapheneAppEngine(opts);
+        dataType : 'json',
+        type: 'GET',
+    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+        success  : function(data){
+          loaded = data;
+          this.container.elementOf(this).querySelector('h2').innerText = data.workflow.name;
+          this.form = new gform(
+            {
+              "actions": [
+                {
+                  "type": "save",
+                  "name": "submit",
+                  "label": "<i class='fa fa-check'></i> Submit"
+                },
+                {
+                  "type": "cancel",
+                  "name": "submitted",
+                  "action":"submitted",
+                  // "label": "<i class='fa fa-check'></i> Submit"
+                }
+              ],
+              "fields":[
+                  {"name":"container","type":"fieldset","fields":            JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
+                }
+                  ]
+            }
             
+            ,'.collapsible');
+          this.form.on('save',function(e){
+            e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saveing',"modifiers": "btn btn-warning"})
+            gform.types.fieldset.edit.call(gform.instances.f0.find('container'),false)
+            gform.instances.f0.find('container').el.style.opacity = .7
+            gform.types.button.edit.call(e.field,false)
+          }).on('submitted',function(e){
+            e.form.find('container').el.style.opacity = 1
+            gform.types.fieldset.edit.call(e.form.find('container'),true)
+            gform.types.button.edit.call(e.form.find('submit'),true)
+            e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
+            e.form.set({container:{first_name:"hello"}})
 
-
-      //     }.bind(this)
+          })
+        }.bind(this)
       })
 		}
 	}

@@ -165,6 +165,7 @@ class WorkflowInstanceController extends Controller
                 'styles'=>$styles,
                 'template'=>$renderer,
                 'apps'=>(Object)[],
+                'resource'=>'flow'
             ]);
 
         }
