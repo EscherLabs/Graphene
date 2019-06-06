@@ -205,7 +205,7 @@ function createFlow() {
   //   this.ref.modal({backdrop: 'static'});
 
     cb2 = new Cobler({formOptions:{inline:true},formTarget:$('.flowform'), disabled: false, targets: [document.getElementById('floweditor')],items:[[]]});
-    $('#flow').keydown(function(event) {
+    $('body').keydown(function(event) {
       switch(event.keyCode) {
         case 27://escape
             event.stopPropagation();
@@ -228,6 +228,11 @@ function createFlow() {
     })
     document.getElementById('sortableListflow').addEventListener('click', function(e) {
       cb2.collections[0].addItem(e.target.dataset.type);
+    })
+    cb2.on('change', function(){
+      
+      myfunc('graph TB'+cb2.toHTML()[0])
+
     })
   // }
 

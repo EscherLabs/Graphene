@@ -28,6 +28,7 @@ Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
+
 Route::get('/setup',function(){
   return redirect('/');
 });
@@ -134,6 +135,9 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
 
     /***** WORKFLOWS *****/
+    Route::post('/workflow/submit/{group}/{slug}','WorkflowInstanceController@submit');
+
+
     // List all workflows
     Route::get('/workflows','WorkflowController@list_all_workflows')->middleware('can:get_all,App\Workflow');
     Route::get('/workflows/user','WorkflowController@list_user_workflows')->middleware('can:get_all,App\Workflow');

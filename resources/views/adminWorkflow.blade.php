@@ -43,16 +43,17 @@
     <div role="tabpanel" class="tab-pane" id="flow" style="padding-top: 15px">
         <div class="row">
 
-        <div class="col-sm-4">
-        <div id="graphDiv"></div>
-        </div>
-          <div class="col-sm-5 flow cobler_select cobler_container" id="floweditor"></div>
+        
           <div class="col-sm-3">
             <ul id="sortableListflow" class="list-group ">
             <li class="list-group-item" data-type="email">Email</li>
             <li class="list-group-item" data-type="approval">Approval</li>
             </ul>
             <div class="flowform"></div>
+          </div>
+          <div class="col-sm-5 flow cobler_select cobler_container" id="floweditor"></div>
+          <div class="col-sm-4">
+            <div id="flow-preview"></div>
           </div>
         </div>
       <!-- <div class="row"><div class="col-md-12 resources "></div></div> -->
@@ -87,31 +88,13 @@
     mermaid.initialize({
         startOnLoad:false
     });
-    var element = document.querySelector("#graphDiv");
 
-var insertSvg = function(svgCode, bindFunctions){
-  debugger;
-    element.innerHTML = svgCode;
-};
-    myfunc=function(e){        // Example of using the API
-      debugger;
- 
-
-        // var graphDefinition = e;
-        graph = mermaid.mermaidAPI.render('graphDiv'+(Math.floor(Math.random() * 10000)).toString(), e, insertSvg);
-      }
-
-    // $(function(){
-    //     // Example of using the API
-    //     var element = document.querySelector("#graphDiv");
-
-    //     var insertSvg = function(svgCode, bindFunctions){
-    //         element.innerHTML = svgCode;
-    //     };
-
-    //     var graphDefinition = 'graph TB\nA[Christmas] -->|Get money| B[Go shopping]';
-    //     var graph = mermaid.render('graphDiv', graphDefinition, insertSvg);
-    // });
+    var insertSvg = function(svgCode, bindFunctions){
+      document.querySelector("#flow-preview").innerHTML = svgCode;
+    };
+    myfunc=function(e){
+      graph = mermaid.mermaidAPI.render(gform.getUID(), e, insertSvg);
+    }
 </script>
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
 @endsection

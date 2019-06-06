@@ -23,7 +23,10 @@ Cobler.types.email = function(container){
 		},
 		initialize: function(el){
 
-		}
+    },    
+    toHTML:function(){
+      return gform.renderString('\nA[Christmas] -->|Pathway| {{guid}}[{{target}}]',get());
+    }
 	}
 }
 Cobler.types.approval = function(container){
@@ -49,9 +52,12 @@ Cobler.types.approval = function(container){
 		get: get,
 		set: function (newItem) {
 			$.extend(item, newItem);
-		},
+    },
 		initialize: function(el){
 
-		}
+		},    
+    toHTML:function(){
+      return gform.renderString('\nA[Christmas] -->{{#approver}}|{{approver}}|{{/approver}} {{guid}}[{{target}}]',get());
+    }
 	}
 }

@@ -4,3 +4,6 @@
   background-color: #d85e16;
   color:#eee;
 }
+div#flow-preview .label {
+    color: #000 !important;
+}

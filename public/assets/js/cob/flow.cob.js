@@ -82,13 +82,26 @@ Cobler.types.Workflow = function(container){
             gform.types.fieldset.edit.call(gform.instances.f0.find('container'),false)
             gform.instances.f0.find('container').el.style.opacity = .7
             gform.types.button.edit.call(e.field,false)
-          }).on('submitted',function(e){
+
+            $.ajax({
+              url:'/api/workflow/submit/'+group_id+'/'+this.get().workflow_id,
+              dataType : 'json',
+              type: 'POST',
+              data: e.form.toJSON(),
+              success  : function(data){
+                e.form.find('container').el.style.opacity = 1
+                gform.types.fieldset.edit.call(e.form.find('container'),true)
+                gform.types.button.edit.call(e.form.find('submit'),true)
+                e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
+              }
+            })
+
+          }.bind(this)).on('submitted',function(e){
             e.form.find('container').el.style.opacity = 1
             gform.types.fieldset.edit.call(e.form.find('container'),true)
             gform.types.button.edit.call(e.form.find('submit'),true)
             e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
             e.form.set({container:{first_name:"hello"}})
-
           })
         }.bind(this)
       })

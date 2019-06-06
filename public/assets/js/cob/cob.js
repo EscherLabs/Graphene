@@ -222,7 +222,8 @@ function Cobler(options) {
 		function toHTML() {
 			var temp = '';
 			for(var i in items){
-				temp += Cobler.types[items[i].widgetType].render(items[i]);
+				//temp += Cobler.types[items[i].get().widgetType].render(items[i]);
+				temp += items[i].toHTML();
 			}
 			return temp;
 		}
