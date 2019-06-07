@@ -25,7 +25,7 @@ Cobler.types.email = function(container){
 
     },    
     toHTML:function(){
-      return gform.renderString('\nA[Christmas] -->|Pathway| {{guid}}[{{target}}]',get());
+      return gform.renderString('\nA[Christmas] -->|Pathway| {{guid}}[{{target}}];\nclick {{guid}} callback',get());
     }
 	}
 }
@@ -57,7 +57,7 @@ Cobler.types.approval = function(container){
 
 		},    
     toHTML:function(){
-      return gform.renderString('\nA[Christmas] -->{{#approver}}|{{approver}}|{{/approver}} {{guid}}[{{target}}]',get());
+      return gform.renderString('\nA[Christmas] -->{{#approver}}|{{approver}}|{{/approver}} {{guid}}[{{target}}];\nclick {{guid}} callback',get());
     }
 	}
 }

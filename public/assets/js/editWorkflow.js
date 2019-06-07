@@ -59,11 +59,9 @@ function load(workflow_version) {
   //   bt.fixStyle()
   // })
 
-  loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
-  forms:[{name:'Initial Form',content:'', disabled: true}]
-  },workflow_version)
+  loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:'', disabled: true}]},workflow_version)
 
-  attributes= $.extend(true,{},{code:{user_preference_form:"",form:"", css:""}}, loaded);
+  attributes= $.extend(true,{},{code:{}}, loaded);
   $('.navbar-header .nav a h4').html('Workflow - '+attributes.workflow.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
@@ -262,7 +260,9 @@ function createFlow() {
 
 
 
-
+var callback = function(e){
+debugger;
+}
 
 
 createFlow();
@@ -319,11 +319,11 @@ $('#save').on('click',function() {
             test = JSON.parse(JSON.parse(error.responseText).error.message);
             toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
             conflictResults = {};
-            conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
-            conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
+            // conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
+            // conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
             conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
-            conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
-            conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
+            // conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
+            // conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
             modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
           }.bind(this),
           401: function() {

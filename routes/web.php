@@ -135,8 +135,10 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/fetch/{app_instance}','AppInstanceController@fetch'); // Check Permissions in Controller
 
     /***** WORKFLOWS *****/
-    Route::post('/workflow/submit/{group}/{slug}','WorkflowInstanceController@submit');
-
+    Route::post('/workflow/{group}/{workflow_instance}','WorkflowSubmissionController@create');
+    Route::get('/workflow/{workflow_submission}','WorkflowSubmissionController@status');
+    Route::put('/workflow/{workflow_submission}','WorkflowSubmissionController@update');
+    Route::delete('/workflow/{workflow_submission}','WorkflowSubmissionController@destroy');
 
     // List all workflows
     Route::get('/workflows','WorkflowController@list_all_workflows')->middleware('can:get_all,App\Workflow');

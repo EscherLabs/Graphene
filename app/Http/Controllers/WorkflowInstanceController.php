@@ -160,8 +160,7 @@ class WorkflowInstanceController extends Controller
                 'slug'=>$myWorkflow->slug,
                 'id'=>$myWorkflow->id,
                 'data'=>[],
-                'config'=>json_decode('{"sections":[[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}]],"layout":4}'),
-                // 'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
+                'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}],[]],"layout":0}'),
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
@@ -173,64 +172,5 @@ class WorkflowInstanceController extends Controller
         }
         abort(404,'App not found');
     }
-
-    public function submit($group, $slug = null, Request $request) {
-        if(!is_numeric($group)) {
-            $groupObj = Group::with('composites')->where('slug','=',$group)->first();
-			$group = $groupObj->id;
-		}else{
-    		$groupObj = Group::with('composites')->where('id','=',$group)->first();
-        }
-
-        if (Auth::check()) { /* User is Authenticated */
-            $current_user = Auth::user();
-
-            $myWorkflow = WorkflowInstance::with('workflow')
-                ->where('group_id','=', $group)->where('id', '=', $slug)->with('workflow')->first();
-
-            if (is_null($myWorkflow)) { 
-                abort(404); 
-            }
-            
-            if($myWorkflow->public == 0) {
-                $this->authorize('fetch' ,$myWorkflow);
-            }
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        } else { /* User is not Authenticated */
-            $current_user = new User;
-            $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('id', '=', $slug)->where('public','=',true)->first();
-            if (is_null($myWorkflow)) { 
-                $return = $this->customAuth->authenticate($request);
-                if(isset($return)){
-                    return $return;
-                }
-            }
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        }
-
-        if($myWorkflow != null) {
-            $myWorkflow->findVersion();
-
-            $submission = new WorkflowSubmission();
-
-            $submission->workflow_id = $myWorkflow->id;
-            $submission->workflow_version_id = $myWorkflow->version->id;
-            $submission->state = $request->get('container');
-            $submission->user_id = $current_user->id;
-            $submission->save();
-
-            $activity = new WorkflowActivityLog();
-            $activity->workflow_id = $myWorkflow->id;
-            $activity->user_id = $current_user->id;
-            $activity->workflow_submission_id = $submission->id;
-            $activity->action = 'submitted';
-
-            $activity->save();
-            
-            return $request->all();
-        }
-        abort(404,'App not found');
-    }
-
 
 }
