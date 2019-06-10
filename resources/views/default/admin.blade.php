@@ -191,8 +191,8 @@
     <script src='/assets/js/vendor/berrytables.full.js'></script> 
     <script src='/assets/js/vendor/state-machine.js'></script>
 
-    @yield('end_body_scripts_bottom')
     <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
+    @yield('end_body_scripts_bottom')
 
     <script>
 

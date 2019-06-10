@@ -73,6 +73,7 @@ Cobler.types.Workflow = function(container){
           // debugger;
           this.form = new gform(
             {
+              "data":{},
               "actions": [
                 {
                   "type": "save",
@@ -107,14 +108,16 @@ Cobler.types.Workflow = function(container){
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
-                document.querySelector('.'+this.id).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/api/workflow/{{id}}">here</a>',data)
+                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/api/workflow/{{id}}">here</a>',data)
                 // gform.types.fieldset.edit.call(e.form.find('_state'),true)
                 // gform.types.button.edit.call(e.form.find('submit'),true)
                 // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
               }.bind(this)
             })
 
-          }.bind(this))
+          }.bind(this)).on('canceled',function(e){
+            e.form.trigger('clear')
+          })
           // .on('submitted',function(e){
           //   e.form.find('_state').el.style.opacity = 1
           //   gform.types.fieldset.edit.call(e.form.find('_state'),true)
