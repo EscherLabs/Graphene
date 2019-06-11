@@ -20,7 +20,8 @@ class CreateWorkflowSubmissionsTable extends Migration
             $table->integer('user_id')->unsigned()->index()->nullable()->default(null);
             $table->enum('assignment_type',['user', 'group'])->nullable()->default(null);
             $table->integer('assignment_id')->unsigned()->index()->nullable()->default(null);
-            $table->json('state')->nullable();
+            $table->string('state')->nullable()->default(null);
+            $table->json('data')->nullable();
             $table->enum('status',['open', 'closed'])->default('open');
             $table->timestamps();
             $table->foreign('workflow_id')->references('id')->on('workflows');
