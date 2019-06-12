@@ -28,6 +28,7 @@ Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
+Route::get('/workflow','WorkflowController@summary');
 
 Route::get('/setup',function(){
   return redirect('/');
@@ -136,9 +137,13 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     /***** WORKFLOWS *****/
     Route::post('/workflow/{group}/{workflow_instance}','WorkflowSubmissionController@create');
+    Route::get('/workflow/submissions','WorkflowSubmissionController@list_user_workflow_submissions');
+    Route::get('/workflow/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
     Route::get('/workflow/{workflow_submission}','WorkflowSubmissionController@status');
     Route::put('/workflow/{workflow_submission}','WorkflowSubmissionController@update');
     Route::delete('/workflow/{workflow_submission}','WorkflowSubmissionController@destroy');
+
+
 
     // List all workflows
     Route::get('/workflows','WorkflowController@list_all_workflows')->middleware('can:get_all,App\Workflow');
@@ -172,8 +177,10 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     /***** WORKFLOW INSTANCES *****/
     // List all workflows instances
     Route::get('/workflowinstances','WorkflowInstanceController@list_all_workflow_instances')->middleware('can:get_all,App\WorkflowInstance');
+    Route::get('/workflowinstances/user','WorkflowInstanceController@list_user_workflow_instances')->middleware('can:get_all,App\WorkflowInstance');
+
     // Lookup specific workflow instance by workflow_instance_id
-    Route::get('/workflowinstances/{workflow_instance}','WorkflowInstanceController@show')->middleware('can:get,workflow_instance');
+    Route::get('/workflowinstances/{workflow_instance}','WorkflowInstanceController@show');
     // Create a new workflow instance
     Route::post('/workflowinstances','WorkflowInstanceController@create')->middleware('can:create,App\WorkflowInstance');
     // Update an existing workflow instance by workflow_instance_id

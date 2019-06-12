@@ -455,7 +455,7 @@ var createEngine = function(e){
     })
     fsm = new StateMachine(options);
 }
-$('#new').on('click', createEngine)
+$('#graphene-quick-create').on('click', createEngine)
 $('body').on('click','[data-action]',function(e){
   fsm[e.currentTarget.dataset.action]()
 })

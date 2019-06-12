@@ -11,6 +11,7 @@ use App\WorkflowDevelopers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use \Carbon\Carbon;
+use App\Libraries\Templater;
 
 class WorkflowController extends Controller
 {
@@ -149,4 +150,85 @@ class WorkflowController extends Controller
         return $workflow->remove_developer($user);
     }
 
+    public function summary(Request $request) {
+        if (Auth::user()->site_developer || Auth::user()->site_admin) {
+            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
+        } else {
+            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
+        }
+
+
+
+
+
+
+
+
+
+        // if(!is_numeric($group)) {
+        //     $groupObj = Group::with('composites')->where('slug','=',$group)->first();
+		// 	$group = $groupObj->id;
+		// }else{
+    	// 	$groupObj = Group::with('composites')->where('id','=',$group)->first();
+        // }
+
+        if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+            // $myWorkflow = WorkflowInstance::with('workflow')
+            //     ->where('group_id','=', $group)->where('slug', '=', $slug)->with('workflow')->first();
+
+            // if (is_null($myWorkflow)) { 
+            //     abort(404); 
+            // }
+            
+            // if($myWorkflow->public == 0) {
+            //     $this->authorize('fetch' ,$myWorkflow);
+            // }
+            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+        } else{
+
+        }
+        // else { /* User is not Authenticated */
+        //     $current_user = new User;
+        //     $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
+        //     if (is_null($myWorkflow)) { 
+        //         $return = $this->customAuth->authenticate($request);
+        //         if(isset($return)){
+        //             return $return;
+        //         }
+        //     }
+        //     $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+        // }
+
+        // $myWorkflow->findVersion();
+
+        // if($myWorkflow != null) {
+            $template = new Templater();
+            return $template->render([
+                'mygroups'=>$links,
+                'name'=>'workflow',
+                'slug'=>'workflow',
+                'id'=>0,
+                'data'=>[],
+                'config'=>json_decode('{"sections":[[],[{"title":"Workflows","workflow_id":"","widgetType":"Workflows","container":true}],[]],"layout":0}'),
+                // 'group'=>(Object)array("id"=>"0"),
+                'scripts'=>[],
+                'styles'=>[],
+                'template'=>"main",
+                'apps'=>(Object)[],
+                'resource'=>'flow'
+            ]);
+        // }
+        // abort(404,'App not found');
+
+
+
+
+
+
+
+
+
+        return $workflows;
+    }
 }

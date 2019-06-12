@@ -67,19 +67,21 @@ class WorkflowSubmissionController extends Controller
             $myWorkflow->findVersion();
 
             $submission = new WorkflowSubmission();
-
             $submission->workflow_id = $myWorkflow->id;
             $submission->workflow_version_id = $myWorkflow->version->id;
-            $submission->state = $request->get('_state');
+            $submission->data = $request->get('_state');
+            $submission->state = "submitted";
             $submission->user_id = $current_user->id;
             $submission->save();
 
             $activity = new WorkflowActivityLog();
             $activity->workflow_id = $myWorkflow->id;
             $activity->user_id = $current_user->id;
-            $activity->end_state = $request->get('_state');
+            $activity->data = $request->get('_state');
+            $submission->end_state = "submitted";
+
             $activity->workflow_submission_id = $submission->id;
-            $activity->action = 'submitted';
+            $activity->action = 'submit';
 
             $activity->save();
             
@@ -89,7 +91,20 @@ class WorkflowSubmissionController extends Controller
     }
 
 
+    public function list_user_workflow_submissions(Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('user_id','=',Auth::user()->id)->get();
+    }
+    public function list_workflow_submission_assignments(Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        return array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'user')->where('assignment_id','=',Auth::user()->id)->get(),
+        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'group')->whereIn('assignment_id',Auth::user()->groups)->get());
 
+    }
 
     public function action($group, $workflow_id, $submission_id, Request $request) {
         return $submission_id;

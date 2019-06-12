@@ -49,6 +49,21 @@ class WorkflowInstanceController extends Controller
         return $workflow_instances->get();
     }
 
+    public function list_user_workflow_instances($group_id = null,Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        if (!is_null($group_id)) {
+            $composite_groups = GroupComposite::where('group_id','=',$group_id)->pluck('composite_group_id')->toArray();
+            $common_groups = array_values(array_intersect(array_merge([$group_id],$composite_groups),Auth::user()->groups));
+            $workflows = WorkflowInstance::whereIn('group_id',$common_groups)->orderBy('name')->get();
+        } else {
+            $workflows = WorkflowInstance::whereIn('group_id',Auth::user()->groups)->orderBy('name')->get();
+        }
+        return $workflows;
+
+    }
+
     public function admin(WorkflowInstance $workflow_instance) {
         $workflow_instance->load(array('group'=>function($query){}));
         return view('admin', ['resource'=>'workflow_instance','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);

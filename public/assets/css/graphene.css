@@ -663,3 +663,12 @@ a.list-group-action {
     margin-left:0;
   }
 }
+#page.flow .flow-title{
+  z-index:1;
+  top:50px;
+  position:sticky;
+  background:#fff;
+  margin: -15px -15px 15px;
+  padding: 15px 15px 10px;
+  border-bottom: solid 1px #eee;
+}

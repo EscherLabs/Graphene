@@ -32,7 +32,7 @@ Cobler.types.Workflow = function(container){
       {{>widgets__header}}
         <div class="collapsible panel-body">
         
-        <h3 class="form-title" style="margin-top: 0;padding-bottom: 5px;border-bottom: solid 1px #eee;"></h3>
+        <h3 class="flow-title"></h3>
         <div class="g_{{guid}}">
         <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
         </div>
@@ -42,7 +42,7 @@ Cobler.types.Workflow = function(container){
       {{^container}}
 
         <div class="collapsible">
-        <h3 class="form-title" style="margin-top: 0;padding-bottom: 5px;border-bottom: solid 1px #eee;"></h3>
+        <h3 class="flow-title"></h3>
         <div class="g_{{guid}}"></div>
         </div>
       {{/container}}`,temp);
@@ -69,7 +69,7 @@ Cobler.types.Workflow = function(container){
     //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
         success  : function(data){
           loaded = data;
-          this.container.elementOf(this).querySelector('.form-title').innerText = data.workflow.name;
+          this.container.elementOf(this).querySelector('.flow-title').innerText = data.workflow.name;
           // debugger;
           this.form = new gform(
             {
@@ -125,6 +125,146 @@ Cobler.types.Workflow = function(container){
           //   e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
           //   e.form.set({_state:{first_name:"hello"}})
           // })
+        }.bind(this)
+      })
+		}
+	}
+}
+
+
+Cobler.types.Workflows = function(container){
+	function get() {
+		item.widgetType = 'Workflows';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+		Title: {},
+		'Workflow ID': {type: 'select', choices: '/api/groups/'+group_id+'/workflowinstances'},
+    // 'User Options':{name:'user_edit',type:'checkbox'}
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      // this.id = gform.getUID();
+      // temp.id = this.id;
+      // return templates['widgets_microapp'].render(temp, templates);
+      return gform.renderString(`
+      <div class="btn-group pull-right slice-actions parent-hover">
+	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+</div>
+
+      {{#container}}
+      <div class="panel panel-default">
+      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+</div>
+      {{>widgets__header}}
+        <div class="collapsible panel-body">
+        
+        <h3 class="flow-title"></h3>
+        <div class="g_{{guid}}">
+        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
+        </div>
+      </div>
+      {{/container}}
+      {{^container}}
+
+        <div class="collapsible">
+        </div>
+      {{/container}}`,temp);
+
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+    if(typeof this.get().workflow_id == 'undefined'){return false;};
+      this.fields['Workflow ID'].enabled = false;
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+      $.ajax({
+        url:'/api/workflowinstances/user',
+        dataType : 'json',
+        type: 'GET',
+    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+        success  : function(data){
+
+          $.ajax({
+            url:'/api/workflow/submissions',
+            dataType : 'json',
+            type: 'GET',
+        //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+            success  : function(newdata){
+
+              $.ajax({
+                url:'/api/workflow/assignments',
+                dataType : 'json',
+                type: 'GET',
+            //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+                success  : function(assignments){
+    
+                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
+                  <div>
+        
+                  <!-- Nav tabs -->
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab">Available Workflows</a></li>
+                    <li role="presentation"><a href="#open" aria-controls="open" role="tab" data-toggle="tab">My Workflows</a></li>
+                    <li role="presentation"><a href="#assignments" aria-controls="assignments" role="tab" data-toggle="tab">Assignments</a></li>
+                  </ul>
+                
+                  <!-- Tab panes -->
+                  <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="workflows">
+                      <ul class="list-group">
+                      {{#data}}<a class="list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                      </ul>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="open">
+                    <ul class="list-group">
+                    {{#open}}<a class="list-group-item" target="_blank" href="/api/workflow/{{id}}">{{created_at}} - {{workflow.name}} <span class="badge">{{status}}</span></a>{{/open}}
+                    </ul>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="assignments">
+                    <ul class="list-group">
+                    {{#assignments}}
+                    {{#direct}}
+                    <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}">{{created_at}} - {{workflow.name}} <span class="badge">{{status}}</span></a>
+                    {{/direct}}
+                    {{#group}}
+                    <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}">{{created_at}} - {{workflow.name}} <span class="badge">{{status}}</span></a>
+                    {{/group}}
+                    {{/assignments}}
+                    </ul>
+                    </div>
+                  </div>
+                
+                </div>
+                  `,{data:data,open:newdata,assignments:assignments});
+    
+    
+                }.bind(this)
+                
+              })
+
+
+            }.bind(this)
+
+          })
+
+        
         }.bind(this)
       })
 		}

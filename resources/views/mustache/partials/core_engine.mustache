@@ -70,7 +70,9 @@
 	var apps = {{{apps_json}}};
 	_.findWhere = _.find;
 	_.where = _.filter;
-	group_id = {{group.id}};
+	
+	group_id = {{group.id}}{{^group}}0{{/group}};
+	
 	group_admin = {{#group.admin}}true{{/group.admin}}{{^group.admin}}false{{/group.admin}};
 	if(group_admin){
 		$('body').addClass('admin');
