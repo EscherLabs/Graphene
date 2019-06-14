@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />
+<meta http-equiv="Vary" content="*" />
     <link rel="icon" href="../../favicon.ico">
     <title>{{ config('app.site')->name }}</title>
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">

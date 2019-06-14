@@ -115,7 +115,11 @@ class WorkflowController extends Controller
         }
     }
     public function admin(Workflow $workflow) {
-        return view('adminWorkflow', ['workflow'=>WorkflowVersion::with('workflow')->where('workflow_id','=',$workflow->id)->orderBy('created_at', 'desc')->first()]);
+        return response(view('adminWorkflow', ['workflow'=>WorkflowVersion::with('workflow')->where('workflow_id','=',$workflow->id)->orderBy('created_at', 'desc')->first()]))
+        ->header('Content-Type', 'text/html')
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        ->header('Expires', '0')
+        ->header('Pragma', 'no-cache');
     }
     public function list_developers(Workflow $workflow)
     {

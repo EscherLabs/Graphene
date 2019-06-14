@@ -28,7 +28,7 @@ Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
-Route::get('/workflow','WorkflowController@summary');
+Route::get('/workflows','WorkflowController@summary');
 
 Route::get('/setup',function(){
   return redirect('/');

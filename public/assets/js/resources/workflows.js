@@ -4,6 +4,7 @@ $.ajax({
 	success: function(data) {
 		Berry.collection.add('/api/workflows/developers',data)		
 		$.ajax({
+
 			url: '/api/'+route,
 			success: function(data) {
 				tableConfig.schema = [
