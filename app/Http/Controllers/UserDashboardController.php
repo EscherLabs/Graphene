@@ -55,7 +55,7 @@ class UserDashboardController extends Controller
         return $template->render([
             'mygroups'=>$group_links,
             'name'=>"Dashboard",
-            'slug'=>'',
+            'slug'=>'dashboard',
             'apps'=>AppInstance::whereIn('group_id',$groups)->with('app')->get(), 
             'config'=>$config, 
             'id'=>Auth::user()->id,
