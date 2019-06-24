@@ -336,7 +336,100 @@ function createFlow() {
     cb2.on('change', function(){
       
       myfunc('graph TB'+cb2.toHTML()[0])
-
+      // new gform({
+      //   "fields": [
+      //     {
+      //         "label": "Project Director Namess",
+      //         "name": "director_name",
+      //         "inline": false
+      //     },
+      //     {
+      //         "label": "Department",
+      //         "name": "department",
+      //         "inline": false
+      //     },
+      //     {
+      //         "type": "radio",
+      //         "label": "I hereby authorize the individual shown below to sign on behalf of the Project Director",
+      //         "name": "documents",
+      //         "multiple": true,
+      //         "options": [
+      //             "HR/Payroll Appointment/Fellowship Forms",
+      //             "HR/Payroll Timesheets (Exempt, Staff Support, Hourly, & Certification)",
+      //             "Independent Contractor Classification and Agreement",
+      //             "Science Store charge invoice",
+      //             "University Copy Center charge invoice",
+      //             "Educational Communication charge invoice",
+      //             "Purchase Requisitions for supplies & services",
+      //             "Payment Voucher for supplies & services",
+      //             "Receive copy of purchase order",
+      //             "Electronic Purchase Order (EPO)",
+      //             "Travel payment expense",
+      //             "iExpense Delegate",
+      //             "iExpense Approver",
+      //             "Subrecipient/Subcontractor notice",
+      //             "All Documents Listed Above",
+      //             "Other"
+      //         ]
+      //     },
+      //     {
+      //         "type": "text",
+      //         "label": "Other",
+      //         "name": "documents_other",
+      //         "show":[{
+      //             "type": "contains",
+      //             "name": "documents",
+      //             "value": "Other"
+      //         }]
+      //     },
+      //     {
+      //         "name": "all",
+      //         "label": false,
+      //         "details": "<b>All Project/Awards associated with Project Director</b>",
+      //         "type": "checkbox"
+      //     },
+      //     {
+      //         "label": "Project/Awared",
+      //         "array": true,
+      //         "name": "project",
+      //         "show": [{
+      //             "type": "matches",
+      //             "name": "all",
+      //             "value": false
+      //         }]
+      //     },
+      //     {
+      //         "name": "period",
+      //         "label": "Authorization Period",
+      //         "parse": false,
+      //         "type": "fieldset",
+      //         "fields": [
+      //             {
+      //                 "type": "date",
+      //                 "label": "From",
+      //                 "name": "startdate",
+      //                 "columns": 6
+      //             },
+      //             {
+      //                 "type": "date",
+      //                 "label": "To",
+      //                 "name": "enddate",
+      //                 "columns": 6
+      //             }
+      //         ]
+      //     },
+      //     {
+      //         "label": "Delegate Name",
+      //         "name": "delegate_name"
+      //     },
+      //     {
+      //         "type": "textarea",
+      //         "label": "Comments / Restrictions",
+      //         "name": "comments"
+      //     }
+      //   ]
+      // },"#myForm")
+      // myfunc('graph TB\n Signature Authorization Form-->|Submit|Submitted\n Submitted-->|Approve|Approved\n Submitted-->|Reject|Signature Authorization Form\n Approved-->|Add|Added(fa:fa-envelope Added)')
     })
   // }
 
@@ -375,7 +468,105 @@ debugger;
 
 
 createFlow();
+      
+      //myfunc('graph TB'+cb2.toHTML()[0])
+      // new gform({
+      //   "fields": [
+      //     {
+      //         "label": "Project Director Namess",
+      //         "name": "director_name",
+      //         "inline": false
+      //     },
+      //     {
+      //         "label": "Department",
+      //         "name": "department",
+      //         "inline": false
+      //     },
+      //     {
+      //         "type": "select",
+      //         "label": "I hereby authorize the individual shown below to sign on behalf of the Project Director",
+      //         "name": "documents",
+      //         "multiple": true,
+      //         "options": [
+      //             "HR/Payroll Appointment/Fellowship Forms",
+      //             "HR/Payroll Timesheets (Exempt, Staff Support, Hourly, & Certification)",
+      //             "Independent Contractor Classification and Agreement",
+      //             "Science Store charge invoice",
+      //             "University Copy Center charge invoice",
+      //             "Educational Communication charge invoice",
+      //             "Purchase Requisitions for supplies & services",
+      //             "Payment Voucher for supplies & services",
+      //             "Receive copy of purchase order",
+      //             "Electronic Purchase Order (EPO)",
+      //             "Travel payment expense",
+      //             "iExpense Delegate",
+      //             "iExpense Approver",
+      //             "Subrecipient/Subcontractor notice",
+      //             "All Documents Listed Above",
+      //             "Other"
+      //         ]
+      //     },
+      //     {
+      //         "type": "text",
+      //         "label": "Other",
+      //         "name": "documents_other",
+      //         "show":[{
+      //             "type": "contains",
+      //             "name": "documents",
+      //             "value": "Other"
+      //         }]
+      //     },
+      //     {
+      //         "name": "all",
+      //         "label": false,
+      //         "details": "<b>All Project/Awards associated with Project Director</b>",
+      //         "type": "checkbox"
+      //     },
+      //     {
+      //         "label": "Project/Awared",
+      //         "array": true,
+      //         "name": "project",
+      //         "show": [{
+      //             "type": "matches",
+      //             "name": "all",
+      //             "value": false
+      //         }]
+      //     },
+      //     {
+      //         "name": "period",
+      //         "label": "Authorization Period",
+      //         "parse": false,
+      //         "type": "fieldset",
+      //         "fields": [
+      //             {
+      //                 "type": "date",
+      //                 "label": "From",
+      //                 "name": "startdate",
+      //                 "columns": 6
+      //             },
+      //             {
+      //                 "type": "date",
+      //                 "label": "To",
+      //                 "name": "enddate",
+      //                 "columns": 6
+      //             }
+      //         ]
+      //     },
+      //     {
+      //         "label": "Delegate Name",
+      //         "name": "delegate_name"
+      //     },
+      //     {
+      //         "type": "textarea",
+      //         "label": "Comments / Restrictions",
+      //         "name": "comments"
+      //     }
+      //   ]
+      // },"#myForm")
+      // myfunc('graph TB\n Initial-->|Submit|Submitted\n Submitted-->|Approve|Approved\n Submitted-->|Reject|Initial(Signature Authorization Form)\n Approved-->|Add|Added(fa:fa-envelope Added)')
 
+
+      
 
 $('#save').on('click',function() {
   // template_errors = templatePage.errors();

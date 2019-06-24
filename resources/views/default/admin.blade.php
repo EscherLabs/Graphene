@@ -196,6 +196,7 @@
     <script src='/assets/js/vendor/state-machine.js'></script>
 
     <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
+    <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script> 
     @yield('end_body_scripts_bottom')
 
     <script>

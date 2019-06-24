@@ -46,14 +46,35 @@
         
           <div class="col-sm-3">
             <ul id="sortableListflow" class="list-group ">
-            <li class="list-group-item" data-type="email">Email</li>
-            <li class="list-group-item" data-type="approval">Approval</li>
+            <!-- <li class="list-group-item" data-type="email">Email</li> -->
+            <li class="list-group-item" data-type="state">State</li>
             </ul>
             <div class="flowform"></div>
           </div>
           <div class="col-sm-5 flow cobler_select cobler_container" id="floweditor"></div>
+          <!-- <div class="col-sm-8">
+          <style>
+          .flow-title {
+    z-index: 1;
+    top: 50px;
+    position: sticky;
+    background: #fff;
+    margin: -15px -15px 15px;
+    padding: 15px 15px 10px;
+    border-bottom: solid 1px #eee;
+}
+</style>
+          <div class="panel panel-default">
+          <div class="collapsible panel-body">
+          <h3 class="flow-title">Signature Authorization Form</h3>
+
+          <div id="myForm" ></div>
+          </div>
+          </div>
+          </div> -->
+
           <div class="col-sm-4">
-            <div id="flow-preview"></div>
+            <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
           </div>
         </div>
       <!-- <div class="row"><div class="col-md-12 resources "></div></div> -->
@@ -111,6 +132,9 @@
     });
   </script>-->
   <script>var loaded = {!! $workflow !!};</script>
+  <script src='/assets/js/vendor/moment.js'></script>
+  <script src='/assets/js/vendor/moment_datepicker.js'></script>
+
   <script type='text/javascript' src='/assets/js/editWorkflow.js'></script>
 @endsection
 

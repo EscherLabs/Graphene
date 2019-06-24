@@ -214,7 +214,7 @@ class WorkflowController extends Controller
                 'slug'=>'workflow',
                 'id'=>0,
                 'data'=>[],
-                'config'=>json_decode('{"sections":[[],[{"title":"Workflows","workflow_id":"","widgetType":"Workflows","container":true}],[]],"layout":0}'),
+                'config'=>json_decode('{"sections":[[{"title":"Workflows","workflow_id":"","widgetType":"Workflows","container":true}],[{"title":"Workflows","text":"Other Content","widgetType":"Content","container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],

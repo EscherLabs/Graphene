@@ -370,6 +370,11 @@ Cobler.types.Workflow = function(container){
 }
 
 
+
+
+
+
+
 Cobler.types.Workflows = function(container){
 	function get() {
 		item.widgetType = 'Workflows';
@@ -445,7 +450,6 @@ Cobler.types.Workflows = function(container){
             type: 'GET',
         //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
             success  : function(newdata){
-
               $.ajax({
                 url:'/api/workflow/assignments',
                 dataType : 'json',
@@ -461,44 +465,54 @@ Cobler.types.Workflows = function(container){
                     item.actions = _.where(JSON.parse(item.workflow_version.code.flow).actions,{from:item.state})
                   })
 
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
-                  <div>
+                //   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
+                //   <div>
         
-                  <!-- Nav tabs -->
-                  <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab">Available Workflows</a></li>
-                    <li role="presentation"><a href="#open" aria-controls="open" role="tab" data-toggle="tab">My Workflows</a></li>
-                    <li role="presentation"><a href="#assignments" aria-controls="assignments" role="tab" data-toggle="tab">Assignments</a></li>
-                  </ul>
+                //   <!-- Nav tabs -->
+                //   <ul class="nav nav-tabs" role="tablist">
+                //     <li role="presentation" class="active"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab">Available Workflows</a></li>
+                //     <li role="presentation"><a href="#open" aria-controls="open" role="tab" data-toggle="tab">My Workflows</a></li>
+                //     <li role="presentation"><a href="#assignments" aria-controls="assignments" role="tab" data-toggle="tab">Assignments</a></li>
+                //   </ul>
                 
-                  <!-- Tab panes -->
-                  <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="workflows">
-                      <ul class="list-group">
-                      {{#data}}<a class="list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-                      </ul>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="open">
-                    <ul class="list-group">
-                    {{#open}}<a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span></a>{{/open}}
-                    </ul>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="assignments">
-                    <ul class="list-group">
-                    {{#assignments}}
-                    {{#direct}}
-                    <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span>{{#actions}}<span class="btn btn-default" data-action="{{name}}">{{label}}</span>{{/actions}}</a>
-                    {{/direct}}
-                    {{#group}}
-                    <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span>{{#actions}}<span class="btn btn-default" data-action="{{name}}">{{label}}</span>{{/actions}}</a>
-                    {{/group}}
-                    {{/assignments}}
-                    </ul>
-                    </div>
+                //   <!-- Tab panes -->
+                //   <div class="tab-content">
+                //     <div role="tabpanel" class="tab-pane active" id="workflows">
+                //       <ul class="list-group">
+                //       {{#data}}<a class="list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                //       </ul>
+                //     </div>
+                //     <div role="tabpanel" class="tab-pane" id="open">
+                //     <ul class="list-group">
+                //     {{#open}}<a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span></a>{{/open}}
+                //     </ul>
+                //     </div>
+                //     <div role="tabpanel" class="tab-pane" id="assignments">
+                //     <ul class="list-group">
+                //     {{#assignments}}
+                //     {{#direct}}
+                //     <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span>{{#actions}}<span class="btn btn-default" data-action="{{name}}">{{label}}</span>{{/actions}}</a>
+                //     {{/direct}}
+                //     {{#group}}
+                //     <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span>{{#actions}}<span class="btn btn-default" data-action="{{name}}">{{label}}</span>{{/actions}}</a>
+                //     {{/group}}
+                //     {{/assignments}}
+                //     </ul>
+                //     </div>
+                //   </div>
+                
+                // </div>
+                //   `,{data:data,open:newdata,assignments:assignments});
+
+                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
+                  <div id="grid">
+
                   </div>
-                
-                </div>
                   `,{data:data,open:newdata,assignments:assignments});
+
+
+                  // $(this.container.elementOf(this).querySelector('#grid'))[0]
+                  new 
                   $(this.container.elementOf(this).querySelector('.collapsible')).find("time.timeago").timeago();
     
                 }.bind(this)

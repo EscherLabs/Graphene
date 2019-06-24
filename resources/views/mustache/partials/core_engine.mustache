@@ -214,7 +214,11 @@
 				$('#page_layout').html(layouts[4].template);
 
 		}else{
-			$('#page_layout').html(layouts[config.layout || 0].template);
+			if(typeof config.layout == 'string' && config.layout.length > 1){
+				$('#page_layout').html(config.layout);
+			}else{
+				$('#page_layout').html(layouts[config.layout || 0].template);
+			}
 
 		}
 
