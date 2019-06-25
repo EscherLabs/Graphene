@@ -140,10 +140,8 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/workflow/submissions','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflow/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
     Route::get('/workflow/{workflow_submission}','WorkflowSubmissionController@status');
-    Route::put('/workflow/{workflow_submission}','WorkflowSubmissionController@update');
+    Route::put('/workflow/{workflow_submission}','WorkflowSubmissionController@action');
     Route::delete('/workflow/{workflow_submission}','WorkflowSubmissionController@destroy');
-
-
 
     // List all workflows
     Route::get('/workflows','WorkflowController@list_all_workflows')->middleware('can:get_all,App\Workflow');

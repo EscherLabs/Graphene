@@ -175,7 +175,7 @@ class WorkflowInstanceController extends Controller
                 'slug'=>$myWorkflow->slug,
                 'id'=>$myWorkflow->id,
                 'data'=>[],
-                'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}],[]],"layout":0}'),
+                'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
                 'group'=>$groupObj,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
@@ -185,7 +185,7 @@ class WorkflowInstanceController extends Controller
             ]);
 
         }
-        abort(404,'App not found');
+        abort(404,'Workflow not found');
     }
 
 }

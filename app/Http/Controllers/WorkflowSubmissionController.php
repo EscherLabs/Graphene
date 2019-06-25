@@ -72,6 +72,11 @@ class WorkflowSubmissionController extends Controller
             $submission->data = $request->get('_state');
             $submission->state = "submitted";
             $submission->user_id = $current_user->id;
+
+
+            // $submission->assignment_type = $current_user->id;
+            // $submission->assignment_id = $current_user->id;
+
             $submission->save();
 
             $activity = new WorkflowActivityLog();
@@ -87,7 +92,7 @@ class WorkflowSubmissionController extends Controller
             
             return $submission;
         }
-        abort(404,'App not found');
+        abort(404,'Workflow not found');
     }
 
 
@@ -106,64 +111,38 @@ class WorkflowSubmissionController extends Controller
 
     }
 
-    public function action($group, $workflow_id, $submission_id, Request $request) {
-        return $submission_id;
-        if(!is_numeric($group)) {
-            $groupObj = Group::with('composites')->where('slug','=',$group)->first();
-			$group = $groupObj->id;
-		}else{
-    		$groupObj = Group::with('composites')->where('id','=',$group)->first();
-        }
+    public function action(WorkflowSubmission $workflow_submission, Request $request) {
 
-        if (Auth::check()) { /* User is Authenticated */
-            $current_user = Auth::user();
-
-            $myWorkflow = WorkflowInstance::with('workflow')
-                ->where('group_id','=', $group)->where('id', '=', $workflow_id)->with('workflow')->first();
-
-            if (is_null($myWorkflow)) { 
-                abort(404); 
-            }
-            
-            if($myWorkflow->public == 0) {
-                $this->authorize('fetch' ,$myWorkflow);
-            }
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        } else { /* User is not Authenticated */
-            $current_user = new User;
-            $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('id', '=', $workflow_id)->where('public','=',true)->first();
-            if (is_null($myWorkflow)) { 
-                $return = $this->customAuth->authenticate($request);
-                if(isset($return)){
-                    return $return;
+            $myWorkflow = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
+            $myWorkflow->findVersion();
+            // dd(json_decode($myWorkflow->version->code->flow)->{$workflow_submission->state});
+            foreach(json_decode($myWorkflow->version->code->flow)->{$workflow_submission->state}->actions as $action){
+                if($action->name == $request->get('action')){
+                    $workflow_submission->state = $action->to;
                 }
             }
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        }
+            // return json_decode($myWorkflow->version->code->flow)->{$workflow_submission->state};
 
-        if($myWorkflow != null) {
-            $myWorkflow->findVersion();
-
-            $submission = new WorkflowSubmission();
-
-            $submission->workflow_id = $myWorkflow->id;
-            $submission->workflow_version_id = $myWorkflow->version->id;
-            $submission->state = $request->get('_state');
-            $submission->user_id = $current_user->id;
-            $submission->save();
+            $workflow_submission->data = $request->get('_state');
+            $workflow_submission->save();
 
             $activity = new WorkflowActivityLog();
             $activity->workflow_id = $myWorkflow->id;
-            $activity->user_id = $current_user->id;
-            $activity->end_state = $request->get('_state');
-            $activity->workflow_submission_id = $submission->id;
-            $activity->action = 'submitted';
+            $activity->user_id = Auth::user()->id;
+            $activity->end_state = $workflow_submission->state;
+            $activity->data = $request->get('_state');
+
+            $activity->workflow_submission_id = $workflow_submission->id;
+            $activity->action = $request->get('action');
 
             $activity->save();
             
-            return $submission;
-        }
-        abort(404,'App not found');
+
+
+
+            return $workflow_submission;
+        // }
+        // abort(404,'Workflow not found');
     }
 
     public function status(WorkflowSubmission $workflow_submission){

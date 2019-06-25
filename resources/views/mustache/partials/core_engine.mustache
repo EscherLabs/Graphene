@@ -186,6 +186,17 @@
 		});
 	}
 
+	function manage(){
+		switch(resource_type){
+			case "page":
+			load(false);
+			break;			
+			case "flow":
+			debugger;
+			document.location = "/admin/workflowinstances/"+resource_id
+			break;
+		}
+	}
 
 	function load(status){
 		$('body').toggleClass('editor', !status)

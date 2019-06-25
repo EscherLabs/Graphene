@@ -165,9 +165,11 @@ function App() {
 		}.bind(this),
 		grid: function(name,options){
 			if(typeof this.grids[name] == 'undefined'){
-				_.each(['create','edit','form'],function(){
-					
-				})
+				// _.each(['create','edit','form'],function(i){
+				// 	if(typeof options[i] == 'string'){
+				// 		options[i] = this.app.findForm(options[i])
+				// 	}
+				// })
 				if(typeof options.create == 'string'){
 					options.create = this.app.findForm(options.create)
 				}

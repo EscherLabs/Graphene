@@ -214,7 +214,7 @@ class WorkflowController extends Controller
                 'slug'=>'workflow',
                 'id'=>0,
                 'data'=>[],
-                'config'=>json_decode('{"sections":[[{"title":"Workflows","workflow_id":"","widgetType":"Workflows","container":true}],[{"title":"Workflows","text":"Other Content","widgetType":"Content","container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
+                'config'=>json_decode('{"sections":[[{"title":"Workflows","widgetType":"WorkflowStatus","container":true}],[{"title":"Available Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],
@@ -223,7 +223,6 @@ class WorkflowController extends Controller
                 'resource'=>'flow'
             ]);
         // }
-        // abort(404,'App not found');
 
 
 

@@ -323,7 +323,7 @@ Cobler.types.Workflow = function(container){
                 }
               ],
               "fields":[
-                  {"name":"_state","type":"fieldset","fields":            JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
+                  {"name":"_state","type":"fieldset","fields": JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
                 }
                   ]
             }
@@ -375,16 +375,15 @@ Cobler.types.Workflow = function(container){
 
 
 
-Cobler.types.Workflows = function(container){
+Cobler.types.WorkflowStatus = function(container){
 	function get() {
-		item.widgetType = 'Workflows';
+		item.widgetType = 'WorkflowStatus';
 		return item;
 	}
 	var item = {
 		guid: generateUUID()}
 	var fields = {
 		Title: {},
-		'Workflow ID': {type: 'select', choices: '/api/groups/'+group_id+'/workflowinstances'},
     // 'User Options':{name:'user_edit',type:'checkbox'}
 	}
 	return {
@@ -419,6 +418,7 @@ Cobler.types.Workflows = function(container){
       {{^container}}
 
         <div class="collapsible">
+  
         </div>
       {{/container}}`,temp);
 
@@ -430,8 +430,6 @@ Cobler.types.Workflows = function(container){
 			$.extend(item, newItem);
 		},
 		initialize: function(el){
-    if(typeof this.get().workflow_id == 'undefined'){return false;};
-      this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
           this.set({collapsed:collapsed});
@@ -456,14 +454,11 @@ Cobler.types.Workflows = function(container){
                 type: 'GET',
             //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
                 success  : function(assignments){
-    
-                  assignments.direct = _.each(assignments.direct,function(item){
-                    item.actions = _.where(JSON.parse(item.workflow_version.code.flow).actions,{from:item.state})
-                  })
-                  assignments.group = _.each(assignments.group,function(item){
-                    debugger;
-                    item.actions = _.where(JSON.parse(item.workflow_version.code.flow).actions,{from:item.state})
-                  })
+                  var getActions = function(item){
+                    item.actions = (JSON.parse(item.workflow_version.code.flow)[item.state] || {"actions": []}).actions;
+                  }
+                  assignments.direct = _.each(assignments.direct, getActions)
+                  assignments.group = _.each(assignments.group, getActions)
 
                 //   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
                 //   <div>
@@ -505,16 +500,77 @@ Cobler.types.Workflows = function(container){
                 //   `,{data:data,open:newdata,assignments:assignments});
 
                   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
-                  <div id="grid">
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab">My Workflows</a></li>
+                    <li role="presentation"><a href="#assignments" aria-controls="assignments" role="tab" data-toggle="tab">My Assignments</a></li>
+                  </ul>
+                  <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="workflows">
+                    <h5>Your workflows</h5><div id="mygrid"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="assignments">
+                    <h5>These workflows waiting for your action</h5><div id="assignmentgrid"></div>
+                    </div>
+                  </div>`,{data:data,open:newdata,assignments:assignments});
+                  assignmentGrid = new GrapheneDataGrid({
+                    el: "#assignmentgrid",
+                    autoSize: 50, 
+                    data: assignments.direct.concat(assignments.group),
+                    actions:[],upload:false,download:false,columns:false,filter:false,
+                    form:{
+                      fields:[
+                        {label:"Workflow Name",name:"name",template:"{{attributes.workflow.name}}"},
+                        // {label:"Created At",name:"created_at"},
+                        {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
+                        {label:"Status",name:"status",template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
+                        {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
+                      ]
+                    }
+                  }).on("*",function(e){
+                    if(e.event.startsWith("click_")){
 
-                  </div>
-                  `,{data:data,open:newdata,assignments:assignments});
+                      // e.event.split("click_")[1]
+                      $.ajax({
+                        url:'/api/workflow/'+e.model.attributes.id,
+                        dataType : 'json',
+                        type: 'PUT',
+                        data: {_state:e.model.attributes,action:e.event.split("click_")[1]},
+                        success  : function(data){
+                          console.log(data);
+                          // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+                          // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+                          // <ul class="list-group available_workflow" style="margin:10px 0 0">
+                          // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                          // </ul>`,{data:data});
+                          }.bind(this)
+                      })
 
 
-                  // $(this.container.elementOf(this).querySelector('#grid'))[0]
-                  new 
-                  $(this.container.elementOf(this).querySelector('.collapsible')).find("time.timeago").timeago();
+
+                    }
+                  })
+                  myGrid = new GrapheneDataGrid({
+                    el: "#mygrid",
+                    autoSize: 50, 
+                    data: newdata,
+                    actions:[],upload:false,download:false,columns:false,filter:false,
+                    form:{
+                      fields:[
+                        {label:"Workflow Name",name:"name",template:"{{attributes.workflow.name}}"},
+                        {label:"Initiated",name:"created_at"},
+                        // {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
+                        {label:"Status",name:"status",template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        // {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
+                        // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
+                      ]
+                    }
+                  })
     
+                  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    assignmentGrid.draw()
+                  })
+
                 }.bind(this)
                 
               })
@@ -526,6 +582,85 @@ Cobler.types.Workflows = function(container){
 
         
         }.bind(this)
+      })
+		}
+	}
+}
+
+
+Cobler.types.Workflows = function(container){
+	function get() {
+		item.widgetType = 'Workflows';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+    Title: {},
+
+    // 'User Options':{name:'user_edit',type:'checkbox'}
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      // this.id = gform.getUID();
+      // temp.id = this.id;
+      // return templates['widgets_microapp'].render(temp, templates);
+      return gform.renderString(`
+      <div class="btn-group pull-right slice-actions parent-hover">
+	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+</div>
+
+      {{#container}}
+      <div class="panel panel-default">
+      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+</div>
+      {{>widgets__header}}
+        <div class="collapsible panel-body">
+        
+        <h3 class="flow-title"></h3>
+        <div class="g_{{guid}}">
+        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
+        </div>
+      </div>
+      {{/container}}
+      {{^container}}
+
+        <div class="collapsible">
+  
+        </div>
+      {{/container}}`,temp);
+
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+      $.ajax({
+        url:'/api/workflowinstances/user',
+        dataType : 'json',
+        type: 'GET',
+    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+        success  : function(data){
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+          <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+          <ul class="list-group available_workflow" style="margin:10px 0 0">
+          {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+          </ul>`,{data:data});
+          }.bind(this)
       })
 		}
 	}
