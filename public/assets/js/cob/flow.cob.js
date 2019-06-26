@@ -320,6 +320,10 @@ Cobler.types.Workflow = function(container){
                   "type": "save",
                   "name": "submit",
                   "label": "<i class='fa fa-check'></i> Submit"
+                },{
+                  "type": "hidden",
+                  "name": "_flowstate",
+                  "value":null
                 }
               ],
               "fields":[
@@ -537,27 +541,85 @@ Cobler.types.WorkflowStatus = function(container){
                     if(e.event.startsWith("click_") && !e.model.waiting()){
                       e.model.waiting(true);
                       // e.event.split("click_")[1]
-                      ;
-                      e.model.attributes
-                      $.ajax({
-                        url:'/api/workflow/'+e.model.attributes.id,
-                        dataType : 'json',
-                        type: 'PUT',
-                        data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
-                        success  : function(e,data){
-                          e.model.waiting(false);
-                          data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
-                          data.updated_at = moment(data.updated_at).fromNow()
-                          e.model.set(data)
-                          // console.log(data);
-                          // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-                          // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-                          // <ul class="list-group available_workflow" style="margin:10px 0 0">
-                          // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-                          // </ul>`,{data:data});
-                          }.bind(null,e)
-                      })
+                      if(_.find(e.model.attributes.actions,{name:e.event.split("click_")[1]}).form){
+                        e.model.waiting(false);
 
+                        new gform(
+                          {
+                            "legend":e.model.attributes.workflow.name,
+                            "data":e.model.attributes.data,
+                            "actions": [
+                              {
+                                "type": "cancel",
+                                "name": "submitted",
+                                "action":"canceled",
+                                // "label": "<i class='fa fa-check'></i> Submit"
+                              },
+                              {
+                                "type": "save",
+                                "name": "submit",
+                                "label": "<i class='fa fa-check'></i> Submit"
+                              },{
+                                "type": "hidden",
+                                "name": "_flowstate",
+                                "value":e.model.attributes.state
+                              }
+
+                            ],
+                            "fields":[
+                                {"name":"_state","type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields
+                              }
+                                ]
+                          }).on('save',function(e,eForm){
+                            e.model.waiting(true);
+
+                            eForm.form.trigger('close')
+                            
+                            $.ajax({
+                              url:'/api/workflow/'+e.model.attributes.id,
+                              dataType : 'json',
+                              type: 'PUT',
+                              data: {_state:eForm.form.get(),action:e.event.split("click_")[1]},
+                              success  : function(e,data){
+                                e.model.waiting(false);
+                                data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
+                                data.updated_at = moment(data.updated_at).fromNow()
+                                e.model.set(data)
+                                
+                                // console.log(data);
+                                // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+                                // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+                                // <ul class="list-group available_workflow" style="margin:10px 0 0">
+                                // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                                // </ul>`,{data:data});
+                                }.bind(null,e)
+                            })
+                          }.bind(null,e)).on('canceled',function(eForm){
+                            debugger;
+                            eForm.form.trigger('close')
+
+
+                          }).modal();
+                      }else{
+                        $.ajax({
+                          url:'/api/workflow/'+e.model.attributes.id,
+                          dataType : 'json',
+                          type: 'PUT',
+                          data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
+                          success  : function(e,data){
+                            e.model.waiting(false);
+                            data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
+                            data.updated_at = moment(data.updated_at).fromNow()
+                            e.model.set(data)
+                            // console.log(data);
+                            // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+                            // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+                            // <ul class="list-group available_workflow" style="margin:10px 0 0">
+                            // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                            // </ul>`,{data:data});
+                            }.bind(null,e)
+                        })
+                    }
 
 
                     }
