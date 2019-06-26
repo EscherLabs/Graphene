@@ -116,6 +116,13 @@ class WorkflowSubmissionController extends Controller
 
             $myWorkflow = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
             $myWorkflow->findVersion();
+            $activity = new WorkflowActivityLog();
+
+            $activity->workflow_id = $myWorkflow->id;
+            $activity->user_id = Auth::user()->id;
+            $activity->start_state = $workflow_submission->state;
+
+
             $flow = json_decode($myWorkflow->version->code->flow);
             foreach($flow->{$workflow_submission->state}->actions as $action){
                 if($action->name == $request->get('action')){
@@ -132,9 +139,6 @@ class WorkflowSubmissionController extends Controller
 
             $workflow_submission->update();
 
-            $activity = new WorkflowActivityLog();
-            $activity->workflow_id = $myWorkflow->id;
-            $activity->user_id = Auth::user()->id;
             $activity->end_state = $workflow_submission->state;
             $activity->data = $request->get('_state');
 

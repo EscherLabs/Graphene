@@ -334,6 +334,7 @@ Cobler.types.Workflow = function(container){
             
             ,'.g_'+get().guid);
           this.form.on('save',function(e){
+            if(!e.form.validate(true))return;
             e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saveing',"modifiers": "btn btn-warning"})
             gform.types.fieldset.edit.call(e.form.find('_state'),false)
             e.form.find('_state').el.style.opacity = .7
@@ -571,6 +572,8 @@ Cobler.types.WorkflowStatus = function(container){
                               }
                                 ]
                           }).on('save',function(e,eForm){
+                            if(!e.form.validate(true))return;
+
                             e.model.waiting(true);
 
                             eForm.form.trigger('close')
