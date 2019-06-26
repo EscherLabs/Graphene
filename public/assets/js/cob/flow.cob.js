@@ -572,7 +572,7 @@ Cobler.types.WorkflowStatus = function(container){
                               }
                                 ]
                           }).on('save',function(e,eForm){
-                            if(!e.form.validate(true))return;
+                            if(!eForm.form.validate(true))return;
 
                             e.model.waiting(true);
 
