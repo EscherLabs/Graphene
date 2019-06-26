@@ -489,11 +489,19 @@ function editMobileOrder(){
 			for(var i in groups){
 				$('.view-as.group_'+groups[i]).click();
 			}
-						
+			var visit = {
+				width:window.innerWidth
+			}
+			if(resource_type !== null){
+				visit.resource_type = resource_type;
+				if(resource_id !== null){
+					visit.resource_id = resource_id;
+				}			
+			}
 			$.ajax({
 					url: '/api/visit/log_visit',
 					type: 'post',
-					data: {width:window.innerWidth,resource_id:resource_id,resource_type:resource_type},
+					data: visit,
 					success: function(){}
 			});
 			function inspect(row,element){

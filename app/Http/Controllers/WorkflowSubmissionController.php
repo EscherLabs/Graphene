@@ -74,8 +74,9 @@ class WorkflowSubmissionController extends Controller
             $submission->user_id = $current_user->id;
 
 
-            // $submission->assignment_type = $current_user->id;
-            // $submission->assignment_id = $current_user->id;
+            $flow = json_decode($myWorkflow->version->code->flow);                
+            $submission->assignment_type = $flow->{'submitted'}->assignment_type;
+            $submission->assignment_id = $flow->{'submitted'}->assignment_id;
 
             $submission->save();
 
@@ -115,16 +116,21 @@ class WorkflowSubmissionController extends Controller
 
             $myWorkflow = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
             $myWorkflow->findVersion();
-            // dd(json_decode($myWorkflow->version->code->flow)->{$workflow_submission->state});
-            foreach(json_decode($myWorkflow->version->code->flow)->{$workflow_submission->state}->actions as $action){
+            $flow = json_decode($myWorkflow->version->code->flow);
+            foreach($flow->{$workflow_submission->state}->actions as $action){
                 if($action->name == $request->get('action')){
                     $workflow_submission->state = $action->to;
+                    if(isset($flow->{$action->to}->status)){
+                        $workflow_submission->status = $flow->{$action->to}->status;
+                    }else{
+                        $workflow_submission->status = 'open';
+                    }
                 }
             }
-            // return json_decode($myWorkflow->version->code->flow)->{$workflow_submission->state};
 
             $workflow_submission->data = $request->get('_state');
-            $workflow_submission->save();
+
+            $workflow_submission->update();
 
             $activity = new WorkflowActivityLog();
             $activity->workflow_id = $myWorkflow->id;
@@ -137,11 +143,7 @@ class WorkflowSubmissionController extends Controller
 
             $activity->save();
             
-
-
-
-            return $workflow_submission;
-        // }
+            return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id','=',$workflow_submission->id)->first();
         // abort(404,'Workflow not found');
     }
 

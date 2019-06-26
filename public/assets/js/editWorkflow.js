@@ -46,13 +46,14 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
         //   this.owner.pub('input', this,{input:this.value});
       }.bind(this)
       this.input = this.input || false;
-      this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
+      // this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
 
-      this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
+      // this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
     this.editor = ace.edit(this.id+"container");
     this.editor.setTheme(this.item.theme || "ace/theme/chrome");
     this.editor.getSession().setMode({path: this.owner.options.default.mode || this.item.mode || "ace/mode/handlebars", inline:this.owner.options.default.inlinemode || this.item.inlinemode});
     this.editor.session.setValue(this.value);
+    this.editor.on("change",this.onchangeEvent.bind(null,false))
    
   },
   // update: function(item, silent) {
@@ -455,7 +456,22 @@ function createFlow() {
     list2.className = list2.className.replace('hidden', '');
     options = new gform({data:attributes.code,actions:[],fields:[
       {name:"flow",label:'Flow',type:'ace',mode:'ace/mode/javascript'}
-    ]},"#options")
+    ]},".options").on('change',function(e){
+      var temp = _.map(JSON.parse(options.get().flow),function(item){
+
+        //return gform.renderString('\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]',item);
+        var temp = '\n'+item.name+'['+item.name+']';
+        var stuff = _.map(item.actions,function(i){
+          return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
+        })
+        return temp+stuff.join('')
+        // return '\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]';
+      })
+      myfunc('graph TB'+temp.join(''))
+
+    })
+    options.trigger('change')
+
   //   cb.collections[0].load(temp.fields);
   // }
 }

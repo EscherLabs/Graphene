@@ -27,7 +27,7 @@
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li>
-    <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
+    <!-- <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li> -->
     <li role="presentation"><a href="#options" aria-controls="options" role="tab" data-toggle="tab"><i class="fa fa-cog"></i> <span class="hidden-xs hidden-sm">Options</span></a></li>
     <!-- <li role="presentation"><a href="#flow" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
     <li role="presentation"><a href="#scripts" aria-controls="scripts" role="tab" data-toggle="tab"><i class="fa fa-coffee"></i> <span class="hidden-xs hidden-sm">Scripts</span></a></li>
@@ -46,7 +46,6 @@
         
           <div class="col-sm-3">
             <ul id="sortableListflow" class="list-group ">
-            <!-- <li class="list-group-item" data-type="email">Email</li> -->
             <li class="list-group-item" data-type="state">State</li>
             </ul>
             <div class="flowform"></div>
@@ -73,9 +72,9 @@
           </div>
           </div> -->
 
-          <div class="col-sm-4">
+          <!-- <div class="col-sm-4">
             <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
-          </div>
+          </div> -->
         </div>
       <!-- <div class="row"><div class="col-md-12 resources "></div></div> -->
     <!-- </div> -->
@@ -83,9 +82,14 @@
         
     </div> -->
   </div>
-  <div role="tabpanel" class="tab-pane options" id="options">
-
-  </div>
+  <div role="tabpanel" class="tab-pane" id="options">
+          <div class="col-sm-8">
+            <div class="options"></div>
+          </div>
+          <div class="col-sm-4">
+            <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
+          </div>
+        </div>
 
 </div>
 

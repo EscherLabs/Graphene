@@ -448,6 +448,8 @@ Cobler.types.WorkflowStatus = function(container){
             type: 'GET',
         //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
             success  : function(newdata){
+
+              newdata = _.each(newdata, function(item){item.created_at = moment(item.created_at).fromNow()})
               $.ajax({
                 url:'/api/workflow/assignments',
                 dataType : 'json',
@@ -456,6 +458,8 @@ Cobler.types.WorkflowStatus = function(container){
                 success  : function(assignments){
                   var getActions = function(item){
                     item.actions = (JSON.parse(item.workflow_version.code.flow)[item.state] || {"actions": []}).actions;
+                    item.updated_at = moment(item.updated_at).fromNow()
+
                   }
                   assignments.direct = _.each(assignments.direct, getActions)
                   assignments.group = _.each(assignments.group, getActions)
@@ -512,38 +516,46 @@ Cobler.types.WorkflowStatus = function(container){
                     <h5>These workflows waiting for your action</h5><div id="assignmentgrid"></div>
                     </div>
                   </div>`,{data:data,open:newdata,assignments:assignments});
+                  assignmentData = assignments.direct.concat(assignments.group);
                   assignmentGrid = new GrapheneDataGrid({
                     el: "#assignmentgrid",
                     autoSize: 50, 
-                    data: assignments.direct.concat(assignments.group),
-                    actions:[],upload:false,download:false,columns:false,filter:false,
+                    data: assignmentData,
+                    actions:[],upload:false,download:false,columns:false,
                     form:{
                       fields:[
-                        {label:"Workflow Name",name:"name",template:"{{attributes.workflow.name}}"},
+                        {label:"Workflow Name",name:"name",type:"text",//options:_.uniq(_.map(assignmentData,function(item){return item.workflow.name})),
+                        template:"{{attributes.workflow.name}}"},
                         // {label:"Created At",name:"created_at"},
-                        {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
-                        {label:"Status",name:"status",template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
-                        {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
-                        {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
+                        {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
+                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        {label:"Assignment",name:"assignment_type",type:"select",options:['group','user'],template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
+                        {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
                     }
                   }).on("*",function(e){
-                    if(e.event.startsWith("click_")){
-
+                    if(e.event.startsWith("click_") && !e.model.waiting()){
+                      e.model.waiting(true);
                       // e.event.split("click_")[1]
+                      ;
+                      e.model.attributes
                       $.ajax({
                         url:'/api/workflow/'+e.model.attributes.id,
                         dataType : 'json',
                         type: 'PUT',
-                        data: {_state:e.model.attributes,action:e.event.split("click_")[1]},
-                        success  : function(data){
-                          console.log(data);
+                        data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
+                        success  : function(e,data){
+                          e.model.waiting(false);
+                          data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
+                          data.updated_at = moment(data.updated_at).fromNow()
+                          e.model.set(data)
+                          // console.log(data);
                           // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
                           // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
                           // <ul class="list-group available_workflow" style="margin:10px 0 0">
                           // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
                           // </ul>`,{data:data});
-                          }.bind(this)
+                          }.bind(null,e)
                       })
 
 
@@ -554,13 +566,13 @@ Cobler.types.WorkflowStatus = function(container){
                     el: "#mygrid",
                     autoSize: 50, 
                     data: newdata,
-                    actions:[],upload:false,download:false,columns:false,filter:false,
+                    actions:[],upload:false,download:false,columns:false,
                     form:{
                       fields:[
                         {label:"Workflow Name",name:"name",template:"{{attributes.workflow.name}}"},
                         {label:"Initiated",name:"created_at"},
                         // {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
-                        {label:"Status",name:"status",template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         // {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
                         // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
