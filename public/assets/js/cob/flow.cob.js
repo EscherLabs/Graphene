@@ -566,7 +566,7 @@ Cobler.types.WorkflowStatus = function(container){
                     el: "#mygrid",
                     autoSize: 50, 
                     data: newdata,
-                    actions:[],upload:false,download:false,columns:false,
+                    actions:[{name:"delete"}],upload:false,download:false,columns:false,
                     form:{
                       fields:[
                         {label:"Workflow Name",name:"name",template:"{{attributes.workflow.name}}"},
@@ -577,6 +577,28 @@ Cobler.types.WorkflowStatus = function(container){
                         // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
                     }
+                  }).on('model:delete',function(e){
+                  
+
+                    $.ajax({
+                      url:'/api/workflow/'+e.model.attributes.id,
+                      dataType : 'json',
+                      type: 'delete',
+                      // data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
+                      success  : function(e,data){
+                        // e.model.waiting(false);
+                        // data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
+                        // data.updated_at = moment(data.updated_at).fromNow()
+                        // e.model.set(data)
+                        // console.log(data);
+                        // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+                        // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+                        // <ul class="list-group available_workflow" style="margin:10px 0 0">
+                        // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                        // </ul>`,{data:data});
+                        }.bind(null,e)
+                    })
+
                   })
     
                   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

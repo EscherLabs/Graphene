@@ -457,6 +457,7 @@ function createFlow() {
     options = new gform({data:attributes.code,actions:[],fields:[
       {name:"flow",label:'Flow',type:'ace',mode:'ace/mode/javascript'}
     ]},".options").on('change',function(e){
+      try{
       var temp = _.map(JSON.parse(options.get().flow),function(item){
 
         //return gform.renderString('\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]',item);
@@ -468,7 +469,7 @@ function createFlow() {
         // return '\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]';
       })
       myfunc('graph TB'+temp.join(''))
-
+    }catch(e){}
     })
     options.trigger('change')
 
