@@ -327,7 +327,7 @@ Cobler.types.Workflow = function(container){
                 }
               ],
               "fields":[
-                  {"name":"_state","type":"fieldset","fields": JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
+                  {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
                 }
                   ]
             }
@@ -568,7 +568,7 @@ Cobler.types.WorkflowStatus = function(container){
 
                             ],
                             "fields":[
-                                {"name":"_state","type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields
+                                {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields
                               }
                                 ]
                           }).on('save',function(e,eForm){
