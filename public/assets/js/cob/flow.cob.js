@@ -308,7 +308,7 @@ Cobler.types.Workflow = function(container){
           // debugger;
           this.form = new gform(
             {
-              "data":{},
+              "data":{_state:this.get().data},
               "actions": [
                 {
                   "type": "cancel",
@@ -348,7 +348,7 @@ Cobler.types.Workflow = function(container){
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
-                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/api/workflow/{{id}}">here</a>',data)
+                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/submission{{id}}">here</a>',data)
                 // gform.types.fieldset.edit.call(e.form.find('_state'),true)
                 // gform.types.button.edit.call(e.form.find('submit'),true)
                 // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
@@ -538,6 +538,8 @@ Cobler.types.WorkflowStatus = function(container){
                         {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
                     }
+                  }).on('click',function(e){
+                    document.location = "/workflows/submission/"+e.model.attributes.id;
                   }).on("*",function(e){
                     if(e.event.startsWith("click_") && !e.model.waiting()){
                       e.model.waiting(true);
@@ -642,6 +644,8 @@ Cobler.types.WorkflowStatus = function(container){
                         // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
                     }
+                  }).on('click',function(e){
+                    document.location = "/workflows/submission/"+e.model.attributes.id;
                   }).on('model:delete',function(e){
                   
 
