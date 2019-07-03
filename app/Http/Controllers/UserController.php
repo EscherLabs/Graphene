@@ -189,19 +189,36 @@ class UserController extends Controller
     public function create(Request $request)
     {
         $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);
-        $user = new User($request->all());
-        if(!empty($user->password)){
-            $user->password = bcrypt($request->password);
-        }
-        $user->save();
 
-        $site = Site::find(Auth::user()->site->id);
-        if ($request->has('developer') && $request->has('site_admin')) {
-            $site->add_member($user,$request->site_admin, $request->developer);
-        } else {
-            $site->add_member($user);
+        $id = $request->unique_id;
+        $email = $request->email;
+
+        $users = User::select('id')
+                     ->where(function ($query) use ($id, $email) {
+                       $query->where('unique_id','=',$id)
+                       ->orWhere('email','=',$email);
+                    })->whereHas('site_members', function($query) {
+                        $query->where('site_id','=',config('app.site')->id);
+                    })->get();
+        
+        if($users->isEmpty()){
+            $user = new User($request->all());
+            if(!empty($user->password)){
+                $user->password = bcrypt($request->password);
+            }
+            $user->save();
+
+            $site = Site::find(Auth::user()->site->id);
+            if ($request->has('developer') && $request->has('site_admin')) {
+                $site->add_member($user,$request->site_admin, $request->developer);
+            } else {
+                $site->add_member($user);
+            }
+            return $user;
         }
-        return $user;
+        else{
+            return response(['error'=>'User with that email or unique id already exists.'], 400);
+        }
     }
 
     public function update(Request $request, User $user)
