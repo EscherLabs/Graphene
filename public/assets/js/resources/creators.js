@@ -367,6 +367,7 @@ var createEngine = function(e){
           }.bind(e),
           error:function(e) {
             toastr.error(e.statusText, 'ERROR');
+            fsm.success(this, e);
           }
         });
       },
@@ -375,7 +376,13 @@ var createEngine = function(e){
       },
       onAfterSuccess:function(e,history,item){
         var link = "";
+        if(item.responseJSON.error != ""){
+            history.from = "error";
+        }
         switch(history.from){
+          case "error":
+          options.complete = item.responseJSON.error;
+          break;
           case "appCreate":
           // $.extend(instanceData,Berries.modal.toJSON())
           instanceData.app_id = item.id;
@@ -394,6 +401,9 @@ var createEngine = function(e){
           break;
           case "pagecomposite":
           link = "<br><br> Here are some next steps you may want to take:<div><a href='/page/"+item.group_id+"/"+item.slug+"' class='list-group-action'><i class='fa fa-file'></i> Visit Page</a>";
+          case "userCreate":
+          //Don't overwrite the complete message on user.
+          break;
           default:
           instanceData.group_id = item.group_id;
           options.complete = "Created Successfully!"+
