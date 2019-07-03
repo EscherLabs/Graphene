@@ -333,6 +333,8 @@ Cobler.types.Workflow = function(container){
             }
             
             ,'.g_'+get().guid);
+            gform.types.fieldset.edit.call(this.form.find('_state'),false)
+
           this.form.on('save',function(e){
             if(!e.form.validate(true))return;
             e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saveing',"modifiers": "btn btn-warning"})
