@@ -32,74 +32,40 @@ class UserController extends Controller
         return $users;
     }
 
-    public function search($search_string) {
+    public function search($search_string='') {
         $search_elements_parsed = preg_split('/[\s,]+/',strtolower($search_string));
-        $search_elements = [];
-        $nicknameLookup = new NicknameLookup();
-        foreach($search_elements_parsed as $element) {
-            if ($element === '') {
-                continue;
-            }
-            $search_elements = array_merge($search_elements,$nicknameLookup->search($element));
+        $search = []; $users = [];
+        if (count($search_elements_parsed) === 1 && $search_elements_parsed[0]!='') {
+            $search[0] = $search_elements_parsed[0];
+            $users = User::select('id','unique_id','first_name','last_name','email','params')
+                ->where(function ($query) use ($search) {
+                    $query->where('unique_id','=',$search[0])
+                        ->orWhere('first_name','like',$search[0].'%')
+                        ->orWhere('last_name','like',$search[0].'%')
+                        ->orWhere('email','like',$search[0].'%');
+                })->whereHas('site_members', function($query) {
+                    $query->where('site_id','=',config('app.site')->id);
+                })->orderBy('first_name', 'asc')->limit(25)->get()->toArray();
+        } else if (count($search_elements_parsed) > 1) {
+            $search[0] = $search_elements_parsed[0];
+            $search[1] = $search_elements_parsed[count($search_elements_parsed)-1];
+            $users = User::select('id','unique_id','first_name','last_name','email','params')
+                ->where(function ($query) use ($search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->where('first_name','like',$search[0].'%')
+                            ->where('last_name','like',$search[1].'%');
+                    })->orWhere(function ($query) use ($search) {
+                        $query->where('first_name','like',$search[1].'%')
+                            ->where('last_name','like',$search[0].'%');
+                    });
+                })->whereHas('site_members', function($query) {
+                    $query->where('site_id','=',config('app.site')->id);
+                })->orderBy('first_name', 'asc')->limit(25)->get()->toArray();
         }
-
-        $matching_users = [];
-        $ranking = [];
-        foreach($search_elements as $element) {
-            if (strlen($element)<3) {
-                // For 1-2 Character searches, perform an exact match
-                $users = User::select('id','unique_id','first_name','last_name','email','params')
-                    ->where(function ($query) use ($element) {
-                        $query->where('first_name','=',$element)
-                            ->orWhere('last_name','=',$element);
-                    })->whereHas('site_members', function($query) {
-                        $query->where('site_id','=',config('app.site')->id);
-                    })->get();
-            } else {
-                $users = User::select('id','unique_id','first_name','last_name','email','params')
-                    ->where(function ($query) use ($element) {
-                        $query->where('unique_id','=',$element)
-                            ->orWhere('first_name','like',$element.'%')
-                            ->orWhere('last_name','like',$element.'%')
-                            ->orWhere('email','like',$element.'%');
-                    })->whereHas('site_members', function($query) {
-                        $query->where('site_id','=',config('app.site')->id);
-                    })->get();
-            }
-            foreach($users as $user) {
-                if (isset($ranking[$user->id])) {
-                    $ranking[$user->id]++;
-                } else {
-                    $ranking[$user->id]=1;
-                }
-                // if (strcasecmp($user->first_name,$element)===0 || strcasecmp($user->last_name,$element)===0) {
-                //     $ranking[$user->id]++; // Extra Points for an exact match
-                // }
-                $matching_users[$user->id] = 
-                    ['id'=>$user->id, 'unique_id'=>$user->unique_id,
-                    'first_name'=>$user->first_name, 'last_name'=>$user->last_name, 
-                    'email'=>$user->email, 'params'=>$user->params];
-            }
+        foreach($users as $index => $user) {
+            $users[$index] = array_intersect_key($user, array_flip(['id','unique_id','first_name','last_name','email','params']));
         }
-        if (count($matching_users)===0) {
-            return [];
-        } 
-        arsort($ranking);
-        $matching_users_count = count($matching_users);
-        $results = [];
-        $current_rank = array_values($ranking)[0];
-        foreach($ranking as $user_id => $rank) {
-            if ($rank < $current_rank && $matching_users_count > 10) { // Throw out bad results
-                break;
-            }
-            $current_rank = $rank;
-            $matching_users[$user_id]['rank'] = $rank;
-            $results[] = $matching_users[$user_id];
-        }
-        if ($matching_users_count > 0 && (count($results) == 0 || count($results) > 10)) {
-            return ['error'=>'Too Many Results! Please refine your search'];
-        }
-        return $results;
+        return $users;
     }
 
     public function show(User $user)
