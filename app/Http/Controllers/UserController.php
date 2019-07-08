@@ -45,7 +45,8 @@ class UserController extends Controller
                         ->orWhere('email','like',$search[0].'%');
                 })->whereHas('site_members', function($query) {
                     $query->where('site_id','=',config('app.site')->id);
-                })->orderBy('first_name', 'asc')->limit(25)->get()->toArray();
+                })->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')
+                    ->limit(25)->get()->toArray();
         } else if (count($search_elements_parsed) > 1) {
             $search[0] = $search_elements_parsed[0];
             $search[1] = $search_elements_parsed[count($search_elements_parsed)-1];
@@ -60,7 +61,8 @@ class UserController extends Controller
                     });
                 })->whereHas('site_members', function($query) {
                     $query->where('site_id','=',config('app.site')->id);
-                })->orderBy('first_name', 'asc')->limit(25)->get()->toArray();
+                })->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')
+                    ->limit(25)->get()->toArray();
         }
         foreach($users as $index => $user) {
             $users[$index] = array_intersect_key($user, array_flip(['id','unique_id','first_name','last_name','email','params']));
