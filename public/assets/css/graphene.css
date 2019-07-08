@@ -663,6 +663,9 @@ a.list-group-action {
     margin-left:0;
   }
 }
+
+@media screen  
+{
 #page.flow .flow-title{
   z-index:1;
   top:50px;
@@ -671,4 +674,19 @@ a.list-group-action {
   margin: -15px -15px 15px;
   padding: 15px 15px 10px;
   border-bottom: solid 1px #eee;
+}
+}
+@media print  
+{
+  .form-group{
+    page-break-inside: avoid;
+  }
+  .form-control{
+    border-width:0 0 1px;
+    border-radius: 0;
+  }
+  body {
+    padding-top: 0;
+  }
+  .gr-main{padding-top:0}
 }
