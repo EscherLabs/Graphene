@@ -333,7 +333,7 @@ Cobler.types.Workflow = function(container){
             }
             
             ,'.g_'+get().guid);
-            gform.types.fieldset.edit.call(this.form.find('_state'),false)
+            // gform.types.fieldset.edit.call(this.form.find('_state'),false)
 
           this.form.on('save',function(e){
             if(!e.form.validate(true))return;
@@ -463,8 +463,11 @@ Cobler.types.WorkflowStatus = function(container){
                 type: 'GET',
             //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
                 success  : function(assignments){
+                  // var total = assignments.direct.length+assignments.group.length;
+                  // $('.notificationCount').toggle(!!total).html(total)
+                  
                   var getActions = function(item){
-                    item.actions = (JSON.parse(item.workflow_version.code.flow)[item.state] || {"actions": []}).actions;
+                    item.actions = (_.find(JSON.parse(item.workflow_version.code.flow),{name:item.state}) || {"actions": []}).actions;
                     item.updated_at = moment(item.updated_at).fromNow()
 
                   }
@@ -589,7 +592,8 @@ Cobler.types.WorkflowStatus = function(container){
                               data: {_state:eForm.form.get(),action:e.event.split("click_")[1]},
                               success  : function(e,data){
                                 e.model.waiting(false);
-                                data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
+                                
+                                data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
                                 data.updated_at = moment(data.updated_at).fromNow()
                                 e.model.set(data)
                                 
@@ -602,7 +606,6 @@ Cobler.types.WorkflowStatus = function(container){
                                 }.bind(null,e)
                             })
                           }.bind(null,e)).on('canceled',function(eForm){
-                            debugger;
                             eForm.form.trigger('close')
 
 
@@ -615,7 +618,7 @@ Cobler.types.WorkflowStatus = function(container){
                           data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
                           success  : function(e,data){
                             e.model.waiting(false);
-                            data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
+                            data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
                             data.updated_at = moment(data.updated_at).fromNow()
                             e.model.set(data)
                             // console.log(data);

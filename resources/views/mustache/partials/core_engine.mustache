@@ -298,6 +298,22 @@
 			})
 			cb.on('user_edit', editUserOptions)
 		}
+
+		$.ajax({
+				url:'/api/workflow/assignments',
+				dataType : 'json',
+				type: 'GET',
+		//     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+				success  : function(assignments){
+					var total = _.where(assignments.direct,{status:"open"}).length+_.where(assignments.group,{status:"open"}).length;
+					$('.notificationCount').toggle(!!total).html(total)
+					if(total>0){
+						$('.notificationCount').next().addClass('shake')
+					}
+				}
+		})
+
+		
 	}
 
 function editMobileOrder(){
@@ -419,9 +435,9 @@ function editMobileOrder(){
 			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: block}
 
 @media (min-width: 768px) {
+			.page-menu ul li.group_all,.group_ .page-menu ul li {display: table-cell}
+			.group_ .page-menu ul li.group_all,.group_ .page-menu ul li {display: none}
 			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: table-cell}
-				
-
 }
 			.view-as.group_{{ composite_group_id }} i{visibility: hidden;}
 			.group_{{ composite_group_id }} .view-as.group_{{ composite_group_id }} i{visibility: visible;}

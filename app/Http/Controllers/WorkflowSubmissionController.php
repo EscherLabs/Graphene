@@ -73,10 +73,19 @@ class WorkflowSubmissionController extends Controller
             $submission->state = "submitted";
             $submission->user_id = $current_user->id;
 
+            $flow = json_decode($myWorkflow->version->code->flow);    
+            
+            $state = null;
+            foreach($flow as $struct) {
+                if ($submission->state == $struct->{"name"}) {
+                    $state = $struct;
+                    break;
+                }
+            }
+            $m = new \Mustache_Engine;
 
-            $flow = json_decode($myWorkflow->version->code->flow);                
-            $submission->assignment_type = $flow->{'submitted'}->assignment_type;
-            $submission->assignment_id = $flow->{'submitted'}->assignment_id;
+            $submission->assignment_type = $state->{"assignment"}->{"type"};
+            $submission->assignment_id = $m->render($state->{"assignment"}->{"id"}, $submission->data);
 
             $submission->save();
 
@@ -112,7 +121,47 @@ class WorkflowSubmissionController extends Controller
 
     }
 
+    private function executeTasks($tasks, $data){
+        $m = new \Mustache_Engine;
+
+        foreach($tasks as $task){
+            switch($task->task) {
+                case "email":
+
+                break;
+                case "api":
+                    $httpHelper = new HTTPHelper();
+                    if(!isset($task->data)){
+                        $task->data = array();
+                    }else{
+                        foreach($task->data as $key=>$value){
+                            $task->data->{$key} = $m->render($value, $data);
+                        }
+                    }
+                    if(isset($task->endpoint)){
+                        $endpoint = Endpoint::find((int)$task->endpoint);
+                        $url = $m->render($endpoint->config->url . $task->url, $data);
+                        if ($endpoint->type == 'http_no_auth') {
+                            $response = $httpHelper->http_fetch( $url,$verb,$task->data);
+                        } else if ($endpoint->type == 'http_basic_auth') {
+                            $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
+                        } else {
+                            abort(505,'Authentication Type Not Supported');
+                        }
+                    }else{
+                        $response = $httpHelper->http_fetch(  $m->render($task->url, $data),"POST",$task->data);
+                    }
+                break;
+                case "data":
+                break;
+                case "membership":
+                break;
+            }
+        }
+    }
+
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
+            $m = new \Mustache_Engine;
 
             $myWorkflow = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
             $myWorkflow->findVersion();
@@ -122,22 +171,51 @@ class WorkflowSubmissionController extends Controller
             $activity->user_id = Auth::user()->id;
             $activity->start_state = $workflow_submission->state;
 
-
             $flow = json_decode($myWorkflow->version->code->flow);
-            foreach($flow->{$workflow_submission->state}->actions as $action){
+
+            $oldstate = null;
+            foreach($flow  as $struct) {
+                if ($workflow_submission->state == $struct->{"name"}) {
+                    $oldstate = $struct;
+                    break;
+                }
+            }
+            if(isset($oldstate->{"onExit"})){
+                $this->executeTasks($oldstate->{"onExit"},$workflow_submission->data);
+            }
+            $state = null;
+
+            foreach($oldstate->actions as $action){
                 if($action->name == $request->get('action')){
                     $workflow_submission->state = $action->to;
-                    if(isset($flow->{$action->to}->status)){
-                        $workflow_submission->status = $flow->{$action->to}->status;
+                    if(isset($oldstate->{"tasks"})){
+                        $this->executeTasks($action->{"tasks"}, $workflow_submission->data);
+                    }
+                    
+                    foreach($flow  as $struct) {
+                        if ($workflow_submission->state == $struct->{"name"}) {
+                            $state = $struct;
+                            break;
+                        }
+                    }
+        
+                    if(isset($state->status)){
+                        $workflow_submission->status = $state->status;
                     }else{
                         $workflow_submission->status = 'open';
                     }
                 }
             }
-
             $workflow_submission->data = $request->get('_state');
+            $workflow_submission->assignment_type = $state->{"assignment"}->{"type"};
+            $workflow_submission->assignment_id = $m->render($state->{"assignment"}->{"id"}, $workflow_submission->data);
+
+            if(isset($state->{"onEnter"})){
+                $this->executeTasks($state->{"onEnter"}, $workflow_submission->data);
+            }
 
             $workflow_submission->update();
+
 
             $activity->end_state = $workflow_submission->state;
             $activity->data = $request->get('_state');
@@ -188,9 +266,6 @@ class WorkflowSubmissionController extends Controller
             }
             $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
-
-
-
 
 
         // if(!is_numeric($group)) {
