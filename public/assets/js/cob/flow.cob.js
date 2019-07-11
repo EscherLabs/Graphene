@@ -337,7 +337,7 @@ Cobler.types.Workflow = function(container){
 
           this.form.on('save',function(e){
             if(!e.form.validate(true))return;
-            e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saveing',"modifiers": "btn btn-warning"})
+            e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saving',"modifiers": "btn btn-warning"})
             gform.types.fieldset.edit.call(e.form.find('_state'),false)
             e.form.find('_state').el.style.opacity = .7
             gform.types.button.edit.call(e.field,false)
@@ -350,13 +350,12 @@ Cobler.types.Workflow = function(container){
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
-                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/submission{{id}}">here</a>',data)
+                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/submission/{{id}}">here</a>',data)
                 // gform.types.fieldset.edit.call(e.form.find('_state'),true)
                 // gform.types.button.edit.call(e.form.find('submit'),true)
                 // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
               }.bind(this)
             })
-
           }.bind(this)).on('canceled',function(e){
             // gform.types.fieldset.edit.call(e.form.find('_state'), false);
             // gform.types.button.edit.call(e.field, false);
@@ -538,8 +537,9 @@ Cobler.types.WorkflowStatus = function(container){
                         template:"{{attributes.workflow.name}}"},
                         // {label:"Created At",name:"created_at"},
                         {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
-                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"Assignment",name:"assignment_type",type:"select",options:['group','user'],template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
+                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        {label:"State",name:"state",template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
                         {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
                     }
@@ -645,6 +645,8 @@ Cobler.types.WorkflowStatus = function(container){
                         {label:"Initiated",name:"created_at"},
                         // {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        {label:"State",name:"state",template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
+
                         // {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
                         // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]

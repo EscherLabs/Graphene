@@ -206,7 +206,7 @@ class WorkflowSubmissionController extends Controller
                     }
                 }
             }
-            $workflow_submission->data = $request->get('_state');
+            $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
             $workflow_submission->assignment_type = $state->{"assignment"}->{"type"};
             $workflow_submission->assignment_id = $m->render($state->{"assignment"}->{"id"}, $workflow_submission->data);
 
