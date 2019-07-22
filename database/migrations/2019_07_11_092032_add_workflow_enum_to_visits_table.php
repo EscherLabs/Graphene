@@ -13,7 +13,7 @@ class AddWorkflowEnumToVisitsTable extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE visits MODIFY resource_type ENUM('page','app_instance','workflow') NOT NULL DEFAULT 'page';");
+        DB::statement("ALTER TABLE visits MODIFY resource_type ENUM('page','app_instance','flow') NOT NULL DEFAULT 'page';");
     }
 
     /**

@@ -15,6 +15,7 @@ use App\Page;
 use App\ResourceCache;
 use App\UserOption;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
@@ -127,7 +128,14 @@ class WorkflowSubmissionController extends Controller
         foreach($tasks as $task){
             switch($task->task) {
                 case "email":
-
+                    // More Info About the Mail API: https://laravel.com/docs/5.8/mail
+                    // Note that Mail::raw is undocumented, as default mail requires 
+                    // the use of blade views.
+                    Mail::raw('You got a Workflow Email!',function($message) { 
+                        $message->to('tcortesi@binghamton.edu')
+                            ->to('asmallco@binghamton.edu')
+                            ->subject('Workflows | You got a Workflow Email'); 
+                    });
                 break;
                 case "api":
                     $httpHelper = new HTTPHelper();
