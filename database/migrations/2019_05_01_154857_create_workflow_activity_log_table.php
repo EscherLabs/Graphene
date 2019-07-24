@@ -15,7 +15,7 @@ class CreateWorkflowActivityLogTable extends Migration
     {
         Schema::create('workflow_activity_log', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('workflow_id')->unsigned()->index();
+            $table->integer('workflow_instance_id')->unsigned()->index();
             $table->integer('workflow_submission_id')->unsigned()->index();
             $table->integer('user_id')->unsigned()->index()->nullable()->default(null);
             $table->string('start_state')->nullable()->default(null);
@@ -23,7 +23,7 @@ class CreateWorkflowActivityLogTable extends Migration
             $table->string('end_state')->nullable()->default(null);
             $table->json('data')->nullable();
             $table->timestamps();
-            $table->foreign('workflow_id')->references('id')->on('workflows');
+            $table->foreign('workflow_instance_id')->references('id')->on('workflow_instances');
             $table->foreign('workflow_submission_id')->references('id')->on('workflow_submissions');
         });
     }

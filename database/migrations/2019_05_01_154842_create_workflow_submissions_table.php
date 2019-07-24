@@ -17,6 +17,8 @@ class CreateWorkflowSubmissionsTable extends Migration
             $table->increments('id');
             $table->integer('workflow_id')->unsigned()->index();
             $table->integer('workflow_version_id')->unsigned()->index();
+            $table->integer('workflow_instance_id')->unsigned()->index();
+            $table->json('workflow_instance_configuration')->nullable();
             $table->integer('user_id')->unsigned()->index()->nullable()->default(null);
             $table->enum('assignment_type',['user', 'group'])->nullable()->default(null);
             $table->integer('assignment_id')->unsigned()->index()->nullable()->default(null);
@@ -26,6 +28,7 @@ class CreateWorkflowSubmissionsTable extends Migration
             $table->timestamps();
             $table->foreign('workflow_id')->references('id')->on('workflows');
             $table->foreign('workflow_version_id')->references('id')->on('workflow_versions');
+            $table->foreign('workflow_instance_id')->references('id')->on('workflow_instances');
         });
     }
 
