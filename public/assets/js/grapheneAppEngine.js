@@ -275,7 +275,9 @@ function(options){
 		})(this.options.data || {}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
+			// debugger;
 			this.data= mountResult.data;
+			app.data = this.data;
 			this.methods = {};
 			for(var i in mountResult) {
 				if(typeof mountResult[i] == 'function') {
@@ -408,7 +410,6 @@ function(options){
 }
 
 var newtemp =  new temp(options);
-
 var app = {};
 return newtemp;
 }

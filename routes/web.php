@@ -31,6 +31,9 @@ Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.s
 
 Route::get('/workflows','WorkflowController@summary');
 Route::get('/workflows/submission/{workflow_submission}','WorkflowSubmissionController@view');
+Route::get('/workflows/report/{workflow_instance}/{workflow_submission}', 'WorkflowSubmissionController@report');
+Route::get('/workflows/report/{workflow_instance}', 'WorkflowInstanceController@report');
+
 
 Route::get('/setup',function(){
   return redirect('/');
@@ -140,7 +143,9 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     /***** WORKFLOWS *****/
     Route::post('/workflow/{group}/{workflow_instance}','WorkflowSubmissionController@create');
     Route::get('/workflow/submissions','WorkflowSubmissionController@list_user_workflow_submissions');
+    Route::get('/workflow/submissions/{workflow_instance}','WorkflowSubmissionController@list_instance_workflow_submissions');
     Route::get('/workflow/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
+    Route::get('/workflow/{workflow_submission}/log','WorkflowSubmissionController@workflow_submission_log');
     Route::get('/workflow/{workflow_submission}','WorkflowSubmissionController@status');
     Route::put('/workflow/{workflow_submission}','WorkflowSubmissionController@action');
     Route::delete('/workflow/{workflow_submission}','WorkflowSubmissionController@destroy');

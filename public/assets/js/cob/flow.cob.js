@@ -376,11 +376,6 @@ Cobler.types.Workflow = function(container){
 }
 
 
-
-
-
-
-
 Cobler.types.WorkflowStatus = function(container){
 	function get() {
 		item.widgetType = 'WorkflowStatus';
@@ -537,7 +532,7 @@ Cobler.types.WorkflowStatus = function(container){
                         template:"{{attributes.workflow.name}}"},
                         // {label:"Created At",name:"created_at"},
                         {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
-                        {label:"Assignment",name:"assignment_type",type:"select",options:['group','user'],template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
+                        {label:"Assignment",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"State",name:"state",template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
                         {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
@@ -770,6 +765,204 @@ Cobler.types.Workflows = function(container){
           <ul class="list-group available_workflow" style="margin:10px 0 0">
           {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
           </ul>`,{data:data});
+          }.bind(this)
+      })
+		}
+	}
+}
+
+
+Cobler.types.WorkflowReport = function(container){
+	function get() {
+		item.widgetType = 'WorkflowReport';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+    Title: {},
+
+    // 'User Options':{name:'user_edit',type:'checkbox'}
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      // this.id = gform.getUID();
+      // temp.id = this.id;
+      // return templates['widgets_microapp'].render(temp, templates);
+      return gform.renderString(`
+      <div class="btn-group pull-right slice-actions parent-hover">
+	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+</div>
+
+      {{#container}}
+      <div class="panel panel-default">
+      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+</div>
+      {{>widgets__header}}
+        <div class="collapsible panel-body">
+        
+        <h3 class="flow-title"></h3>
+        <div class="g_{{guid}}">
+        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
+        </div>
+      </div>
+      {{/container}}
+      {{^container}}
+
+        <div class="collapsible">
+  
+        </div>
+      {{/container}}`,temp);
+
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+      $.ajax({
+        url:'/api/workflow/submissions/'+this.get().options.id,
+        dataType : 'json',
+        type: 'GET',
+    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+        success  : function(data){
+          data = _.each(data, function(item){
+            item.created_at = {
+              original:item.created_at,
+              time:moment(item.created_at).format('LTS'),
+              date:moment(item.created_at).format('L'),
+              fromNow:moment(item.created_at).fromNow()
+            }
+            item.updated_at = {
+              original:item.updated_at,
+              time:moment(item.updated_at).format('LTS'),
+              date:moment(item.updated_at).format('L'),
+              fromNow:moment(item.updated_at).fromNow()
+            }
+          })
+
+          new GrapheneDataGrid({schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"}],data:data,actions:[],upload:false,el:this.container.elementOf(this).querySelector('.collapsible')}).on('click',function(e){
+            document.location = "/workflows/report/"+this.get().options.id+'/'+e.model.attributes.id;
+          }.bind(this))
+          
+          // .innerHTML = gform.renderString(` 
+          // <label for="link_filter" class="sr-only">Filter Report</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+          // <ul class="list-group available_workflow" style="margin:10px 0 0">
+          // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">({{created_at}}) {{user.first_name}} {{user.last_name}} - <span class="pull-right">{{updated_at}}</span></a>{{/data}}
+          // </ul>`,{data:data});
+          }.bind(this)
+      })
+		}
+	}
+}
+
+
+Cobler.types.WorkflowSubmissionReport = function(container){
+	function get() {
+		item.widgetType = 'WorkflowSubmissionReport';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+    Title: {},
+
+    // 'User Options':{name:'user_edit',type:'checkbox'}
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      // this.id = gform.getUID();
+      // temp.id = this.id;
+      // return templates['widgets_microapp'].render(temp, templates);
+      return gform.renderString(`
+      <div class="btn-group pull-right slice-actions parent-hover">
+	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+</div>
+
+      {{#container}}
+      <div class="panel panel-default">
+      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+</div>
+      {{>widgets__header}}
+        <div class="collapsible panel-body">
+        
+        <h3 class="flow-title"></h3>
+        <div class="g_{{guid}}">
+        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
+        </div>
+      </div>
+      {{/container}}
+      {{^container}}
+        <div class="collapsible">
+        </div>
+      {{/container}}`,temp);
+
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+      $.ajax({
+        url:'/api/workflow/'+this.get().options.id+'/log',
+        dataType : 'json',
+        type: 'GET',
+    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+        success  : function(data){
+          data = _.each(data, function(item){
+            item.created_at = {
+              original:item.created_at,
+              time:moment(item.created_at).format('LTS'),
+              date:moment(item.created_at).format('L'),
+              fromNow:moment(item.created_at).fromNow()
+            }
+            item.updated_at = {
+              original:item.updated_at,
+              time:moment(item.updated_at).format('LTS'),
+              date:moment(item.updated_at).format('L'),
+              fromNow:moment(item.updated_at).fromNow()
+            }
+          })          
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+          <label for="link_filter" class="sr-only">Filter Report</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+          <ul class="list-group available_workflow" style="margin:10px 0 0">
+          {{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h4>Action: <div class="btn">{{action}}</div><span class="pull-right">({{updated_at.fromNow}})</span></h4></div>
+          Transition: <span class="label label-default">{{start_state}}</span> <i class="fa fa-arrow-right text-muted"></i> <span class="label label-success">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span></div>{{/data}}
+          </ul>`, {data:data});
+
+          $('.filterable').on('click',function(e){
+            debugger;
+            var form = _.extend(JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content),{data:_.find(this.data,{id:parseInt(e.currentTarget.dataset.id)}).data});
+            form.actions = [];
+            form.legend = "State"
+            new gform(form).modal()
+          }.bind({data:data}))
           }.bind(this)
       })
 		}

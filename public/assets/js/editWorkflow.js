@@ -455,21 +455,20 @@ function createFlow() {
 
     list2.className = list2.className.replace('hidden', '');
     options = new gform({data:attributes.code,actions:[],fields:[
+      {name:"initial",label:"Initial State"},
       {name:"flow",label:'Flow',type:'ace',mode:'ace/mode/javascript'}
     ]},".options").on('change',function(e){
       try{
-      var temp = _.map(JSON.parse(options.get().flow),function(item){
-
-        //return gform.renderString('\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]',item);
-        var temp = '\n'+item.name+'['+item.name+']';
-        var stuff = _.map(item.actions,function(i){
-          return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
+        var temp = _.map(JSON.parse(options.get().flow),function(item){
+          var temp = '\n'+item.name+'['+item.name+']';
+          var stuff = _.map(item.actions,function(i){
+            return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
+          })
+          return temp+stuff.join('')
+          // return '\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]';
         })
-        return temp+stuff.join('')
-        // return '\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]';
-      })
-      myfunc('graph TB'+temp.join(''))
-    }catch(e){}
+        myfunc('graph TB'+temp.join(''))
+      }catch(e){}
     })
     options.trigger('change')
 

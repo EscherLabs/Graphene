@@ -18,4 +18,7 @@ class WorkflowSubmission extends Model
     public function workflowInstance() {
         return $this->belongsTo(WorkflowInstance::class);
     }
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }
