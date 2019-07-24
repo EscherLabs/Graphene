@@ -22,6 +22,7 @@ class CreateWorkflowActivityLogTable extends Migration
             $table->string('action')->nullable()->default(null);
             $table->string('end_state')->nullable()->default(null);
             $table->json('data')->nullable();
+            $table->enum('status',['open', 'closed'])->default('open');
             $table->timestamps();
             $table->foreign('workflow_instance_id')->references('id')->on('workflow_instances');
             $table->foreign('workflow_submission_id')->references('id')->on('workflow_submissions');
