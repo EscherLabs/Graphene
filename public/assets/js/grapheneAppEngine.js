@@ -180,22 +180,24 @@ function App() {
 					options.form = this.app.findForm(options.form)
 				}
 				this.grids[name] = new GrapheneDataGrid(_.extend({collections:this.collections,data:this.data[options.resource||name]},options))//new gform(formOptions,this.app.find(target)[0])
+				if(typeof options.resource !== 'undefined'){
+					this.collections.on(options.resource,function(e){
+						this.load(e.collection);
+					}.bind(this.grids[name]))
 
-				this.collections.on(options.resource,function(e){
-					this.load(e.collection);
-				}.bind(this.grids[name]))
-
-				if(options.rest){
-					this.grids[name].on('model:created',function(e){
-						this.app.post(e.grid.resource,e.model.attributes)
-					}.bind(this))
-					this.grids[name].on('model:edited',function(e){
-						this.app.put(e.grid.resource,e.model.attributes)
-					}.bind(this))
-					this.grids[name].on('model:deleted',function(e){
-						this.app.delete(e.grid.resource,e.model.attributes)
-					}.bind(this))
+					if(options.rest){
+						this.grids[name].on('model:created',function(e){
+							this.app.post(e.grid.resource,e.model.attributes)
+						}.bind(this))
+						this.grids[name].on('model:edited',function(e){
+							this.app.put(e.grid.resource,e.model.attributes)
+						}.bind(this))
+						this.grids[name].on('model:deleted',function(e){
+							this.app.delete(e.grid.resource,e.model.attributes)
+						}.bind(this))
+					}
 				}
+
 			}
 			return this.grids[name]
 		}.bind(this),

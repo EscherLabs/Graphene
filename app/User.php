@@ -48,6 +48,9 @@ class User extends Authenticatable
     public function app_versions() {
       return $this->hasMany(AppVersion::class);
     }
+    public function workflows() {
+      return $this->hasMany(Workflow::class);
+    }
     public function workflow_versions() {
       return $this->hasMany(WorkflowVersion::class);
     }

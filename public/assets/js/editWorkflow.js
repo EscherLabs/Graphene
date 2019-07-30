@@ -195,8 +195,22 @@ function load(workflow_version) {
       toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
     }
   }});
+  r_options = {data:loaded.code, actions:[],fields:[
 
+    {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Key</h4>',columns:9,type:"output"},
+    {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Type</h4>',columns:3,type:"output"},
 
+    {name:"resources",label:false,array:true,type:"fieldset",fields:[
+      {name:"name",label:false,columns:9,placeholder:"Key"},
+      {name:"type",label:false,type:"select",columns:3,options:[
+        {label:"String",value:"string"},
+        {label:"Group",value:"group"},
+        {label:"User",value:"user"},
+        {label:"Endpoint",value:"endpoint"}
+      ]}
+    ]}
+  ]}
+  resources = new gform(r_options,'.resources');
 
 }
 
@@ -287,173 +301,6 @@ function modalForm(form, name, onSave) {
 
 
 function createFlow() {
-  // if(typeof cb === 'undefined'){
-  //   if(typeof form === 'string'){
-  //     form = JSON.parse(form || '{}');
-  //   }
-  //   form = form || {};
-  //   $('#myModal').remove();
-  //   this.onSave = onSave;
-  //   this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-  //   $(this.ref).appendTo('body');
-  //   this.ref.find('.modal-body').html(templates.formEditor.render());
-  //   this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-  //   this.ref.on('hide.bs.modal', function(){
-  //     cb.destroy();
-  //     delete cb;
-  //   });
-  //   this.ref.find('#saveForm').on('click', function(){
-  //     this.onSave.call(this)
-  //     this.ref.modal('hide');
-      
-  //   }.bind(this))
-  //   this.ref.modal({backdrop: 'static'});
-
-    cb2 = new Cobler({formOptions:{inline:true},formTarget:$('.flowform'), disabled: false, targets: [document.getElementById('floweditor')],items:[[]]});
-    $('body').keydown(function(event) {
-      switch(event.keyCode) {
-        case 27://escape
-            event.stopPropagation();
-            cb2.deactivate();
-            return false;
-          break;
-      }
-    });
-    list2 = document.getElementById('sortableListflow');
-    cb2.addSource(list2);
-    cb2.on('activate', function(){
-      if(list2.className.indexOf('hidden') == -1){
-        list2.className += ' hidden';
-      }
-      $('.flowform').removeClass('hidden');
-    })
-    cb2.on('deactivate', function(){
-      list2.className = list2.className.replace('hidden', '');
-      $('.flowform').addClass('hidden');
-    })
-    document.getElementById('sortableListflow').addEventListener('click', function(e) {
-      cb2.collections[0].addItem(e.target.dataset.type);
-    })
-    cb2.on('change', function(){
-      
-      myfunc('graph TB'+cb2.toHTML()[0])
-      // new gform({
-      //   "fields": [
-      //     {
-      //         "label": "Project Director Namess",
-      //         "name": "director_name",
-      //         "inline": false
-      //     },
-      //     {
-      //         "label": "Department",
-      //         "name": "department",
-      //         "inline": false
-      //     },
-      //     {
-      //         "type": "radio",
-      //         "label": "I hereby authorize the individual shown below to sign on behalf of the Project Director",
-      //         "name": "documents",
-      //         "multiple": true,
-      //         "options": [
-      //             "HR/Payroll Appointment/Fellowship Forms",
-      //             "HR/Payroll Timesheets (Exempt, Staff Support, Hourly, & Certification)",
-      //             "Independent Contractor Classification and Agreement",
-      //             "Science Store charge invoice",
-      //             "University Copy Center charge invoice",
-      //             "Educational Communication charge invoice",
-      //             "Purchase Requisitions for supplies & services",
-      //             "Payment Voucher for supplies & services",
-      //             "Receive copy of purchase order",
-      //             "Electronic Purchase Order (EPO)",
-      //             "Travel payment expense",
-      //             "iExpense Delegate",
-      //             "iExpense Approver",
-      //             "Subrecipient/Subcontractor notice",
-      //             "All Documents Listed Above",
-      //             "Other"
-      //         ]
-      //     },
-      //     {
-      //         "type": "text",
-      //         "label": "Other",
-      //         "name": "documents_other",
-      //         "show":[{
-      //             "type": "contains",
-      //             "name": "documents",
-      //             "value": "Other"
-      //         }]
-      //     },
-      //     {
-      //         "name": "all",
-      //         "label": false,
-      //         "details": "<b>All Project/Awards associated with Project Director</b>",
-      //         "type": "checkbox"
-      //     },
-      //     {
-      //         "label": "Project/Awared",
-      //         "array": true,
-      //         "name": "project",
-      //         "show": [{
-      //             "type": "matches",
-      //             "name": "all",
-      //             "value": false
-      //         }]
-      //     },
-      //     {
-      //         "name": "period",
-      //         "label": "Authorization Period",
-      //         "parse": false,
-      //         "type": "fieldset",
-      //         "fields": [
-      //             {
-      //                 "type": "date",
-      //                 "label": "From",
-      //                 "name": "startdate",
-      //                 "columns": 6
-      //             },
-      //             {
-      //                 "type": "date",
-      //                 "label": "To",
-      //                 "name": "enddate",
-      //                 "columns": 6
-      //             }
-      //         ]
-      //     },
-      //     {
-      //         "label": "Delegate Name",
-      //         "name": "delegate_name"
-      //     },
-      //     {
-      //         "type": "textarea",
-      //         "label": "Comments / Restrictions",
-      //         "name": "comments"
-      //     }
-      //   ]
-      // },"#myForm")
-      // myfunc('graph TB\n Signature Authorization Form-->|Submit|Submitted\n Submitted-->|Approve|Approved\n Submitted-->|Reject|Signature Authorization Form\n Approved-->|Add|Added(fa:fa-envelope Added)')
-    })
-  // }
-
-  // if(typeof form !== 'undefined'){
-  //   var temp = $.extend(true, {}, form);
-  //   for(var i in temp.fields){
-
-  //     temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-  //     switch(temp.fields[i].type) {
-  //       case "select":
-  //       case "radio":
-  //         temp.fields[i].widgetType = 'select';
-  //         break;
-  //       case "checkbox":
-  //         temp.fields[i].widgetType = 'checkbox';
-  //         break;
-  //       default:
-  //         temp.fields[i].widgetType = 'textbox';
-  //     }
-
-  //   }
-
-    list2.className = list2.className.replace('hidden', '');
     options = new gform({data:attributes.code,actions:[],fields:[
       {name:"initial",label:"Initial State"},
       {name:"flow",label:'Flow',type:'ace',mode:'ace/mode/javascript'}
@@ -485,138 +332,16 @@ debugger;
 
 createFlow();
       
-      //myfunc('graph TB'+cb2.toHTML()[0])
-      // new gform({
-      //   "fields": [
-      //     {
-      //         "label": "Project Director Namess",
-      //         "name": "director_name",
-      //         "inline": false
-      //     },
-      //     {
-      //         "label": "Department",
-      //         "name": "department",
-      //         "inline": false
-      //     },
-      //     {
-      //         "type": "select",
-      //         "label": "I hereby authorize the individual shown below to sign on behalf of the Project Director",
-      //         "name": "documents",
-      //         "multiple": true,
-      //         "options": [
-      //             "HR/Payroll Appointment/Fellowship Forms",
-      //             "HR/Payroll Timesheets (Exempt, Staff Support, Hourly, & Certification)",
-      //             "Independent Contractor Classification and Agreement",
-      //             "Science Store charge invoice",
-      //             "University Copy Center charge invoice",
-      //             "Educational Communication charge invoice",
-      //             "Purchase Requisitions for supplies & services",
-      //             "Payment Voucher for supplies & services",
-      //             "Receive copy of purchase order",
-      //             "Electronic Purchase Order (EPO)",
-      //             "Travel payment expense",
-      //             "iExpense Delegate",
-      //             "iExpense Approver",
-      //             "Subrecipient/Subcontractor notice",
-      //             "All Documents Listed Above",
-      //             "Other"
-      //         ]
-      //     },
-      //     {
-      //         "type": "text",
-      //         "label": "Other",
-      //         "name": "documents_other",
-      //         "show":[{
-      //             "type": "contains",
-      //             "name": "documents",
-      //             "value": "Other"
-      //         }]
-      //     },
-      //     {
-      //         "name": "all",
-      //         "label": false,
-      //         "details": "<b>All Project/Awards associated with Project Director</b>",
-      //         "type": "checkbox"
-      //     },
-      //     {
-      //         "label": "Project/Awared",
-      //         "array": true,
-      //         "name": "project",
-      //         "show": [{
-      //             "type": "matches",
-      //             "name": "all",
-      //             "value": false
-      //         }]
-      //     },
-      //     {
-      //         "name": "period",
-      //         "label": "Authorization Period",
-      //         "parse": false,
-      //         "type": "fieldset",
-      //         "fields": [
-      //             {
-      //                 "type": "date",
-      //                 "label": "From",
-      //                 "name": "startdate",
-      //                 "columns": 6
-      //             },
-      //             {
-      //                 "type": "date",
-      //                 "label": "To",
-      //                 "name": "enddate",
-      //                 "columns": 6
-      //             }
-      //         ]
-      //     },
-      //     {
-      //         "label": "Delegate Name",
-      //         "name": "delegate_name"
-      //     },
-      //     {
-      //         "type": "textarea",
-      //         "label": "Comments / Restrictions",
-      //         "name": "comments"
-      //     }
-      //   ]
-      // },"#myForm")
-      // myfunc('graph TB\n Initial-->|Submit|Submitted\n Submitted-->|Approve|Approved\n Submitted-->|Reject|Initial(Signature Authorization Form)\n Approved-->|Add|Added(fa:fa-envelope Added)')
-
-
-      
 
 $('#save').on('click',function() {
-  // template_errors = templatePage.errors();
-  // script_errors =scriptPage.errors();
-  // debugger;
-  var data = {code:options.get()};
-  // data.code.css = Berries.style.toJSON().code.css;
-  // data.code.resources = _.map(bt.models,'attributes');
-  // data.code.templates = templatePage.toJSON();
 
-  // try{
-  //   _.each(data.code.templates, function(partial){
-  //     try{
-  //         Ractive.parse(partial.content);
-  //       }catch(e){
-  //         template_errors.push({
-  //           type: e.name,
-  //           name: partial.name,
-  //           message: e.message
-  //         });
-  //       }
-  //   })
-  // }catch(e) {
-  //     toastr.error(e.message, e.name);
-  //     return false;
-  // }
-  // var errorCount = template_errors.length+ script_errors.length;//+ css_errors.length
+  var data = {code:options.get()};
 
   if(true || !errorCount){
-    // data.code.scripts = scriptPage.toJSON();
-    // var temp = formPage.toJSON();
+
     data.code.forms = formPage.toJSON();
     data.updated_at = attributes.updated_at;
-
+    data.code.resources = resources.toJSON().resources;
     $.ajax({
       url: root+attributes.workflow_id+'/code',
       method: 'put',
@@ -636,11 +361,8 @@ $('#save').on('click',function() {
             test = JSON.parse(JSON.parse(error.responseText).error.message);
             toastr.warning('conflict detected:'+error.statusText, 'NOT SAVED')
             conflictResults = {};
-            // conflictResults.sources = (JSON.stringify(test.sources) !== JSON.stringify(this.model.sources));
-            // conflictResults.css = (JSON.stringify(test.css) !== JSON.stringify(this.model.css));
+
             conflictResults.options = (JSON.stringify(test.options) !== JSON.stringify(this.model.options));
-            // conflictResults.scripts = (JSON.stringify(test.script) !== JSON.stringify(this.model.script));
-            // conflictResults.template = (JSON.stringify(test.template) !== JSON.stringify(this.model.template));
             modal({headerClass:'bg-danger' ,title: 'Conflict(s) detected', content: render('conflict', conflictResults)})//, footer:'<div class="btn btn-danger">Force Save</div>'})
           }.bind(this),
           401: function() {

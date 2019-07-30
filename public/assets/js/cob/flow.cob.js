@@ -957,7 +957,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           </ul>`, {data:data});
 
           $('.filterable').on('click',function(e){
-            debugger;
             var form = _.extend(JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content),{data:_.find(this.data,{id:parseInt(e.currentTarget.dataset.id)}).data});
             form.actions = [];
             form.legend = "State"

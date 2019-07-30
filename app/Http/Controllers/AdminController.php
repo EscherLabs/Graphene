@@ -130,8 +130,6 @@ class AdminController extends Controller
                 ->with('workflowinstancesCount')
                 ->with('linksCount');
                 // ->find($group->id);
-
-
             }) )->select('group_id','user_id','content_admin','apps_admin');
         }));
         $user->load(array('group_members'=>function($query){
@@ -139,8 +137,12 @@ class AdminController extends Controller
                 $query->where('site_id','=',config('app.site')->id)->select('id', 'site_id', 'name', 'slug');
             }))->select('group_id','user_id');
         }));
+
+        $user->load(array('workflows'=>function($query){
+            
+        }));
         return view('adminDashboard', ['user'=>$user]);
-        return $user;
+        // return $user;
 
         // return Group::where('site_id', config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->orderBy('order')->get();
     }
