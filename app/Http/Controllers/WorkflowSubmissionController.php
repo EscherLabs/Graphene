@@ -68,10 +68,12 @@ class WorkflowSubmissionController extends Controller
             $myWorkflow->findVersion();
 
             $submission = new WorkflowSubmission();
-            $submission->workflow_id = $myWorkflow->id;
+            $submission->workflow_id = $myWorkflow->workflow_id;
+            $submission->workflow_instance_id = $myWorkflow->id;
             $submission->workflow_version_id = $myWorkflow->version->id;
+            $submission->workflow_instance_configuration = $myWorkflow->configuration;
             $submission->data = $request->get('_state');
-            $submission->state = $myWorkflow->version->code->initial;
+            $submission->state = $myWorkflow->configuration->initial;
             $submission->user_id = $current_user->id;
 
             $flow = json_decode($myWorkflow->version->code->flow);    
@@ -96,10 +98,12 @@ class WorkflowSubmissionController extends Controller
             $submission->save();
 
             $activity = new WorkflowActivityLog();
-            $activity->workflow_id = $myWorkflow->id;
+            $activity->workflow_id = $myWorkflow->workflow_id;
+            $activity->workflow_instance_id = $myWorkflow->id;
             $activity->user_id = $current_user->id;
             $activity->data =  $submission->data;
             $activity->end_state = $submission->state;
+            $activity->status = $submission->status;
 
             $activity->workflow_submission_id = $submission->id;
             $activity->action = 'submit';
@@ -111,96 +115,6 @@ class WorkflowSubmissionController extends Controller
         abort(404,'Workflow not found');
     }
 
-    public function list_user_workflow_submissions(Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('user_id','=',Auth::user()->id)->get();
-    }
-    public function list_workflow_submission_assignments(Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        return array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'user')->where('assignment_id','=',Auth::user()->id)->get(),
-        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'group')->whereIn('assignment_id',Auth::user()->groups)->get());
-
-    }
-    public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_id','=',$workflow_instance->id)->orderBy('updated_at','DESC')->get();
-    }   
-    
-    public function workflow_submission_log($workflow_submission, Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission)->orderBy('updated_at','DESC')->get();
-    }
-    private function executeTasks($tasks, $data){
-        $m = new \Mustache_Engine;
-
-        foreach($tasks as $task){
-            if(!isset($task->data)){
-                $task->data = array();
-            }else{
-                foreach($task->data as $key=>$value){
-                    $task->data->{$key} = $m->render($value, $data);
-                }
-            }
-            switch($task->task) {
-                case "email":
-                    $content = "Workflow task taken";
-                    if($task->content){
-                        $content = $m->render($task->content, $data);
-                    }
-                    $subject = 'Workflows | You got a Workflow Email';
-
-                    if($task->subject){
-                        $subject = $m->render($task->subject, $data);
-                    }
-                    $to = 'asmallco@binghamton.edu';
-
-                    // More Info About the Mail API: https://laravel.com/docs/5.8/mail
-                    // Note that Mail::raw is undocumented, as default mail requires 
-                    // the use of blade views.
-                    Mail::raw( $content, function($message) use($to, $subject) { 
-                        $message->to($to);
-                        $message->subject($subject); 
-                    });
-                break;
-                case "api":
-                    $httpHelper = new HTTPHelper();
-                    // if(!isset($task->data)){
-                    //     $task->data = array();
-                    // }else{
-                    //     foreach($task->data as $key=>$value){
-                    //         $task->data->{$key} = $m->render($value, $data);
-                    //     }
-                    // }
-                    if(isset($task->endpoint)){
-                        $endpoint = Endpoint::find((int)$task->endpoint);
-                        $url = $m->render($endpoint->config->url . $task->url, $data);
-                        if ($endpoint->type == 'http_no_auth') {
-                            $response = $httpHelper->http_fetch( $url,$verb,$task->data);
-                        } else if ($endpoint->type == 'http_basic_auth') {
-                            $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
-                        } else {
-                            abort(505,'Authentication Type Not Supported');
-                        }
-                    }else{
-                        $response = $httpHelper->http_fetch(  $m->render($task->url, $data),"POST",$task->data);
-                    }
-                break;
-                case "data":
-                break;
-                case "membership":
-                break;
-            }
-        }
-    }
-
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
         $m = new \Mustache_Engine;
 
@@ -208,7 +122,9 @@ class WorkflowSubmissionController extends Controller
         $myWorkflow->findVersion();
         $activity = new WorkflowActivityLog();
 
-        $activity->workflow_id = $myWorkflow->id;
+        $activity->workflow_id = $myWorkflow->worfklow_id;
+        $activity->workflow_instance_id = $myWorkflow->id;
+
         $activity->user_id = Auth::user()->id;
         $activity->start_state = $workflow_submission->state;
 
@@ -259,13 +175,98 @@ class WorkflowSubmissionController extends Controller
 
         $activity->end_state = $workflow_submission->state;
         $activity->data = $request->get('_state');
+        $activity->comment = $request->get('comment');
 
         $activity->workflow_submission_id = $workflow_submission->id;
         $activity->action = $request->get('action');
-
+        $activity->status = $workflow_submission->status;
         $activity->save();
         
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id','=',$workflow_submission->id)->first();
+    }
+
+    private function executeTasks($tasks, $data){
+        $m = new \Mustache_Engine;
+
+        foreach($tasks as $task){
+            if(!isset($task->data)){
+                $task->data = array();
+            }else{
+                foreach($task->data as $key=>$value){
+                    $task->data->{$key} = $m->render($value, $data);
+                }
+            }
+            switch($task->task) {
+                case "email":
+                    $content = "Workflow task taken";
+                    if($task->content){
+                        $content = $m->render($task->content, $data);
+                    }
+                    $subject = 'Workflows | You got a Workflow Email';
+
+                    if($task->subject){
+                        $subject = $m->render($task->subject, $data);
+                    }
+                    $to = 'asmallco@binghamton.edu';
+
+                    // More Info About the Mail API: https://laravel.com/docs/5.8/mail
+                    // Note that Mail::raw is undocumented, as default mail requires 
+                    // the use of blade views.
+                    Mail::raw( $content, function($message) use($to, $subject) { 
+                        $message->to($to);
+                        $message->subject($subject); 
+                    });
+                break;
+                case "api":
+                    $httpHelper = new HTTPHelper();
+                    if(isset($task->endpoint)){
+                        $endpoint = Endpoint::find((int)$task->endpoint);
+                        $url = $m->render($endpoint->config->url . $task->url, $data);
+                        if ($endpoint->type == 'http_no_auth') {
+                            $response = $httpHelper->http_fetch( $url,$verb,$task->data);
+                        } else if ($endpoint->type == 'http_basic_auth') {
+                            $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
+                        } else {
+                            abort(505,'Authentication Type Not Supported');
+                        }
+                    }else{
+                        $response = $httpHelper->http_fetch(  $m->render($task->url, $data),"POST",$task->data);
+                    }
+                break;
+                // case "data":
+                // break;
+                // case "membership":
+                // break;
+            }
+        }
+    }
+
+    public function list_user_workflow_submissions(Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('user_id','=',Auth::user()->id)->get();
+    }
+    public function list_workflow_submission_assignments(Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        return array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'user')->where('assignment_id','=',Auth::user()->id)->get(),
+        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'group')->whereIn('assignment_id',Auth::user()->groups)->get());
+
+    }
+    public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_id','=',$workflow_instance->id)->orderBy('updated_at','DESC')->get();
+    }   
+    
+    public function workflow_submission_log($workflow_submission, Request $request) {
+        if (!Auth::check()) {
+            abort(403); // You must be authenticated to fetch links
+        }
+        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission)->orderBy('updated_at','DESC')->get();
     }
 
     public function view(WorkflowSubmission $workflow_submission, Request $request) {

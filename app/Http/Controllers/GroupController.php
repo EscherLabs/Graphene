@@ -56,6 +56,12 @@ class GroupController extends Controller
                 $query->select('id','name');
             }))->orderBy('updated_at');
         }))
+        ->with(array('workflow_instances'=>function($query){
+            $query->select('id','group_id','workflow_id','name', 'public', 'slug')
+            ->with(array('workflow'=>function($query){
+                $query->select('id','name');
+            }))->orderBy('updated_at');
+        }))
         ->with(array('tags'=>function($query){
             $query->select('id','group_id','name', 'value');
         }))

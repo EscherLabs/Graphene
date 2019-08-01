@@ -21,6 +21,7 @@ class CreateWorkflowActivityLogTable extends Migration
             $table->string('start_state')->nullable()->default(null);
             $table->string('action')->nullable()->default(null);
             $table->string('end_state')->nullable()->default(null);
+            $table->text('comment');
             $table->json('data')->nullable();
             $table->enum('status',['open', 'closed'])->default('open');
             $table->timestamps();

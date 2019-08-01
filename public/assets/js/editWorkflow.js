@@ -206,6 +206,7 @@ function load(workflow_version) {
         {label:"String",value:"string"},
         {label:"Group",value:"group"},
         {label:"User",value:"user"},
+        {label:"Email",value:"email"},
         {label:"Endpoint",value:"endpoint"}
       ]}
     ]}
@@ -302,7 +303,6 @@ function modalForm(form, name, onSave) {
 
 function createFlow() {
     options = new gform({data:attributes.code,actions:[],fields:[
-      {name:"initial",label:"Initial State"},
       {name:"flow",label:'Flow',type:'ace',mode:'ace/mode/javascript'}
     ]},".options").on('change',function(e){
       try{

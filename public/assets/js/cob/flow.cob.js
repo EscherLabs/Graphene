@@ -570,9 +570,9 @@ Cobler.types.WorkflowStatus = function(container){
 
                             ],
                             "fields":[
-                                {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields
-                              }
-                                ]
+                              {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
+                              {"name":"comment","type":"textarea","length":255}
+                            ]
                           }).on('save',function(e,eForm){
                             if(!eForm.form.validate(true))return;
 
@@ -584,7 +584,7 @@ Cobler.types.WorkflowStatus = function(container){
                               url:'/api/workflow/'+e.model.attributes.id,
                               dataType : 'json',
                               type: 'PUT',
-                              data: {_state:eForm.form.get(),action:e.event.split("click_")[1]},
+                              data: {_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},
                               success  : function(e,data){
                                 e.model.waiting(false);
                                 
@@ -606,11 +606,47 @@ Cobler.types.WorkflowStatus = function(container){
 
                           }).modal();
                       }else{
+
+
+
+                        new gform(
+                          {
+                            "legend":e.model.attributes.workflow.name,
+                            "data":e.model.attributes.data,
+                            "actions": [
+                              {
+                                "type": "cancel",
+                                "name": "submitted",
+                                "action":"canceled",
+                                // "label": "<i class='fa fa-check'></i> Submit"
+                              },
+                              {
+                                "type": "save",
+                                "name": "submit",
+                                "label": "<i class='fa fa-check'></i> Submit"
+                              },{
+                                "type": "hidden",
+                                "name": "_flowstate",
+                                "value":e.model.attributes.state
+                              }
+
+                            ],
+                            "fields":[
+                              {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
+                              {"name":"comment","type":"textarea","length":255}
+                            ]
+                          }).on('save',function(e,eForm){
+
+
+
+                            e.model.waiting(true);
+
+                            eForm.form.trigger('close')
                         $.ajax({
                           url:'/api/workflow/'+e.model.attributes.id,
                           dataType : 'json',
                           type: 'PUT',
-                          data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
+                          data: {_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},
                           success  : function(e,data){
                             e.model.waiting(false);
                             data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
@@ -624,6 +660,15 @@ Cobler.types.WorkflowStatus = function(container){
                             // </ul>`,{data:data});
                             }.bind(null,e)
                         })
+
+
+                      }.bind(null,e)).on('canceled',function(eForm){
+                        eForm.form.trigger('close')
+
+
+                      }).modal();
+
+
                     }
 
 
