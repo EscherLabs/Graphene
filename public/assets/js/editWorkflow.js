@@ -303,7 +303,7 @@ function modalForm(form, name, onSave) {
 
 function createFlow() {
     options = new gform({data:attributes.code,actions:[],fields:[
-      {name:"flow",label:'Flow',type:'ace',mode:'ace/mode/javascript'}
+      {name:"flow",label:false,type:'ace',mode:'ace/mode/javascript'}
     ]},".options").on('change',function(e){
       try{
         var temp = _.map(JSON.parse(options.get().flow),function(item){

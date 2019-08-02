@@ -272,7 +272,6 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::delete('/users/{user}','UserController@destroy')->middleware('can:delete,user');
     // Search all users
     Route::get('/users/search/{search_string?}','UserController@search')->middleware('can:get_all,App\User');
-    // Route::get('/users/find/{search?}','UserController@find')->middleware('can:get_all,App\User');
     // Impersonate a user
     Route::get('/users/{user}/impersonate','UserController@impersonate')->middleware('can:impersonate,user');
 

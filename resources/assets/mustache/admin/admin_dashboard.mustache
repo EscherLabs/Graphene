@@ -190,7 +190,7 @@
 										{{/appinstances_count}}
                     {{#workflowinstances_count}}
 										<a href="/admin/groups/{{id}}/workflowinstances" class="list-group-item" style="border-left:solid #31708f">
-											<i class="fa fa-cubes text-info"></i> <span class="text-info">Workflow Instances</span> <span class="badge">{{workflowinstances_count.aggregate}}</span>
+											<i class="fa fa-list text-info"></i> <span class="text-info">Workflow Instances</span> <span class="badge">{{workflowinstances_count.aggregate}}</span>
 										</a>
 										{{/workflowinstances_count}}
 										{{#endpoints_count}}
@@ -239,6 +239,11 @@
                   <span class="fa fa-cubes" title="MicroApps" data-toggle="tooltip" data-placement="top"></span>
                 </a>
                 {{/appinstances_count}}
+                {{^workflowinstances_count}}
+                <a href="/admin/groups/{{id}}/workflowinstances" class="text-default" style="padding:5px;font-size:20px;">
+                  <span class="fa fa-list" title="Workflows" data-toggle="tooltip" data-placement="top"></span>
+                </a>
+								{{/workflowinstances_count}}
                 {{^endpoints_count}}
                 <a href="/admin/groups/{{id}}/endpoints" class="text-warning" style="padding:5px;font-size:20px;">
                   <span class="fa fa-crosshairs" title="Endpoints" data-toggle="tooltip" data-placement="top"></span>

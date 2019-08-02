@@ -41,21 +41,21 @@ class WorkflowSubmissionController extends Controller
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
 
-            $myWorkflow = WorkflowInstance::with('workflow')
+            $myWorkflowInstance = WorkflowInstance::with('workflow')
                 ->where('group_id','=', $group)->where('id', '=', $workflow_id)->with('workflow')->first();
 
-            if (is_null($myWorkflow)) { 
+            if (is_null($myWorkflowInstance)) { 
                 abort(404); 
             }
             
-            if($myWorkflow->public == 0) {
-                $this->authorize('fetch' ,$myWorkflow);
+            if($myWorkflowInstance->public == 0) {
+                $this->authorize('fetch' ,$myWorkflowInstance);
             }
             $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('id', '=', $workflow_id)->where('public','=',true)->first();
-            if (is_null($myWorkflow)) { 
+            $myWorkflowInstance = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('id', '=', $workflow_id)->where('public','=',true)->first();
+            if (is_null($myWorkflowInstance)) { 
                 $return = $this->customAuth->authenticate($request);
                 if(isset($return)){
                     return $return;
@@ -64,53 +64,22 @@ class WorkflowSubmissionController extends Controller
             $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
 
-        if($myWorkflow != null) {
-            $myWorkflow->findVersion();
+        if($myWorkflowInstance != null) {
+            $myWorkflowInstance->findVersion();
 
-            $submission = new WorkflowSubmission();
-            $submission->workflow_id = $myWorkflow->workflow_id;
-            $submission->workflow_instance_id = $myWorkflow->id;
-            $submission->workflow_version_id = $myWorkflow->version->id;
-            $submission->workflow_instance_configuration = $myWorkflow->configuration;
-            $submission->data = $request->get('_state');
-            $submission->state = $myWorkflow->configuration->initial;
-            $submission->user_id = $current_user->id;
-
-            $flow = json_decode($myWorkflow->version->code->flow);    
+            $workflow_submission = new WorkflowSubmission();
+            $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
+            $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
+            $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
+            $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
+            $workflow_submission->data = array();
+            $workflow_submission->state = $myWorkflowInstance->configuration->initial;
+            $workflow_submission->user_id = $current_user->id;
             
-            $state = null;
-            foreach($flow as $struct) {
-                if ($submission->state == $struct->name) {
-                    $state = $struct;
-                    break;
-                }
-            }
-            $m = new \Mustache_Engine;
-
-
-            if(isset($state->onEnter)){
-                $this->executeTasks($state->onEnter,$request->get('_state'));
-            }
-
-            $submission->assignment_type = $state->assignment->type;
-            $submission->assignment_id = $m->render($state->assignment->id, $submission->data);
-
-            $submission->save();
-
-            $activity = new WorkflowActivityLog();
-            $activity->workflow_id = $myWorkflow->workflow_id;
-            $activity->workflow_instance_id = $myWorkflow->id;
-            $activity->user_id = $current_user->id;
-            $activity->data =  $submission->data;
-            $activity->end_state = $submission->state;
-            $activity->status = $submission->status;
-
-            $activity->workflow_submission_id = $submission->id;
-            $activity->action = 'submit';
-
-            $activity->save();
             
-            return $submission;
+            $request->merge(["action"=>"submit"]);
+            $workflow_submission->save();
+            return $this->action($workflow_submission, $request);
         }
         abort(404,'Workflow not found');
     }
@@ -118,17 +87,14 @@ class WorkflowSubmissionController extends Controller
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
         $m = new \Mustache_Engine;
 
-        $myWorkflow = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
-        $myWorkflow->findVersion();
-        $activity = new WorkflowActivityLog();
+        $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
+        $myWorkflowInstance->findVersion();
 
-        $activity->workflow_id = $myWorkflow->worfklow_id;
-        $activity->workflow_instance_id = $myWorkflow->id;
+        $start_state = $workflow_submission->state;
 
-        $activity->user_id = Auth::user()->id;
-        $activity->start_state = $workflow_submission->state;
 
-        $flow = json_decode($myWorkflow->version->code->flow);
+
+        $flow = json_decode($myWorkflowInstance->version->code->flow);
         $oldstate = null;
         foreach($flow  as $struct) {
             if ($workflow_submission->state == $struct->name) {
@@ -139,6 +105,8 @@ class WorkflowSubmissionController extends Controller
         if(isset($oldstate->onExit)){
             $this->executeTasks($oldstate->onExit, $workflow_submission->data);
         }
+
+        
         $state = null;
 
         foreach($oldstate->actions as $action){
@@ -162,28 +130,96 @@ class WorkflowSubmissionController extends Controller
                 }
             }
         }
+
+
         $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
-        $workflow_submission->assignment_type = $state->assignment->type;
-        $workflow_submission->assignment_id = $m->render($state->assignment->id, $workflow_submission->data);
+
+
+
+        $state_data = array();
+
+        //if url is defined on assignment get data and add it to the $state_data['assignment']
+        if(isset($workflow_submission->assignment->url)){
+            $assignment_data;
+            if(!isset($workflow_submission->assignment->data)){
+                $assignment_data = array();
+            }else{
+                foreach($workflow_submission->assignment->data as $key=>$value){
+                    $assignment_data->{$key} = $m->render($value, $state_data);
+                }
+            }
+            $httpHelper = new HTTPHelper();
+            if(isset($workflow_submission->assignment->endpoint)){
+                $endpoint = Endpoint::find((int)$workflow_submission->assignment->endpoint);
+                $url = $m->render($endpoint->config->url . $workflow_submission->assignment->url, $state_data);
+
+                if ($endpoint->type == 'http_no_auth') {
+                    $state_data['assignment'] = $httpHelper->http_fetch( $url,"GET",$assignment_data);
+                } else if ($endpoint->type == 'http_basic_auth') {
+                    $state_data['assignment'] = $httpHelper->http_fetch($url,"GET",$assignment_data,$endpoint->config->username, $endpoint->getSecret());
+                } else {
+                    abort(505,'Authentication Type Not Supported');
+                }
+            }else{
+                $state_data['assignment'] = $httpHelper->http_fetch(  $m->render($workflow_submission->assignment->url, $state_data),"GET", $assignment_data);
+            }
+
+        }
+        
+        $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
+
+        //Handle assignment ids - validate that they exist
+        $assignment_id = $m->render($state->assignment->id, $workflow_submission->data);
+
+        if($state->assignment->type == "user"){
+            $user = User::where("unique_id", '=', $assignment_id)->first();
+            if($user !== null) {
+                $workflow_submission->assignment_id = $user->id;
+            }else{
+                $workflow_submission->assignment_id = $assignment_id;
+            }
+        }else{
+            $group = Group::where("id",'=', $assignment_id)->first();
+            if($group !== null) {
+                $workflow_submission->assignment_id = $group->id;
+            }else{
+                $workflow_submission->assignment_id = $assignment_id;
+            }
+        }
 
         if(isset($state->onEnter)){
             $this->executeTasks($state->onEnter, $workflow_submission->data);
         }
 
         $workflow_submission->update();
-
-
-        $activity->end_state = $workflow_submission->state;
-        $activity->data = $request->get('_state');
-        $activity->comment = $request->get('comment');
-
-        $activity->workflow_submission_id = $workflow_submission->id;
-        $activity->action = $request->get('action');
-        $activity->status = $workflow_submission->status;
-        $activity->save();
         
-        return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id','=',$workflow_submission->id)->first();
+        $this->logAction($workflow_submission,$start_state,$request->get('action'),$request->get('comment'));
+
+        return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
+
+    private function performAction($workflow_submission, $action, $data){
+        
+    }
+    private function logAction($workflow_submission, $start_state, $action, $comment){
+        
+        $activity = new WorkflowActivityLog();
+        $activity->start_state = $start_state;
+
+        $activity->workflow_id = $workflow_submission->workflow_id;
+        $activity->workflow_instance_id = $workflow_submission->workflow_instance_id;
+        $activity->workflow_submission_id = $workflow_submission->id;
+        $activity->data =  $workflow_submission->data;
+        $activity->end_state = $workflow_submission->state;
+        $activity->status = $workflow_submission->status;
+        $activity->user_id = Auth::user()->id;
+        $activity->comment = $comment;
+        $activity->action = $action;
+        $activity->save();
+
+    }
+
+
 
     private function executeTasks($tasks, $data){
         $m = new \Mustache_Engine;
@@ -223,7 +259,7 @@ class WorkflowSubmissionController extends Controller
                         $endpoint = Endpoint::find((int)$task->endpoint);
                         $url = $m->render($endpoint->config->url . $task->url, $data);
                         if ($endpoint->type == 'http_no_auth') {
-                            $response = $httpHelper->http_fetch( $url,$verb,$task->data);
+                            $response = $httpHelper->http_fetch( $url,"POST",$task->data);
                         } else if ($endpoint->type == 'http_basic_auth') {
                             $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
                         } else {
@@ -279,23 +315,23 @@ class WorkflowSubmissionController extends Controller
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $myWorkflow = WorkflowInstance::with('workflow')
+            $myWorkflowInstance = WorkflowInstance::with('workflow')
                 ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->first();
 
-            if (is_null($myWorkflow)) { 
+            if (is_null($myWorkflowInstance)) { 
                 abort(404); 
             }
             
-            if($myWorkflow->public == 0) {
-                $this->authorize('fetch' ,$myWorkflow);
+            if($myWorkflowInstance->public == 0) {
+                $this->authorize('fetch' ,$myWorkflowInstance);
             }
             $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            $myWorkflow = WorkflowInstance::with('workflow')
+            $myWorkflowInstance = WorkflowInstance::with('workflow')
             ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->where('public','=',true)->first();
-            // $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
-            if (is_null($myWorkflow)) { 
+            // $myWorkflowInstance = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
+            if (is_null($myWorkflowInstance)) { 
                 $return = $this->customAuth->authenticate($request);
                 if(isset($return)){
                     return $return;
@@ -311,8 +347,8 @@ class WorkflowSubmissionController extends Controller
             abort(404); 
         }
 
-        $myWorkflow->findVersion();
-        // if($myWorkflow != null) {
+        $myWorkflowInstance->findVersion();
+        // if($myWorkflowInstance != null) {
             $template = new Templater();
             return $template->render([
                 'mygroups'=>$links,
@@ -320,10 +356,10 @@ class WorkflowSubmissionController extends Controller
                 'slug'=>'workflow',
                 'id'=>0,
                 'data'=>[],
-                // 'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
-                'config'=>array("sections"=>[[array("title"=>$myWorkflow->name,"data"=>$workflow_submission->data,"workflow_id"=>$myWorkflow->id,"widgetType"=>"Workflow","container"=>true)]],"layout"=>"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div>"),
+                // 'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
+                'config'=>array("sections"=>[[array("title"=>$myWorkflowInstance->name,"data"=>$workflow_submission->data,"workflow_id"=>$myWorkflowInstance->id,"widgetType"=>"Workflow","container"=>true)]],"layout"=>"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div>"),
                 
-                // json_decode('{"sections":[[],[{"title":"'.$myWorkflow->name.'","workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
+                // json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],
@@ -362,7 +398,7 @@ class WorkflowSubmissionController extends Controller
         }
 
 
-        // if($myWorkflow != null) {
+        // if($myWorkflowInstance != null) {
             $template = new Templater();
             return $template->render([
                 'mygroups'=>$links,

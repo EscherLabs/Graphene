@@ -102,16 +102,6 @@ class UserController extends Controller
         return $results;
     }
 
-    // public function find($search)
-    // {   
-    //     $users = User::where('unique_id', '=', $search)->get();
-    //     if(!count($users)){
-    //         return $this->search($search);
-    //     }else{
-    //         return $users;
-    //     }
-    // }
-
     public function show(User $user)
     {
         return $user;
