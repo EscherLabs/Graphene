@@ -83,11 +83,13 @@
     </div> -->
   </div>
   <div role="tabpanel" class="tab-pane" id="options">
-          <div class="col-sm-8">
-            <div class="options"></div>
-          </div>
-          <div class="col-sm-4">
+  <div class="options" style="width:0;display:none"></div>
+
+          <div class="col-sm-6">
+            <div class="btn btn-success pull-right" style="margin-top:15px" id="add-state" ><i class="fa fa-plus"></i> Add</div>
             <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
+          </div>
+          <div class="col-sm-6" id="flow-form">
           </div>
         </div>
   <div role="tabpanel" class="tab-pane" id="resources">

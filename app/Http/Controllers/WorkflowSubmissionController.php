@@ -76,8 +76,6 @@ class WorkflowSubmissionController extends Controller
             $workflow_submission->state = $myWorkflowInstance->configuration->initial;
             $workflow_submission->user_id = $current_user->id;
             
-            
-            $request->merge(["action"=>"submit"]);
             $workflow_submission->save();
             return $this->action($workflow_submission, $request);
         }
@@ -91,8 +89,6 @@ class WorkflowSubmissionController extends Controller
         $myWorkflowInstance->findVersion();
 
         $start_state = $workflow_submission->state;
-
-
 
         $flow = json_decode($myWorkflowInstance->version->code->flow);
         $oldstate = null;
@@ -131,12 +127,19 @@ class WorkflowSubmissionController extends Controller
             }
         }
 
-
         $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
 
-
-
         $state_data = array();
+        $state_data['actor'] = array('first_name'=>Auth::user()->first_name,'last_name'=>Auth::user()->first_name,'email'=>Auth::user()->email,'unique_id'=>Auth::user()->unique_id) ;
+        $owner = User::find($workflow_submission->user_id);
+        $state_data['owner'] = array('first_name'=>$owner->first_name,'last_name'=>$owner->first_name,'email'=>$owner->email,'unique_id'=>$owner->unique_id) ;
+        $state_data['action'] = $request->get('action');
+
+        $state_data['config'] = array();
+        foreach($myWorkflowInstance->configuration->resources as $resource){
+            // switch($resource->type)
+            $state_data['config']{$resource->name} = $resource->value;
+        }
 
         //if url is defined on assignment get data and add it to the $state_data['assignment']
         if(isset($workflow_submission->assignment->url)){
@@ -163,7 +166,6 @@ class WorkflowSubmissionController extends Controller
             }else{
                 $state_data['assignment'] = $httpHelper->http_fetch(  $m->render($workflow_submission->assignment->url, $state_data),"GET", $assignment_data);
             }
-
         }
         
         $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
@@ -193,14 +195,32 @@ class WorkflowSubmissionController extends Controller
 
         $workflow_submission->update();
         
-        $this->logAction($workflow_submission,$start_state,$request->get('action'),$request->get('comment'));
+        $this->logAction($workflow_submission,$start_state,$state_data['action'],$request->get('comment'));
+
+
+        
+        //Email owner
+        $content = "Workflow task taken on workflow you own";
+        $subject = 'Workflows | You got a Workflow Email';
+        $to = $state_data['owner']['email'];
+        Mail::raw( $content, function($message) use($to, $subject) { 
+            $message->to($to);
+            $message->subject($subject); 
+        });
+
+        //Email actor
+        $content = "Workflow task taken by you";
+        $subject = 'Workflows | You got a Workflow Email';
+        $to = $state_data['actor']['email'];
+        Mail::raw( $content, function($message) use($to, $subject) { 
+            $message->to($to);
+            $message->subject($subject); 
+        });
+        
 
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
 
-    private function performAction($workflow_submission, $action, $data){
-        
-    }
     private function logAction($workflow_submission, $start_state, $action, $comment){
         
         $activity = new WorkflowActivityLog();

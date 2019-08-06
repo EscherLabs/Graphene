@@ -162,6 +162,16 @@ attributes = {};
 $('[href="/admin/workflows"]').parent().addClass('active');
 
 var root = '/api/workflows/';
+
+
+function setSize(){
+  var temp2= $(window).height() - $('.nav-tabs').offset().top -77;
+  var temp = $(window).height() - $('#flow-form').offset().top;
+  $('body').append('<style>#flow-form { height: '+temp+'px; }</style>')
+  $('body').append('<style>.ace_editor { height: '+temp2+'px; }</style>')
+}
+
+window.onresize = setSize;
 function load(workflow_version) {
 	$('.nav-tabs').stickyTabs();
   // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -175,11 +185,7 @@ function load(workflow_version) {
 
   $('#version').html((attributes.summary || 'Working Version'));
 
-
-
-  var temp = $(window).height() - $('.nav-tabs').offset().top -77;
-
-  $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
+  setSize();
 
   // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
   // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
@@ -302,40 +308,149 @@ function modalForm(form, name, onSave) {
 
 
 function createFlow() {
-    options = new gform({data:attributes.code,actions:[],fields:[
-      {name:"flow",label:false,type:'ace',mode:'ace/mode/javascript'}
-    ]},".options").on('change',function(e){
-      try{
-        var temp = _.map(JSON.parse(options.get().flow),function(item){
-          var temp = '\n'+item.name+'['+item.name+']';
-          var stuff = _.map(item.actions,function(i){
-            return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
-          })
-          return temp+stuff.join('')
-          // return '\n{{state}}[{{state}}] -->{{#action}}|{{action}}|{{/action}} {{target}}[{{target}}{{^target}}End{{/target}}]';
+    // options = new gform({data:attributes.code,actions:[],fields:[
+    //   {name:"flow",label:false,type:'ace',mode:'ace/mode/javascript'}
+    // ]},".options").on('change',function(e){
+    //   try{
+    //     var temp = _.map(JSON.parse(options.get().flow),function(item){
+    //       var temp = '\n'+item.name+'['+item.name+']';
+    //       var stuff = _.map(item.actions,function(i){
+    //         return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
+    //       })
+    //       return temp+stuff.join('')
+    //     })
+    //     myfunc('graph TB'+temp.join(''))
+    //   }catch(e){}
+    // })
+    // options.trigger('change')
+
+    try{
+      var temp = _.map(mappable,function(item){
+        var temp = '\n'+item.name+'['+item.name+']';
+        var stuff = _.map(item.actions,function(i){
+          return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
         })
-        myfunc('graph TB'+temp.join(''))
-      }catch(e){}
-    })
-    options.trigger('change')
-
-  //   cb.collections[0].load(temp.fields);
-  // }
+        return temp+stuff.join('')
+      })
+      myfunc('graph TB'+temp.join(''))
+    }catch(e){}
+    
 }
 
 
 
-var callback = function(e){
-debugger;
-}
+// var callback = function(e){
+// debugger;
+// }
 
-
+// debugger;
+mappable = JSON.parse(attributes.code.flow);
 createFlow();
-      
+
+
+
+
+function drawForm(name){
+
+
+  if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
+  flowForm = new gform({
+    actions:[],
+    legend:"State",
+    data: _.find(mappable,{name:name}),
+    fields:[
+      {name: "name", label: "Name"},
+      {type: "fieldset", name: "assignment", label: "Assignment", fields: [
+        {name: "type", label: "Type", type: "select", options: [
+          {value: "group", label: "Group"},
+          {value: "user", label: "User"},
+          {value: "url", label: "Url"}
+        ]},
+        _.extend({show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
+        _.extend({show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
+
+        {name: "id", label: 'ID (template)', type: "text", show: [{type: "matches", name: "type", value: "url"}]},
+        {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "matches", name: "type", value: "url"}]},
+
+        {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "matches", name: "type", value: "url"}]},
+      ]},
+      // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
+      {name: "onEnter", type: "fieldset", fields: taskForm, array: true},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+      // {name: "hasOnLeave", label: "Include Tasks On Leaving State", type: "switch"},
+      {name: "onLeave", type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+      {label:"<legend>Actions</legend>",type:"output",name:"actions_label", parse: false},
+      {
+        name: "actions", label: false, type: "fieldset", fields: [
+          {name: "label", label: "Label", columns: 6},
+          {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
+          {name: "type", label: "Type", type: "select", columns: 6, options:[
+            {value: "success", label: "Success"},
+            {value: "danger", label: "Danger"},
+            {value: "info", label: "Info"},
+            {value: "warning", label: "Warning"},
+            {value: "default", label: "Default"},
+            {value: "primary", label: "Primary"},
+            {value: "link", label: "Simple"}
+          ], show: [{type: "not_matches", name: "label", value: ""}]},
+          {name: "to", label: "To", columns: 6, type: "select", options: function(e){
+            return _.pluck(mappable, 'name');
+          }, show: [{type: "not_matches", name: "label", value: ""}]},
+          {name: "tasks", label: "Action Tasks", type: "fieldset", fields: taskForm, array: true}
+        ], array: true
+      }
+    ]
+  },'#flow-form').on('input',function(e){
+    mappable[_.findIndex(mappable,{name:e.form.options.data.name||e.form.toJSON().name})] = e.form.toJSON();
+    if(e.form.toJSON().name !== e.form.options.data.name){
+      e.form.options.data.name = e.form.toJSON().name;
+      _.each(mappable,function(state){
+        _.each(state.actions,function(action){
+          if(action.from == e.form.options.data.name){
+            action.from = e.form.toJSON().name
+          }
+          if(action.to == e.form.options.data.name){
+            action.to = e.form.toJSON().name
+          }
+        })
+      })
+    }
+    createFlow();
+  })
+
+}
+
+gform.collections.add('endpoints', _.where(attributes.code.resources, {type: "endpoint"}))
+var taskForm = [
+  {name: "task", label: "Task", columns:12, type: "select", options: [{value: "api", label: "API"}, {value: "email", label: "Email"}]},
+  {name: "subject", type:"text", label: "Subject", columns:12,show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "content", type:"textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'api'}]},
+  {name: "url", type: "url",columns:8,placeholder:8, label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
+  // {name:"data",}
+]
+var valueField = {columns:12,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
+
+
+$('#flow-preview').on('click','.nodes .node',function(e){
+
+  // console.log(e.currentTarget.id);
+
+  drawForm(e.currentTarget.id);
+})
+
+
+$('#add-state').on('click',function() {
+  mappable.push({name:"newState"});
+  drawForm('newState');
+
+})
+
+
+
 
 $('#save').on('click',function() {
 
-  var data = {code:options.get()};
+  var data = {code:{flow:JSON.stringify(mappable)}};
 
   if(true || !errorCount){
 

@@ -923,3 +923,19 @@ a.list-group-action {
 .control-group.success .combobox-container .caret {
   border-top-color: #468847;
 }
+
+#flow-preview foreignObject {
+  overflow: visible;
+}
+#flow-preview .edgeLabel{background:#F0F0F4}
+#flow-form {
+  background: #fff;
+  box-shadow: inset 2px 0px 1px #ccc;
+  overflow: scroll;
+  padding:25px;
+  margin-bottom: -20px;
+}
+fieldset fieldset {
+  margin-left: 30px !important;
+}
+

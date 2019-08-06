@@ -305,34 +305,41 @@ Cobler.types.Workflow = function(container){
         success  : function(data){
           loaded = data;
           this.container.elementOf(this).querySelector('.flow-title').innerText = data.workflow.name;
-          // debugger;
-          this.form = new gform(
-            {
-              "data":{_state:this.get().data},
-              "actions": [
-                {
-                  "type": "cancel",
-                  "name": "submitted",
-                  "action":"canceled",
-                  // "label": "<i class='fa fa-check'></i> Submit"
-                },
-                {
-                  "type": "save",
-                  "name": "submit",
-                  "label": "<i class='fa fa-check'></i> Submit"
-                },{
-                  "type": "hidden",
-                  "name": "_flowstate",
-                  "value":null
-                }
-              ],
-              "fields":[
-                  {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
-                }
-                  ]
-            }
+          var formSetup = {
+            "data":{_state:this.get().data},
+            "actions": [
+              {
+                "type": "cancel",
+                "name": "cancel",
+                "action":"canceled",
+                "label": "<i class='fa fa-times'></i> Clear"
+              },{
+                "type": "hidden",
+                "name": "_flowstate",
+                "value":data.configuration.initial
+              }
+            ],
+            "fields":[
+                {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
+              }
+                ]
+          }
+            _.each((_.find(JSON.parse(data.version.code.flow),{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
+              action.modifiers = 'btn btn-'+action.type;
+              action.action = 'save';
+              action.type = 'button';
+              formSetup.actions.push(action);
+              // return action;
+            });
+          
+
+          this.form = new gform(formSetup, '.g_'+get().guid);
+
+
+
+
             
-            ,'.g_'+get().guid);
+
             // gform.types.fieldset.edit.call(this.form.find('_state'),false)
 
           this.form.on('save',function(e){
@@ -341,12 +348,13 @@ Cobler.types.Workflow = function(container){
             gform.types.fieldset.edit.call(e.form.find('_state'),false)
             e.form.find('_state').el.style.opacity = .7
             gform.types.button.edit.call(e.field,false)
-
+            var data = e.form.toJSON();
+            data.action = e.field.name;
             $.ajax({
               url:'/api/workflow/'+group_id+'/'+this.get().workflow_id,
               dataType : 'json',
               type: 'POST',
-              data: e.form.toJSON(),
+              data: data,
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
@@ -463,8 +471,8 @@ Cobler.types.WorkflowStatus = function(container){
                   var getActions = function(item){
                     item.actions = (_.find(JSON.parse(item.workflow_version.code.flow),{name:item.state}) || {"actions": []}).actions;
                     item.updated_at = moment(item.updated_at).fromNow()
-
                   }
+
                   assignments.direct = _.each(assignments.direct, getActions)
                   assignments.group = _.each(assignments.group, getActions)
 
@@ -602,8 +610,6 @@ Cobler.types.WorkflowStatus = function(container){
                             })
                           }.bind(null,e)).on('canceled',function(eForm){
                             eForm.form.trigger('close')
-
-
                           }).modal();
                       }else{
 
@@ -629,10 +635,9 @@ Cobler.types.WorkflowStatus = function(container){
                                 "name": "_flowstate",
                                 "value":e.model.attributes.state
                               }
-
                             ],
                             "fields":[
-                              {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
+                              // {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
                               {"name":"comment","type":"textarea","length":255}
                             ]
                           }).on('save',function(e,eForm){
@@ -664,10 +669,7 @@ Cobler.types.WorkflowStatus = function(container){
 
                       }.bind(null,e)).on('canceled',function(eForm){
                         eForm.form.trigger('close')
-
-
                       }).modal();
-
 
                     }
 
@@ -686,7 +688,6 @@ Cobler.types.WorkflowStatus = function(container){
                         // {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"State",name:"state",template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
-
                         // {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
                         // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
@@ -695,7 +696,6 @@ Cobler.types.WorkflowStatus = function(container){
                     document.location = "/workflows/submission/"+e.model.attributes.id;
                   }).on('model:delete',function(e){
                   
-
                     $.ajax({
                       url:'/api/workflow/'+e.model.attributes.id,
                       dataType : 'json',
