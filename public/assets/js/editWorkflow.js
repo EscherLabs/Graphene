@@ -217,7 +217,13 @@ function load(workflow_version) {
       ]}
     ]}
   ]}
-  resources = new gform(r_options,'.resources');
+  resources = new gform(r_options,'.resources').on('input:type',function(e){
+    gform.collections.update('endpoints', _.where(e.form.get().resources, {type: "endpoint"}));
+  }).on('input:name',_.throttle(function(e){
+    if(e.field.parent.find('type').value == "endpoint"){
+      gform.collections.update('endpoints', _.where(e.form.get().resources, {type: "endpoint"}));
+    }
+  }));
 
 }
 
@@ -323,32 +329,28 @@ function createFlow() {
     //   }catch(e){}
     // })
     // options.trigger('change')
-
+//<span class="fa fa-plus"></span> 
     try{
-      var temp = _.map(mappable,function(item){
-        var temp = '\n'+item.name;
-        // temp+= '\nstyle '+item.name+' fill:#f9f,stroke:#333,stroke-width:4px';
-        if(item.status == "closed"){
-          temp+='('+item.name+')';
-          temp += '\nclass '+item.name+' cssClass';
-        }else{
-            temp+='['+item.name+']';
+      var graph = _.map(flow_states,function(state){
+        var graph = '\n'+state.name+'['+state.name+']';
+
+        if(state.status == "closed"){
+          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} cssClass', state);
         }
 
-        var stuff = _.map(item.actions,function(i){
-          // debugger;
-          var temp = '\n'+item.name;
-          if(item.status == "closed"){
-              temp+='('+item.name+')';
+        var stuff = _.map(state.actions,function(action){
+          var graph = '\n'+state.name;
+          if(state.status == "closed"){
+              graph+='('+state.name+')';
             }else{
-              temp+='['+item.name+']';
+              graph+='['+state.name+']';
             }
-          return temp+'-->|'+i.label+'|'+' '+i.to;
+          return graph+'-->|'+action.label+'|'+' '+action.to;
         })
-        return temp+stuff.join('')
+        return graph+stuff.join('')
       })
 
-      myfunc('graph TB'+''+temp.join(''))
+      myfunc('graph TB'+''+graph.join(''))
     }catch(e){}
     
 }
@@ -360,7 +362,7 @@ function createFlow() {
 // }
 
 // debugger;
-mappable = JSON.parse(attributes.code.flow);
+flow_states = JSON.parse(attributes.code.flow);
 createFlow();
 
 
@@ -370,11 +372,14 @@ function drawForm(name){
 
 
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
+  gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
+
   flowForm = new gform({
     actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'}],
     legend:"State",
-    data: _.find(mappable,{name:name}),
+    data: _.find(flow_states,{name:name}),
     fields:[
+      // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
       {name: "name", label: "Name"},
       {name: "status", label: "Status",type:"select",options:["open","closed"]},
       {type: "fieldset", name: "assignment", label: "Assignment", fields: [
@@ -410,16 +415,16 @@ function drawForm(name){
             {value: "link", label: "Simple"}
           ], show: [{type: "not_matches", name: "label", value: ""}]},
           {name: "to", label: "To", columns: 6, type: "select", options: function(e){
-            return _.pluck(mappable, 'name');
+            return _.pluck(flow_states, 'name');
           }, show: [{type: "not_matches", name: "label", value: ""}]},
           {name: "tasks", label: "Action Tasks", type: "fieldset", fields: taskForm, array: true}
         ], array: true
       }
     ]
-  },'#flow-form').on('input',function(e){
-    mappable[_.findIndex(mappable,{name:e.form.options.data.name||e.form.toJSON().name})] = e.form.toJSON();
+  },'#flow-form').on('change',function(e){
+    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.toJSON().name})] = e.form.toJSON();
     if(e.form.toJSON().name !== e.form.options.data.name){
-      _.each(mappable,function(state){
+      _.each(flow_states,function(state){
         _.each(state.actions,function(action){
           if(action.from == e.form.options.data.name){
             action.from = e.form.toJSON().name
@@ -432,19 +437,30 @@ function drawForm(name){
       e.form.options.data.name = e.form.toJSON().name;
 
     }
+    
     createFlow();
   }).on('delete',function(e){
-    debugger;
-        // mappable = 
-// mappable = _.compact(
-  mappable.splice(_.findIndex(mappable,{name:e.form.options.data.name||e.form.toJSON().name}),1)
-  // );
+        var removed = flow_states.splice(_.findIndex(flow_states,{name:e.form.options.data.name||e.form.toJSON().name}),1)
+        _.each(flow_states,function(state){
+          _.each(state.actions,function(action){
+            if(action.from == removed[0].name){
+              action.from = state.name
+            }
+            if(action.to == removed[0].name){
+              action.to = state.name
+            }
+          })
+        })
+        if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
+        gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
+
         createFlow();
   })
 
 }
 
 gform.collections.add('endpoints', _.where(attributes.code.resources, {type: "endpoint"}))
+gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "api", label: "API"}, {value: "email", label: "Email"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
@@ -467,9 +483,15 @@ $('#flow-preview').on('click','.nodes .node',function(e){
 
 
 $('#add-state').on('click',function() {
-  mappable.push({name:"newState"});
-  drawForm('newState');
+  i=0;
+  while(typeof _.find(flow_states,{name:gform.renderString("newState{{i}}",{i:i})}) !== 'undefined'){
+    i++;
+  }
+  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),actions:[{name:"newAction"}]});
+  drawForm(gform.renderString("newState{{i}}",{i:i}));
+  gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
+  createFlow();
 })
 
 
@@ -477,7 +499,7 @@ $('#add-state').on('click',function() {
 
 $('#save').on('click',function() {
 
-  var data = {code:{flow:JSON.stringify(mappable)}};
+  var data = {code:{flow:JSON.stringify(flow_states)}};
 
   if(true || !errorCount){
 
