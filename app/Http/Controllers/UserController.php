@@ -32,7 +32,7 @@ class UserController extends Controller
         return $users;
     }
 
-    public function search($search_string) {
+    public function search($search_string="") {
         $search_elements_parsed = preg_split('/[\s,]+/',strtolower($search_string));
         $search_elements = [];
         $nicknameLookup = new NicknameLookup();

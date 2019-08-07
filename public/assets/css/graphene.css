@@ -939,8 +939,16 @@ fieldset fieldset {
   margin-left: 30px !important;
 }
 
-.cssClass > rect{
+.nodes .node:hover{
+  cursor: pointer;
+}
+.closedClass > rect{
+  fill:#FFcccc !important;
+  /* stroke:#FF0000 !important; */
+  /*stroke-width:4px !important;;*/
+}
+.selectedClass > rect{
     /*fill:#FF0000 !important;*/
-    stroke:#FF0000 !important;
-    /*stroke-width:4px !important;;*/
+    stroke:#1166ff !important;
+    stroke-width:2px !important;;
 }

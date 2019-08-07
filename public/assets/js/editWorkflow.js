@@ -335,7 +335,7 @@ function createFlow() {
         var graph = '\n'+state.name+'['+state.name+']';
 
         if(state.status == "closed"){
-          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} cssClass', state);
+          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', state);
         }
 
         var stuff = _.map(state.actions,function(action){
@@ -349,6 +349,10 @@ function createFlow() {
         })
         return graph+stuff.join('')
       })
+      if(typeof flowForm !== 'undefined'){
+        graph.push('\nclass '+flowForm.get('name')+' selectedClass');
+      }  
+
 
       myfunc('graph TB'+''+graph.join(''))
     }catch(e){}
@@ -376,14 +380,19 @@ function drawForm(name){
 
   flowForm = new gform({
     actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'}],
-    legend:"State",
+    // legend:"State",
+    // sections:"tab",
+    // clear:true,
     data: _.find(flow_states,{name:name}),
+    
     fields:[
       // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
-      {name: "name", label: "Name"},
-      {name: "status", label: "Status",type:"select",options:["open","closed"]},
-      {type: "fieldset", name: "assignment", label: "Assignment", fields: [
-        {name: "type", label: "Type", type: "select", options: [
+      {name: "name",inline:false, label: "Name"},
+      {name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
+      {label:"<legend>Assignment</legend>",type:"output",name:"assignment_label", parse: false},
+
+      {type: "fieldset", name: "assignment", label: false, fields: [
+        {name: "type",inline:false, label: "Type", type: "select", options: [
           {value: "group", label: "Group"},
           {value: "user", label: "User"},
           {value: "url", label: "Url"}
@@ -391,15 +400,18 @@ function drawForm(name){
         _.extend({show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
         _.extend({show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
-        {name: "id", label: 'ID (template)', type: "text", show: [{type: "matches", name: "type", value: "url"}]},
+        {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "matches", name: "type", value: "url"}]},
         {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "matches", name: "type", value: "url"}]},
 
         {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "matches", name: "type", value: "url"}]},
       ]},
       // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
-      {name: "onEnter", type: "fieldset", fields: taskForm, array: true},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+      {label:"<legend>onEnter</legend>",type:"output",name:"enter_label", parse: false},
+
+      {name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: true},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
       // {name: "hasOnLeave", label: "Include Tasks On Leaving State", type: "switch"},
-      {name: "onLeave", type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+      {label:"<legend>onLeave</legend>",type:"output",name:"leave_label", parse: false},
+      {name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
       {label:"<legend>Actions</legend>",type:"output",name:"actions_label", parse: false},
       {
         name: "actions", label: false, type: "fieldset", fields: [
@@ -414,33 +426,55 @@ function drawForm(name){
             {value: "primary", label: "Primary"},
             {value: "link", label: "Simple"}
           ], show: [{type: "not_matches", name: "label", value: ""}]},
-          {name: "to", label: "To", columns: 6, type: "select", options: function(e){
-            return _.pluck(flow_states, 'name');
-          }, show: [{type: "not_matches", name: "label", value: ""}]},
+          {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates', show: [{type: "not_matches", name: "label", value: ""}]},
           {name: "tasks", label: "Action Tasks", type: "fieldset", fields: taskForm, array: true}
         ], array: true
       }
     ]
-  },'#flow-form').on('change',function(e){
-    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.toJSON().name})] = e.form.toJSON();
-    if(e.form.toJSON().name !== e.form.options.data.name){
+  },'#flow-form').on('input', function(e){
+    // debugger;
+    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')})] = e.form.toJSON();
+
+    gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
+
+    if(e.form.get('name') != e.form.options.data.name){
       _.each(flow_states,function(state){
-        _.each(state.actions,function(action){
-          if(action.from == e.form.options.data.name){
-            action.from = e.form.toJSON().name
-          }
+        _.each(state.actions,function(action,i){
+          // if(action.from == e.form.options.data.name){
+          //   action.from = e.form.toJSON().name
+          // }
           if(action.to == e.form.options.data.name){
-            action.to = e.form.toJSON().name
+            action.to = e.form.get('name');
+            if(e.form.get('name') == state.name){
+              _.where(e.form.fields,{name:'actions'})[i].find('to').set(action.to)
+            }
           }
         })
       })
-      e.form.options.data.name = e.form.toJSON().name;
 
     }
+
+    e.form.options.data.name = e.form.get('name');
+
+    // if(e.form.get('name') !== e.form.options.data.name){
+    //   _.each(flow_states,function(state){
+    //     _.each(state.actions,function(action){
+    //       // if(action.from == e.form.options.data.name){
+    //       //   action.from = e.form.toJSON().name
+    //       // }
+    //       if(action.to == e.form.options.data.name){
+    //         action.to = e.form.get('name')
+    //       }
+          
+    //     })
+    //   })
+    //   e.form.options.data.name = e.form.get('name');
+
+    // }
     
     createFlow();
   }).on('delete',function(e){
-        var removed = flow_states.splice(_.findIndex(flow_states,{name:e.form.options.data.name||e.form.toJSON().name}),1)
+        var removed = flow_states.splice(_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')}),1)
         _.each(flow_states,function(state){
           _.each(state.actions,function(action){
             if(action.from == removed[0].name){
@@ -479,6 +513,8 @@ $('#flow-preview').on('click','.nodes .node',function(e){
   // console.log(e.currentTarget.id);
 
   drawForm(e.currentTarget.id);
+  createFlow();
+
 })
 
 
