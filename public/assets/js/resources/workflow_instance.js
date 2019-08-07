@@ -86,7 +86,7 @@ $.ajax({
 				// 	}.bind({resources:data.resources}))
 				// 	// var attributes = $.extend(true, [], data.resources,data.workflow.code.resources);
 				var valueField = {columns:8,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
-
+				data.configuration = data.configuration||{}
 				r_options = {data:{initial:data.configuration.initial,resources:_.map(data.workflow.code.resources,function(resource){
 					var r = _.find(data.configuration.resources,{name:resource.name});
 					if(typeof r !== 'undefined' && r.type == resource.type){

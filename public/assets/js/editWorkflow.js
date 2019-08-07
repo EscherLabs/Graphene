@@ -326,13 +326,29 @@ function createFlow() {
 
     try{
       var temp = _.map(mappable,function(item){
-        var temp = '\n'+item.name+'['+item.name+']';
+        var temp = '\n'+item.name;
+        // temp+= '\nstyle '+item.name+' fill:#f9f,stroke:#333,stroke-width:4px';
+        if(item.status == "closed"){
+          temp+='('+item.name+')';
+          temp += '\nclass '+item.name+' cssClass';
+        }else{
+            temp+='['+item.name+']';
+        }
+
         var stuff = _.map(item.actions,function(i){
-          return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
+          // debugger;
+          var temp = '\n'+item.name;
+          if(item.status == "closed"){
+              temp+='('+item.name+')';
+            }else{
+              temp+='['+item.name+']';
+            }
+          return temp+'-->|'+i.label+'|'+' '+i.to;
         })
         return temp+stuff.join('')
       })
-      myfunc('graph TB'+temp.join(''))
+
+      myfunc('graph TB'+''+temp.join(''))
     }catch(e){}
     
 }
@@ -355,11 +371,12 @@ function drawForm(name){
 
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   flowForm = new gform({
-    actions:[],
+    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'}],
     legend:"State",
     data: _.find(mappable,{name:name}),
     fields:[
       {name: "name", label: "Name"},
+      {name: "status", label: "Status",type:"select",options:["open","closed"]},
       {type: "fieldset", name: "assignment", label: "Assignment", fields: [
         {name: "type", label: "Type", type: "select", options: [
           {value: "group", label: "Group"},
@@ -402,7 +419,6 @@ function drawForm(name){
   },'#flow-form').on('input',function(e){
     mappable[_.findIndex(mappable,{name:e.form.options.data.name||e.form.toJSON().name})] = e.form.toJSON();
     if(e.form.toJSON().name !== e.form.options.data.name){
-      e.form.options.data.name = e.form.toJSON().name;
       _.each(mappable,function(state){
         _.each(state.actions,function(action){
           if(action.from == e.form.options.data.name){
@@ -413,19 +429,30 @@ function drawForm(name){
           }
         })
       })
+      e.form.options.data.name = e.form.toJSON().name;
+
     }
     createFlow();
+  }).on('delete',function(e){
+    debugger;
+        // mappable = 
+// mappable = _.compact(
+  mappable.splice(_.findIndex(mappable,{name:e.form.options.data.name||e.form.toJSON().name}),1)
+  // );
+        createFlow();
   })
 
 }
 
 gform.collections.add('endpoints', _.where(attributes.code.resources, {type: "endpoint"}))
 var taskForm = [
-  {name: "task", label: "Task", columns:12, type: "select", options: [{value: "api", label: "API"}, {value: "email", label: "Email"}]},
-  {name: "subject", type:"text", label: "Subject", columns:12,show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "task", label: "Task", type: "select", options: [{value: "api", label: "API"}, {value: "email", label: "Email"}]},
+  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
+
+  {name: "subject", type:"text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type:"textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'api'}]},
-  {name: "url", type: "url",columns:8,placeholder:8, label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
+  {name: "url", type: "url",columns:8,placeholder:"\\", label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
   // {name:"data",}
 ]
 var valueField = {columns:12,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}

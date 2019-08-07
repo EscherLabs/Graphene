@@ -119,7 +119,8 @@
   <script type="text/javascript" src="/assets/js/vendor/mermaid.min.js"></script>
   <script>
     mermaid.initialize({
-        startOnLoad:false
+        startOnLoad:false,
+        securityLevel: 'loose'
     });
 
     var insertSvg = function(svgCode, bindFunctions){
@@ -127,6 +128,8 @@
     };
     myfunc=function(e){
       graph = mermaid.mermaidAPI.render(gform.getUID(), e, insertSvg);
+
+      
     }
 </script>
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->

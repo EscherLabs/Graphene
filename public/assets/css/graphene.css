@@ -939,3 +939,8 @@ fieldset fieldset {
   margin-left: 30px !important;
 }
 
+.cssClass > rect{
+    /*fill:#FF0000 !important;*/
+    stroke:#FF0000 !important;
+    /*stroke-width:4px !important;;*/
+}
