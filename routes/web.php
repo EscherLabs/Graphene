@@ -30,9 +30,7 @@ Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
 
 Route::get('/workflows','WorkflowController@summary');
-Route::get('/workflows/submission/{workflow_submission}','WorkflowSubmissionController@view');
-Route::get('/workflows/report/{workflow_instance}/{workflow_submission}', 'WorkflowSubmissionController@report');
-Route::get('/workflows/report/{workflow_instance}', 'WorkflowInstanceController@report');
+Route::get('/workflows/report/{workflow_submission}', 'WorkflowSubmissionController@report');
 
 
 Route::get('/setup',function(){
@@ -75,7 +73,10 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
   Route::get('/apps/{app}/developers', 'AdminController@appdevelopers')->middleware('can:list_developers,app');
   Route::get('/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
   Route::get('/workflows/{workflow}/developers', 'AdminController@workflowdevelopers')->middleware('can:list_developers,workflow');
+
+  Route::get('/workflowinstances/{workflow_instance}/report', 'WorkflowInstanceController@report');  
   Route::get('/workflowinstances/{workflow_instance}', 'WorkflowInstanceController@admin')->middleware('can:get,workflow_instance');
+
 
   Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
 });

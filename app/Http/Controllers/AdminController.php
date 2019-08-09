@@ -139,7 +139,7 @@ class AdminController extends Controller
         }));
 
         $user->load(array('workflows'=>function($query){
-            
+            $query->with(array("workflow_instances"=>function($query){},"user"));
         }));
         return view('adminDashboard', ['user'=>$user]);
         // return $user;

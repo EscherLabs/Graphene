@@ -21,6 +21,7 @@ use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
+use \Ds\Vector;
 
 class WorkflowSubmissionController extends Controller
 {
@@ -322,72 +323,72 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission)->orderBy('updated_at','DESC')->get();
+        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission)->with('user')->orderBy('updated_at','DESC')->get();
     }
 
-    public function view(WorkflowSubmission $workflow_submission, Request $request) {
+    // public function view(WorkflowSubmission $workflow_submission, Request $request) {
         
-        if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        } else {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        }
+    //     if (Auth::user()->site_developer || Auth::user()->site_admin) {
+    //         $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
+    //     } else {
+    //         $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
+    //     }
 
-        if (Auth::check()) { /* User is Authenticated */
-            $current_user = Auth::user();
-            $myWorkflowInstance = WorkflowInstance::with('workflow')
-                ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->first();
+    //     if (Auth::check()) { /* User is Authenticated */
+    //         $current_user = Auth::user();
+    //         $myWorkflowInstance = WorkflowInstance::with('workflow')
+    //             ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->first();
 
-            if (is_null($myWorkflowInstance)) { 
-                abort(404); 
-            }
+    //         if (is_null($myWorkflowInstance)) { 
+    //             abort(404); 
+    //         }
             
-            if($myWorkflowInstance->public == 0) {
-                $this->authorize('fetch' ,$myWorkflowInstance);
-            }
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        } else { /* User is not Authenticated */
-            $current_user = new User;
-            $myWorkflowInstance = WorkflowInstance::with('workflow')
-            ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->where('public','=',true)->first();
-            // $myWorkflowInstance = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
-            if (is_null($myWorkflowInstance)) { 
-                $return = $this->customAuth->authenticate($request);
-                if(isset($return)){
-                    return $return;
-                }
-            }
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        }
+    //         if($myWorkflowInstance->public == 0) {
+    //             $this->authorize('fetch' ,$myWorkflowInstance);
+    //         }
+    //         $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+    //     } else { /* User is not Authenticated */
+    //         $current_user = new User;
+    //         $myWorkflowInstance = WorkflowInstance::with('workflow')
+    //         ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->where('public','=',true)->first();
+    //         // $myWorkflowInstance = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
+    //         if (is_null($myWorkflowInstance)) { 
+    //             $return = $this->customAuth->authenticate($request);
+    //             if(isset($return)){
+    //                 return $return;
+    //             }
+    //         }
+    //         $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+    //     }
 
-        if (Auth::check()) { /* User is Authenticated */
-            $current_user = Auth::user();
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        } else{
-            abort(404); 
-        }
+    //     if (Auth::check()) { /* User is Authenticated */
+    //         $current_user = Auth::user();
+    //         $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+    //     } else{
+    //         abort(404); 
+    //     }
 
-        $myWorkflowInstance->findVersion();
-        // if($myWorkflowInstance != null) {
-            $template = new Templater();
-            return $template->render([
-                'mygroups'=>$links,
-                'name'=>'workflow',
-                'slug'=>'workflow',
-                'id'=>0,
-                'data'=>[],
-                // 'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
-                'config'=>array("sections"=>[[array("title"=>$myWorkflowInstance->name,"data"=>$workflow_submission->data,"workflow_id"=>$myWorkflowInstance->id,"widgetType"=>"Workflow","container"=>true)]],"layout"=>"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div>"),
+    //     $myWorkflowInstance->findVersion();
+    //     // if($myWorkflowInstance != null) {
+    //         $template = new Templater();
+    //         return $template->render([
+    //             'mygroups'=>$links,
+    //             'name'=>'workflow',
+    //             'slug'=>'workflow',
+    //             'id'=>0,
+    //             'data'=>[],
+    //             // 'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
+    //             'config'=>array("sections"=>[[array("title"=>$myWorkflowInstance->name,"data"=>$workflow_submission->data,"workflow_id"=>$myWorkflowInstance->id,"widgetType"=>"Workflow","container"=>true)]],"layout"=>"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div>"),
                 
-                // json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
-                // 'group'=>(Object)array("id"=>"0"),
-                'scripts'=>[],
-                'styles'=>[],
-                'template'=>"main",
-                'apps'=>(Object)[],
-                'resource'=>'flow'
-            ]);
-    }
+    //             // json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
+    //             // 'group'=>(Object)array("id"=>"0"),
+    //             'scripts'=>[],
+    //             'styles'=>[],
+    //             'template'=>"main",
+    //             'apps'=>(Object)[],
+    //             'resource'=>'flow'
+    //         ]);
+    // }
 
     public function status(WorkflowSubmission $workflow_submission){
         return $workflow_submission;
@@ -400,7 +401,7 @@ class WorkflowSubmissionController extends Controller
     }
 
 
-    public function report(WorkflowInstance $workflow_instance, $workflow_submission_id,Request $request) {
+    public function report($workflow_submission_id,Request $request) {
         $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission_id)->with('user')->with('workflowVersion')->first();
         if (Auth::user()->site_developer || Auth::user()->site_admin) {
             $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
@@ -416,8 +417,7 @@ class WorkflowSubmissionController extends Controller
             abort(404); 
 
         }
-
-
+        
         // if($myWorkflowInstance != null) {
             $template = new Templater();
             return $template->render([
@@ -426,7 +426,8 @@ class WorkflowSubmissionController extends Controller
                 'slug'=>'workflow',
                 'id'=>0,
                 'data'=>[],
-                'config'=>json_decode('{"sections":[[{"title":"Workflow Submission Log","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}],[{"title":"Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
+                // 'config'=>json_decode('{"sections":[[{"title":"'.$workflow_instance->name.' ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
+                'config'=>json_decode('{"sections":[[{"title":"TItle here ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],

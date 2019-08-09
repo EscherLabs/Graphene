@@ -942,6 +942,10 @@ fieldset fieldset {
 .nodes .node:hover{
   cursor: pointer;
 }
+.node rect{
+  fill: #f9f9f9 !important;
+  stroke: #888 !important;
+}
 .closedClass > rect{
   fill:#FFcccc !important;
   /* stroke:#FF0000 !important; */
@@ -950,5 +954,17 @@ fieldset fieldset {
 .selectedClass > rect{
     /*fill:#FF0000 !important;*/
     stroke:#1166ff !important;
-    stroke-width:2px !important;;
+    stroke:#68b767 !important;
+
+    stroke-width:2px !important;
+}
+.closedClass > rect{
+  fill:#FFcccc !important;
+  stroke:#FF8888 !important;
+
+  /* stroke:#FF0000 !important; */
+  /*stroke-width:4px !important;;*/
+}
+.selectedClass.closedClass > rect{
+stroke:#FF0000 !important;
 }

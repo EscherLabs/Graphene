@@ -16,4 +16,7 @@ class WorkflowActivityLog extends Model
     public function workflowSubmission() {
         return $this->belongsTo(WorkflowSubmission::class);
     }
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

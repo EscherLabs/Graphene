@@ -30,7 +30,7 @@ class Templater {
         $this->set_defaults($data);
 
         /* Build / Cleanup "mygroups" object */
-        $content_types = ['pages','app_instances'];
+        $content_types = ['pages','app_instances','workflow_instances'];
         foreach($data['mygroups'] as $index => $mygroup) {
             $has_content = false;
             foreach($content_types as $content_type) {

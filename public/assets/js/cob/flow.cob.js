@@ -358,7 +358,7 @@ Cobler.types.Workflow = function(container){
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
-                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/submission/{{id}}">here</a>',data)
+                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/report/{{id}}">here</a>',data)
                 // gform.types.fieldset.edit.call(e.form.find('_state'),true)
                 // gform.types.button.edit.call(e.form.find('submit'),true)
                 // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
@@ -547,7 +547,7 @@ Cobler.types.WorkflowStatus = function(container){
                       ]
                     }
                   }).on('click',function(e){
-                    document.location = "/workflows/submission/"+e.model.attributes.id;
+                    document.location = "/workflows/report/"+e.model.attributes.id;
                   }).on("*",function(e){
                     if(e.event.startsWith("click_") && !e.model.waiting()){
                       e.model.waiting(true);
@@ -642,8 +642,6 @@ Cobler.types.WorkflowStatus = function(container){
                             ]
                           }).on('save',function(e,eForm){
 
-
-
                             e.model.waiting(true);
 
                             eForm.form.trigger('close')
@@ -693,7 +691,7 @@ Cobler.types.WorkflowStatus = function(container){
                       ]
                     }
                   }).on('click',function(e){
-                    document.location = "/workflows/submission/"+e.model.attributes.id;
+                    document.location = "/workflows/report/"+e.model.attributes.id;
                   }).on('model:delete',function(e){
                   
                     $.ajax({
@@ -900,7 +898,7 @@ Cobler.types.WorkflowReport = function(container){
           })
 
           new GrapheneDataGrid({schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"}],data:data,actions:[],upload:false,el:this.container.elementOf(this).querySelector('.collapsible')}).on('click',function(e){
-            document.location = "/workflows/report/"+this.get().options.id+'/'+e.model.attributes.id;
+            document.location = "/workflows/report/"+e.model.attributes.id;
           }.bind(this))
           
           // .innerHTML = gform.renderString(` 
@@ -913,6 +911,9 @@ Cobler.types.WorkflowReport = function(container){
 		}
 	}
 }
+
+
+
 
 
 Cobler.types.WorkflowSubmissionReport = function(container){
@@ -937,29 +938,42 @@ Cobler.types.WorkflowSubmissionReport = function(container){
       // temp.id = this.id;
       // return templates['widgets_microapp'].render(temp, templates);
       return gform.renderString(`
-      <div class="btn-group pull-right slice-actions parent-hover">
-	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+
+
+        <div class="row">
+
+          <div class=" col-sm-4" ></div>
+
+          <div class="list col-sm-4" style="margin: -15px 0 -15px -15px;background:#e8e8e8;padding:15px;position: fixed;overflow: scroll;top: 111px;bottom: 0;">
+          <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+          </div>
+          <div class="col-sm-8" style="top:-15px">
+          <div class="panel panel-default">
+          <div class="panel-heading" style="position:relative">
+      <h3 class="panel-title">{{title}}</h3>
+    </div>
+    <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
+    <div class="form" style="padding-right: 50px;padding-left: 35px;">
 </div>
 
-      {{#container}}
-      <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-</div>
-      {{>widgets__header}}
-        <div class="collapsible panel-body">
-        
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}">
-        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+            </div>
+            </div>
+          </div>
         </div>
-        </div>
-      </div>
-      {{/container}}
-      {{^container}}
-        <div class="collapsible">
-        </div>
-      {{/container}}`,temp);
+        <style>
+        .list-group-item.active{
+          background-color:#606971
+        }
+        .list-group-item:hover{
+          background-color:#f0f0f0;
+          cursor:pointer
+        }
+        .list-group-item.active:hover{
+          background-color:#606971
+        }
+        </style>
+
+`,temp);
 
 		},
 		edit: berryEditor.call(this, container),
@@ -994,19 +1008,27 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               fromNow:moment(item.updated_at).fromNow()
             }
           })          
-          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-          <label for="link_filter" class="sr-only">Filter Report</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+          data = _.map(data, function(log){
+            log.closed = log.status == 'closed';
+            log.open = log.status == 'open';
+            return log;
+          })
+          this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(` 
           <ul class="list-group available_workflow" style="margin:10px 0 0">
-          {{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h4>Action: <div class="btn">{{action}}</div><span class="pull-right">({{updated_at.fromNow}})</span></h4></div>
-          Transition: <span class="label label-default">{{start_state}}</span> <i class="fa fa-arrow-right text-muted"></i> <span class="label label-success">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span></div>{{/data}}
+          {{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right">({{updated_at.fromNow}})</span></h5></div>
+          <span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span></div>{{/data}}
           </ul>`, {data:data});
 
           $('.filterable').on('click',function(e){
             var form = _.extend(JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content),{data:_.find(this.data,{id:parseInt(e.currentTarget.dataset.id)}).data});
             form.actions = [];
-            form.legend = "State"
-            new gform(form).modal()
+            // form.legend = "State"
+            $(e.currentTarget.parentElement).find('.active').removeClass('active')
+            $(e.currentTarget).addClass('active')
+            new gform(form,e.currentTarget.parentElement.parentElement.nextElementSibling.querySelector('.form'))
           }.bind({data:data}))
+          $('.filterable').first().click();
+
           }.bind(this)
       })
 		}

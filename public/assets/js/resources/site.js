@@ -86,7 +86,7 @@ $.ajax({
 		],attributes:{additional:arr}, actions:false, name:'cas_data_map_additional'})
 
 		$('#proxyserver_config .col-sm-9').berry({fields: [
-			{label: 'ProxyServer Config', name:'proxyserver_config', fields:{
+			{label: 'API Gateway Config', name:'proxyserver_config', fields:{
 				config:{
 					label: false, name:'config',
 					multiple:{

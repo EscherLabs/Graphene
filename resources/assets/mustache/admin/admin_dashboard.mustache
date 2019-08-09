@@ -298,12 +298,99 @@
         {{#workflows}}
 
         <div class="filterable grid-item" style="display:inline-block;">
-        		<div class="panel panel-default" style="border-top: solid 3px #4d87b9;">
+        		<div class="panel panel-default" style="border-top: solid 3px #9ac337;">
               <div class="avatar" title="{{user.first_name}} {{user.last_name}}" data-toggle="tooltip" data-placement="top" style="background:{{user.unknown}}">{{user.initials}}</div>
               <a href="/admin/workflows/{{id}}" class="parent-hover pull-right" style="margin:5px 10px;color:#aaa"><i class="fa fa-pencil"></i></a>
 
             <div class="" style="margin-top:5px;font-weight:400;font-size:large;color:#777;text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">{{name}}</div>
               <div class="label" style="background:#8bb4da; font-weight:normal"><i class="fa fa-clock-o"></i> Updated: <time class="timeago" datetime="{{updated_at}}" title="{{updated_at}}"></time></div>
+
+
+              <div class="panel-content" style="padding:15px 10px 10px">
+                <p style="color: #666;font-size: small;">{{description}}</p>
+                  {{#workflow_instances}}
+                  <div class="appInstance">
+                 
+                    <div class="dropdown parent-hover pull-right">
+                      <a id="dLabel" href="javascript:void(0);" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i style="padding: 5px 10px;" class="fa fa-ellipsis-v"></i>
+                        {{! <span class="caret"></span> }}
+                      </a>
+                      
+                      <ul class="dropdown-menu" aria-labelledby="dLabel">
+                        <li><a target="_blank" href="/workflow/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i> Visit</a></li>
+                        <li><a target="_blank" href="/admin/workflowinstances/{{id}}/report"><i class="fa fa-report"></i> Report</a></li>
+                        
+                        <li><a href="/admin/workflowinstances/{{id}}"><i class="fa fa-pencil"></i> Edit</a></li>
+                      </ul>
+                    </div>
+
+                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
+                      <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
+                      {{#unlisted}}
+                      <i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
+                      {{/unlisted}}
+                      {{^unlisted}}
+                      <i title="Listed" data-toggle="tooltip" data-placement="top" class="fa fa-link"></i>
+                      {{/unlisted}}
+                      {{#public}}
+                      <i title="Public" data-toggle="tooltip" data-placement="top" class="text-success fa fa-eye"></i>
+                      {{/public}}
+                      {{^public}}
+                      <i title="Private" data-toggle="tooltip" data-placement="top" class="text-danger fa fa-eye-slash"></i>
+                      {{/public}}
+
+                      {{#composite_limit}}
+                      <i title="Limited To Composites" data-toggle="tooltip" data-placement="top"  class="fa fa-user"></i>
+                      {{/composite_limit}}
+                      {{^composite_limit}}
+                      <i title="Open to Group Members" data-toggle="tooltip" data-placement="top"  class="fa fa-users"></i>
+                      {{/composite_limit}}
+
+                      {{^hidden_xs}}
+                      <i class="pull-right fa fa-phone"></i>
+                      {{/hidden_xs}}
+                      {{^hidden_sm}}
+                      <i class="pull-right fa fa-mobile"></i>
+                      {{/hidden_sm}}
+                      {{^hidden_md}}
+                      <i class="pull-right fa fa-desktop"></i>
+                      {{/hidden_md}}
+
+                      <!--i class="pull-right device_{{device}}"></i-->
+
+
+                      </div>
+                    </a>
+                    <div class="collapse" id="collapseExample{{id}}">
+
+                      <div style="background: #ffffff;padding: 10px 15px 5px;overflow:scroll">
+                      <h5>{{version.summary}}</h5>
+                      <p class="text-muted">{{version.description}}</p>
+
+                        {{#resources.length}}
+                        <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+                        <table>
+                        <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+                        {{#resources}}
+                        <tr>
+                        <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
+                        </tr>
+                        {{/resources}} 
+                      </table>
+                        {{/resources.length}}                    
+                      </div>
+                    </div>
+                  
+                  </div>
+                    
+                  {{/workflow_instances}}
+
+              </div>
+
+
+
+
 
 				    </div>
         </div>

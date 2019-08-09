@@ -58,7 +58,7 @@ $.ajax({
 			}},
 			{'name': 'report', 'label': '<i class="fa fa-cogs"></i> Report', callback: function(model){
 
-				document.location = "/workflows/report/"+model.attributes.id;
+				document.location = "/admin/workflowinstances/"+model.attributes.id+"/report";
 			}}
 
 		]
