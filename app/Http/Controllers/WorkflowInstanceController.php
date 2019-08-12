@@ -189,34 +189,40 @@ class WorkflowInstanceController extends Controller
     }
 
     public function report(WorkflowInstance $workflow_instance,Request $request) {
-        if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        } else {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        }
 
-        if (Auth::check()) { /* User is Authenticated */
-            $current_user = Auth::user();
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        } else{
-            abort(404); 
-        }
 
-        $template = new Templater();
-        return $template->render([
-            'mygroups'=>$links,
-            'name'=>'workflow',
-            'slug'=>'workflow',
-            'id'=>0,
-            'data'=>[],
-            'config'=>json_decode('{"sections":[[{"title":"Workflow Submissions","widgetType":"WorkflowReport","container":true,"titlebar":true,"options":{"id":'.$workflow_instance->id.'}}],[{"title":"Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
-            // 'group'=>(Object)array("id"=>"0"),
-            'scripts'=>[],
-            'styles'=>[],
-            'template'=>"main",
-            'apps'=>(Object)[],
-            'resource'=>'flow'
-        ]);
-        return $workflows;
+        return view('admin', ['resource'=>'workflow_instance_report','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
+
+
+
+        // if (Auth::user()->site_developer || Auth::user()->site_admin) {
+        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
+        // } else {
+        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
+        // }
+
+        // if (Auth::check()) { /* User is Authenticated */
+        //     $current_user = Auth::user();
+        //     $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+        // } else{
+        //     abort(404); 
+        // }
+
+        // $template = new Templater();
+        // return $template->render([
+        //     'mygroups'=>$links,
+        //     'name'=>'workflow',
+        //     'slug'=>'workflow',
+        //     'id'=>0,
+        //     'data'=>[],
+        //     'config'=>json_decode('{"sections":[[{"title":"Workflow Submissions","widgetType":"WorkflowReport","container":true,"titlebar":true,"options":{"id":'.$workflow_instance->id.'}}],[{"title":"Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
+        //     // 'group'=>(Object)array("id"=>"0"),
+        //     'scripts'=>[],
+        //     'styles'=>[],
+        //     'template'=>"main",
+        //     'apps'=>(Object)[],
+        //     'resource'=>'flow'
+        // ]);
+        // return $workflows;
     }
 }

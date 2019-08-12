@@ -62,6 +62,7 @@
 
 @section('end_body_scripts_bottom')
   <script src='/assets/js/paged.js'></script> 
+  <script src='/assets/js/vendor/moment.js'></script>
 
   <script src='/assets/js/resources/{{ $resource }}.js'></script> 
 @endsection

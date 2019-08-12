@@ -1016,7 +1016,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(` 
           <ul class="list-group available_workflow" style="margin:10px 0 0">
           {{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right">({{updated_at.fromNow}})</span></h5></div>
-          <span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span></div>{{/data}}
+          <span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>{{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>{{/data}}
           </ul>`, {data:data});
 
           $('.filterable').on('click',function(e){

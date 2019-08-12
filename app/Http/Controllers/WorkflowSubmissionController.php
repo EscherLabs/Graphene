@@ -104,6 +104,22 @@ class WorkflowSubmissionController extends Controller
         }
 
         
+
+
+        $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
+
+        $state_data = array();
+        $state_data['actor'] = array('first_name'=>Auth::user()->first_name,'last_name'=>Auth::user()->first_name,'email'=>Auth::user()->email,'unique_id'=>Auth::user()->unique_id) ;
+        $owner = User::find($workflow_submission->user_id);
+        $state_data['owner'] = array('first_name'=>$owner->first_name,'last_name'=>$owner->first_name,'email'=>$owner->email,'unique_id'=>$owner->unique_id) ;
+        $state_data['action'] = $request->get('action');
+
+        $state_data['config'] = array();
+        foreach($myWorkflowInstance->configuration->resources as $resource){
+            // switch($resource->type)
+            $state_data['config']{$resource->name} = $resource->value;
+        }
+
         $state = null;
 
         foreach($oldstate->actions as $action){
@@ -128,19 +144,6 @@ class WorkflowSubmissionController extends Controller
             }
         }
 
-        $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
-
-        $state_data = array();
-        $state_data['actor'] = array('first_name'=>Auth::user()->first_name,'last_name'=>Auth::user()->first_name,'email'=>Auth::user()->email,'unique_id'=>Auth::user()->unique_id) ;
-        $owner = User::find($workflow_submission->user_id);
-        $state_data['owner'] = array('first_name'=>$owner->first_name,'last_name'=>$owner->first_name,'email'=>$owner->email,'unique_id'=>$owner->unique_id) ;
-        $state_data['action'] = $request->get('action');
-
-        $state_data['config'] = array();
-        foreach($myWorkflowInstance->configuration->resources as $resource){
-            // switch($resource->type)
-            $state_data['config']{$resource->name} = $resource->value;
-        }
 
         //if url is defined on assignment get data and add it to the $state_data['assignment']
         if(isset($workflow_submission->assignment->url)){
@@ -168,7 +171,6 @@ class WorkflowSubmissionController extends Controller
                 $state_data['assignment'] = $httpHelper->http_fetch(  $m->render($workflow_submission->assignment->url, $state_data),"GET", $assignment_data);
             }
         }
-        
         $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
 
         //Handle assignment ids - validate that they exist
@@ -264,13 +266,19 @@ class WorkflowSubmissionController extends Controller
                     if($task->subject){
                         $subject = $m->render($task->subject, $data);
                     }
-                    $to = 'asmallco@binghamton.edu';
+                    $to = array();//'asmallco@binghamton.edu';
+                    foreach($task->to as $email){
 
+                    // dd($email);
+                        $to[] = $m->render($email, $data);
+                    }
                     // More Info About the Mail API: https://laravel.com/docs/5.8/mail
                     // Note that Mail::raw is undocumented, as default mail requires 
                     // the use of blade views.
                     Mail::raw( $content, function($message) use($to, $subject) { 
+                        $m = new \Mustache_Engine;
                         $message->to($to);
+
                         $message->subject($subject); 
                     });
                 break;

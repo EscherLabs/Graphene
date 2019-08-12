@@ -397,8 +397,8 @@ function drawForm(name){
           {value: "user", label: "User"},
           {value: "url", label: "Url"}
         ]},
-        _.extend({show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
-        _.extend({show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
+        _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
+        _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
         {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "matches", name: "type", value: "url"}]},
         {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "matches", name: "type", value: "url"}]},
@@ -408,7 +408,7 @@ function drawForm(name){
       // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
       {label:"<legend>onEnter</legend>",type:"output",name:"enter_label", parse: false},
 
-      {name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: true},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+      {name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
       // {name: "hasOnLeave", label: "Include Tasks On Leaving State", type: "switch"},
       {label:"<legend>onLeave</legend>",type:"output",name:"leave_label", parse: false},
       {name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
@@ -432,8 +432,14 @@ function drawForm(name){
       }
     ]
   },'#flow-form').on('input', function(e){
-    // debugger;
-    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')})] = e.form.toJSON();
+    var temp =  e.form.get();
+    temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
+    temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
+    _.each(temp.actions,function(action){
+      action.tasks = _.compact(_.map(action.tasks,function(e){if(e.task){return e} }))
+    })
+
+    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')})] = temp;
 
     gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -496,8 +502,8 @@ function drawForm(name){
 gform.collections.add('endpoints', _.where(attributes.code.resources, {type: "endpoint"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 var taskForm = [
-  {name: "task", label: "Task", type: "select", options: [{value: "api", label: "API"}, {value: "email", label: "Email"}]},
-  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
+  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "api", label: "API"}, {value: "email", label: "Email"}]},
+  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
 
   {name: "subject", type:"text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type:"textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
@@ -505,7 +511,7 @@ var taskForm = [
   {name: "url", type: "url",columns:8,placeholder:"\\", label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
   // {name:"data",}
 ]
-var valueField = {columns:12,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
+var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
 
 
 $('#flow-preview').on('click','.nodes .node',function(e){
@@ -536,7 +542,7 @@ $('#add-state').on('click',function() {
 $('#save').on('click',function() {
 
   var data = {code:{flow:JSON.stringify(flow_states)}};
-
+debugger;
   if(true || !errorCount){
 
     data.code.forms = formPage.toJSON();

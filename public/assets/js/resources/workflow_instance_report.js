@@ -1,0 +1,34 @@
+$('.navbar-header .nav a h4').html('Workflow Instance Report');
+$('[href="/admin/workflowinstances"]').parent().addClass('active');
+
+$.ajax({
+	url: '/api/workflowinstances/'+resource_id,
+	success: function(data) {
+		$('.navbar-header .nav a h4').append(' - '+data.workflow.name+'');
+		
+		$.ajax({
+			url:'/api/workflow/submissions/'+resource_id,
+			dataType : 'json',
+			type: 'GET',
+			success  : function(data){
+				data = _.each(data, function(item){
+					item.created_at = {
+						original:item.created_at,
+						time:moment(item.created_at).format('LTS'),
+						date:moment(item.created_at).format('L'),
+						fromNow:moment(item.created_at).fromNow()
+					}
+					item.updated_at = {
+						original:item.updated_at,
+						time:moment(item.updated_at).format('LTS'),
+						date:moment(item.updated_at).format('L'),
+						fromNow:moment(item.updated_at).fromNow()
+					}
+				})
+
+				new GrapheneDataGrid({autoSize:10,schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"}],data:data,actions:[],upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
+					document.location = "/workflows/report/"+e.model.attributes.id;
+				}.bind(this))
+			}.bind(this)
+		})
+}})
