@@ -324,7 +324,7 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_id','=',$workflow_instance->id)->orderBy('updated_at','DESC')->get();
+        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_id','=',$workflow_instance->id)->orderBy('created_at')->get();
     }   
     
     public function workflow_submission_log($workflow_submission, Request $request) {

@@ -384,6 +384,86 @@ Cobler.types.Workflow = function(container){
 }
 
 
+
+Cobler.types.Workflows = function(container){
+	function get() {
+		item.widgetType = 'Workflows';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+    Title: {},
+
+    // 'User Options':{name:'user_edit',type:'checkbox'}
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      // this.id = gform.getUID();
+      // temp.id = this.id;
+      // return templates['widgets_microapp'].render(temp, templates);
+      return gform.renderString(`
+      <div class="btn-group pull-right slice-actions parent-hover">
+	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+</div>
+
+      {{#container}}
+      <div class="panel panel-default">
+      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+</div>
+      {{>widgets__header}}
+        <div class="collapsible panel-body">
+        
+        <h3 class="flow-title"></h3>
+        <div class="g_{{guid}}">
+        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
+        </div>
+      </div>
+      {{/container}}
+      {{^container}}
+
+        <div class="collapsible">
+  
+        </div>
+      {{/container}}`,temp);
+
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+      $.ajax({
+        url:'/api/workflowinstances/user',
+        dataType : 'json',
+        type: 'GET',
+    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
+        success  : function(data){
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+          <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+          <ul class="list-group available_workflow" style="margin:10px 0 0">
+          {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+          </ul>`,{data:data});
+          }.bind(this)
+      })
+		}
+	}
+}
+
+
 Cobler.types.WorkflowStatus = function(container){
 	function get() {
 		item.widgetType = 'WorkflowStatus';
@@ -736,185 +816,6 @@ Cobler.types.WorkflowStatus = function(container){
 }
 
 
-Cobler.types.Workflows = function(container){
-	function get() {
-		item.widgetType = 'Workflows';
-		return item;
-	}
-	var item = {
-		guid: generateUUID()}
-	var fields = {
-    Title: {},
-
-    // 'User Options':{name:'user_edit',type:'checkbox'}
-	}
-	return {
-    container:container,
-		fields: fields,
-		render: function() {
-      var temp = get();
-      temp.workflow_admin = group_admin;
-      // this.id = gform.getUID();
-      // temp.id = this.id;
-      // return templates['widgets_microapp'].render(temp, templates);
-      return gform.renderString(`
-      <div class="btn-group pull-right slice-actions parent-hover">
-	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-</div>
-
-      {{#container}}
-      <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-</div>
-      {{>widgets__header}}
-        <div class="collapsible panel-body">
-        
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}">
-        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-        </div>
-        </div>
-      </div>
-      {{/container}}
-      {{^container}}
-
-        <div class="collapsible">
-  
-        </div>
-      {{/container}}`,temp);
-
-		},
-		edit: berryEditor.call(this, container),
-		toJSON: get,
-		get: get,
-		set: function (newItem) {
-			$.extend(item, newItem);
-		},
-		initialize: function(el){
-      if(this.container.owner.options.disabled && this.get().enable_min){
-          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
-          this.set({collapsed:collapsed});
-          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
-      }
-      $.ajax({
-        url:'/api/workflowinstances/user',
-        dataType : 'json',
-        type: 'GET',
-    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
-        success  : function(data){
-          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-          <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-          <ul class="list-group available_workflow" style="margin:10px 0 0">
-          {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-          </ul>`,{data:data});
-          }.bind(this)
-      })
-		}
-	}
-}
-
-
-Cobler.types.WorkflowReport = function(container){
-	function get() {
-		item.widgetType = 'WorkflowReport';
-		return item;
-	}
-	var item = {
-		guid: generateUUID()}
-	var fields = {
-    Title: {},
-
-    // 'User Options':{name:'user_edit',type:'checkbox'}
-	}
-	return {
-    container:container,
-		fields: fields,
-		render: function() {
-      var temp = get();
-      temp.workflow_admin = group_admin;
-      // this.id = gform.getUID();
-      // temp.id = this.id;
-      // return templates['widgets_microapp'].render(temp, templates);
-      return gform.renderString(`
-      <div class="btn-group pull-right slice-actions parent-hover">
-	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-</div>
-
-      {{#container}}
-      <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-</div>
-      {{>widgets__header}}
-        <div class="collapsible panel-body">
-        
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}">
-        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-        </div>
-        </div>
-      </div>
-      {{/container}}
-      {{^container}}
-
-        <div class="collapsible">
-  
-        </div>
-      {{/container}}`,temp);
-
-		},
-		edit: berryEditor.call(this, container),
-		toJSON: get,
-		get: get,
-		set: function (newItem) {
-			$.extend(item, newItem);
-		},
-		initialize: function(el){
-      if(this.container.owner.options.disabled && this.get().enable_min){
-          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
-          this.set({collapsed:collapsed});
-          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
-      }
-      $.ajax({
-        url:'/api/workflow/submissions/'+this.get().options.id,
-        dataType : 'json',
-        type: 'GET',
-    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
-        success  : function(data){
-          data = _.each(data, function(item){
-            item.created_at = {
-              original:item.created_at,
-              time:moment(item.created_at).format('LTS'),
-              date:moment(item.created_at).format('L'),
-              fromNow:moment(item.created_at).fromNow()
-            }
-            item.updated_at = {
-              original:item.updated_at,
-              time:moment(item.updated_at).format('LTS'),
-              date:moment(item.updated_at).format('L'),
-              fromNow:moment(item.updated_at).fromNow()
-            }
-          })
-
-          new GrapheneDataGrid({schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"}],data:data,actions:[],upload:false,el:this.container.elementOf(this).querySelector('.collapsible')}).on('click',function(e){
-            document.location = "/workflows/report/"+e.model.attributes.id;
-          }.bind(this))
-          
-          // .innerHTML = gform.renderString(` 
-          // <label for="link_filter" class="sr-only">Filter Report</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-          // <ul class="list-group available_workflow" style="margin:10px 0 0">
-          // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">({{created_at}}) {{user.first_name}} {{user.last_name}} - <span class="pull-right">{{updated_at}}</span></a>{{/data}}
-          // </ul>`,{data:data});
-          }.bind(this)
-      })
-		}
-	}
-}
-
-
-
-
 
 Cobler.types.WorkflowSubmissionReport = function(container){
 	function get() {
@@ -1015,9 +916,18 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           })
           this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(` 
           <ul class="list-group available_workflow" style="margin:10px 0 0">
+          <div class="filterable list-group-item" target="_blank"  data-id="{{data.0.id}}">
+          <div>{{#actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions}}</div>
+<hr>
+          <div><h5><span class="pull-right">({{data.0.updated_at.fromNow}})</span></h5></div>
+            <span class="label label-success{{#closed}} label-danger{{/closed}}">{{data.0.end_state}}</span>
+          </div>
           {{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right">({{updated_at.fromNow}})</span></h5></div>
           <span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>{{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>{{/data}}
-          </ul>`, {data:data});
+          </ul>`, {
+            data:data,
+            actions:(_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions
+          });
 
           $('.filterable').on('click',function(e){
             var form = _.extend(JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content),{data:_.find(this.data,{id:parseInt(e.currentTarget.dataset.id)}).data});
@@ -1028,6 +938,133 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             new gform(form,e.currentTarget.parentElement.parentElement.nextElementSibling.querySelector('.form'))
           }.bind({data:data}))
           $('.filterable').first().click();
+
+
+
+
+          $('.available_workflow').on('click','[data-event]',function(e){
+            var event = e.currentTarget.dataset.event;
+
+              if(_.find(e.model.attributes.actions,{name:event}).form){
+
+                new gform(
+                  {
+                    "legend":e.model.attributes.workflow.name,
+                    "data":e.model.attributes.data,
+                    "actions": [
+                      {
+                        "type": "cancel",
+                        "name": "submitted",
+                        "action":"canceled",
+                        // "label": "<i class='fa fa-check'></i> Submit"
+                      },
+                      {
+                        "type": "save",
+                        "name": "submit",
+                        "label": "<i class='fa fa-check'></i> Submit"
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate",
+                        "value":e.model.attributes.state
+                      }
+
+                    ],
+                    "fields":[
+                      {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
+                      {"name":"comment","type":"textarea","length":255}
+                    ]
+                  }).on('save',function(e,eForm){
+                    if(!eForm.form.validate(true))return;
+
+                    e.model.waiting(true);
+
+                    eForm.form.trigger('close')
+                    
+                    $.ajax({
+                      url:'/api/workflow/'+e.model.attributes.id,
+                      dataType : 'json',
+                      type: 'PUT',
+                      data: {_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},
+                      success  : function(e,data){
+                        e.model.waiting(false);
+                        
+                        data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
+                        data.updated_at = moment(data.updated_at).fromNow()
+                        e.model.set(data)
+                        
+                        // console.log(data);
+                        // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+                        // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+                        // <ul class="list-group available_workflow" style="margin:10px 0 0">
+                        // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+                        // </ul>`,{data:data});
+                        }.bind(null,e)
+                    })
+                  }.bind(null,e)).on('canceled',function(eForm){
+                    eForm.form.trigger('close')
+                  }).modal();
+              }else{
+
+
+
+              //   new gform(
+              //     {
+              //       "legend":e.model.attributes.workflow.name,
+              //       "data":e.model.attributes.data,
+              //       "actions": [
+              //         {
+              //           "type": "cancel",
+              //           "name": "submitted",
+              //           "action":"canceled",
+              //           // "label": "<i class='fa fa-check'></i> Submit"
+              //         },
+              //         {
+              //           "type": "save",
+              //           "name": "submit",
+              //           "label": "<i class='fa fa-check'></i> Submit"
+              //         },{
+              //           "type": "hidden",
+              //           "name": "_flowstate",
+              //           "value":e.model.attributes.state
+              //         }
+              //       ],
+              //       "fields":[
+              //         // {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
+              //         {"name":"comment","type":"textarea","length":255}
+              //       ]
+              //     }).on('save',function(e,eForm){
+
+              //       e.model.waiting(true);
+
+              //       eForm.form.trigger('close')
+              //   $.ajax({
+              //     url:'/api/workflow/'+e.model.attributes.id,
+              //     dataType : 'json',
+              //     type: 'PUT',
+              //     data: {_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},
+              //     success  : function(e,data){
+              //       e.model.waiting(false);
+              //       data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
+              //       data.updated_at = moment(data.updated_at).fromNow()
+              //       e.model.set(data)
+              //       // console.log(data);
+              //       // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
+              //       // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
+              //       // <ul class="list-group available_workflow" style="margin:10px 0 0">
+              //       // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
+              //       // </ul>`,{data:data});
+              //       }.bind(null,e)
+              //   })
+
+
+              // }.bind(null,e)).on('canceled',function(eForm){
+              //   eForm.form.trigger('close')
+              // }).modal();
+
+            }
+
+
+
 
           }.bind(this)
       })
