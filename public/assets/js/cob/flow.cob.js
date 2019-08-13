@@ -819,22 +819,16 @@ Cobler.types.WorkflowStatus = function(container){
 
 Cobler.types.WorkflowSubmissionReport = function(container){
 	function get() {
-		item.widgetType = 'WorkflowSubmissionReport';
 		return item;
 	}
-	var item = {
-		guid: generateUUID()}
-	var fields = {
-    Title: {},
-
-    // 'User Options':{name:'user_edit',type:'checkbox'}
-	}
+	var item = {guid: generateUUID()}
+	var fields = {}
 	return {
     container:container,
 		fields: fields,
 		render: function() {
       var temp = get();
-      temp.workflow_admin = group_admin;
+      // temp.workflow_admin = group_admin;
       // this.id = gform.getUID();
       // temp.id = this.id;
       // return templates['widgets_microapp'].render(temp, templates);
@@ -843,12 +837,12 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
         <div class="row">
 
-          <div class=" col-sm-4" ></div>
+          <div class="col-md-4 hidden-xs hidden-sm"" ></div>
 
-          <div class="list col-sm-4" style="margin: -15px 0 -15px -15px;background:#e8e8e8;padding:15px;position: fixed;overflow: scroll;top: 111px;bottom: 0;">
+          <div class="list col-md-4 hidden-xs hidden-sm" style="margin: -15px 0 -15px -15px;background:#e8e8e8;padding:15px;position: fixed;overflow: scroll;top: 111px;bottom: 0;">
           <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
           </div>
-          <div class="col-sm-8" style="top:-15px">
+          <div class="col-md-8" style="top:-15px">
           <div class="panel panel-default">
           <div class="panel-heading" style="position:relative">
       <h3 class="panel-title">{{title}}</h3>
@@ -865,7 +859,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         .list-group-item.active{
           background-color:#606971
         }
-        .list-group-item:hover{
+        .list-group-item.filterable:hover{
           background-color:#f0f0f0;
           cursor:pointer
         }
@@ -916,27 +910,55 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           })
           this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(` 
           <ul class="list-group available_workflow" style="margin:10px 0 0">
-          <div class="filterable list-group-item" target="_blank"  data-id="{{data.0.id}}">
-          <div>{{#actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions}}</div>
-<hr>
+          <div class="filterable list-group-item" target="_blank" data-current=true data-id="{{data.0.id}}">
+          <div>{{workflow.user.first_name}} {{workflow.user.last_name}}</div>
+
+          <hr>
           <div><h5><span class="pull-right">({{data.0.updated_at.fromNow}})</span></h5></div>
-            <span class="label label-success{{#closed}} label-danger{{/closed}}">{{data.0.end_state}}</span>
+            <span class="label label-success{{#data.0.closed}} label-danger{{/data.0.closed}}">{{data.0.end_state}}</span>
           </div>
+          <div class="list-group-item bg-primary" ><h5>History</h5></div>
           {{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right">({{updated_at.fromNow}})</span></h5></div>
           <span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>{{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>{{/data}}
           </ul>`, {
+            workflow:this.get().options,
             data:data,
             actions:(_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions
           });
 
-          $('.filterable').on('click',function(e){
-            var form = _.extend(JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content),{data:_.find(this.data,{id:parseInt(e.currentTarget.dataset.id)}).data});
-            form.actions = [];
+          $('.filterable').on('click',function(data,e){
+            // var form = _.extend(JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content),{data:_.find(this.data,{id:parseInt(e.currentTarget.dataset.id)}).data});
+            // form.actions = [];
             // form.legend = "State"
             $(e.currentTarget.parentElement).find('.active').removeClass('active')
             $(e.currentTarget).addClass('active')
-            new gform(form,e.currentTarget.parentElement.parentElement.nextElementSibling.querySelector('.form'))
-          }.bind({data:data}))
+            if(typeof previewForm !== 'undefined'){previewForm.destroy();}
+            if(e.currentTarget.dataset.current){
+              document.querySelector('.form').innerHTML = gform.renderString( (_.find(this.get().options.workflow_version.code.templates,{name:"Preview"}) || {content:""}).content || '<div>{{#actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions}}</div>',{
+                data:data,
+                actions:(_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions
+              });
+
+            }else{
+              var log = _.find(data,{id:parseInt(e.currentTarget.dataset.id)});
+              form = {
+                actions:[],
+                data:{
+                  _state:log.data
+                },
+                "fields":[
+                  {"name":"_state",edit:false,"label":false,"type":"fieldset","fields": JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content).fields},                                
+                // {"name":"comment","type":"textarea","length":255}
+                  {
+                    "type": "hidden",
+                    "name": "_flowstate",
+                    "value": log.start_state
+                  }
+                ]
+              }
+              previewForm = new gform(form, document.querySelector('.form'))
+            }
+          }.bind(this,data))
           $('.filterable').first().click();
 
 

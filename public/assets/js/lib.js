@@ -95,12 +95,12 @@ $('body').on('keyup','[name=filter]', function(event){
 });
 
 templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
-// gform.types['user']= _.extend({}, gform.types['smallcombo'], {
-//   defaults:{label:'User <span class="text-success pull-right">{{value}}</span>',search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
-// })
-// gform.types['user_email']= _.extend({}, gform.types['user'], {
-//   defaults:{value:"{{email}}"}
-// })
-// gform.types['group']= _.extend({}, gform.types['smallcombo'], {
-//   defaults:{label:'Group <span class="text-success pull-right">{{value}}</span>', options: '/api/groups',format:{label:"{{name}}",value:"{{id}}"}}
-// })
+gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+  defaults:{label:'User <span class="text-success pull-right">{{value}}</span>',search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
+})
+gform.types['user_email']= _.extend({}, gform.types['user'], {
+  defaults:{value:"{{email}}"}
+})
+gform.types['group']= _.extend({}, gform.types['smallcombo'], {
+  defaults:{label:'Group <span class="text-success pull-right">{{value}}</span>', options: '/api/groups',format:{label:"{{name}}",value:"{{id}}"}}
+})
