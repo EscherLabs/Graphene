@@ -1064,7 +1064,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             }
 
 
-
+          })
 
           }.bind(this)
       })

@@ -178,7 +178,7 @@ function load(workflow_version) {
   //   bt.fixStyle()
   // })
 
-  loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:'', disabled: true}]},workflow_version)
+  loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:'', disabled: true}],templates:[{name:'Preview',content:'', disabled: true}]},workflow_version)
 
   attributes= $.extend(true,{},{code:{}}, loaded);
   $('.navbar-header .nav a h4').html('Workflow - '+attributes.workflow.name);
@@ -187,7 +187,7 @@ function load(workflow_version) {
 
   setSize();
 
-  // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
   // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
   formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
@@ -349,7 +349,7 @@ function createFlow() {
         })
         return graph+stuff.join('')
       })
-      if(typeof flowForm !== 'undefined'){
+      if(typeof flowForm !== 'undefined' && flowForm.isActive){
         graph.push('\nclass '+flowForm.get('name')+' selectedClass');
       }  
 
@@ -379,7 +379,7 @@ function drawForm(name){
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
   flowForm = new gform({
-    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'}],
+    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{type:"button",modifiers:"btn btn-default",label:"Done",action:"done"}],
     // legend:"State",
     // sections:"tab",
     // clear:true,
@@ -495,6 +495,13 @@ function drawForm(name){
         gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
         createFlow();
+  }).on('done',function(e){
+    if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
+    e.stopPropagation();
+    e.preventDefault();
+    gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
+
+    createFlow();
   })
 
 }
@@ -542,12 +549,14 @@ $('#add-state').on('click',function() {
 $('#save').on('click',function() {
 
   var data = {code:{flow:JSON.stringify(flow_states)}};
-debugger;
   if(true || !errorCount){
 
     data.code.forms = formPage.toJSON();
     data.updated_at = attributes.updated_at;
     data.code.resources = resources.toJSON().resources;
+    template_errors = templatePage.errors();
+    data.code.templates = templatePage.toJSON();
+
     $.ajax({
       url: root+attributes.workflow_id+'/code',
       method: 'put',

@@ -115,7 +115,7 @@ function load(app_version) {
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
 
-  templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  templatePage = new paged('.templates', {name:'templates', items:attributes.code.templates, label:'Template'});
   scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
   formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 

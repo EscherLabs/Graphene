@@ -225,11 +225,10 @@ class WorkflowSubmissionController extends Controller
     }
 
     private function logAction($workflow_submission, $start_state, $action, $comment){
-        
         $activity = new WorkflowActivityLog();
         $activity->start_state = $start_state;
 
-        $activity->workflow_id = $workflow_submission->workflow_id;
+        // $activity->workflow_id = $workflow_submission->workflow_id;
         $activity->workflow_instance_id = $workflow_submission->workflow_instance_id;
         $activity->workflow_submission_id = $workflow_submission->id;
         $activity->data =  $workflow_submission->data;
@@ -239,7 +238,6 @@ class WorkflowSubmissionController extends Controller
         $activity->comment = $comment;
         $activity->action = $action;
         $activity->save();
-
     }
 
 
