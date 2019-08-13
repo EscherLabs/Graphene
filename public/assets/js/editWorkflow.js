@@ -367,7 +367,7 @@ function createFlow() {
 // }
 
 // debugger;
-flow_states = JSON.parse(attributes.code.flow||'[{"name":"first"}]');
+flow_states = JSON.parse(attributes.code.flow||'[{"name":"origin"}]');
 createFlow();
 
 
