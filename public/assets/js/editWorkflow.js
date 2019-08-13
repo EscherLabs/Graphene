@@ -158,6 +158,7 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
 };
 }( jQuery ));
 
+
 attributes = {};
 $('[href="/admin/workflows"]').parent().addClass('active');
 
@@ -366,7 +367,7 @@ function createFlow() {
 // }
 
 // debugger;
-flow_states = JSON.parse(attributes.code.flow);
+flow_states = JSON.parse(attributes.code.flow||'[{"name":"first"}]');
 createFlow();
 
 
@@ -435,6 +436,8 @@ function drawForm(name){
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
     temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
+    temp.actions = _.compact(_.map(temp.actions,function(e){if(e.name && e.label){return e} }))
+
     _.each(temp.actions,function(action){
       action.tasks = _.compact(_.map(action.tasks,function(e){if(e.task){return e} }))
     })
@@ -519,6 +522,7 @@ var taskForm = [
   // {name:"data",}
 ]
 var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
+
 
 
 $('#flow-preview').on('click','.nodes .node',function(e){
