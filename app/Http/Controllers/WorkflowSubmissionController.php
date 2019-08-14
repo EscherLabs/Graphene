@@ -34,10 +34,10 @@ class WorkflowSubmissionController extends Controller
 
     public function create($group, $workflow_id = null, Request $request) {
         if(!is_numeric($group)) {
-            $groupObj = Group::with('composites')->where('slug','=',$group)->first();
+            $groupObj = Group::with('composites')->where('slug','=',$group)->where('site_id',config('app.site')->id)->first();
 			$group = $groupObj->id;
 		}else{
-    		$groupObj = Group::with('composites')->where('id','=',$group)->first();
+    		$groupObj = Group::with('composites')->where('id','=',$group)->where('site_id',config('app.site')->id)->first();
         }
 
         if (Auth::check()) { /* User is Authenticated */
@@ -53,7 +53,7 @@ class WorkflowSubmissionController extends Controller
             if($myWorkflowInstance->public == 0) {
                 $this->authorize('fetch' ,$myWorkflowInstance);
             }
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+            $links = Group::AppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
             $myWorkflowInstance = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('id', '=', $workflow_id)->where('public','=',true)->first();
@@ -63,7 +63,7 @@ class WorkflowSubmissionController extends Controller
                     return $return;
                 }
             }
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+            $links = Group::publicAppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         }
 
         if($myWorkflowInstance != null) {
@@ -179,8 +179,8 @@ class WorkflowSubmissionController extends Controller
             if($user !== null) {
                 $workflow_submission->assignment_id = $user->id;
             }else{
-                $workflow_submission->assignment_id = $assignment_id;
-                $user = User::where("id", '=', $assignment_id)->first();
+                $user = User::where("id",'=',$assignment_id)->first();
+                $workflow_submission->assignment_id = $user->id;
                 if($user === null) {
                     throw new \Exception('Assigned User Does Not Exist');
                 }
@@ -188,11 +188,15 @@ class WorkflowSubmissionController extends Controller
             $state_data['assigned_to'] = ['user' => ['first_name'=>$user->first_name,'last_name'=>$user->last_name,'email'=>$user->email,'unique_id'=>$user->unique_id]];
         }else{
             $assigned_to['group'] = true;
-            $group = Group::where("id",'=', $assignment_id)->first();
+            $group = Group::where("id",'=',$assignment_id)->where('site_id',config('app.site')->id)->first();
             if($group !== null) {
                 $workflow_submission->assignment_id = $group->id;
             }else{
-                throw new \Exception('Assigned Group Does Not Exist');
+                $group = Group::where("slug",'=',$assignment_id)->where('site_id',config('app.site')->id)->first();
+                $workflow_submission->assignment_id = $group->id;
+                if($group === null) {
+                    throw new \Exception('Assigned Group Does Not Exist');
+                }
             }
             $state_data['assigned_to'] = ['group' => ['name'=>$groip->name,'slug'=>$group->slug,'id'=>$group->id]];
         }
@@ -453,7 +457,7 @@ class WorkflowSubmissionController extends Controller
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
+            $links = Group::AppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         } 
         else { /* User is not Authenticated */
             abort(404); 
