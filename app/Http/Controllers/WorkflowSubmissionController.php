@@ -15,6 +15,7 @@ use App\Page;
 use App\ResourceCache;
 use App\UserOption;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
@@ -103,18 +104,15 @@ class WorkflowSubmissionController extends Controller
             $this->executeTasks($oldstate->onExit, $workflow_submission->data);
         }
 
-        
-
-
         $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
 
-        $state_data = array();
-        $state_data['actor'] = array('first_name'=>Auth::user()->first_name,'last_name'=>Auth::user()->first_name,'email'=>Auth::user()->email,'unique_id'=>Auth::user()->unique_id) ;
+        $state_data = [];
+        $state_data['actor'] = ['first_name'=>Auth::user()->first_name,'last_name'=>Auth::user()->last_name,'email'=>Auth::user()->email,'unique_id'=>Auth::user()->unique_id] ;
         $owner = User::find($workflow_submission->user_id);
-        $state_data['owner'] = array('first_name'=>$owner->first_name,'last_name'=>$owner->first_name,'email'=>$owner->email,'unique_id'=>$owner->unique_id) ;
+        $state_data['owner'] =['first_name'=>$owner->first_name,'last_name'=>$owner->last_name,'email'=>$owner->email,'unique_id'=>$owner->unique_id,'is_actor'=>($owner->id === Auth::user()->id)] ;
         $state_data['action'] = $request->get('action');
 
-        $state_data['config'] = array();
+        $state_data['config'] = [];
         foreach($myWorkflowInstance->configuration->resources as $resource){
             // switch($resource->type)
             $state_data['config']{$resource->name} = $resource->value;
@@ -182,14 +180,21 @@ class WorkflowSubmissionController extends Controller
                 $workflow_submission->assignment_id = $user->id;
             }else{
                 $workflow_submission->assignment_id = $assignment_id;
+                $user = User::where("id", '=', $assignment_id)->first();
+                if($user === null) {
+                    throw new \Exception('Assigned User Does Not Exist');
+                }
             }
+            $state_data['assigned_to'] = ['user' => ['first_name'=>$user->first_name,'last_name'=>$user->last_name,'email'=>$user->email,'unique_id'=>$user->unique_id]];
         }else{
+            $assigned_to['group'] = true;
             $group = Group::where("id",'=', $assignment_id)->first();
             if($group !== null) {
                 $workflow_submission->assignment_id = $group->id;
             }else{
-                $workflow_submission->assignment_id = $assignment_id;
+                throw new \Exception('Assigned Group Does Not Exist');
             }
+            $state_data['assigned_to'] = ['group' => ['name'=>$groip->name,'slug'=>$group->slug,'id'=>$group->id]];
         }
 
         if(isset($state->onEnter)){
@@ -200,25 +205,56 @@ class WorkflowSubmissionController extends Controller
         
         $this->logAction($workflow_submission,$start_state,$state_data['action'],$request->get('comment'));
 
+        // Setup $state_data -- Some of this may be better to have further up in this function for
+        // use by other things (other than the emailer)
+        $state_data['status'] = $workflow_submission->status;
+        $state_data['state'] = $state->name;
+        $state_data['previous_state'] = $oldstate->name;
+        $state_data['is_open'] = ($state_data['status']=='open')?true:false;
+        $state_data['is_closed'] = ($state_data['status']=='closed')?true:false;
+        $state_data['was_initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous_state']);
+        $state_data['is_initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
+        $state_data['workflow'] = ['name'=>$myWorkflowInstance->name,'id'=>$myWorkflowInstance->id];
+        $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
+        $state_data['comment'] = ($request->has('comment'))?$request->get('comment'):null;
 
-        
-        //Email owner
-        $content = "Workflow task taken on workflow you own";
-        $subject = 'Workflows | You got a Workflow Email';
-        $to = $state_data['owner']['email'];
-        Mail::raw( $content, function($message) use($to, $subject) { 
-            $message->to($to);
+        $email_body = '
+{{to.first_name}} {{to.last_name}} - <br><br>
+{{#was_initial}}The workflow "{{workflow.name}}" was just submitted by {{owner.first_name}} {{owner.last_name}}.<br>{{/was_initial}}
+{{^was_initial}}An action ({{action}}) was recently taken on the "{{workflow.name}}" workflow by {{actor.first_name}} {{actor.last_name}}{{^owner.is_actor}}, which was originally submitted by / owned by {{owner.first_name}} {{owner.last_name}}{{/owner.is_actor}}.<br>{{/was_initial}}
+{{#is_open}}This workflow is currently in the "{{state}}" state, and is assigned to {{#assigned_to.user}}{{first_name}} {{last_name}}{{/assigned_to.user}}{{#assigned_to.group}}the {{name}} group{{/assigned_to.group}}.<br>{{/is_open}}
+{{#is_closed}}This workflow is now CLOSED and in the "{{state}}" state.<br>{{/is_closed}}
+{{#comment}}The following comment was provided: "{{comment}}"<br>{{/comment}}
+<br>You may view the current status as well as the complete history of this workflow here: {{report_url}}
+';
+        $email_body = str_replace('<br>',"\n",str_replace("\n",'',$email_body));
+        $subject = 'Workflow Update | '.$myWorkflowInstance->name;
+        // Send Email To Owner
+        $to = $state_data['owner'];
+        $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
+        Mail::raw( $content_rendered, function($message) use($to, $subject) {
+            $message->to($to['email']);
             $message->subject($subject); 
         });
+        // Send Email to Actor (if different person than actor)
+        if (!$state_data['owner']['is_actor']) {
+            $to = $state_data['actor'];
+            $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
+            Mail::raw( $content_rendered, function($message) use($to, $subject) { 
+                $message->to($to['email']);
+                $message->subject($subject); 
+            });
+        }
+
 
         //Email actor
-        $content = "Workflow task taken by you";
-        $subject = 'Workflows | You got a Workflow Email';
-        $to = $state_data['actor']['email'];
-        Mail::raw( $content, function($message) use($to, $subject) { 
-            $message->to($to);
-            $message->subject($subject); 
-        });
+        // $content = "Workflow task taken by you";
+        // $subject = 'Workflows | You got a Workflow Email';
+        // $to = $state_data['actor']['email'];
+        // Mail::raw( $content, function($message) use($to, $subject) { 
+        //     $message->to($to);
+        //     $message->subject($subject); 
+        // });
         
 
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
