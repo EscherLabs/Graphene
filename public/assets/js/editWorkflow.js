@@ -418,6 +418,7 @@ function drawForm(name){
         name: "actions", label: false, type: "fieldset", fields: [
           {name: "label", label: "Label", columns: 6},
           {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
+          {name: "form", label: "Show Form",type:"switch", columns: 12},
           {name: "type", label: "Type", type: "select", columns: 6, options:[
             {value: "success", label: "Success"},
             {value: "danger", label: "Danger"},

@@ -436,7 +436,8 @@ class WorkflowSubmissionController extends Controller
             abort(404); 
 
         }
-        
+        $workflow_submission->load('workflowInstance');
+
         // if($myWorkflowInstance != null) {
             $template = new Templater();
             return $template->render([

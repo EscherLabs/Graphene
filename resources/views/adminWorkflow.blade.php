@@ -116,7 +116,6 @@
   <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/email_flow.cob.js'></script>
   <script type="text/javascript" src="/assets/js/vendor/mermaid.min.js"></script>
   <script>
     mermaid.initialize({
