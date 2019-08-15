@@ -15,6 +15,7 @@ use App\Page;
 use App\ResourceCache;
 use App\UserOption;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
@@ -265,6 +266,7 @@ class WorkflowInstanceController extends Controller
                 'state' => $submission->state,
                 'created_at' => $submission->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
+                'report_url' => '=HYPERLINK("'.URL::to('/workflows/report/'.$submission->id).'","Open Report")'
             ]);
             $all_keys = array_unique(array_merge($all_keys,array_keys($data)),SORT_REGULAR);
             $all_submissions[] = $data;
