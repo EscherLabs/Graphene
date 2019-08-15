@@ -126,10 +126,16 @@ class Templater {
             'partials_loader' => $partials_loader,
             'cache' => storage_path('cache/mustache'),
         ]);
-    if (!isset($data['template'])) {
-        $data['template'] = 'main';
-    }   
-    $tpl = $m->loadTemplate($data['template']);
-        return $tpl->render($data);
+        if (!isset($data['template'])) {
+            $data['template'] = 'main';
+        }   
+        $tpl = $m->loadTemplate($data['template']);
+        // return $tpl->render($data);
+
+        return response($tpl->render($data))
+            ->header('Content-Type', 'text/html')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Expires', '0')
+            ->header('Pragma', 'no-cache');
     }
 }

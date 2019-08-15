@@ -116,6 +116,7 @@ var createEngine = function(e){
       //all
       { name: 'cancel',     from: '*',  to: 'start' },
       { name: 'success',     from: '*',  to: 'success' },
+      { name: 'error',     from: '*',  to: 'start' },
       { name: 'other',     from: 'success',  to: 'start' },
     ],
     methods: {
@@ -366,20 +367,25 @@ var createEngine = function(e){
             fsm.success(this,e);
           }.bind(e),
           error:function(e) {
+
             toastr.error(e.statusText, 'ERROR');
+            fsm.error(this, e);
           }
         });
       },
       onSubmit:function(){
         reset();
       },
+      onBeforeError:function(e,history,item){
+        if(typeof item.responseJSON !== 'undefined' && item.responseJSON.error){
+          toastr.error(item.responseJSON.error, 'ERROR');
+        }
+      },
       onAfterSuccess:function(e,history,item){
         var link = "";
         switch(history.from){
           case "appCreate":
-          // $.extend(instanceData,Berries.modal.toJSON())
           instanceData.app_id = item.id;
-          // options.complete+=''
           options.complete = "Successfully Created an App!<br><br> Here are some next steps you may want to take<div>"+
           "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> Instanciate App</a>"+
           "<a href='/admin/apps/"+item.id+"' class='list-group-action'><i class='fa fa-cube'></i> Edit App</a>"+
@@ -409,7 +415,7 @@ var createEngine = function(e){
             $(item).hide()
           }else{
             $(item).show()
-          } 
+          }
           }.bind(this) 
         )
       },

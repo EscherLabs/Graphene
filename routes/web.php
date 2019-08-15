@@ -265,10 +265,8 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     /***** USERS *****/
     // List all users
     Route::get('/users','UserController@index')->middleware('can:get_all,App\User');
-
     // Search all users
     Route::get('/users/search/{search_string?}','UserController@search')->middleware('can:get_all,App\User');
-    
     // Lookup specific user by user_id
     Route::get('/users/{user}','UserController@show')->middleware('can:get,user');
     // Create a new user
