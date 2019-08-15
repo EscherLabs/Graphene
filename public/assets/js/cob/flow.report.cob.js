@@ -51,7 +51,7 @@ report:`
         <dt>State</dt><dd style="text-transform: capitalize;">{{workflow.state}}</dd>
         <dt>Original Submission</dt> <dd>{{workflow.created_at.date}} @ {{workflow.created_at.time}}</dd>
         <dt>Last Action</dt> <dd>{{workflow.updated_at.date}} @ {{workflow.updated_at.time}}</dd>
-        <dt>Assignee</dt><dd>{{assignment.name}} ({{workflow.assignment_type}})</dd>
+        <dt>Assignee</dt><dd>{{assignment.name}}{{^assignment.name}}{{assignment.first_name}} {{assignment.last_name}}{{/assignment.name}} ({{workflow.assignment_type}})</dd>
 
         </dl>
       </div>

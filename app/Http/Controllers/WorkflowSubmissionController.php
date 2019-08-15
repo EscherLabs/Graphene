@@ -443,8 +443,8 @@ class WorkflowSubmissionController extends Controller
         $is_assigned = false;//(Auth::user()->site_developer || Auth::user()->site_admin);
 
         if($workflow_submission->assignment_type == "user"){
-            $assignment = User::where("unique_id", '=', $workflow_submission->assignment_id)->select('first_name','last_name','email','unique_id','params')->first();
-            $is_assigned = ($is_assigned || (Auth::user()->unique_id == $workflow_submission->assignment_id) );
+            $assignment = User::where("id", '=', $workflow_submission->assignment_id)->select('first_name','last_name','email','unique_id','params')->first();
+            $is_assigned = ($is_assigned || (Auth::user()->id == $workflow_submission->assignment_id) );
         }else{
             $assignment = Group::where("id",'=',$workflow_submission->assignment_id)->where('site_id',config('app.site')->id)->select('name','slug','id')->first();
             $is_assigned = ($is_assigned || in_array($workflow_submission->assignment_id, Auth::user()->groups) );
