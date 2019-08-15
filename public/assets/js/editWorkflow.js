@@ -441,8 +441,10 @@ function drawForm(name){
           {value: "user", label: "User"},
           {value: "url", label: "Url"}
         ]},
-        _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
-        _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
+        {type:"user",name:"id",show: [{type: "matches", name: "type", value: "user"}]},
+        {type:"group",name:"id",show: [{type: "matches", name: "type", value: "group"}]},
+        // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
+        // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
         {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "matches", name: "type", value: "url"}]},
         {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "matches", name: "type", value: "url"}]},
@@ -590,8 +592,6 @@ $('#add-state').on('click',function() {
 
   createFlow();
 })
-
-
 
 
 $('#save').on('click',function() {

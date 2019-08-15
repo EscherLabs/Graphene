@@ -320,11 +320,11 @@ Cobler.types.Workflow = function(container){
               }
             ],
             "fields":[
-                {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(data.version.code.form).fields
+                {"name":"_state","label":false,"type":"fieldset","fields": data.version.code.form.fields
               }
                 ]
           }
-          _.each((_.find(JSON.parse(data.version.code.flow),{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
+          _.each((_.find(data.version.code.flow,{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
             action.modifiers = 'btn btn-'+action.type;
             action.action = 'save';
             action.type = 'button';
@@ -537,7 +537,7 @@ Cobler.types.WorkflowStatus = function(container){
                   // $('.notificationCount').toggle(!!total).html(total)
                   
                   var getActions = function(item){
-                    item.actions = (_.find(JSON.parse(item.workflow_version.code.flow),{name:item.state}) || {"actions": []}).actions;
+                    item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
                     item.updated_at = moment(item.updated_at).fromNow()
                   }
 
@@ -646,7 +646,7 @@ Cobler.types.WorkflowStatus = function(container){
 
                             ],
                             "fields":[
-                              {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(e.model.attributes.workflow_version.code.form).fields},                                
+                              {"name":"_state","label":false,"type":"fieldset","fields": e.model.attributes.workflow_version.code.form.fields},                                
                               {"name":"comment","type":"textarea","length":255}
                             ]
                           }).on('save',function(e,eForm){
@@ -658,13 +658,14 @@ Cobler.types.WorkflowStatus = function(container){
                             
                             $.ajax({
                               url:'/api/workflow/'+e.model.attributes.id,
-                              dataType : 'json',
                               type: 'PUT',
-                              data: {_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},
+                              dataType : 'json',
+                              contentType: 'application/json',
+                              data: JSON.stringify({_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},),
                               success  : function(e,data){
                                 e.model.waiting(false);
                                 
-                                data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
+                                data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
                                 data.updated_at = moment(data.updated_at).fromNow()
                                 e.model.set(data)
                                 
@@ -717,10 +718,11 @@ Cobler.types.WorkflowStatus = function(container){
                           url:'/api/workflow/'+e.model.attributes.id,
                           dataType : 'json',
                           type: 'PUT',
-                          data: {_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},
+                          contentType: 'application/json',
+                          data: JSON.stringify({_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]}),
                           success  : function(e,data){
                             e.model.waiting(false);
-                            data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
+                            data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
                             data.updated_at = moment(data.updated_at).fromNow()
                             e.model.set(data)
                             // console.log(data);

@@ -71,7 +71,7 @@ $.ajax({
 					// resource.value = (_.find(data.configuration.map,{name:resource.name})||{value:''}).value 
 					return resource;
 				})}, actions:[],fields:[
-					{name:"initial",label:"Initial State", options:_.pluck(JSON.parse(data.version.code.flow),'name'), type:"smallcombo"},
+					{name:"initial",label:"Initial State", options:_.pluck(data.version.code.flow,'name'), type:"smallcombo"},
 
 					{name:"map",label:false,array:{min:data.workflow.code.map.length,max:data.workflow.code.map.length},type:"fieldset",fields:[
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.value.type}})</span></h4>'}},
