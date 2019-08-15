@@ -187,6 +187,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     // Lookup specific workflow instance by workflow_instance_id
     Route::get('/workflowinstances/{workflow_instance}','WorkflowInstanceController@show');
+    Route::get('/workflowinstances/{workflow_instance}/csv','WorkflowInstanceController@getcsv');
     // Create a new workflow instance
     Route::post('/workflowinstances','WorkflowInstanceController@create')->middleware('can:create,App\WorkflowInstance');
     // Update an existing workflow instance by workflow_instance_id

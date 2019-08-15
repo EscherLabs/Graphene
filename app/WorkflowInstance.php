@@ -20,6 +20,9 @@ class WorkflowInstance extends Model
     public function group() {
       return $this->belongsTo(Group::class);
     }
+    public function submissions() {
+        return $this->hasMany(WorkflowSubmission::class);
+    }
     public function workflow() {
       return $this->belongsTo(Workflow::class);
     }

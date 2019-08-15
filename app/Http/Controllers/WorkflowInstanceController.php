@@ -225,4 +225,64 @@ class WorkflowInstanceController extends Controller
         // ]);
         // return $workflows;
     }
+
+    private function flatten($arr,&$flat,$parent='') {
+        if (is_string($arr) || is_bool($arr) || is_numeric($arr)) {
+            return $arr;
+        }
+        if (is_array($arr)) {
+            $cat = [];
+            foreach($arr as $elem) {
+                if (is_string($elem) || is_bool($elem) || is_numeric($elem)) {
+                    $cat[] = $elem;
+                } else {
+                    return 'Unsupported Form Type';
+                }
+            }
+            return '"'.implode('", "',$cat).'"';
+        }
+        if (is_object($arr)) {
+            foreach($arr as $key => $ar) {
+                $children = $this->flatten($ar,$flat,$parent.$key.'.');
+                if (!is_null($children)) {
+                    $flat[$parent.$key] = $children;
+                }
+            }
+            return null;
+        }
+    }    
+
+    public function getcsv(WorkflowInstance $workflow_instance, Request $request) {
+        $submissions = $workflow_instance->submissions()->with('user')->get();
+        $all_submissions = [];
+        $all_keys = [];
+        $csv = '';
+        foreach($submissions as $submission) {
+            $flat = [];
+            $this->flatten($submission->data,$flat);
+            $data = array_merge($flat, [
+                'status' => $submission->status,
+                'state' => $submission->state,
+                'created_at' => $submission->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
+            ]);
+            $all_keys = array_unique(array_merge($all_keys,array_keys($data)),SORT_REGULAR);
+            $all_submissions[] = $data;
+        }
+        $csv .= '"'.implode('","',$all_keys).'"'."\n";
+        foreach($all_submissions as $submission) {
+            $row = [];
+            foreach($all_keys as $key) {
+                if (isset($submission[$key])) {
+                    $row[] = str_replace('"','""',$submission[$key]);
+                } else {
+                    $row[] = '';
+                }
+            }
+            $csv .= '"'.implode('","',$row).'"'."\n";
+        }
+        return response($csv,200)->header('Content-Type','text/csv')
+            ->header('Content-Disposition','attachment; filename="'.$workflow_instance->name.'_workflow.csv"');
+    }
+
 }
