@@ -106,6 +106,7 @@ class WorkflowSubmissionController extends Controller
         }
 
         $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
+        
         $owner = User::find($workflow_submission->user_id);
 
         $state_data = [];
@@ -419,24 +420,35 @@ class WorkflowSubmissionController extends Controller
         }
     }
 
-
     public function report($workflow_submission_id,Request $request) {
         $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission_id)->with('user')->with('workflowVersion')->first();
-        if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        } else {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        }
+        // if (Auth::user()->site_developer || Auth::user()->site_admin) {
+        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
+        // } else {
+        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
+        // }
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $links = Group::AppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         } 
         else { /* User is not Authenticated */
-            abort(404); 
-
+            $return = $this->customAuth->authenticate($request);
+            if(isset($return)){
+                return $return;
+            }
         }
         $workflow_submission->load('workflowInstance');
+
+        $is_assigned = false;//(Auth::user()->site_developer || Auth::user()->site_admin);
+
+        if($workflow_submission->assignment_type == "user"){
+            $assignment = User::where("unique_id", '=', $workflow_submission->assignment_id)->select('first_name','last_name','email','unique_id','params')->first();
+            $is_assigned = ($is_assigned || (Auth::user()->unique_id == $workflow_submission->assignment_id) );
+        }else{
+            $assignment = Group::where("id",'=',$workflow_submission->assignment_id)->where('site_id',config('app.site')->id)->select('name','slug','id')->first();
+            $is_assigned = ($is_assigned || in_array($workflow_submission->assignment_id, Auth::user()->groups) );
+        }
 
         // if($myWorkflowInstance != null) {
             $template = new Templater();
@@ -447,7 +459,7 @@ class WorkflowSubmissionController extends Controller
                 'id'=>0,
                 'data'=>[],
                 // 'config'=>json_decode('{"sections":[[{"title":"'.$workflow_instance->name.' ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
-                'config'=>json_decode('{"sections":[[{"title":"TItle here ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
+                'config'=>json_decode('{"sections":[[{"title":"TItle here ","widgetType":"WorkflowSubmissionReport","is_assigned":'.json_encode($is_assigned).', "assignment":'.json_encode($assignment).', "options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],

@@ -1,8 +1,7 @@
-
 workflow_report = {
-history:`<ul class="list-group available_workflow" style="margin:10px 0 0">
+history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
 <div class="filterable list-group-item" target="_blank" data-current=true data-id="{{data.0.id}}">
-<div>{{workflow.user.first_name}} {{workflow.user.last_name}}
+<div>{{workflow.user.first_name}} {{workflow.user.last_name}} (Originator)
 <span class="label pull-right label-success{{#data.0.closed}} label-danger{{/data.0.closed}}">{{data.0.end_state}}</span>
 
 </div>
@@ -40,15 +39,27 @@ hr{
 margin:10px 0
 }
 </style>`,
-actions:`<div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div>`,
+actions:`{{#actions_data.0}}<legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div>{{/actions_data.0}}`,
 report:`
     <div>
-      <h3>{{workflow.user.first_name}} {{workflow.user.last_name}}</h3>
-      <dl></dl>
-      {{workflow.created_at}}
-      <div>{{workflow.assignment_type}}:{{workflow.assignment_id}}</div>
+    <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
+    Submitted {{workflow.created_at.fromNow}} by <h4>{{workflow.user.first_name}} {{workflow.user.last_name}}</h4><hr>
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="dl-horizontal">
+        <dt>Status</dt><dd style="text-transform: capitalize;">{{workflow.status}}</dd>
+        <dt>State</dt><dd style="text-transform: capitalize;">{{workflow.state}}</dd>
+        <dt>Original Submission</dt> <dd>{{workflow.created_at.date}} @ {{workflow.created_at.time}}</dd>
+        <dt>Last Action</dt> <dd>{{workflow.updated_at.date}} @ {{workflow.updated_at.time}}</dd>
+        <dt>Assignee</dt><dd>{{assignment.name}} ({{workflow.assignment_type}})</dd>
+
+        </dl>
+      </div>
+      <div class="col-md-6">
       {{>actions}}
-      <hr>
+      </div>
+    </div>
+
     </div>
 <div class="panel">
   <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
@@ -78,7 +89,25 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 		toJSON: get,
 		get: get,
 		set: function (newItem) {$.extend(item, newItem);},
-
+    processDates:function(log){
+      var cat = moment(log.created_at);
+      var uat = moment(log.updated_at);
+      log.created_at = {
+        original:log.created_at,
+        time:cat.format('LTS'),
+        date:cat.format('L'),
+        fromNow:cat.fromNow()
+      }
+      log.updated_at = {
+        original:log.updated_at,
+        time:uat.format('LTS'),
+        date:uat.format('L'),
+        fromNow:uat.fromNow()
+      }
+      log.closed = log.status == 'closed';
+      log.open = log.status == 'open';
+      return log;
+    },
 		initialize: function(el){
       if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
@@ -90,26 +119,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         dataType : 'json',
         type: 'GET',
         success  : function(data){
+          this.get().options = this.processDates(this.get().options)
         
-          data = _.map(data, function(log){
-            var cat = moment(log.created_at);
-            var uat = moment(log.updated_at);
-            log.created_at = {
-              original:log.created_at,
-              time:cat.format('LTS'),
-              date:cat.format('L'),
-              fromNow:cat.fromNow()
-            }
-            log.updated_at = {
-              original:log.updated_at,
-              time:uat.format('LTS'),
-              date:uat.format('L'),
-              fromNow:uat.fromNow()
-            }
-            log.closed = log.status == 'closed';
-            log.open = log.status == 'open';
-            return log;
-          })
+          data = _.map(data, this.processDates )
+
+          
 
           this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
 
@@ -137,19 +151,26 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
             if(e.currentTarget.dataset.current){
 
-              this.preview = _.find(this.get().options.workflow_version.code.templates,{name:"Preview"});
-              if(typeof this.preview !== 'undefined' && this.preview.content.length){
+              this.preview = (_.find(this.get().options.workflow_version.code.templates,{name:"Preview"})||{content:''});
+              if(this.preview.content.length){
                 this.preview = this.preview.content;
               }else{
-                previewForm = new gform(form)
-                this.preview = previewForm.toString('_state');
+                previewForm = new gform(form).on('change',function(e){
+                  $('#previewForm').html(e.form.toString('_state'))
+                })
+                this.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
               }
               workflow_report.preview = this.preview;
-              document.querySelector('.report').innerHTML =  gform.renderString(workflow_report.report, _.extend({}, workflow_report, {
-                    workflow:this.get().options,
-                    data:data[0],
-                    actions_data:(_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions
-                  }) );
+              
+              reportData =  {
+                workflow:this.get().options,
+                assignment:this.get().assignment,
+                data:data[0]
+              }
+              if(this.get().is_assigned){
+                reportData.actions_data = (_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions
+              }
+              document.querySelector('.report').innerHTML =  gform.renderString(workflow_report.report, _.extend({}, workflow_report,reportData));
 
             }else{
               document.querySelector('.report').innerHTML = gform.renderString(workflow_report.form, this.get());
@@ -161,7 +182,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           $('.filterable').first().click();
 
           $('.report').on('click','[data-event]',function(e){
-            // var event = e.currentTarget.dataset.event;
             var formStructure = {
               "legend":this.get().options.workflow_instance.name,
               "actions": [
@@ -198,7 +218,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(this.get().options.workflow_version.code.forms,{name:'Initial Form'}).content).fields})
             }
 
-
             new gform(formStructure).on('save',function(e){
               document.querySelector('.report').innerHTML = '<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>';
 
@@ -206,7 +225,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
               e.form.trigger('close')
               formData = {comment:e.form.get('comment'),action:e.form.get('_flowaction')}
-              if(typeof e.form.fields._state !== 'undefined'){
+
+              if(typeof e.form.find('_state') !== 'undefined'){
                 formData._state =e.form.get('_state')
               }
               $.ajax({
