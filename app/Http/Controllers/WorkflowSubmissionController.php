@@ -88,7 +88,7 @@ class WorkflowSubmissionController extends Controller
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
         $m = new \Mustache_Engine;
 
-        $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_id)->first();
+        $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
         $myWorkflowInstance->findVersion();
 
         $start_state = $workflow_submission->state;
