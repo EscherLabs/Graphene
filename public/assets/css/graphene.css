@@ -968,3 +968,6 @@ fieldset fieldset {
 .selectedClass.closedClass > rect{
 stroke:#FF0000 !important;
 }
+
+
+.widget.WorkflowSubmissionReport .list{margin: -15px 0 -15px -15px;background:#e8e8e8;padding:15px;position: fixed;overflow: scroll;top: 45px;bottom: 0;}

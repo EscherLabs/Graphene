@@ -188,7 +188,6 @@
 		<script src="/assets/js/templates/admin.js"></script>
     <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
     <script src='/assets/js/vendor/toastr.min.js'></script> 
-    <script src='/assets/js/lib.js'></script> 
     @yield('end_body_scripts_top')
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
@@ -196,7 +195,9 @@
     <script src='/assets/js/vendor/state-machine.js'></script>
 
     <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
-    <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script> 
+    <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>
+        <script src='/assets/js/lib.js'></script> 
+ 
     @yield('end_body_scripts_bottom')
 
     <script>
