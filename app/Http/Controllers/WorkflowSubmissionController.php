@@ -92,8 +92,10 @@ class WorkflowSubmissionController extends Controller
         $myWorkflowInstance->findVersion();
 
         $start_state = $workflow_submission->state;
-
-        $flow = json_decode($myWorkflowInstance->version->code->flow);
+        $flow = $myWorkflowInstance->version->code->flow;
+        if(is_string($flow)){
+            $flow = json_decode($flow);
+        }
         $oldstate = null;
         foreach($flow  as $struct) {
             if ($workflow_submission->state == $struct->name) {

@@ -320,27 +320,18 @@ Cobler.types.Workflow = function(container){
               }
             ],
             "fields":[
-                {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(data.version.code.forms,{name:'Initial Form'}).content).fields
+                {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(data.version.code.form).fields
               }
                 ]
           }
-            _.each((_.find(JSON.parse(data.version.code.flow),{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
-              action.modifiers = 'btn btn-'+action.type;
-              action.action = 'save';
-              action.type = 'button';
-              formSetup.actions.push(action);
-              // return action;
-            });
-          
-
+          _.each((_.find(JSON.parse(data.version.code.flow),{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
+            action.modifiers = 'btn btn-'+action.type;
+            action.action = 'save';
+            action.type = 'button';
+            formSetup.actions.push(action);
+          });
+        
           this.form = new gform(formSetup, '.g_'+get().guid);
-
-
-
-
-            
-
-            // gform.types.fieldset.edit.call(this.form.find('_state'),false)
 
           this.form.on('save',function(e){
             if(!e.form.validate(true))return;
@@ -353,8 +344,9 @@ Cobler.types.Workflow = function(container){
             $.ajax({
               url:'/api/workflow/'+group_id+'/'+this.get().workflow_id,
               dataType : 'json',
+              contentType: 'application/json',
+              data: JSON.stringify(data),
               type: 'POST',
-              data: data,
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
@@ -368,7 +360,6 @@ Cobler.types.Workflow = function(container){
             // gform.types.fieldset.edit.call(e.form.find('_state'), false);
             // gform.types.button.edit.call(e.field, false);
             e.form.trigger('clear');
-
           })
           // .on('submitted',function(e){
           //   e.form.find('_state').el.style.opacity = 1
@@ -655,7 +646,7 @@ Cobler.types.WorkflowStatus = function(container){
 
                             ],
                             "fields":[
-                              {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(e.model.attributes.workflow_version.code.forms,{name:'Initial Form'}).content).fields},                                
+                              {"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(e.model.attributes.workflow_version.code.form).fields},                                
                               {"name":"comment","type":"textarea","length":255}
                             ]
                           }).on('save',function(e,eForm){

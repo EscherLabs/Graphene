@@ -140,7 +140,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 _state:log.data
               },
               "fields":[
-                {"name":"_state",edit:false,"label":false,"type":"fieldset","fields": JSON.parse(cb.collections[0].getItems()[0].get().options.workflow_version.code.forms[0].content).fields},
+                {"name":"_state",edit:false,"label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields},
                 {
                   "type": "hidden",
                   "name": "_flowstate",
@@ -168,7 +168,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 data:data[0]
               }
               if(this.get().is_assigned){
-                reportData.actions_data = (_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions
+                reportData.actions_data = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
               }
               document.querySelector('.report').innerHTML =  gform.renderString(workflow_report.report, _.extend({}, workflow_report,reportData));
 
@@ -212,10 +212,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 {"name":"comment","type":"textarea","length":255}
               ]
             }
-
-            if(_.find((_.find(JSON.parse(this.get().options.workflow_version.code.flow),{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
+            if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
               formStructure.data = {_state:this.get().options.data},
-              formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": JSON.parse(_.find(this.get().options.workflow_version.code.forms,{name:'Initial Form'}).content).fields})
+              formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
             }
 
             new gform(formStructure).on('save',function(e){
@@ -232,11 +231,12 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               $.ajax({
                 url:'/api/workflow/'+e.form.get('_id'),
                 dataType : 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
                 type: 'PUT',
-                data: formData,
                 success  : function(data){
                   document.location.reload();
-                  // data.actions = (_.find(JSON.parse(data.workflow_version.code.flow),{name:data.state}) || {"actions": []}).actions;
+                  // data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
                   // data.updated_at = moment(data.updated_at).fromNow()
                   // e.model.set(data)
                   }

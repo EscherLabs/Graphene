@@ -61,43 +61,19 @@ $.ajax({
 					{name: 'id', type:'hidden'}
 				],attributes:data, actions:false, name:'main'})
 
-				// if(typeof data.workflow.code.forms !== 'undefined' && _.findWhere(data.workflow.code.forms,{name:"Options"}).content){
-				// 	$('#optionstab').show();
-				// 	var options = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.workflow.code.forms,{name:"Options"}).content)) 
-				// 	$('#optionstab').toggle(!!options.fields.length);
-				// 	options.attributes = data.options || {};
-				// 	options.attributes.id = data.id;
-				// 	options.name = 'options';
-				// 	$('#options .col-sm-9').berry(options);
-				// }
-				// if(typeof data.workflow.code.forms !== 'undefined' && _.findWhere(data.workflow.code.forms,{name:"User Options"}).content){
-				// 	var user_options_default = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.workflow.code.forms,{name:"User Options"}).content)) 
-				// 	$('#useroptionstab').toggle(!!user_options_default.fields.length);
-				// 	user_options_default.attributes = data.user_options_default || {};
-				// 	user_options_default.attributes.id = data.id;
-				// 	user_options_default.name = 'user_options_default';
-				// 	$('#user_options_default .col-sm-9').berry(user_options_default);
-				// }
-				// if(typeof data.workflow.code.resources !== 'undefined' && data.workflow.code.resources[0].name !== '') {	
-				// 	$('#resoucestab').show();
-				// 	var attributes = _.map(data.workflow.code.resources,function(resource){
-				// 		resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
-				// 		return resource
-				// 	}.bind({resources:data.resources}))
-				// 	// var attributes = $.extend(true, [], data.resources,data.workflow.code.resources);
 				var valueField = {columns:8,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
 				data.configuration = data.configuration||{}
-				r_options = {data:{initial:data.configuration.initial,resources:_.map(data.workflow.code.resources,function(resource){
-					var r = _.find(data.configuration.resources,{name:resource.name});
+				r_options = {data:{initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
+					var r = _.find(data.configuration.map,{name:resource.name});
 					if(typeof r !== 'undefined' && r.type == resource.type){
 						resource.value = r.value;
 					}
-					// resource.value = (_.find(data.configuration.resources,{name:resource.name})||{value:''}).value 
+					// resource.value = (_.find(data.configuration.map,{name:resource.name})||{value:''}).value 
 					return resource;
 				})}, actions:[],fields:[
 					{name:"initial",label:"Initial State", options:_.pluck(JSON.parse(data.version.code.flow),'name'), type:"smallcombo"},
 
-					{name:"resources",label:false,array:{min:data.workflow.code.resources.length,max:data.workflow.code.resources.length},type:"fieldset",fields:[
+					{name:"map",label:false,array:{min:data.workflow.code.map.length,max:data.workflow.code.map.length},type:"fieldset",fields:[
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.value.type}})</span></h4>'}},
 
 						{columns:0,name:"type",label:false,edit:false},
@@ -108,37 +84,58 @@ $.ajax({
 						_.extend({show:[{type:"matches",name:"type",value:"endpoint"}],type:"select",options:'/api/groups/'+data.group_id+'/endpoints',format:{label:"{{name}}",value:"{{id}}"}},valueField),
 					]}
 				]}
-				resources = new gform(r_options,'#resources .col-sm-9');
-					// $('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {},fields:[
+				map = new gform(r_options,'#map .col-sm-9');
+					// $('#map .col-sm-9').berry({name:'map', actions:false,attributes: {},fields:[
 					// 	{name:'container', label: false,  type: 'fieldset', fields:[
 
-					// 		{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
+					// 		{"multiple": {"duplicate": false},label: '', name: 'map', type: 'fieldset', fields:[
 					// 			{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
 					// 			{name: 'endpoint',label:false,columns:8, type: 'select',default: {name:'None', value:'none'}, choices: '/api/groups/'+data.group_id+'/endpoints'},
 					// 			{label:false, name: 'name',columns:0, type:'hidden'}
 					// 		]}
 					// 	]},
 					// ]} ).on('change',function(item, b, c){
-					// 	var item = Berries.resources.findByID(item.id)
+					// 	var item = Berries.map.findByID(item.id)
 					// 	var url = '';
 					// 	url += (_.findWhere(Berry.collection.get('/api/groups/'+this.group_id+'/endpoints'),{id:parseInt(item.value)})||{config:{url:''} }).config.url;
-					// 	url+=(_.findWhere(this.workflow.code.resources,{name:item.parent.children.name.instances[1].value})||{path:''}).path				
+					// 	url+=(_.findWhere(this.workflow.code.map,{name:item.parent.children.name.instances[1].value})||{path:''}).path				
 					// 	item.update({help:url, value:item.value}, true)
 					// }.bind(data))
 				// }
+				if(typeof data.workflow.code.resources !== 'undefined' && data.workflow.code.resources[0].name !== '') {	
+					$('#resourcestab').show();
+					var attributes = _.map(data.workflow.code.resources,function(resource){
+						resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
+						return resource
+					}.bind({resources:data.configuration.resources}))
+
+					$('#resources .col-sm-9').berry({name:'resources', actions:false,attributes: {resources:attributes},fields:[
+						{name:'container', label: false,  type: 'fieldset', fields:[
+
+							{"multiple": {"duplicate": false},label: '', name: 'resources', type: 'fieldset', fields:[
+								{label:false, name: 'name',columns:4, type:'raw', template:'<label class="control-label" style="float:right">{{value}}: </lable>'},
+								{name: 'endpoint',label:false,columns:8, type: 'select',default: {name:'None', value:'none'}, choices: '/api/groups/'+data.group_id+'/endpoints'},
+								{label:false, name: 'name',columns:0, type:'hidden'}
+							]}
+						]},
+					]} ).on('change',function(item, b, c){
+						var item = Berries.resources.findByID(item.id)
+						var url = '';
+						url += (_.findWhere(Berry.collection.get('/api/groups/'+this.group_id+'/endpoints'),{id:parseInt(item.value)})||{config:{url:''} }).config.url;
+						url+=(_.findWhere(this.workflow.code.resources,{name:item.parent.children.name.instances[1].value})||{path:''}).path				
+						item.update({help:url, value:item.value}, true)
+					}.bind(data))
+				}
+
+
 				$('#save').on('click',function(){
 					var item = Berries.main.toJSON();
-					// if(typeof Berries.options !== 'undefined') {
-					// 	item.options = Berries.options.toJSON();
-					// }			
-					// if(typeof Berries.user_options_default !== 'undefined') {
-					// 	item.user_options_default = Berries.user_options_default.toJSON();
-					// }
-					// if(typeof Berries.resources !== 'undefined') {
-					// 	item.resources = Berries.resources.toJSON().resources;
-					// }
-					if(typeof resources !== 'undefined') {
-						item.configuration = resources.toJSON();
+
+					// if(typeof map !== 'undefined') {
+						item.configuration = map.toJSON();
+					// }					
+					if(typeof Berries.resources !== 'undefined') {
+						item.configuration.resources = Berries.resources.toJSON().resources;
 					}
 					$.ajax({url: '/api/workflowinstances/'+item.id, type: 'PUT', data: item, success:function(){
 							toastr.success('', 'Successfully updated Workflow Instance')

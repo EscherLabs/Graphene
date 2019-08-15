@@ -175,16 +175,56 @@ function setSize(){
 window.onresize = setSize;
 function load(workflow_version) {
 	$('.nav-tabs').stickyTabs();
-  // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  //   bt.fixStyle()
-  // })
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    bt.fixStyle()
+  })
 
-  loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:'', disabled: true}],templates:[{name:'Preview',content:'', disabled: true}]},workflow_version)
+  wf_form = "";
+  if(typeof workflow_version.form !== 'undefined'){
+    wf_form = workflow_version.form
+    if(typeof wf_form !== 'string'){
+      wf_form = JSON.stringify(wf_form,null,2);
+    }
+    workflow_version.forms =[];
+  }else{
+    // wf_form = workflow_version.code.forms[0].content
+
+  }
+
+
+
+  loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:wf_form, disabled: true}],templates:[{name:'Preview',content:'', disabled: true}]},workflow_version)
 
   attributes= $.extend(true,{},{code:{}}, loaded);
   $('.navbar-header .nav a h4').html('Workflow - '+attributes.workflow.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
+
+
+  var tableConfig = {
+		entries: [25, 50, 100],
+		count: 25,
+		autoSize: -20,
+		container: '.resources',
+    edit:true,delete:true,add:true
+	}
+
+
+  tableConfig.schema = [
+    {label: 'Name',name: 'name'},
+    {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}, {label: 'Include as Script', value: 'script'}, {label: 'Include as CSS', value: 'css'}]},
+    {label: 'Path',name:'path'},
+    {label: 'Fetch', type: 'checkbox',name:'fetch'},
+    {label: 'Cache', type: 'checkbox',name:'cache'}
+  ];
+  tableConfig.data = attributes.code.resources;
+  if(typeof bt !== 'undefined'){
+    bt.destroy();
+  }
+  bt = new berryTable(tableConfig)
+
+
+
 
   setSize();
 
@@ -207,7 +247,7 @@ function load(workflow_version) {
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Key</h4>',columns:9,type:"output"},
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Type</h4>',columns:3,type:"output"},
 
-    {name:"resources",label:false,array:true,type:"fieldset",fields:[
+    {name:"map",label:false,array:true,type:"fieldset",fields:[
       {name:"name",label:false,columns:9,placeholder:"Key"},
       {name:"type",label:false,type:"select",columns:3,options:[
         {label:"String",value:"string"},
@@ -218,11 +258,11 @@ function load(workflow_version) {
       ]}
     ]}
   ]}
-  resources = new gform(r_options,'.resources').on('input:type',function(e){
-    gform.collections.update('endpoints', _.where(e.form.get().resources, {type: "endpoint"}));
+  map = new gform(r_options,'.map').on('input:type',function(e){
+    gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
   }).on('input:name',_.throttle(function(e){
     if(e.field.parent.find('type').value == "endpoint"){
-      gform.collections.update('endpoints', _.where(e.form.get().resources, {type: "endpoint"}));
+      gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
     }
   }));
 
@@ -367,7 +407,10 @@ function createFlow() {
 // }
 
 // debugger;
-flow_states = JSON.parse(attributes.code.flow||'[{"name":"origin"}]');
+flow_states = attributes.code.flow||'[{"name":"origin"}]';
+if(typeof flow_states == 'string'){
+  flow_states = JSON.parse(flow_states);
+}
 createFlow();
 
 
@@ -510,7 +553,7 @@ function drawForm(name){
 
 }
 
-gform.collections.add('endpoints', _.where(attributes.code.resources, {type: "endpoint"}))
+gform.collections.add('endpoints', _.where(attributes.code.map, {type: "endpoint"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "api", label: "API"}, {value: "email", label: "Email"}]},
@@ -552,20 +595,20 @@ $('#add-state').on('click',function() {
 
 
 $('#save').on('click',function() {
-
-  var data = {code:{flow:JSON.stringify(flow_states)}};
+  var data = {code:{flow:flow_states}};
   if(true || !errorCount){
-
-    data.code.forms = formPage.toJSON();
+    data.code.form = JSON.parse(formPage.toJSON()[0].content);
     data.updated_at = attributes.updated_at;
-    data.code.resources = resources.toJSON().resources;
+    data.code.map = map.toJSON().map;
     template_errors = templatePage.errors();
     data.code.templates = templatePage.toJSON();
-
+    data.code.resources = _.map(bt.models,'attributes');
     $.ajax({
       url: root+attributes.workflow_id+'/code',
       method: 'put',
-      data: data,
+      dataType : 'json',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
       success:function(e) {
         attributes.updated_at = e.updated_at;
         toastr.success('', 'Successfully Saved')
