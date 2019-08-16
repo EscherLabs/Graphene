@@ -18,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\AppInstance' => 'App\Policies\AppInstancePolicy',
         'App\Workflow' => 'App\Policies\WorkflowPolicy',
         'App\WorkflowInstance' => 'App\Policies\WorkflowInstancePolicy',
+        'App\WorkflowSubmission' => 'App\Policies\WorkflowSubmissionPolicy',
         'App\Endpoint' => 'App\Policies\EndpointPolicy',
         'App\Link' => 'App\Policies\LinkPolicy',
         'App\User' => 'App\Policies\UserPolicy',

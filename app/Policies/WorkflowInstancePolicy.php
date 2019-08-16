@@ -17,6 +17,13 @@ class WorkflowInstancePolicy
         }
     }
 
+    public function create_submission(User $user, WorkflowInstance $workflow_instance)
+    {
+        if ($user->group_member($workflow_instance->id) || $user->group_admin($workflow_instance->id)) {
+            return true;
+        }
+    }
+
     public function get_all(User $user)
     {
         // TJC 3/26/18 -- Need to revisit

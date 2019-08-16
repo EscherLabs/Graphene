@@ -7,7 +7,7 @@ $.ajax({
 		$('.navbar-header .nav a h4').append(' - '+data.workflow.name+'');
 		
 		$.ajax({
-			url:'/api/workflow/submissions/'+resource_id,
+			url:'/api/workflowinstances/'+resource_id+'/submissons',
 			dataType : 'json',
 			type: 'GET',
 			success  : function(data){

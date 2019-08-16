@@ -33,37 +33,15 @@ class WorkflowSubmissionController extends Controller
         $this->customAuth = new CustomAuth();
     }
 
-    public function create($group, $workflow_id = null, Request $request) {
-        if(!is_numeric($group)) {
-            $groupObj = Group::with('composites')->where('slug','=',$group)->where('site_id',config('app.site')->id)->first();
-			$group = $groupObj->id;
-		}else{
-    		$groupObj = Group::with('composites')->where('id','=',$group)->where('site_id',config('app.site')->id)->first();
-        }
+    public function create(WorkflowInstance $workflow_instance, Request $request) {
+        $myWorkflowInstance = WorkflowInstance::with('workflow')
+            ->where('id', '=', $workflow_instance->id)->with('workflow')->first();
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-
-            $myWorkflowInstance = WorkflowInstance::with('workflow')
-                ->where('group_id','=', $group)->where('id', '=', $workflow_id)->with('workflow')->first();
-
-            if (is_null($myWorkflowInstance)) { 
-                abort(404); 
-            }
-            
-            if($myWorkflowInstance->public == 0) {
-                $this->authorize('fetch' ,$myWorkflowInstance);
-            }
             $links = Group::AppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-            $myWorkflowInstance = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('id', '=', $workflow_id)->where('public','=',true)->first();
-            if (is_null($myWorkflowInstance)) { 
-                $return = $this->customAuth->authenticate($request);
-                if(isset($return)){
-                    return $return;
-                }
-            }
             $links = Group::publicAppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         }
 
@@ -338,7 +316,7 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_id','=',$workflow_instance->id)->orderBy('created_at')->get();
+        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_instance_id','=',$workflow_instance->id)->orderBy('created_at')->get();
     }   
     
     public function workflow_submission_log($workflow_submission, Request $request) {
