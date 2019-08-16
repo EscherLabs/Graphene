@@ -437,8 +437,9 @@ function drawForm(name){
 
       {type: "fieldset", name: "assignment", label: false, fields: [
         {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
-          {value: "group", label: "Group"},
-          {value: "user", label: "User"}
+
+          {value: "user", label: "User"},
+          {value: "group", label: "Group"}
         ]},
         {type:"user",name:"id",show: [{type: "matches", name: "type", value: "user"}]},
         {type:"group",name:"id",show: [{type: "matches", name: "type", value: "group"}]},

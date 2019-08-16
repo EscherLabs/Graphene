@@ -6,11 +6,13 @@ history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
 
 </div>
 <hr>
-<div><h5 style="text-align:right"><span>({{data.0.updated_at.fromNow}})</span></h5></div>
+<div><h5 style="text-align:right"><span data-toggle="tooltip" title="{{data.0.updated_at.date}} @ {{data.0.updated_at.time}}" data-placement="top">({{data.0.updated_at.fromNow}})</span></h5></div>
 </div>
 <div class="list-group-item bg-info" style="color: white;background: #aaa;" ><h4>History</h4></div>
-{{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right">({{updated_at.fromNow}})</span></h5></div>
-<span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span><span class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>{{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>{{/data}}
+{{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>
+<span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span>
+<span style="display:none" class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>
+{{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>{{/data}}
 </ul>`,
 container:`<div class="row">
 <div class="list col-md-4 hidden-xs hidden-sm " style="">
@@ -39,7 +41,7 @@ hr{
 margin:10px 0
 }
 </style>`,
-actions:`{{#actions_data.0}}<legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div>{{/actions_data.0}}`,
+actions:`{{#actions_data.0}}<legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div><br>{{/actions_data.0}}`,
 report:`
     <div>
     <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
@@ -94,14 +96,14 @@ Cobler.types.WorkflowSubmissionReport = function(container){
       var uat = moment(log.updated_at);
       log.created_at = {
         original:log.created_at,
-        time:cat.format('LTS'),
-        date:cat.format('L'),
+        time:cat.format('h:mma'),
+        date:cat.format('MM/DD/YY'),
         fromNow:cat.fromNow()
       }
       log.updated_at = {
         original:log.updated_at,
-        time:uat.format('LTS'),
-        date:uat.format('L'),
+        time:uat.format('h:mma'),
+        date:uat.format('MM/DD/YY'),
         fromNow:uat.fromNow()
       }
       log.closed = log.status == 'closed';
@@ -126,6 +128,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           
 
           this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
+  $('[data-toggle="tooltip"]').tooltip()
 
           $('.filterable').on('click',function(data,e){
             $('.active').removeClass('active')
