@@ -303,14 +303,35 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('user_id','=',Auth::user()->id)->get();
+        $submissions = WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('user_id','=',Auth::user()->id)->with(array('logs'=>function($q){
+            $q->orderBy('created_at','desc');
+        }))->get();
+        foreach ($submissions as $submission) {
+            echo $submission->Assignment();
+        }
+        return $submissions;
     }
     public function list_workflow_submission_assignments(Request $request) {
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'user')->where('assignment_id','=',Auth::user()->id)->get(),
-        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->where('assignment_type',"=",'group')->whereIn('assignment_id',Auth::user()->groups)->get());
+        $submissions = array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'user')->where('assignment_id','=',Auth::user()->id)->with(array('logs'=>function($q){
+            $q->orderBy('created_at','desc');
+        }))->get(),
+        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'group')->whereIn('assignment_id',Auth::user()->groups)->with(array('logs'=>function($q){
+            $q->orderBy('created_at','desc');
+        }))->get());
+
+
+
+        foreach ($submissions['direct'] as $submission) {
+            echo $submission->Assignment();
+        }
+        foreach ($submissions['group'] as $submission) {
+            echo $submission->Assignment();
+        }
+        return $submissions;
+
 
     }
     public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {

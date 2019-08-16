@@ -98,7 +98,7 @@ $.ajax({
 					$('#user_options_default .col-sm-9').berry(user_options_default);
 				}
 				if(typeof data.app.code.resources !== 'undefined' && data.app.code.resources[0].name !== '') {	
-					$('#resoucestab').show();
+					$('#resourcestab').show();
 					var attributes = _.map(data.app.code.resources,function(resource){
 						resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
 						return resource

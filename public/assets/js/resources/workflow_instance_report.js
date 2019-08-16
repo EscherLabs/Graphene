@@ -7,9 +7,10 @@ $.ajax({
 		$('.navbar-header .nav a h4').append(' - '+data.workflow.name+'');
 		
 		$.ajax({
-			url:'/api/workflowinstances/'+resource_id+'/submissons',
+			url:'/api/workflowinstances/'+resource_id+'/submissions',
 			dataType : 'json',
 			type: 'GET',
+
 			success  : function(data){
 				data = _.each(data, function(item){
 					item.created_at = {
@@ -26,9 +27,14 @@ $.ajax({
 					}
 				})
 
-				new GrapheneDataGrid({autoSize:10,schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"}],data:data,actions:[],upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
+				new GrapheneDataGrid({
+					
+					actions:[{type:"info",name:"d_csv",label:'<i class="fa fa-download"></i> Download'}],
+					autoSize:10,schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"}],data:data,download:false,upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
 					document.location = "/workflows/report/"+e.model.attributes.id;
-				}.bind(this))
+				}.bind(this)).on('d_csv',function(e){
+					document.location = "/api/workflowinstances/"+resource_id+"/csv"
+				})
 			}.bind(this)
 		})
 }})

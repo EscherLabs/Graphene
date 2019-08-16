@@ -21,4 +21,17 @@ class WorkflowSubmission extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function logs() {
+        return $this->hasMany(WorkflowActivityLog::class);
+    }
+
+    public function Assignment() {
+
+        if($this->assignment_type == "user"){
+            $this->assignee = User::where("id", '=', $this->assignment_id)->first()->only('first_name','last_name','email','unique_id','params');
+        }else{
+            $this->assignee = Group::where("id",'=',$this->assignment_id)->where('site_id',config('app.site')->id)->select('name','slug','id')->first();
+        }
+    }
 }

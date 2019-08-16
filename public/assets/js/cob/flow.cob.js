@@ -526,7 +526,10 @@ Cobler.types.WorkflowStatus = function(container){
         //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
             success  : function(newdata){
 
-              newdata = _.each(newdata, function(item){item.created_at = moment(item.created_at).fromNow()})
+              newdata = _.each(newdata, function(item){
+                item.created_at = moment(item.created_at).fromNow()
+                item.updated_at = moment(item.updated_at).fromNow()
+              })
               $.ajax({
                 url:'/api/workflowsubmissions/user/assignments',
                 dataType : 'json',
@@ -538,7 +541,7 @@ Cobler.types.WorkflowStatus = function(container){
                   
                   var getActions = function(item){
                     item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                    item.updated_at = moment(item.updated_at).fromNow()
+                    // item.updated_at = moment(item.updated_at).fromNow()
                   }
 
                   assignments.direct = _.each(assignments.direct, getActions)
@@ -597,6 +600,12 @@ Cobler.types.WorkflowStatus = function(container){
                     </div>
                   </div>`,{data:data,open:newdata,assignments:assignments});
                   assignmentData = assignments.direct.concat(assignments.group);
+
+                  assignmentData = _.each(assignmentData, function(item){
+                    item.created_at = moment(item.created_at).fromNow()
+                    item.updated_at = moment(item.updated_at).fromNow()
+                    item.is_open = (item.status == 'open')
+                  })
                   assignmentGrid = new GrapheneDataGrid({
                     el: "#assignmentgrid",
                     autoSize: 50, 
@@ -604,14 +613,17 @@ Cobler.types.WorkflowStatus = function(container){
                     actions:[],upload:false,download:false,columns:false,
                     form:{
                       fields:[
-                        {label:"Workflow Name",name:"name",type:"text",//options:_.uniq(_.map(assignmentData,function(item){return item.workflow.name})),
-                        template:"{{attributes.workflow.name}}"},
-                        // {label:"Created At",name:"created_at"},
-                        {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
-                        {label:"Assignment",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
+                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                        }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
+                        {label:"Initiated",name:"created_at",template:"{{attributes.created_at}} by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                        {label:"Last Action",name:"updated_at",template:'<div class="label label-default">{{attributes.logs.0.action}}</div> <time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
+                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
-                        {label:"State",name:"state",template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
-                        {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
+                        {label:"State",name:"state",type:"select",options:function(data){
+                          return _.uniq(_.map(data,function(item){return item.state}))
+                        }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
+                        // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="click_{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
                     }
                   }).on('click',function(e){
@@ -748,14 +760,23 @@ Cobler.types.WorkflowStatus = function(container){
                     el: "#mygrid",
                     autoSize: 50, 
                     data: newdata,
-                    actions:[{name:"delete"}],upload:false,download:false,columns:false,
+                    // actions:[{name:"delete"}],
+                    actions:[],
+                    upload:false,download:false,columns:false,
                     form:{
                       fields:[
-                        {label:"Workflow Name",name:"name",template:"{{attributes.workflow.name}}"},
-                        {label:"Initiated",name:"created_at"},
+                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                        }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
+                        {label:"Initiated",name:"created_at",template:"{{attributes.created_at}} by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
                         // {label:"Last Action",name:"updated_at",template:'<time class="timeago" datetime="{{attributes.created_at}}" title="{{attributes.created_at}}">{{attributes.created_at}}</time>'},
+                        {label:"Last Action",name:"updated_at",template:'<div class="label label-default">{{attributes.logs.0.action}}</div> <time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
+                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
+                        
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
-                        {label:"State",name:"state",template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
+                        {label:"State",name:"state",type:"select",options:function(data){
+                          return _.uniq(_.map(data,function(item){return item.state}))
+                        }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
                         // {label:"Assignment",name:"assignment_type",template:'<span style="text-transform:capitalize">{{attributes.assignment_type}}</span>'},
                         // {label:"Actions",name:"actions",template:'{{#attributes.actions}}<span class="btn btn-default" style="margin:2px 0" data-event="{{name}}">{{label}}</span>{{/attributes.actions}}'}
                       ]
