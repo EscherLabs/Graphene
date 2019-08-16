@@ -151,30 +151,30 @@ class WorkflowSubmissionController extends Controller
         $state_data['is']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
 
         // if url is defined on assignment get data and add it to the $state_data['assignment']
-        if(isset($workflow_submission->assignment->url)){
-            $assignment_data;
-            if(!isset($workflow_submission->assignment->data)){
-                $assignment_data = array();
-            }else{
-                foreach($workflow_submission->assignment->data as $key=>$value){
-                    $assignment_data->{$key} = $m->render($value, $state_data);
-                }
-            }
-            $httpHelper = new HTTPHelper();
-            if(isset($workflow_submission->assignment->endpoint)){
-                $endpoint = Endpoint::find((int)$workflow_submission->assignment->endpoint);
-                $url = $m->render($endpoint->config->url . $workflow_submission->assignment->url, $state_data);
-                if ($endpoint->type == 'http_no_auth') {
-                    $state_data['assignment']['data'] = $httpHelper->http_fetch( $url,"GET",$assignment_data);
-                } else if ($endpoint->type == 'http_basic_auth') {
-                    $state_data['assignment']['data'] = $httpHelper->http_fetch($url,"GET",$assignment_data,$endpoint->config->username, $endpoint->getSecret());
-                } else {
-                    abort(505,'Authentication Type Not Supported');
-                }
-            } else {
-                $state_data['assignment']['data'] = $httpHelper->http_fetch($m->render($workflow_submission->assignment->url, $state_data),"GET", $assignment_data);
-            }
-        }
+        // if(isset($workflow_submission->assignment->url)){
+        //     $assignment_data;
+        //     if(!isset($workflow_submission->assignment->data)){
+        //         $assignment_data = array();
+        //     }else{
+        //         foreach($workflow_submission->assignment->data as $key=>$value){
+        //             $assignment_data->{$key} = $m->render($value, $state_data);
+        //         }
+        //     }
+        //     $httpHelper = new HTTPHelper();
+        //     if(isset($workflow_submission->assignment->endpoint)){
+        //         $endpoint = Endpoint::find((int)$workflow_submission->assignment->endpoint);
+        //         $url = $m->render($endpoint->config->url . $workflow_submission->assignment->url, $state_data);
+        //         if ($endpoint->type == 'http_no_auth') {
+        //             $state_data['assignment']['data'] = $httpHelper->http_fetch( $url,"GET",$assignment_data);
+        //         } else if ($endpoint->type == 'http_basic_auth') {
+        //             $state_data['assignment']['data'] = $httpHelper->http_fetch($url,"GET",$assignment_data,$endpoint->config->username, $endpoint->getSecret());
+        //         } else {
+        //             abort(505,'Authentication Type Not Supported');
+        //         }
+        //     } else {
+        //         $state_data['assignment']['data'] = $httpHelper->http_fetch($m->render($workflow_submission->assignment->url, $state_data),"GET", $assignment_data);
+        //     }
+        // }
 
         $state_data['assignment']['type'] = $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
         $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
