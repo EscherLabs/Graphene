@@ -16,13 +16,15 @@ class UserPolicy
         }
     }
 
+    // Policy used for search -- available to all users.
     public function get_all(User $user)
     {
-        if (count($user->content_admin_groups)>0 || count($user->apps_admin_groups)>0 || $user->site_admin || $user->site_developer) {
-            return true;
-        }
+        return true;
+    //     if (count($user->content_admin_groups)>0 || count($user->apps_admin_groups)>0 || $user->site_admin || $user->site_developer) {
+    //         return true;
+    //     }
     }
-
+    
     public function get(User $user, User $the_user)
     {
         // User must be an admin of one or more groups, or a site admin, or a developer, or the user
