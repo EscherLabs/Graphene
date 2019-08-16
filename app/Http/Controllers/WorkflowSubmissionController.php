@@ -532,8 +532,8 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br>
 {{/is.closed}}
 {{^was.initial}}
     This workflow was last updated by {{actor.first_name}} {{actor.last_name}} who performed
-    the "{{action}}" action, and moved it into the current "{{state}}" state.  They also
-    provided the following comment: "{{comment}}"<br>
+    the "{{action}}" action, and moved it into the current "{{state}}" state.  {{#comment}}They also
+    provided the following comment: "{{comment}}"{{/comment}}<br>
 {{/was.initial}}
 {{#is.actionable}}
     <br>To take actions, or view the history / current status, visit the following: {{report_url}}
