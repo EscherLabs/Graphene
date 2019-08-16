@@ -102,5 +102,5 @@ gform.types['user_email']= _.extend({}, gform.types['user'], {
   defaults:{value:"{{email}}"}
 })
 gform.types['group']= _.extend({}, gform.types['smallcombo'], {
-  defaults:{options: '/api/groups',format:{title:'Group <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
+  defaults:{options: '/api/groups?members=20',format:{title:'Group <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
 })

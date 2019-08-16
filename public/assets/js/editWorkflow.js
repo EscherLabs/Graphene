@@ -436,20 +436,19 @@ function drawForm(name){
       {label:"<legend>Assignment</legend>",type:"output",name:"assignment_label", parse: false},
 
       {type: "fieldset", name: "assignment", label: false, fields: [
-        {name: "type",inline:false, label: "Type", type: "select", options: [
+        {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
           {value: "group", label: "Group"},
-          {value: "user", label: "User"},
-          {value: "url", label: "Url"}
+          {value: "user", label: "User"}
         ]},
         {type:"user",name:"id",show: [{type: "matches", name: "type", value: "user"}]},
         {type:"group",name:"id",show: [{type: "matches", name: "type", value: "group"}]},
         // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
         // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
-        {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "matches", name: "type", value: "url"}]},
-        {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "matches", name: "type", value: "url"}]},
+        {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+        {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
 
-        {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "matches", name: "type", value: "url"}]},
+        {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
       ]},
       // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
       {label:"<legend>onEnter</legend>",type:"output",name:"enter_label", parse: false},
@@ -479,6 +478,7 @@ function drawForm(name){
       }
     ]
   },'#flow-form').on('input', function(e){
+    debugger;
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
     temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
@@ -643,7 +643,8 @@ $('#import').on('click', function() {
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Workflow',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
       $.ajax({
         url: root+attributes.workflow_id+'/code',
-        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
+        contentType: 'application/json',
+        data: JSON.stringify($.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor))),
         method: 'PUT',
         success: function(){
           Berries.update.trigger('close');
@@ -664,7 +665,8 @@ $('#publish').on('click', function() {
         if(Berries.publish.validate()){
           $.ajax({
             url: root + attributes.workflow_id + '/publish',
-            data: this.toJSON(),
+            contentType: 'application/json',
+            data: JSON.stringify(this.toJSON()),
             method: 'PUT',
             success: function() {
               Berries.publish.trigger('close');
