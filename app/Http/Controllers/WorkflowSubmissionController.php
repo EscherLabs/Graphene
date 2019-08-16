@@ -141,6 +141,7 @@ class WorkflowSubmissionController extends Controller
 
         $state_data['status'] = $workflow_submission->status;
         $state_data['state'] = $state->name;
+        if (!isset($state->actions)) { $state->actions = []; }
         $state_data['actions'] = array_map(function ($ar) {
             return array_only((array)$ar,['label','name','type']);
         }, $state->actions);
