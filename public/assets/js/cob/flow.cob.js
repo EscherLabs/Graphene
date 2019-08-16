@@ -342,7 +342,7 @@ Cobler.types.Workflow = function(container){
             var data = e.form.toJSON();
             data.action = e.field.name;
             $.ajax({
-              url:'/api/workflow/'+group_id+'/'+this.get().workflow_id,
+              url:'/api/workflowsubmissions/'+this.get().workflow_id,
               dataType : 'json',
               contentType: 'application/json',
               data: JSON.stringify(data),
@@ -520,7 +520,7 @@ Cobler.types.WorkflowStatus = function(container){
         success  : function(data){
 
           $.ajax({
-            url:'/api/workflow/submissions',
+            url:'/api/workflowsubmissions/user',
             dataType : 'json',
             type: 'GET',
         //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
@@ -528,7 +528,7 @@ Cobler.types.WorkflowStatus = function(container){
 
               newdata = _.each(newdata, function(item){item.created_at = moment(item.created_at).fromNow()})
               $.ajax({
-                url:'/api/workflow/assignments',
+                url:'/api/workflowsubmissions/user/assignments',
                 dataType : 'json',
                 type: 'GET',
             //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
@@ -657,7 +657,7 @@ Cobler.types.WorkflowStatus = function(container){
                             eForm.form.trigger('close')
                             
                             $.ajax({
-                              url:'/api/workflow/'+e.model.attributes.id,
+                              url:'/api/workflowsubmissions/'+e.model.attributes.id,
                               type: 'PUT',
                               dataType : 'json',
                               contentType: 'application/json',
@@ -715,7 +715,7 @@ Cobler.types.WorkflowStatus = function(container){
 
                             eForm.form.trigger('close')
                         $.ajax({
-                          url:'/api/workflow/'+e.model.attributes.id,
+                          url:'/api/workflowsubmissions/'+e.model.attributes.id,
                           dataType : 'json',
                           type: 'PUT',
                           contentType: 'application/json',
@@ -765,7 +765,7 @@ Cobler.types.WorkflowStatus = function(container){
                   }).on('model:delete',function(e){
                   
                     $.ajax({
-                      url:'/api/workflow/'+e.model.attributes.id,
+                      url:'/api/workflowsubmissions/'+e.model.attributes.id,
                       dataType : 'json',
                       type: 'delete',
                       // data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},

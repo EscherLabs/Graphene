@@ -18,6 +18,8 @@ class CreateWorkflowActivityLogTable extends Migration
             $table->integer('workflow_instance_id')->unsigned()->index();
             $table->integer('workflow_submission_id')->unsigned()->index();
             $table->integer('user_id')->unsigned()->index()->nullable()->default(null);
+            $table->enum('assignment_type',['user', 'group'])->nullable()->default(null);
+            $table->integer('assignment_id')->unsigned()->index()->nullable()->default(null);
             $table->string('start_state')->nullable()->default(null);
             $table->string('action')->nullable()->default(null);
             $table->string('end_state')->nullable()->default(null);

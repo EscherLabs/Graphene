@@ -115,7 +115,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
       $.ajax({
-        url:'/api/workflow/'+this.get().options.id+'/log',
+        url:'/api/workflowsubmissions/'+this.get().options.id+'/log',
         dataType : 'json',
         type: 'GET',
         success  : function(data){
@@ -229,7 +229,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 formData._state =e.form.get('_state')
               }
               $.ajax({
-                url:'/api/workflow/'+e.form.get('_id'),
+                url:'/api/workflowsubmissions/'+e.form.get('_id'),
                 dataType : 'json',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
