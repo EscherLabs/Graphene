@@ -17,10 +17,11 @@ class APIUserPolicy
         }
     }
 
-    // Policy used for search -- available to all users.
     public function get_all(User $user)
     {
-        return true;
+        if ($user->site_admin) {
+            return true;
+        }
     }
 
     public function get(User $user, APIUser $api_user)
