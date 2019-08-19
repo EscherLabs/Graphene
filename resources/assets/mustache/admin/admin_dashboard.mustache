@@ -5,7 +5,7 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         {{#app_developers.length}}<li role="presentation" class="active"><a href="#uapps" aria-controls="uapps" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> <span class="hidden-xs hidden-sm">My &mu;Apps<span></a></li>{{/app_developers.length}}
-        <li role="presentation"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab"><i class="fa fa-check"></i> <span class="hidden-xs hidden-sm">My Workflows</span></a></li>
+        {{#workflows.length}}<li role="presentation"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab"><i class="fa fa-check"></i> <span class="hidden-xs hidden-sm">My Workflows</span></a></li>{{/workflows.length}}
 
         <li role="presentation" {{^app_developers.length}} class="active" {{/app_developers.length}}><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
 
@@ -295,7 +295,7 @@
 
         <div role="tabpanel" class="tab-pane workflows" id="workflows">
         <div class="masonry-grid">
-        {{#workflows.0}}
+        {{#workflows.length}}
 
         <div class="filterable grid-item" style="display:inline-block;">
         		<div class="panel panel-default" style="border-top: solid 3px #9ac337;">
@@ -395,7 +395,7 @@
 				    </div>
         </div>
 
-        {{/workflows.0}}
+        {{/workflows.length}}
         </div>
         </div>
 
