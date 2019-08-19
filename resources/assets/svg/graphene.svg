@@ -29,10 +29,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.57726334"
-     inkscape:cx="805.60317"
-     inkscape:cy="-1276.6189"
+     inkscape:cx="-167.08981"
+     inkscape:cy="-1138.034"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g4403"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:object-nodes="true"
@@ -45,10 +45,10 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:snap-grids="true"
-     inkscape:window-width="1280"
-     inkscape:window-height="751"
+     inkscape:window-width="1440"
+     inkscape:window-height="855"
      inkscape:window-x="0"
-     inkscape:window-y="1"
+     inkscape:window-y="0"
      inkscape:window-maximized="1">
     <inkscape:grid
        type="axonomgrid"
@@ -218,15 +218,15 @@
            sodipodi:role="line">GRAPHENE</tspan></text>
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="-192.89023"
-         y="2561.969"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:42.32091522px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="-192.74222"
+         y="2563.8008"
          id="text4205"
          sodipodi:linespacing="125%"><tspan
            sodipodi:role="line"
            id="tspan4207"
-           x="-192.89023"
-           y="2561.969">PROXY</tspan></text>
+           x="-192.74222"
+           y="2563.8008">APIGATEWAY</tspan></text>
     </g>
     <g
        id="g4425">
@@ -344,7 +344,7 @@
        inkscape:connector-curvature="0"
        inkscape:export-xdpi="35.571426"
        inkscape:export-ydpi="35.571426"
-       inkscape:export-filename="/Users/adam/Documents/graphene_small.png" />
+       inkscape:export-filename="/Library/WebServer/Documents/GrapheneDataGrid/docs/assets/images/graphene_datagrid_logo.png" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.16164398px;line-height:125%;font-family:Chalkduster;-inkscape-font-specification:Chalkduster;letter-spacing:0px;word-spacing:0px;opacity:0.93000034;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -354,7 +354,7 @@
        sodipodi:linespacing="125%"
        inkscape:export-xdpi="35.571426"
        inkscape:export-ydpi="35.571426"
-       inkscape:export-filename="/Users/adam/Documents/graphene_small.png"><tspan
+       inkscape:export-filename="/Library/WebServer/Documents/GrapheneDataGrid/docs/assets/images/graphene_datagrid_logo.png"><tspan
          sodipodi:role="line"
          id="tspan4178"
          x="-199.66702"
@@ -362,14 +362,17 @@
     <text
        sodipodi:linespacing="125%"
        id="text4180"
-       y="2409.0317"
-       x="-193.83023"
-       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         y="2409.0317"
-         x="-193.83023"
+       y="2405.9104"
+       x="-200.30247"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:55.97657013px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"
+       inkscape:export-filename="/Library/WebServer/Documents/GrapheneDataGrid/docs/assets/images/graphene_datagrid_logo.png"
+       inkscape:export-xdpi="35.571426"
+       inkscape:export-ydpi="35.571426"><tspan
+         y="2405.9104"
+         x="-200.30247"
          id="tspan4182"
-         sodipodi:role="line">TABLES</tspan></text>
+         sodipodi:role="line">DATAGRID</tspan></text>
     <g
        id="g4373"
        transform="translate(0,-24.6351)">

@@ -350,7 +350,8 @@ Cobler.types.Workflow = function(container){
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
                 e.form.destroy();
-                document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/report/{{id}}">here</a>',data)
+                document.location = "/workflows/report/"+data.id;
+                // document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/report/{{id}}">here</a>',data)
                 // gform.types.fieldset.edit.call(e.form.find('_state'),true)
                 // gform.types.button.edit.call(e.form.find('submit'),true)
                 // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
