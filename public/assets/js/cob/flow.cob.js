@@ -335,10 +335,11 @@ Cobler.types.Workflow = function(container){
 
           this.form.on('save',function(e){
             if(!e.form.validate(true))return;
-            e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saving',"modifiers": "btn btn-warning"})
+            // e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saving',"modifiers": "btn btn-warning"})
             gform.types.fieldset.edit.call(e.form.find('_state'),false)
             e.form.find('_state').el.style.opacity = .7
-            gform.types.button.edit.call(e.field,false)
+            // gform.types.button.edit.call(e.field,false)
+            $('.gform-footer').hide();
             var data = e.form.toJSON();
             data.action = e.field.name;
             $.ajax({
@@ -349,13 +350,23 @@ Cobler.types.Workflow = function(container){
               type: 'POST',
               success  : function(data){
                 e.form.find('_state').el.style.opacity = 1
-                e.form.destroy();
+                // e.form.destroy();
                 document.location = "/workflows/report/"+data.id;
                 // document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/report/{{id}}">here</a>',data)
                 // gform.types.fieldset.edit.call(e.form.find('_state'),true)
                 // gform.types.button.edit.call(e.form.find('submit'),true)
                 // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
-              }.bind(this)
+              }.bind(this),
+              error:function(){
+
+                e.form.find('_state').el.style.opacity = 1
+                gform.types.fieldset.edit.call(e.form.find('_state'),true)
+
+                $('.gform-footer').show();
+                toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+
+
+              }
             })
           }.bind(this)).on('canceled',function(e){
             // gform.types.fieldset.edit.call(e.form.find('_state'), false);
