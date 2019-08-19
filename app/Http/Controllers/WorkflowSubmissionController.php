@@ -492,7 +492,8 @@ class WorkflowSubmissionController extends Controller
 ';
         $subject = 'Workflow Update | '.$state_data['workflow']['instance']['name'];
         // Send Email To Owner (if the owner is not also the asignee)
-        if (isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']) {
+        if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']) 
+            || isset($state_data['assignment']['group'])) {
             $to = $state_data['owner'];
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
