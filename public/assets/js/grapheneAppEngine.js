@@ -142,6 +142,7 @@ function App() {
 						formOptions.private = true;
 						formOptions.collections = this.collections;
 						formOptions.selector = target;
+						formOptions.methods = this.methods;
 						if(typeof target == 'string'){
 							target = this.app.find(target)[0];
 						}
@@ -154,6 +155,7 @@ function App() {
 					formOptions.private = true;
 					formOptions.collections = this.collections;
 					formOptions.selector = target;
+					formOptions.methods = this.methods;
 					var newForm = new gform(formOptions,target)
 					this.forms[newForm.name] = newForm;
 					return this.forms[newForm.name]
@@ -263,18 +265,18 @@ function(options){
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
 				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
-			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;\n/*- Custom Code starts Here -*/');
+			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app=gae;app.data=data;\n/*- Custom Code starts Here -*/');
 			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
 
 		}
 
-		var mountResult = (function(data, script) {
+		var mountResult = (function(data, gae, script) {
 			// try{
 				eval(script);
-				return mount.call({data:data});	
+				return mount.call({data:data,gae:gae});	
 			// }catch(e){
 			// }		
-		})(this.options.data || {}, this.config.script)
+		})(this.options.data || {},{}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
 			// debugger;
@@ -284,6 +286,11 @@ function(options){
 			for(var i in mountResult) {
 				if(typeof mountResult[i] == 'function') {
 					this.methods[i] = mountResult[i].bind(this);
+				}
+			}
+			for(var i in mountResult.gae) {
+				if(typeof mountResult.gae[i] == 'function') {
+					this.methods[i] = mountResult.gae[i].bind(this);
 				}
 			}
 		} else {

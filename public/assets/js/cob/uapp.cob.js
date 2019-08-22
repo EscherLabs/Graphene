@@ -56,9 +56,10 @@ Cobler.types.uApp = function(container){
                 }
                 $.ajax({
                 url: '/api/fetch/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
-                // dataType : 'text json',
+                dataType : 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(send_data),
                 type: 'POST',
-                data: send_data,
                 error: function (data) {
                   // if(typeof data.responseJSON !== 'undefined' && typeof data.responseJSON.error !== 'undefined' && data.responseJSON.error) {
                   //   toastr.error(data.responseJSON.error.message || data.responseJSON.error,'ERROR')
