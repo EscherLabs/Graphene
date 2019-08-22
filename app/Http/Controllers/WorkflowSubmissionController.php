@@ -490,7 +490,7 @@ class WorkflowSubmissionController extends Controller
 {{#comment}}The following comment was provided: "{{comment}}"<br>{{/comment}}
 <br>You may view the current status as well as the complete history of this workflow here: {{report_url}}
 ';
-        $subject = 'Workflow Update | '.$state_data['workflow']['instance']['name'];
+        $subject = 'Update '.$state_data['workflow']['instance']['name'];
         // Send Email To Owner (if the owner is not also the asignee)
         if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']) 
             || isset($state_data['assignment']['group'])) {
@@ -543,7 +543,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br>
     <br>You may view the full history of this workflow here: {{report_url}}
 {{/is.actionable}}
 ';
-        $subject = 'Workflow Assignment | '.$state_data['workflow']['instance']['name'];
+        $subject = 'Assignment '.$state_data['workflow']['instance']['name'];
         if (isset($state_data['assignment']['group'])) {
             $to = Arr::pluck($state_data['assignment']['group']['members'],'email');
         } else if (isset($state_data['assignment']['user'])) {
