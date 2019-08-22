@@ -31,6 +31,7 @@ function App() {
 					var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
 					data.user.options = (Lockr.get(url)|| {options:{}}).options;
 				}
+				debugger;
 				// this.app.update(data);
 				_.extend(this.data, data || {});
 				this.app.update();
@@ -265,7 +266,7 @@ function(options){
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
 				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
-			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app=gae;app.data=data;\n/*- Custom Code starts Here -*/');
+			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;//var app=gae;app.data=data;\n/*- Custom Code starts Here -*/');
 			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
 
 		}
@@ -279,7 +280,7 @@ function(options){
 		})(this.options.data || {},{}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
-			// debugger;
+			debugger;
 			this.data= mountResult.data;
 			app.data = this.data;
 			this.methods = {};
@@ -299,7 +300,8 @@ function(options){
 
 		this.data.options = $.extend({}, this.data.options);
 
-    this.$el = this.options.$el;
+		this.$el = this.options.$el;
+		debugger;
     if(typeof this.app == 'undefined'){
 			this.app = App.call(this)
 			app = this.app;
@@ -419,6 +421,7 @@ function(options){
 }
 
 var newtemp =  new temp(options);
+debugger;
 var app = {};
 return newtemp;
 }
