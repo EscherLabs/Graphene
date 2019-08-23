@@ -31,7 +31,6 @@ function App() {
 					var url = '/api/apps/instances/'+this.config.app_instance_id+'/user_options';
 					data.user.options = (Lockr.get(url)|| {options:{}}).options;
 				}
-				debugger;
 				// this.app.update(data);
 				_.extend(this.data, data || {});
 				this.app.update();
@@ -182,7 +181,7 @@ function App() {
 				if(typeof options.form == 'string'){
 					options.form = this.app.findForm(options.form)
 				}
-				this.grids[name] = new GrapheneDataGrid(_.extend({collections:this.collections,data:this.data[options.resource||name]},options))//new gform(formOptions,this.app.find(target)[0])
+				this.grids[name] = new GrapheneDataGrid(_.extend({methods:this.methods,collections:this.collections,data:this.data[options.resource||name]},options))//new gform(formOptions,this.app.find(target)[0])
 				if(typeof options.resource !== 'undefined'){
 					this.collections.on(options.resource,function(e){
 						this.load(e.collection);
@@ -266,32 +265,31 @@ function(options){
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
 				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
-			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;//var app=gae;app.data=data;\n/*- Custom Code starts Here -*/');
+			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app.data = app.data||data;\n/*- Custom Code starts Here -*/');
 			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
 
 		}
 
-		var mountResult = (function(data, gae, script) {
+		var mountResult = (function(data, script) {
 			// try{
 				eval(script);
-				return mount.call({data:data,gae:gae});	
+				return mount.call({data:data,app:app});	
 			// }catch(e){
 			// }		
-		})(this.options.data || {},{}, this.config.script)
+		})(this.options.data || {}, this.config.script)
 
 		if(typeof mountResult !== 'undefined') {
-			debugger;
 			this.data= mountResult.data;
-			app.data = this.data;
+			// app.data = this.data;
 			this.methods = {};
 			for(var i in mountResult) {
 				if(typeof mountResult[i] == 'function') {
 					this.methods[i] = mountResult[i].bind(this);
 				}
 			}
-			for(var i in mountResult.gae) {
-				if(typeof mountResult.gae[i] == 'function') {
-					this.methods[i] = mountResult.gae[i].bind(this);
+			for(var i in mountResult.app) {
+				if(typeof mountResult.app[i] == 'function') {
+					this.methods[i] = mountResult.app[i].bind(this);
 				}
 			}
 		} else {
@@ -301,7 +299,7 @@ function(options){
 		this.data.options = $.extend({}, this.data.options);
 
 		this.$el = this.options.$el;
-		debugger;
+		
     if(typeof this.app == 'undefined'){
 			this.app = App.call(this)
 			app = this.app;
@@ -421,7 +419,6 @@ function(options){
 }
 
 var newtemp =  new temp(options);
-debugger;
 var app = {};
 return newtemp;
 }
