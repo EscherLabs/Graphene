@@ -136,7 +136,7 @@ function App() {
 				target = this.app.find(target)[0];
 			}
 			if(typeof name == 'string'){
-				var formOptions = this.app.findForm(name);//_.find(this.options.config.forms,{name:name})
+				var formOptions = _.cloneDeep(this.app.findForm(name));//_.find(this.options.config.forms,{name:name})
 				if(typeof formOptions !== 'undefined'){
 						// var formOptions = JSON.parse(form.content);
 						formOptions.private = true;
@@ -173,13 +173,13 @@ function App() {
 				// 	}
 				// })
 				if(typeof options.create == 'string'){
-					options.create = this.app.findForm(options.create)
+					options.create = _.cloneDeep(this.app.findForm(options.create))
 				}
 				if(typeof options.edit == 'string'){
-					options.edit = this.app.findForm(options.edit)
+					options.edit = _.cloneDeep(this.app.findForm(options.edit))
 				}	
 				if(typeof options.form == 'string'){
-					options.form = this.app.findForm(options.form)
+					options.form = _.cloneDeep(this.app.findForm(options.form))
 				}
 				this.grids[name] = new GrapheneDataGrid(_.extend({methods:this.methods,collections:this.collections,data:this.data[options.resource||name]},options))//new gform(formOptions,this.app.find(target)[0])
 				if(typeof options.resource !== 'undefined'){
