@@ -176,6 +176,10 @@ window.onresize = setSize;
 function load(workflow_version) {
 	$('.nav-tabs').stickyTabs();
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var temp = new gform(JSON.parse(formPage.toJSON()[0].content));
+    gform.collections.update('form_users', temp.filter({type:"user"}));
+    gform.collections.update('form_groups', temp.filter({type:"group"}));
+
     bt.fixStyle()
   })
 
@@ -242,6 +246,7 @@ function load(workflow_version) {
       toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
     }
   }});
+
   r_options = {data:loaded.code, actions:[],fields:[
 
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Key</h4>',columns:9,type:"output"},
@@ -260,10 +265,22 @@ function load(workflow_version) {
   ]}
   map = new gform(r_options,'.map').on('input:type',function(e){
     gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
+    gform.collections.update('map_users', _.where(e.form.get().map, {type: "user"}));
+    gform.collections.update('map_groups', _.where(e.form.get().map, {type: "group"}));
+    
   }).on('input:name',_.throttle(function(e){
-    if(e.field.parent.find('type').value == "endpoint"){
-      gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
+    switch(e.field.parent.find('type').value){
+      case "endpoint":
+        gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
+        break;
+      case "user":
+          gform.collections.update('map_users', _.where(e.form.get().map, {type: "user"}));
+      break;
+      case "group":
+          gform.collections.update('map_groups', _.where(e.form.get().map, {type: "group"}));
+      break;
     }
+
   }));
 
 }
@@ -372,8 +389,14 @@ function createFlow() {
     // options.trigger('change')
 //<span class="fa fa-plus"></span> 
     try{
-      var graph = _.map(flow_states,function(state){
-        var graph = '\n'+state.name+'['+state.name+']';
+      var graph = _.map(flow_states,function(state,i,j){
+
+        var graph = '\n'+state.name;
+        if(i){
+          '['+state.name+']';
+        }else{
+          '(('+state.name+'))';
+        }
 
         if(state.status == "closed"){
           graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', state);
@@ -381,11 +404,13 @@ function createFlow() {
 
         var stuff = _.map(state.actions,function(action){
           var graph = '\n'+state.name;
-          if(state.status == "closed"){
-              graph+='('+state.name+')';
-            }else{
-              graph+='['+state.name+']';
-            }
+          if(!i ){
+            graph+='(('+state.name+'))';
+          }else if( state.status == "closed"){
+            graph+='('+state.name+')';
+          }else{
+            graph+='['+state.name+']';
+          }
           return graph+'-->|'+action.label+'|'+' '+action.to;
         })
         return graph+stuff.join('')
@@ -393,8 +418,6 @@ function createFlow() {
       if(typeof flowForm !== 'undefined' && flowForm.isActive){
         graph.push('\nclass '+flowForm.get('name')+' selectedClass');
       }  
-
-
       myfunc('graph TB'+''+graph.join(''))
     }catch(e){}
     
@@ -437,12 +460,47 @@ function drawForm(name){
 
       {type: "fieldset", name: "assignment", label: false, fields: [
         {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
-
           {value: "user", label: "User"},
           {value: "group", label: "Group"}
         ]},
-        {type:"user",name:"id",show: [{type: "matches", name: "type", value: "user"}]},
-        {type:"group",name:"id",show: [{type: "matches", name: "type", value: "group"}]},
+
+        // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+        //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
+        // })
+
+        {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+        {
+          "type": "optgroup",
+          "options": "map_users",
+          "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+            return "{{map."+option.name+"}}"},label:"{{name}}"}
+        },       
+        {
+          "type": "optgroup",
+          "options": "form_users",
+          "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+            return "{{form."+option.data.name+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+        }
+        ]},
+        {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
+          {
+            "type": "optgroup",
+            "options": "map_groups",
+            "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+              return "{{map."+option.name+"}}"},label:"{{name}}"}
+          },       
+          {
+            "type": "optgroup",
+            "options": "form_groups",
+            "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+              return "{{form."+option.data.name+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+          },
+          {
+            "type":"optgroup",
+            "options":'/api/groups?members=20',
+            "format":{label:"{{name}}",value:"{{id}}"}
+          }
+        ]},
         // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
         // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
@@ -479,7 +537,6 @@ function drawForm(name){
       }
     ]
   },'#flow-form').on('input', function(e){
-    debugger;
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
     temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
@@ -557,7 +614,15 @@ function drawForm(name){
 }
 
 gform.collections.add('endpoints', _.where(attributes.code.map, {type: "endpoint"}))
+gform.collections.add('map_users', _.where(attributes.code.map, {type: "user"}))
+gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
+
+var temp = new gform(attributes.code.form);
+gform.collections.add('form_users', temp.filter({type:"user"}));
+gform.collections.add('form_groups', temp.filter({type:"group"}));
+
+
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "api", label: "API"}, {value: "email", label: "Email"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),

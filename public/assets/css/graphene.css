@@ -946,15 +946,23 @@ fieldset fieldset {
   fill: #f9f9f9 !important;
   stroke: #888 !important;
 }
+.node circle{
+  fill: #f4f4ff !important;
+    stroke: #90ddaa !important;
+    stroke:#55aaff !important;
+}
 .closedClass > rect{
   fill:#FFcccc !important;
   /* stroke:#FF0000 !important; */
   /*stroke-width:4px !important;;*/
 }
 .selectedClass > rect{
-    /*fill:#FF0000 !important;*/
+  stroke:#68b767 !important;
+}
+.selectedClass > *{
+    /* fill:#FF0000 !important;
     stroke:#1166ff !important;
-    stroke:#68b767 !important;
+    stroke:#68b767 !important; */
 
     stroke-width:2px !important;
 }
