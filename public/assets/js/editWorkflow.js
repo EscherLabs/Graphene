@@ -480,7 +480,13 @@ function drawForm(name){
           "type": "optgroup",
           "options": "form_users",
           "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
-            return "{{form."+option.data.name+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+            var path = option.data.name
+            var search = option.data;
+            while(search.ischild){
+              path = search.parent.name+'.'+path;
+              search = search.parent;
+            }
+            return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
         }
         ]},
         {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
@@ -494,7 +500,13 @@ function drawForm(name){
             "type": "optgroup",
             "options": "form_groups",
             "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
-              return "{{form."+option.data.name+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+              var path = option.data.name
+              var search = option.data;
+              while(search.ischild){
+                path = search.parent.name+'.'+path;
+                search = search.parent;
+              }
+              return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
           },
           {
             "type":"optgroup",
