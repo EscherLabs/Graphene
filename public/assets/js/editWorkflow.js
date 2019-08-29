@@ -179,7 +179,8 @@ function load(workflow_version) {
     var temp = new gform(JSON.parse(formPage.toJSON()[0].content));
     gform.collections.update('form_users', temp.filter({type:"user"}));
     gform.collections.update('form_groups', temp.filter({type:"group"}));
-
+    debugger;
+    gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
     bt.fixStyle()
   })
 
@@ -505,9 +506,10 @@ function drawForm(name){
         // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
         {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
-        {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+        {name: "resource", type: "select", label:"Resource", placeholder: "None", options:"resources"},
 
-        {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+        // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+        // {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
       ]},
       // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
       {label:"<legend>onEnter</legend>",type:"output",name:"enter_label", parse: false},
@@ -617,6 +619,7 @@ gform.collections.add('endpoints', _.where(attributes.code.map, {type: "endpoint
 gform.collections.add('map_users', _.where(attributes.code.map, {type: "user"}))
 gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
+gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 
 var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"}));
@@ -624,13 +627,14 @@ gform.collections.add('form_groups', temp.filter({type:"group"}));
 
 
 var taskForm = [
-  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "api", label: "API"}, {value: "email", label: "Email"}]},
+  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
 
-  {name: "subject", type:"text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "content", type:"textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'api'}]},
-  {name: "url", type: "url",columns:8,placeholder:"\\", label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
+  {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
+  // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'api'}]},
+  // {name: "url", type: "url",columns:8,placeholder:"\\", label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
   // {name:"data",}
 ]
 var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}

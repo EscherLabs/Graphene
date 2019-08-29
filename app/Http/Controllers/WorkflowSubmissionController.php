@@ -276,20 +276,20 @@ class WorkflowSubmissionController extends Controller
                     });
                 break;
                 case "api":
-                    $httpHelper = new HTTPHelper();
-                    if(isset($task->endpoint)){
-                        $endpoint = Endpoint::find((int)$task->endpoint);
-                        $url = $m->render($endpoint->config->url . $task->url, $data);
-                        if ($endpoint->type == 'http_no_auth') {
-                            $response = $httpHelper->http_fetch( $url,"POST",$task->data);
-                        } else if ($endpoint->type == 'http_basic_auth') {
-                            $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
-                        } else {
-                            abort(505,'Authentication Type Not Supported');
-                        }
-                    }else{
-                        $response = $httpHelper->http_fetch(  $m->render($task->url, $data),"POST",$task->data);
-                    }
+                    // $httpHelper = new HTTPHelper();
+                    // if(isset($task->endpoint)){
+                    //     $endpoint = Endpoint::find((int)$task->endpoint);
+                    //     $url = $m->render($endpoint->config->url . $task->url, $data);
+                    //     if ($endpoint->type == 'http_no_auth') {
+                    //         $response = $httpHelper->http_fetch( $url,"POST",$task->data);
+                    //     } else if ($endpoint->type == 'http_basic_auth') {
+                    //         $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
+                    //     } else {
+                    //         abort(505,'Authentication Type Not Supported');
+                    //     }
+                    // }else{
+                    //     $response = $httpHelper->http_fetch(  $m->render($task->url, $data),"POST",$task->data);
+                    // }
                 break;
                 // case "data":
                 // break;
