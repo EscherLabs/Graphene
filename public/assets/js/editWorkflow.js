@@ -474,7 +474,7 @@ function drawForm(name){
           "type": "optgroup",
           "options": "map_users",
           "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
-            return "{{map."+option.name+"}}"},label:"{{name}}"}
+            return "{{datamap."+option.name+"}}"},label:"{{name}}"}
         },       
         {
           "type": "optgroup",
@@ -494,7 +494,7 @@ function drawForm(name){
             "type": "optgroup",
             "options": "map_groups",
             "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
-              return "{{map."+option.name+"}}"},label:"{{name}}"}
+              return "{{datamap."+option.name+"}}"},label:"{{name}}"}
           },       
           {
             "type": "optgroup",
