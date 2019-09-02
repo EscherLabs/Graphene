@@ -14,6 +14,18 @@ class WorkflowSubmissionPolicy
 {
     use HandlesAuthorization;
 
+    public function take_action(User $user, WorkflowSubmission $workflow_submission)
+    {
+        // User is Assigned to Submission (User Assignment Type)
+        if ($workflow_submission->assignment_type === 'user' && $workflow_submission->assignment_id === $user->id) {
+            return true;
+        }
+        // User is Assigned to Submission (Group Assignment Type)
+        if ($workflow_submission->assignment_type === 'group' && $user->group_member($workflow_submission->assignment_id)) {
+            return true;
+        }
+    }
+
     public function view(User $user, WorkflowSubmission $workflow_submission)
     {
         // User is Owner of Submission
@@ -52,4 +64,13 @@ class WorkflowSubmissionPolicy
             return true;
         }
     }
+
+    public function delete(User $user, WorkflowSubmission $workflow_submission)
+    {
+        // User is Admin of Group that Submission Instance belongs to
+        if ($user->group_admin($workflow_submission->workflowInstance->group_id)) {
+            return true;
+        }
+    }
+
 }
