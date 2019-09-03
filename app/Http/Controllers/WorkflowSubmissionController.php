@@ -269,12 +269,17 @@ class WorkflowSubmissionController extends Controller
                     // More Info About the Mail API: https://laravel.com/docs/5.8/mail
                     // Note that Mail::raw is undocumented, as default mail requires 
                     // the use of blade views.
-                    Mail::raw( $content, function($message) use($to, $subject) { 
-                        $m = new \Mustache_Engine;
-                        $message->to($to);
+                    try {
+                        Mail::raw( $content, function($message) use($to, $subject) { 
+                            $m = new \Mustache_Engine;
+                            $message->to($to);
 
-                        $message->subject($subject); 
-                    });
+                            $message->subject($subject); 
+                        });
+                    } catch (\Exception $e) {
+                        // Failed to Send Email... 
+                        // Continue Anyway.
+                    }
                 break;
                 case "api":
                     // $httpHelper = new HTTPHelper();
@@ -499,10 +504,16 @@ class WorkflowSubmissionController extends Controller
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            Mail::raw( $content_rendered, function($message) use($to, $subject) {
-                $message->to($to['email']);
-                $message->subject($subject); 
-            });    
+            try {
+                Mail::raw( $content_rendered, function($message) use($to, $subject) {
+                    $message->to($to['email']);
+                    $message->subject($subject); 
+                });    
+            } catch (\Exception $e) {
+                // Failed to Send Email... 
+                // Continue Anyway.
+            }
+
         }
         // Send Email to Actor (if different person than actor)
         if (!$state_data['owner']['is']['actor']) {
@@ -510,10 +521,15 @@ class WorkflowSubmissionController extends Controller
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            Mail::raw( $content_rendered, function($message) use($to, $subject) { 
-                $message->to($to['email']);
-                $message->subject($subject); 
-            });
+            try {
+                Mail::raw( $content_rendered, function($message) use($to, $subject) { 
+                    $message->to($to['email']);
+                    $message->subject($subject); 
+                });
+            } catch (\Exception $e) {
+                // Failed to Send Email... 
+                // Continue Anyway.
+            }
         }
 
         // Email Asignee(s)
@@ -553,9 +569,14 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br>
         $content_rendered = $m->render($email_body, $state_data);
         // Clean up whitespaces and carriage returns
         $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-        Mail::raw( $content_rendered, function($message) use($to, $subject) {
-            $message->to($to);
-            $message->subject($subject); 
-        });
+        try {
+            Mail::raw( $content_rendered, function($message) use($to, $subject) {
+                $message->to($to);
+                $message->subject($subject); 
+            });
+        } catch (\Exception $e) {
+            // Failed to Send Email... 
+            // Continue Anyway.
+        }
     }
 }

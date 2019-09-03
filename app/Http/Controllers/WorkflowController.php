@@ -155,83 +155,37 @@ class WorkflowController extends Controller
     }
 
     public function summary(Request $request) {
-        if (Auth::user()->site_developer || Auth::user()->site_admin) {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        } else {
-            $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        }
-
-
-
-
-
-
-
-
-
-        // if(!is_numeric($group)) {
-        //     $groupObj = Group::with('composites')->where('slug','=',$group)->first();
-		// 	$group = $groupObj->id;
-		// }else{
-    	// 	$groupObj = Group::with('composites')->where('id','=',$group)->first();
-        // }
-
         if (Auth::check()) { /* User is Authenticated */
-            $current_user = Auth::user();
-            // $myWorkflow = WorkflowInstance::with('workflow')
-            //     ->where('group_id','=', $group)->where('slug', '=', $slug)->with('workflow')->first();
-
-            // if (is_null($myWorkflow)) { 
-            //     abort(404); 
-            // }
-            
-            // if($myWorkflow->public == 0) {
-            //     $this->authorize('fetch' ,$myWorkflow);
-            // }
             $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else{
-
+            abort(403);
         }
-        // else { /* User is not Authenticated */
-        //     $current_user = new User;
-        //     $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
-        //     if (is_null($myWorkflow)) { 
-        //         $return = $this->customAuth->authenticate($request);
-        //         if(isset($return)){
-        //             return $return;
-        //         }
-        //     }
-        //     $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        // }
-
-        // $myWorkflow->findVersion();
-
-        // if($myWorkflow != null) {
-            $template = new Templater();
-            return $template->render([
-                'mygroups'=>$links,
-                'name'=>'workflow',
-                'slug'=>'workflow',
-                'id'=>0,
-                'data'=>[],
-                'config'=>json_decode('{"sections":[[{"title":"Workflows","widgetType":"WorkflowStatus","container":true}],[{"title":"Available Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
-                // 'group'=>(Object)array("id"=>"0"),
-                'scripts'=>[],
-                'styles'=>[],
-                'template'=>"main",
-                'apps'=>(Object)[],
-                'resource'=>'flow'
-            ]);
-        // }
-
-
-
-
-
-
-
-
-
-        return $workflows;
+        $template = new Templater();
+        return $template->render([
+            'mygroups'=>$links,
+            'name'=>'workflow',
+            'slug'=>'workflow',
+            'id'=>0,
+            'data'=>[],
+            'config'=>[
+                "sections"=>[
+                    [[
+                        "title"=>"Workflows",
+                        "widgetType"=>"WorkflowStatus",
+                        "container"=>true
+                    ]],[[
+                        "title"=>"Available Workflows",
+                        "widgetType"=>"Workflows",
+                        "titlebar"=>true,
+                        "container"=>true
+                    ]]],
+                "layout"=>'<div class="col-sm-9 cobler_container"></div><div class="col-sm-3 cobler_container"></div>'
+            ],
+            'scripts'=>[],
+            'styles'=>[],
+            'template'=>"main",
+            'apps'=>collect([1, 2, 3]),
+            'resource'=>'flow'
+        ]);
     }
 }
