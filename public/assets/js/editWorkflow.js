@@ -179,12 +179,11 @@ function load(workflow_version) {
     var temp = new gform(JSON.parse(formPage.toJSON()[0].content));
     gform.collections.update('form_users', temp.filter({type:"user"}));
     gform.collections.update('form_groups', temp.filter({type:"group"}));
-    debugger;
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
     bt.fixStyle()
   })
 
-  wf_form = "";
+  wf_form = "{}";
   if(typeof workflow_version.form !== 'undefined'){
     wf_form = workflow_version.form
     if(typeof wf_form !== 'string'){
@@ -199,8 +198,8 @@ function load(workflow_version) {
 
 
   loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:wf_form, disabled: true}],templates:[{name:'Preview',content:'', disabled: true}]},workflow_version)
-
-  attributes= $.extend(true,{},{code:{}}, loaded);
+  
+  attributes= $.extend(true,{},{code:{form:JSON.parse(loaded.code.forms[0].content)}}, loaded);
   $('.navbar-header .nav a h4').html('Workflow - '+attributes.workflow.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
@@ -632,7 +631,6 @@ gform.collections.add('map_users', _.where(attributes.code.map, {type: "user"}))
 gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
-
 var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"}));
 gform.collections.add('form_groups', temp.filter({type:"group"}));
@@ -668,7 +666,7 @@ $('#add-state').on('click',function() {
   while(typeof _.find(flow_states,{name:gform.renderString("newState{{i}}",{i:i})}) !== 'undefined'){
     i++;
   }
-  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),actions:[{name:"newAction"}]});
+  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),actions:[]});
   drawForm(gform.renderString("newState{{i}}",{i:i}));
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 

@@ -925,7 +925,8 @@ a.list-group-action {
 }
 
 #flow-preview foreignObject {
-  overflow: visible;
+  /* overflow: visible; */
+  height:11px
 }
 #flow-preview .edgeLabel{background:#F0F0F4}
 #flow-form {
