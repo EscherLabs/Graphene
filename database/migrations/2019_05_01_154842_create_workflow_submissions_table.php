@@ -26,6 +26,7 @@ class CreateWorkflowSubmissionsTable extends Migration
             $table->json('data')->nullable();
             $table->enum('status',['open', 'closed'])->default('open');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('workflow_id')->references('id')->on('workflows');
             $table->foreign('workflow_version_id')->references('id')->on('workflow_versions');
             $table->foreign('workflow_instance_id')->references('id')->on('workflow_instances');

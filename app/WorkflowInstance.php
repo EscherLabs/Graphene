@@ -3,9 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkflowInstance extends Model
 {
+    use SoftDeletes;
     protected $fillable = ['name', 'slug', 'public', 'configuration','icon', 'workflow_version_id', 'unlisted','groups'];
     protected $casts = ['configuration' => 'object', 'groups'=>'array'];
     protected $appends = ['version','hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
