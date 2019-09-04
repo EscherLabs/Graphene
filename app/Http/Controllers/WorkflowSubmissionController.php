@@ -70,6 +70,7 @@ class WorkflowSubmissionController extends Controller
         $myWorkflowInstance->findVersion();
 
         $start_state = $workflow_submission->state;
+        $start_assignment = $workflow_submission->only('assignment_type','assignment_id');
         $flow = $myWorkflowInstance->version->code->flow;
         if(is_string($flow)){
             $flow = json_decode($flow);
@@ -212,24 +213,24 @@ class WorkflowSubmissionController extends Controller
 
         $workflow_submission->update();
         
-        $this->logAction($workflow_submission,$start_state,$state_data['action'],$request->get('comment'));
+        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action'],$request->get('comment'));
 
         $this->send_default_emails($state_data);
 
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
 
-    private function logAction($workflow_submission, $start_state, $action, $comment){
+    private function logAction($workflow_submission, $start_state, $start_assignment, $action, $comment){
         $activity = new WorkflowActivityLog();
         $activity->start_state = $start_state;
-
-        // $activity->workflow_id = $workflow_submission->workflow_id;
         $activity->workflow_instance_id = $workflow_submission->workflow_instance_id;
         $activity->workflow_submission_id = $workflow_submission->id;
         $activity->data =  $workflow_submission->data;
         $activity->end_state = $workflow_submission->state;
         $activity->status = $workflow_submission->status;
         $activity->user_id = Auth::user()->id;
+        $activity->assignment_type = $start_assignment['assignment_type'];
+        $activity->assignment_id = $start_assignment['assignment_id'];
         $activity->comment = $comment;
         $activity->action = $action;
         $activity->save();
@@ -268,12 +269,17 @@ class WorkflowSubmissionController extends Controller
                     // More Info About the Mail API: https://laravel.com/docs/5.8/mail
                     // Note that Mail::raw is undocumented, as default mail requires 
                     // the use of blade views.
-                    Mail::raw( $content, function($message) use($to, $subject) { 
-                        $m = new \Mustache_Engine;
-                        $message->to($to);
+                    try {
+                        Mail::raw( $content, function($message) use($to, $subject) { 
+                            $m = new \Mustache_Engine;
+                            $message->to($to);
 
-                        $message->subject($subject); 
-                    });
+                            $message->subject($subject); 
+                        });
+                    } catch (\Exception $e) {
+                        // Failed to Send Email... 
+                        // Continue Anyway.
+                    }
                 break;
                 case "api":
                     // $httpHelper = new HTTPHelper();
@@ -341,11 +347,11 @@ class WorkflowSubmissionController extends Controller
         return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_instance_id','=',$workflow_instance->id)->orderBy('created_at')->get();
     }   
     
-    public function workflow_submission_log($workflow_submission, Request $request) {
+    public function workflow_submission_log(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission)->with('user')->orderBy('updated_at','DESC')->get();
+        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
     }
 
     // public function view(WorkflowSubmission $workflow_submission, Request $request) {
@@ -422,8 +428,8 @@ class WorkflowSubmissionController extends Controller
         }
     }
 
-    public function report($workflow_submission_id,Request $request) {
-        $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission_id)->with('user')->with('workflowVersion')->first();
+    public function report(WorkflowSubmission $workflow_submission,Request $request) {
+        $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission->id)->with('user')->with('workflowVersion')->first();
         // if (Auth::user()->site_developer || Auth::user()->site_admin) {
         //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
         // } else {
@@ -498,10 +504,16 @@ class WorkflowSubmissionController extends Controller
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            Mail::raw( $content_rendered, function($message) use($to, $subject) {
-                $message->to($to['email']);
-                $message->subject($subject); 
-            });    
+            try {
+                Mail::raw( $content_rendered, function($message) use($to, $subject) {
+                    $message->to($to['email']);
+                    $message->subject($subject); 
+                });    
+            } catch (\Exception $e) {
+                // Failed to Send Email... 
+                // Continue Anyway.
+            }
+
         }
         // Send Email to Actor (if different person than actor)
         if (!$state_data['owner']['is']['actor']) {
@@ -509,10 +521,15 @@ class WorkflowSubmissionController extends Controller
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            Mail::raw( $content_rendered, function($message) use($to, $subject) { 
-                $message->to($to['email']);
-                $message->subject($subject); 
-            });
+            try {
+                Mail::raw( $content_rendered, function($message) use($to, $subject) { 
+                    $message->to($to['email']);
+                    $message->subject($subject); 
+                });
+            } catch (\Exception $e) {
+                // Failed to Send Email... 
+                // Continue Anyway.
+            }
         }
 
         // Email Asignee(s)
@@ -552,9 +569,14 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br>
         $content_rendered = $m->render($email_body, $state_data);
         // Clean up whitespaces and carriage returns
         $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-        Mail::raw( $content_rendered, function($message) use($to, $subject) {
-            $message->to($to);
-            $message->subject($subject); 
-        });
+        try {
+            Mail::raw( $content_rendered, function($message) use($to, $subject) {
+                $message->to($to);
+                $message->subject($subject); 
+            });
+        } catch (\Exception $e) {
+            // Failed to Send Email... 
+            // Continue Anyway.
+        }
     }
 }

@@ -24,12 +24,6 @@ class WorkflowInstancePolicy
         }
     }
 
-    public function get_all(User $user)
-    {
-        // TJC 3/26/18 -- Need to revisit
-            return true;
-    }
-
     public function get(User $user, WorkflowInstance $workflow_instance)
     {
         if ($user->site_admin || $user->group_apps_admin($workflow_instance->group_id)) {

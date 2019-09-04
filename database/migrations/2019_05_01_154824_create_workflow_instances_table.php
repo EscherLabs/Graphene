@@ -28,6 +28,7 @@ class CreateWorkflowInstancesTable extends Migration
             $table->json('groups')->nullable();
             $table->json('configuration')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('workflow_id')->references('id')->on('workflows');
             $table->foreign('group_id')->references('id')->on('groups');
         });
