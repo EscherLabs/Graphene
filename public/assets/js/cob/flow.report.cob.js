@@ -41,7 +41,7 @@ hr{
 margin:10px 0
 }
 </style>`,
-actions:`{{#actions_data.0}}<legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div><br>{{/actions_data.0}}`,
+actions:`{{#actions_data.0}}<div class="hidden-print"><legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div><br></div>{{/actions_data.0}}`,
 report:`
     <div>
     <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
