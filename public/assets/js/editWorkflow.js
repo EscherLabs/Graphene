@@ -391,11 +391,11 @@ function createFlow() {
     try{
       var graph = _.map(flow_states,function(state,i,j){
 
-        var graph = '\n'+state.name;
+        var graph = '\n'+state.name.split(' ').join('_')+'';
         if(i){
-          '['+state.name+']';
+          graph+='["'+state.name+'"]';
         }else{
-          '(('+state.name+'))';
+          graph+='(("'+state.name+'"))';
         }
 
         if(state.status == "closed"){
@@ -405,18 +405,18 @@ function createFlow() {
         var stuff = _.map(state.actions,function(action){
           var graph = '\n'+state.name;
           if(!i ){
-            graph+='(('+state.name+'))';
+            graph+='(("'+state.name+'"))';
           }else if( state.status == "closed"){
-            graph+='('+state.name+')';
+            graph+='("'+state.name+'")';
           }else{
-            graph+='['+state.name+']';
+            graph+='["'+state.name+'"]';
           }
-          return graph+'-->|'+action.label+'|'+' '+action.to;
+          return graph+'-->|'+action.label+'|'+' '+action.to.split(' ').join('_')+'';
         })
         return graph+stuff.join('')
       })
       if(typeof flowForm !== 'undefined' && flowForm.isActive){
-        graph.push('\nclass '+flowForm.get('name')+' selectedClass');
+        graph.push('\nclass '+flowForm.get('name').split(' ').join('_')+' selectedClass');
       }  
       myfunc('graph TB'+''+graph.join(''))
     }catch(e){}
@@ -654,8 +654,9 @@ var valueField = {label:'Value <span class="text-success pull-right">{{value}}</
 $('#flow-preview').on('click','.nodes .node',function(e){
 
   // console.log(e.currentTarget.id);
-
-  drawForm(e.currentTarget.id);
+// debugger;
+  // drawForm(e.currentTarget.id);
+  drawForm(e.currentTarget.textContent);
   createFlow();
 
 })
