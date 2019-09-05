@@ -1046,3 +1046,22 @@ stroke:#FF0000 !important;
 
 
 .widget.WorkflowSubmissionReport .list{margin: -15px 0 -15px -15px;background:#e8e8e8;padding:15px;position: fixed;overflow: scroll;top: 45px;bottom: 0;}
+
+.shake {
+  
+    animation: bellshake .5s cubic-bezier(.36,.07,.19,.97) both;
+    backface-visibility: hidden;
+    transform-origin: top center;
+}
+
+@keyframes bellshake {
+  0% { transform: rotate(0); }
+  15% { transform: rotate(5deg); }
+  30% { transform: rotate(-5deg); }
+  45% { transform: rotate(4deg); }
+  60% { transform: rotate(-4deg); }
+  75% { transform: rotate(2deg); }
+  85% { transform: rotate(-2deg); }
+  92% { transform: rotate(1deg); }
+  100% { transform: rotate(0); }
+}
