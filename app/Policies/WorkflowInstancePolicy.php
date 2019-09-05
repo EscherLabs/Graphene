@@ -19,7 +19,7 @@ class WorkflowInstancePolicy
 
     public function create_submission(User $user, WorkflowInstance $workflow_instance)
     {
-        if ($user->group_member($workflow_instance->id) || $user->group_admin($workflow_instance->id)) {
+        if ($user->group_member($workflow_instance->group_id) || $user->group_admin($workflow_instance->group_id)) {
             return true;
         }
     }

@@ -256,16 +256,15 @@ Cobler.types.Workflow = function(container){
       // return templates['widgets_microapp'].render(temp, templates);
       return gform.renderString(`
       <div class="btn-group pull-right slice-actions parent-hover">
-	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-</div>
-
+	    {{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
+      </div>
       {{#container}}
       <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-</div>
+            <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+        <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+      </div>
       {{>widgets__header}}
-        <div class="collapsible panel-body">
+      <div class="collapsible panel-body">
         
         <h3 class="flow-title"></h3>
         <div class="g_{{guid}}">

@@ -63,7 +63,7 @@ $.ajax({
 
 				var valueField = {columns:8,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
 				data.configuration = data.configuration||{}
-				r_options = {data:{initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
+				r_options = {data:{suppress_emails:data.configuration.suppress_emails,initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
 					var r = _.find(data.configuration.map,{name:resource.name});
 					if(typeof r !== 'undefined' && r.type == resource.type){
 						resource.value = r.value;
@@ -72,7 +72,13 @@ $.ajax({
 					return resource;
 				})}, actions:[],fields:[
 					{name:"initial",label:"Initial State", options:_.pluck(data.version.code.flow,'name'), type:"smallcombo"},
-
+					{name:"suppress_emails",title:'Suppress Default Emails{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}',type:"switch",inline:false},
+					// {name:"emails",label:false, type:"fieldset",show:[{type:"matches",name:"suppress_emails",value:true}],fields:[
+					// 	{name:"actor",label:"Actor",type:"checkbox",value:true,columns:3},
+					// 	{name:"owner",label:"Owner",type:"checkbox",value:true,columns:3},
+					// 	{name:"assignee",label:"Assignee",type:"checkbox",value:true,columns:3}
+					// ]},
+					
 					{name:"map",label:false,array:{min:data.workflow.code.map.length,max:data.workflow.code.map.length},type:"fieldset",fields:[
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.value.type}})</span></h4>'}},
 
@@ -102,7 +108,7 @@ $.ajax({
 					// 	item.update({help:url, value:item.value}, true)
 					// }.bind(data))
 				// }
-				if(typeof data.workflow.code.resources !== 'undefined' && data.workflow.code.resources[0].name !== '') {	
+				if(typeof data.workflow.code.resources !== 'undefined' && data.workflow.code.resources.length && data.workflow.code.resources[0].name !== '') {	
 					$('#resourcestab').show();
 					var attributes = _.map(data.workflow.code.resources,function(resource){
 						resource.endpoint = (_.find(this.resources,{name:resource.name}) ||{endpoint:'none'}).endpoint
@@ -137,7 +143,11 @@ $.ajax({
 					if(typeof Berries.resources !== 'undefined') {
 						item.configuration.resources = Berries.resources.toJSON().resources;
 					}
-					$.ajax({url: '/api/workflowinstances/'+item.id, type: 'PUT', data: item, success:function(){
+					$.ajax({url: '/api/workflowinstances/'+item.id, type: 'PUT', 
+					dataType : 'json',
+					contentType: 'application/json',
+					// data: JSON.stringify(data),
+					data: JSON.stringify(item), success:function(){
 							toastr.success('', 'Successfully updated Workflow Instance')
 						}.bind(this),
 						error:function(e) {

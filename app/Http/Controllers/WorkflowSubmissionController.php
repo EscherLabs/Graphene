@@ -192,7 +192,7 @@ class WorkflowSubmissionController extends Controller
                 }
             }
             $state_data['assignment']['user'] = $user->only('first_name','last_name','email','unique_id','params');
-        }else{
+        }elseif($state->assignment->type == "group"){
             $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
             if($group !== null) {
                 $workflow_submission->assignment_id = $group->id;
@@ -205,8 +205,11 @@ class WorkflowSubmissionController extends Controller
             }
             $state_data['assignment']['group'] = $group->only('name','slug','id');
             $state_data['assignment']['group']['members'] = $group->members()->with('bulkuser')->get()->pluck('bulkuser')->toArray();
+        }else{
+            $workflow_submission->assignment_type = NULL;
         }
-
+        
+        // dd($workflow_submission);
         if(isset($state->onEnter)){
             $this->executeTasks($state->onEnter, $workflow_submission->data);
         }
@@ -214,8 +217,10 @@ class WorkflowSubmissionController extends Controller
         $workflow_submission->update();
         
         $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action'],$request->get('comment'));
-
-        $this->send_default_emails($state_data);
+        
+        if(!isset($myWorkflowInstance->configuration->suppress_emails) || !$myWorkflowInstance->configuration->suppress_emails){
+            $this->send_default_emails($state_data);
+        }
 
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
