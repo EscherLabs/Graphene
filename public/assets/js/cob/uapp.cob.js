@@ -56,7 +56,7 @@ Cobler.types.uApp = function(container){
                 }
                 $.ajax({
                 url: '/api/fetch/'+ this.config.app_instance_id + '/' +name+ '?verb='+verb,
-                dataType : 'json',
+                // dataType : 'json',
                 contentType: 'application/json',
                 data: JSON.stringify(send_data),
                 type: 'POST',
