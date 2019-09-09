@@ -54,18 +54,18 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', isset($_SERVER['DB_HOST'])?$_SERVER['DB_HOST']:'127.0.0.1'),
-            'port' => env('DB_PORT', isset($_SERVER['DB_PORT'])?$_SERVER['DB_PORT']:'3306'),
-            'database' => env('DB_DATABASE', isset($_SERVER['DB_DATABASE'])?$_SERVER['DB_DATABASE']:'graphene'),
-            'username' => env('DB_USERNAME', isset($_SERVER['DB_USERNAME'])?$_SERVER['DB_USERNAME']:'graphene'),
-            'password' => env('DB_PASSWORD', isset($_SERVER['DB_PASSWORD'])?$_SERVER['DB_PASSWORD']:'graphene'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', ''),
+            'username' => env('DB_USERNAME', ''),
+            'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix' => '',
             'strict' => true,
             'engine' => null,
             'options' => [
-                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', isset($_SERVER['DB_PERSISTENT'])?$_SERVER['DB_PERSISTENT']:false),
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
             ],
         ],
 
@@ -113,8 +113,8 @@ return [
     'migrations' => 'migrations',
 
     // This is specifically for running a migration from legacy myBinghamton database.  Will be removed.
-    'full_seed' => env('FULL_SEED',isset($_SERVER['FULL_SEED'])?$_SERVER['FULL_SEED']:false), /* Run Portal DB seed in full/abridged mode -- faster but less complete */
-    'download_images' => env('DOWNLOAD_IMAGES',isset($_SERVER['DOWNLOAD_IMAGES'])?$_SERVER['DOWNLOAD_IMAGES']:false), /* Download Images from Portal S3 Bucket */
+    'full_seed' => env('FULL_SEED',false), /* Run Portal DB seed in full/abridged mode -- faster but less complete */
+    'download_images' => env('DOWNLOAD_IMAGES',false), /* Download Images from Portal S3 Bucket */
 
     /*
     |--------------------------------------------------------------------------
