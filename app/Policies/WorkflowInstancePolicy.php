@@ -26,7 +26,18 @@ class WorkflowInstancePolicy
 
     public function get(User $user, WorkflowInstance $workflow_instance)
     {
-        if ($user->site_admin || $user->group_apps_admin($workflow_instance->group_id)) {
+        // If you're an admin of the group, or you're an admin of the site => you can view the workflow instance.
+        if ($user->group_admin($workflow_instance->group_id) || $user->site_admin) {
+            return true;
+        }
+
+        // If the workflow instance limits visibility to composites, and you are a member of one of those composites => you can view the workflow instance.
+        if (is_array($workflow_instance->groups) && count($workflow_instance->groups) > 0) { 
+            if (count(array_intersect($user->groups, $workflow_instance->groups)) > 0) {
+                return true;
+            }
+        // If the workflow instance DOESNT limit visibility to composites, and you are a member of the workflow instance group => you can view the workflow instance.
+        } else if ($user->group_member($workflow_instance->group_id)) {
             return true;
         }
     }
@@ -62,17 +73,17 @@ class WorkflowInstancePolicy
             return true;
         }
         
-        // If the app instance limits visibility to composites, and you are a member of one of those composites => you can view the app instance.
+        // If the workflow instance limits visibility to composites, and you are a member of one of those composites => you can view the workflow instance.
         if (is_array($workflow_instance->groups) && count($workflow_instance->groups) > 0) { 
             if (count(array_intersect($user->groups, $workflow_instance->groups)) > 0) {
                 return true;
             }
-        // If the app instance DOESNT limit visibility to composites, and you are a member of the app instance group => you can view the app instance.
+        // If the workflow instance DOESNT limit visibility to composites, and you are a member of the workflow instance group => you can view the workflow instance.
         } else if ($user->group_member($workflow_instance->group_id)) {
             return true;
         }
 
-        // If the app instance is public => you can view the app instance.
+        // If the workflow instance is public => you can view the workflow instance.
         if ($workflow_instance->public == true) {
             return true;
         }
