@@ -181,7 +181,7 @@ php artisan serve --host={{domain}}
 <pre>
 $ mysql -u root -h {{host}} -P {{port}}
 > CREATE DATABASE {{database}};
-> CREATE USER '{{username}}'@'{{host}}' IDENTIFIED BY '{{#password}}{{password}}{{/password}}{{^password}}CHANGE TO VALID PASSWORD{{/password}}';
+> CREATE USER '{{username}}'@'{{host}}' IDENTIFIED WITH mysql_native_password BY '{{#password}}{{password}}{{/password}}{{^password}}CHANGE TO VALID PASSWORD{{/password}}';
 > GRANT ALL PRIVILEGES ON {{database}}.* TO '{{username}}'@'{{host}}' WITH GRANT OPTION;
 </pre>
     <div class="alert alert-warning">
