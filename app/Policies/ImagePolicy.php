@@ -25,7 +25,10 @@ class ImagePolicy
     }
 
     public function get(User $user, Image $image) {
-        if ($user->group_member($image->group_id) || $user->group_admin($image->group_id) || $user->site_admin) {
+        if ($user->group_member($image->group_id) || 
+            $user->group_admin($image->group_id) || 
+            $user->site_admin ||
+            $image->public) {
             return true;
         }
     }

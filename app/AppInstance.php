@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AppInstance extends Model
 {
     protected $fillable = ['name', 'slug', 'public', 'options', 'user_options_default', 'resources','icon', 'app_version_id', 'unlisted','groups','device'];
-    protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object','groups'=>'array'];
+    protected $casts = ['options' => 'object', 'user_options_default' => 'object', 'resources' => 'object','groups'=>'array','public' => 'boolean'];
     protected $appends = ['version','hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
 
     /* Transient Properties not saved in the database */
