@@ -697,6 +697,7 @@ a.list-group-action {
   display: inline-block;
   width: 4rem;
   height: 2.2rem;
+  margin: .5em;
 }
 
 /* Hide default HTML checkbox */

@@ -40,7 +40,45 @@
   <div class="tab-content">
   <div role="tabpanel" class="tab-pane active " id="resources">
       <div class="row"><div class="col-md-12 resources "></div></div></div>
-    <div role="tabpanel" class="tab-pane forms" id="forms"></div>
+    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:20px">
+    <div class="">
+      <div class="row">
+          <div class="col-md-6 col-sm-4 hidden-xs">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <div class="btn-group" role="group" aria-label="...">
+                  <a class="btn btn-success" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})">Preview </a>
+                  <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
+                  <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class=" source view view_source" id="alt-sidebar">
+                  <ul id="sortableList" class="list-group ">
+                    <li class="list-group-item" data-type="input">Input</li>
+                    <li class="list-group-item" data-type="collection">Options</li>
+                    <li class="list-group-item" data-type="bool">Boolean</li>
+                    <li class="list-group-item" data-type="section">Section</li>
+                  </ul>			
+                  <div id="mainform"></div>				
+                  <div id="form"></div>				
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-8 col-xs-12">
+            <div class="panel panel-primary">
+              <div class="panel-heading"><b>Form</b></div>
+              <div class="panel-body">
+                <div class="target"></div>
+                <div id="editor" class="form-horizontal widget_container cobler_select"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
     <!-- <div role="tabpanel" class="tab-pane scripts" id="scripts"></div> -->
     <div role="tabpanel" class="tab-pane" id="flow" style="padding-top: 15px">
         <div class="row">
@@ -153,7 +191,11 @@
   <script src='/assets/js/vendor/moment.js'></script>
   <script src='/assets/js/vendor/moment_datepicker.js'></script>
 
+  <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
+  <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
+  
   <script type='text/javascript' src='/assets/js/editWorkflow.js'></script>
+  <script type='text/javascript' src='/assets/js/workflow.cob.js'></script>
 @endsection
 
 @section('bottom_page_styles')

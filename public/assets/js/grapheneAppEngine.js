@@ -123,7 +123,10 @@ function App() {
 			var form = _.find(this.options.config.forms,{name:name})
 			if(typeof form !== 'undefined'){
 				try{
-					return JSON.parse(form.content);
+					form = JSON.parse(form.content);
+					form.collections = this.collections;
+					form.methods = this.method;
+					return form;
 				}catch(e){
 					this.app.debug('Failed to parse form:'+name )
 				}
@@ -138,49 +141,57 @@ function App() {
 			if(typeof name == 'string'){
 				var formOptions = _.cloneDeep(this.app.findForm(name));//_.find(this.options.config.forms,{name:name})
 				if(typeof formOptions !== 'undefined'){
-						// var formOptions = JSON.parse(form.content);
-						formOptions.private = true;
-						formOptions.collections = this.collections;
-						formOptions.selector = target;
-						formOptions.methods = this.methods;
-						if(typeof target == 'string'){
-							target = this.app.find(target)[0];
-						}
-						this.forms[name] = new gform(formOptions,target)
-
-						return this.forms[name]
-				}
-			}else{
-					var formOptions = name;
+					// var formOptions = JSON.parse(form.content);
 					formOptions.private = true;
 					formOptions.collections = this.collections;
 					formOptions.selector = target;
 					formOptions.methods = this.methods;
-					var newForm = new gform(formOptions,target)
-					this.forms[newForm.name] = newForm;
-					return this.forms[newForm.name]
+					if(typeof target == 'string'){
+						target = this.app.find(target)[0];
+					}
+					this.forms[name] = new gform(formOptions,target)
+
+					return this.forms[name]
+				}
+			}else{
+				var formOptions = name;
+				formOptions.private = true;
+				formOptions.collections = this.collections;
+				formOptions.selector = target;
+				formOptions.methods = this.methods;
+				var newForm = new gform(formOptions,target)
+				this.forms[newForm.name] = newForm;
+				return this.forms[newForm.name]
 			}
 		}
 
 		return this.forms[name]
 
 		}.bind(this),
-		grid: function(name,options){
+		grid: function(name, options){
 			if(typeof this.grids[name] == 'undefined'){
 				// _.each(['create','edit','form'],function(i){
 				// 	if(typeof options[i] == 'string'){
 				// 		options[i] = this.app.findForm(options[i])
 				// 	}
 				// })
+
 				if(typeof options.create == 'string'){
 					options.create = _.cloneDeep(this.app.findForm(options.create))
 				}
 				if(typeof options.edit == 'string'){
 					options.edit = _.cloneDeep(this.app.findForm(options.edit))
 				}	
+				if(typeof options.form == 'undefined'){
+					this.app.debug('Form required for grid:'+name )
+				}
+
 				if(typeof options.form == 'string'){
 					options.form = _.cloneDeep(this.app.findForm(options.form))
 				}
+				
+
+
 				this.grids[name] = new GrapheneDataGrid(_.extend({methods:this.methods,collections:this.collections,data:this.data[options.resource||name]},options))//new gform(formOptions,this.app.find(target)[0])
 				if(typeof options.resource !== 'undefined'){
 					this.collections.on(options.resource,function(e){
@@ -216,6 +227,10 @@ function App() {
 		}.bind(this),
 		
 		modal:function(options,data){
+
+			if(typeof options == 'string'){
+				options = {content:options};
+			}
 			var hClass = ''
 			switch(options.status){
 				case 'error':
@@ -240,6 +255,9 @@ function App() {
 			});
 		}.bind(this),
 		alert:function(options,data){
+			if(typeof options == 'string'){
+				options = {content:options};
+			}
 			toastr[options.status||'info'](gform.m(options.content||'',_.extend({}, this.partials, data)),options.title )
 		}.bind(this)
 		//dialog

@@ -162,7 +162,9 @@ function Cobler(options) {
 			var item = item || items[active];
 			item.set(data);
 			var temp = renderItem.call(cob,item);
-			temp.className += ' ' + cob.options.active;
+			if(items[active] == item){
+				temp.className += ' ' + cob.options.active;
+			}
 			var modEL = elementOf(item);
 			 var a = modEL.parentNode.replaceChild(temp, modEL);
 		 	if(typeof item.initialize !== 'undefined'){
@@ -216,7 +218,7 @@ function Cobler(options) {
 			for(var i in items){
 				json.push(items[i].toJSON(opts));
 			}
-			if(opts.object)return {target: target.dataset.id, items: json};
+			if(typeof opts !== 'undefined' && opts.object)return {target: target.dataset.id, items: json};
 			return json;
 		}
 		function toHTML() {
