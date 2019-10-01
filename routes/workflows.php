@@ -18,7 +18,7 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
   
 Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {
     /***** WORKFLOWS *****/
-    Route::post('/workflowsubmissions/{workflow_instance}','WorkflowSubmissionController@create')->middleware('can:create_submission,workflow_instance');
+    Route::post('/workflowsubmissions/{workflow_instance}/{save_or_submit?}','WorkflowSubmissionController@create')->middleware('can:create_submission,workflow_instance');
     Route::get('/workflowsubmissions/user','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflowsubmissions/user/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
     Route::get('/workflowsubmissions/{workflow_submission}/log','WorkflowSubmissionController@workflow_submission_log')->middleware('can:view,workflow_submission');
@@ -59,6 +59,9 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     // List all workflows instances
     Route::get('/workflowinstances','WorkflowInstanceController@list_all_workflow_instances');
     Route::get('/workflowinstances/user','WorkflowInstanceController@list_user_workflow_instances');
+
+    // Get workflow submissions by user (given a workflow_instance id)
+    Route::get('/workflowinstances/{workflow_instance}/workflowsubmissions/{status?}','WorkflowInstanceController@list_user_workflow_instance_submissions');
 
     // Lookup specific workflow instance by workflow_instance_id
     Route::get('/workflowinstances/{workflow_instance}','WorkflowInstanceController@show');
