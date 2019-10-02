@@ -9,7 +9,7 @@ class WorkflowInstance extends Model
 {
     use SoftDeletes;
     protected $fillable = ['name', 'slug', 'public', 'configuration','icon', 'workflow_version_id', 'unlisted','groups'];
-    protected $casts = ['configuration' => 'object', 'groups'=>'array'];
+    protected $casts = ['configuration' => 'object', 'groups'=>'array','public' => 'boolean'];
     protected $appends = ['version','hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
 
     /* Transient Properties not saved in the database */

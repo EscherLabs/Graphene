@@ -287,4 +287,14 @@ class WorkflowInstanceController extends Controller
             ->header('Content-Disposition','attachment; filename="'.$workflow_instance->name.'_workflow.csv"');
     }
 
+    public function list_user_workflow_instance_submissions(WorkflowInstance $workflow_instance, Request $request, $status=null) {
+        if (is_null($status)) {
+            $submissions = WorkflowSubmission::where('user_id',Auth::user()->id)->get();
+        } else {
+            $submissions = WorkflowSubmission::where('user_id',Auth::user()->id)
+                ->where('status',$status)->get();
+        }
+        return $submissions;
+    }
+
 }

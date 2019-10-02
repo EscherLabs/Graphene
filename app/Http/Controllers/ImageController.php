@@ -20,6 +20,12 @@ class ImageController extends Controller
     }
     
     public function get(Image $image) {
+        // Check to see if the user can view this image
+        if (!$image->public) {
+            if (!Auth::check() || !Auth::user()->can('get', $image)) {
+                return response('Permission Denied',403);
+            }
+        }
         $max_age = 2592000; // Cache Images for 30 days
         $headers = [
             "Cache-Control"=>"max-age=".$max_age,
@@ -48,12 +54,13 @@ class ImageController extends Controller
 
     public function create(Request $request)
     {
-        $image = new Image([
+         $image = new Image([
             'group_id'=>$request->group_id,
             'name'=>pathinfo($request->file('image_filename')->getClientOriginalName(), PATHINFO_FILENAME),
             'mime_type'=>$request->file('image_filename')->getClientMimeType(),
             'ext'=>pathinfo($request->file('image_filename')->getClientOriginalName(), PATHINFO_EXTENSION),
         ]);
+        $image->public = (isset($request->public) && ($request->public===true || $request->public==="true"));
         $image->save();
 
         $path = Storage::putFileAs(
@@ -65,6 +72,7 @@ class ImageController extends Controller
     public function update(Request $request, Image $image)
     {
         $data = $request->all();
+        $data['public'] = (isset($request->public) && ($request->public===true || $request->public==="true"));
         $image->update($data);
         return $image;
     }

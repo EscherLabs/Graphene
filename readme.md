@@ -4,7 +4,7 @@ Graphene is a fully featured 'Micro Application' and 'Content Management' Platfo
 
 If you are interested in piloting Graphene at your campus, please contact [graphenepilot@binghamton.edu](mailto:graphenepilot@binghamton.edu).
 
-<img src="https://www.escherlabs.com/assets/images/graphene_screenshot.png" width="100%">
+<img src="https://www.escherlabs.com/assets/images/graphene_screenshots.gif" width="100%">
 
 ## Dependencies
  - MySQL 5.7.8+ or MariaDB 10.2+
