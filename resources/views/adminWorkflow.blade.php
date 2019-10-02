@@ -43,35 +43,67 @@
     <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:20px">
     <div class="">
       <div class="row">
-          <div class="col-md-6 col-sm-4 hidden-xs">
+          <div class="col-md-2 col-sm-8 col-xs-12">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <div class="btn-group" role="group" aria-label="...">
+              <div class="btn-group" role="group" style="margin-bottom:20px" aria-label="...">
                   <a class="btn btn-success" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})">Preview </a>
                   <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
                   <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
                 </div>
               </div>
               <div class="panel-body">
-                <div class=" source view view_source" id="alt-sidebar">
-                  <ul id="sortableList" class="list-group ">
+           
+                <ul id="sortableList" class="list-group">
                     <li class="list-group-item" data-type="input">Input</li>
                     <li class="list-group-item" data-type="collection">Options</li>
                     <li class="list-group-item" data-type="bool">Boolean</li>
                     <li class="list-group-item" data-type="section">Section</li>
                   </ul>			
-                  <div id="mainform"></div>				
-                  <div id="form"></div>				
-                  </div>
+
               </div>
             </div>
           </div>
           <div class="col-md-6 col-sm-8 col-xs-12">
+            <div class="target"></div>
+
             <div class="panel panel-primary">
-              <div class="panel-heading"><b>Form</b></div>
+              <div class="panel-body" style="position:relative">
+                <form>
+                <div id="editor" style="position:relative;z-index:1" class="form-horizontal widget_container cobler_select"></div>
+                <div><i class="fa fa-arrow-circle-o-left fa-2x pull-left text-muted"></i>Click or Drop Form Elements HERE</div>
+                <style>
+                .margin-bottom{margin-bottom:15px !important}
+                #editor + div {
+    display: none;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    padding: 11px;
+    text-align: center;
+    border:dotted 1px #080;
+    border-radius:3px;
+}
+
+#editor:empty + div{
+    display: block;
+}
+                </style>
+                </form>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 hidden-xs">
+            <div class="panel panel-default">
+
               <div class="panel-body">
-                <div class="target"></div>
-                <div id="editor" class="form-horizontal widget_container cobler_select"></div>
+                <div class=" source view view_source" id="alt-sidebar">
+
+                  <div id="mainform"></div>				
+                  <div id="form"></div>				
+                  </div>
               </div>
             </div>
           </div>
@@ -172,6 +204,13 @@
 
       
     }
+    $('body').keydown(function(event) {
+      switch(event.keyCode) {
+        case 27://escape
+            cb.deactivate();
+          break;
+      }
+    });
 </script>
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
 @endsection

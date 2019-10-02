@@ -18,20 +18,21 @@ renderBuilder = function(){
     list = document.getElementById('sortableList');
     cb.addSource(list);
     cb.on('activate', function(e){
-      if(list.className.indexOf('hidden') == -1){
-        list.className += ' hidden';
-      }
+      // if(list.className.indexOf('hidden') == -1){
+      //   list.className += ' hidden';
+      // }
       $('#form').removeClass('hidden');
     })
     cb.on('deactivate', function(){
       if(typeof gform.instances.editor !== 'undefined'){
           gform.instances.editor.destroy();
       }
-      list.className = list.className.replace('hidden', '');
+      // list.className = list.className.replace('hidden', '');
       $('#form').addClass('hidden');
       mainForm();
     })
     document.getElementById('sortableList').addEventListener('click', function(e) {
+      cb.deactivate();
       cb.collections[0].addItem(e.target.dataset.type);
     })
     cb.on("change", function(){

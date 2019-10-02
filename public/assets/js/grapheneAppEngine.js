@@ -175,7 +175,7 @@ function App() {
 				// 		options[i] = this.app.findForm(options[i])
 				// 	}
 				// })
-
+				options = options||{};
 				if(typeof options.create == 'string'){
 					options.create = _.cloneDeep(this.app.findForm(options.create))
 				}
