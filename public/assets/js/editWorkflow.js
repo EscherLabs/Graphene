@@ -99,25 +99,25 @@ mainForm = function(){
       data: form,
       actions:[],
       fields: [
-        {name:"legend",label:"Label"},
-        {name:"name",label:"Name"},
+        // {name:"legend",label:"Label"},
+        // {name:"name",label:"Name"},
         {name:"default",label:false,type:'fieldset',fields:[
           {name:"horizontal",label:"Horizontal",type:"checkbox"}
         ]},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
-        {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
-        {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
+        // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
+        // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
           
-          {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
-          // {name:"name",columns:6,label:"Name"},
-          {name:"action",columns:6,label:"Action"},
-          {name:"label",columns:6,label:"Label"},
-          {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
-            {label:"Danger",value:"btn btn-danger"},
-            {label:"Success",value:"btn btn-success"},
-            {label:"Info",value:"btn btn-info"}]}
+        //   {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
+        //   // {name:"name",columns:6,label:"Name"},
+        //   {name:"action",columns:6,label:"Action"},
+        //   {name:"label",columns:6,label:"Label"},
+        //   {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
+        //     {label:"Danger",value:"btn btn-danger"},
+        //     {label:"Success",value:"btn btn-success"},
+        //     {label:"Info",value:"btn btn-info"}]}
 
-        ]},
+        // ]},
 
       ],
       legend: 'Edit Form',
@@ -130,9 +130,9 @@ mainForm = function(){
       }
     }).on('input', _.throttle(function(e){
       form = _.extend(form,e.form.get());
-      if(typeof e.form.get().actions == 'undefined'){
-        delete form.actions;
-      }
+      // if(typeof e.form.get().actions == 'undefined'){
+      //   delete form.actions;
+      // }
       // if(typeof e.field !== 'undefined' && e.field.name == 'horizontal'){
       //   renderBuilder()
       // }

@@ -55,10 +55,10 @@
               <div class="panel-body">
            
                 <ul id="sortableList" class="list-group">
-                    <li class="list-group-item" data-type="input">Input</li>
-                    <li class="list-group-item" data-type="collection">Options</li>
-                    <li class="list-group-item" data-type="bool">Boolean</li>
-                    <li class="list-group-item" data-type="section">Section</li>
+                    <li class="list-group-item" data-type="input"><i class="fa fa-font"></i> Input</li>
+                    <li class="list-group-item" data-type="collection"><i class="fa fa-list"></i> Options</li>
+                    <li class="list-group-item" data-type="bool"><i class="fa fa-check-square-o"></i> Boolean</li>
+                    <li class="list-group-item" data-type="section"><i class="fa fa-list-ol"></i> Section</li>
                   </ul>			
 
               </div>
@@ -68,6 +68,7 @@
             <div class="target"></div>
 
             <div class="panel panel-primary">
+       
               <div class="panel-body" style="position:relative">
                 <form>
                 <div id="editor" style="position:relative;z-index:1" class="form-horizontal widget_container cobler_select"></div>
@@ -82,8 +83,8 @@
     right: 15px;
     padding: 11px;
     text-align: center;
-    border:dotted 1px #080;
-    border-radius:3px;
+    border:dashed 1px #080;
+    border-radius:30px;
 }
 
 #editor:empty + div{

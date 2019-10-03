@@ -375,6 +375,10 @@ display:none;
 .editor .slice,#sortableList a{
     cursor:move;
 }
+#editor .slice{
+  overflow: hidden;
+}
+
 li.widget_active{cursor:default}
 
 .note-editor.note-frame.fullscreen {
