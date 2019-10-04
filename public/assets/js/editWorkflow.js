@@ -61,6 +61,8 @@ renderBuilder = function(){
         case "scale":
         case "range":
         case "grid":
+        case "user":
+        case "groups":
         case "smallcombo":
           temp.fields[i].widgetType = 'collection';
           break;

@@ -48,7 +48,7 @@
               <div class="panel-heading">
               <div class="btn-group" role="group" style="margin-bottom:20px" aria-label="...">
                   <a class="btn btn-success" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})">Preview </a>
-                  <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
+                  <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
                   <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
                 </div>
               </div>
