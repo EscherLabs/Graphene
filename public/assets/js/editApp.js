@@ -117,18 +117,18 @@ function load(app_version) {
 
   templatePage = new paged('.templates', {name:'templates', items:attributes.code.templates, label:'Template'});
   scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
-  formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
+  // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
-    item.content = this.berry.fields[this.active].toJSON();
-    if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
-      modalForm(item.content, item.name, function() {
-        var old = formPage.getCurrent();
-        formPage.update(old.key, JSON.stringify($.extend(false, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
-      });
-    }else{
-      toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
-    }
-  }});
+  //   item.content = this.berry.fields[this.active].toJSON();
+  //   if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
+  //     modalForm(item.content, item.name, function() {
+  //       var old = formPage.getCurrent();
+  //       formPage.update(old.key, JSON.stringify($.extend(false, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
+  //     });
+  //   }else{
+  //     toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
+  //   }
+  // }});
 }
 load(loaded.code);
 orig = $.extend({},loaded);
@@ -142,80 +142,80 @@ $(document).keydown(function(e) {
   return true;
 });
 
-function modalForm(form, name, onSave) {
+// function modalForm(form, name, onSave) {
 
-  if(typeof cb === 'undefined'){
-    if(typeof form === 'string'){
-      form = JSON.parse(form || '{}');
-    }
-    form = form || {};
-    $('#myModal').remove();
-    this.onSave = onSave;
-    this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-    $(this.ref).appendTo('body');
-    this.ref.find('.modal-body').html(templates.formEditor.render());
-    this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-    this.ref.on('hide.bs.modal', function(){
-      cb.destroy();
-      delete cb;
-    });
-    this.ref.find('#saveForm').on('click', function(){
-      this.onSave.call(this)
-      this.ref.modal('hide');
+//   if(typeof cb === 'undefined'){
+//     if(typeof form === 'string'){
+//       form = JSON.parse(form || '{}');
+//     }
+//     form = form || {};
+//     $('#myModal').remove();
+//     this.onSave = onSave;
+//     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+//     $(this.ref).appendTo('body');
+//     this.ref.find('.modal-body').html(templates.formEditor.render());
+//     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
+//     this.ref.on('hide.bs.modal', function(){
+//       cb.destroy();
+//       delete cb;
+//     });
+//     this.ref.find('#saveForm').on('click', function(){
+//       this.onSave.call(this)
+//       this.ref.modal('hide');
       
-    }.bind(this))
-    this.ref.modal({backdrop: 'static'});
+//     }.bind(this))
+//     this.ref.modal({backdrop: 'static'});
 
-    cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-    $('.modal #form').keydown(function(event) {
-      switch(event.keyCode) {
-        case 27://escape
-            event.stopPropagation();
-            cb.deactivate();
-            return false;
-          break;
-      }
-    });
-    list = document.getElementById('sortableList');
-    cb.addSource(list);
-    cb.on('activate', function(){
-      if(list.className.indexOf('hidden') == -1){
-        list.className += ' hidden';
-      }
-      $('#form').removeClass('hidden');
-    })
-    cb.on('deactivate', function(){
-      list.className = list.className.replace('hidden', '');
-      $('#form').addClass('hidden');
-    })
-    document.getElementById('sortableList').addEventListener('click', function(e) {
-      cb.collections[0].addItem(e.target.dataset.type);
-    })
-  }
+//     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
+//     $('.modal #form').keydown(function(event) {
+//       switch(event.keyCode) {
+//         case 27://escape
+//             event.stopPropagation();
+//             cb.deactivate();
+//             return false;
+//           break;
+//       }
+//     });
+//     list = document.getElementById('sortableList');
+//     cb.addSource(list);
+//     cb.on('activate', function(){
+//       if(list.className.indexOf('hidden') == -1){
+//         list.className += ' hidden';
+//       }
+//       $('#form').removeClass('hidden');
+//     })
+//     cb.on('deactivate', function(){
+//       list.className = list.className.replace('hidden', '');
+//       $('#form').addClass('hidden');
+//     })
+//     document.getElementById('sortableList').addEventListener('click', function(e) {
+//       cb.collections[0].addItem(e.target.dataset.type);
+//     })
+//   }
 
-  if(typeof form !== 'undefined'){
-    var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
+//   if(typeof form !== 'undefined'){
+//     var temp = $.extend(true, {}, form);
+//     for(var i in temp.fields){
 
-      temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-          temp.fields[i].widgetType = 'select';
-          break;
-        case "checkbox":
-          temp.fields[i].widgetType = 'checkbox';
-          break;
-        default:
-          temp.fields[i].widgetType = 'textbox';
-      }
+//       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
+//       switch(temp.fields[i].type) {
+//         case "select":
+//         case "radio":
+//           temp.fields[i].widgetType = 'select';
+//           break;
+//         case "checkbox":
+//           temp.fields[i].widgetType = 'checkbox';
+//           break;
+//         default:
+//           temp.fields[i].widgetType = 'textbox';
+//       }
 
-    }
+//     }
 
-    list.className = list.className.replace('hidden', '');
-    cb.collections[0].load(temp.fields);
-  }
-}
+//     list.className = list.className.replace('hidden', '');
+//     cb.collections[0].load(temp.fields);
+//   }
+// }
 
 $('#save').on('click',function() {
   template_errors = templatePage.errors();
@@ -377,3 +377,246 @@ $('#versions').on('click', function() {
   })
 })
 
+
+
+
+
+
+
+renderBuilder = function(){
+  var target = document.querySelector('.target');
+  $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">'+working_forms[formIndex].label+'</div>')
+  var form = myform;
+  var map = "";
+  _.each(path,function(p){
+    form = _.find(form.fields,{name:p})
+    map += form.name+',';
+    $(target).append('<div style="text-align:center;padding:5px;color: #555;"><i class="fa fa-long-arrow-down fa-2x"> </i></div><div style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" data-map="'+map+'" class="btn btn-default">'+(form.label||form.name)+'</div>')
+  })
+  gform.addClass(target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1],'btn-success')
+
+  
+  $(target).append('<hr>')
+
+  
+  if(typeof cb === 'undefined'){
+
+    cb = new Cobler({formTarget:$('#form') ,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
+    list = document.getElementById('sortableList');
+    cb.addSource(list);
+    cb.on('activate', function(e){
+      // if(list.className.indexOf('hidden') == -1){
+      //   list.className += ' hidden';
+      // }
+      $('#form').removeClass('hidden');
+    })
+    cb.on('deactivate', function(){
+      if(typeof gform.instances.editor !== 'undefined'){
+          gform.instances.editor.destroy();
+      }
+      // list.className = list.className.replace('hidden', '');
+      $('#form').addClass('hidden');
+      mainForm();
+    })
+    document.getElementById('sortableList').addEventListener('click', function(e) {
+      // debugger;
+      cb.deactivate();
+      cb.collections[0].addItem(e.target.dataset.type || e.target.parentElement.dataset.type);
+    })
+    cb.on("change", function(){
+      var workingForm = myform;
+      _.each(path,function(p){
+        workingForm = _.find(workingForm.fields,{name:p})
+      })
+      workingForm.fields = cb.toJSON()[0];
+      
+    })
+    cb.on('remove', function(e){
+      if(typeof gform.instances.editor !== 'undefined' && gform.instances.editor.options.cobler == e[0]){
+        cb.deactivate();
+      }
+    });
+  }
+
+  if(typeof form !== 'undefined'){
+    var temp = $.extend(true, {}, form);
+    for(var i in temp.fields){
+      // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
+      // temp.fields[i].options = mapOptions.getobject()
+      switch(temp.fields[i].type) {
+        case "select":
+        case "radio":
+        case "scale":
+        case "range":
+        case "grid":
+        case "user":
+        case "groups":
+        case "smallcombo":
+          temp.fields[i].widgetType = 'collection';
+          break;
+        case "checkbox":
+        case "switch":
+          temp.fields[i].widgetType = 'bool';
+          break;
+        case "fieldset":
+        case "grid":
+          temp.fields[i].widgetType = 'section';
+          break;
+        default:
+          temp.fields[i].widgetType = 'input';
+      }
+    }
+    
+    list.className = list.className.replace('hidden', '');
+    cb.collections[0].load(temp.fields);
+  }
+  // mainForm(form,map);
+
+  if(typeof gform.instances.editor !== 'undefined'){
+    gform.instances.editor.destroy();
+  }
+
+  mainForm();
+} 
+mainForm = function(){
+  var form = myform;
+  _.each(path,function(p){
+    form = _.find(form.fields,{name:p})
+  })
+  if(!path.length){
+    new gform({
+      name:"editor",
+      data: form,
+      actions:[],
+      fields: [
+        {name:"legend",label:"Label",columns:6},
+        {name:"name",label:"Name",columns:6},
+        {name:"default",label:false,type:'fieldset',fields:[
+          {name:"horizontal",label:"Horizontal",type:"checkbox"}
+        ]},
+        {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
+        // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
+        // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
+          
+        //   {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
+        //   // {name:"name",columns:6,label:"Name"},
+        //   {name:"action",columns:6,label:"Action"},
+        //   {name:"label",columns:6,label:"Label"},
+        //   {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
+        //     {label:"Danger",value:"btn btn-danger"},
+        //     {label:"Success",value:"btn btn-success"},
+        //     {label:"Info",value:"btn btn-info"}]}
+
+        // ]},
+
+      ],
+      legend: 'Edit Form',
+    }, '#mainform').on('input:type',function(e){
+      if(e.field.value == 'cancel'){
+        e.field.parent.set({
+          "label":"<i class=\"fa fa-times\"></i> Cancel",
+          "action":"cancel",
+          "modifiers": "btn btn-danger"})
+      }
+    }).on('input', _.throttle(function(e){
+      form = _.extend(form,e.form.get());
+      // if(typeof e.form.get().actions == 'undefined'){
+      //   delete form.actions;
+      // }
+      // if(typeof e.field !== 'undefined' && e.field.name == 'horizontal'){
+      //   renderBuilder()
+      // }
+
+    }) ).on('input:horizontal',function(){
+      renderBuilder();
+    })
+  }else{
+    var temp = new Cobler.types[gform.types[form.type].base]();
+    $("#mainform").html(gform.renderString(accordion))
+
+    $('.panelOptions').toggle(false);
+    
+    new gform({
+      name:"editor",
+      nomanage:true,
+      data: form,
+      actions:[],
+      clear:false,
+      fields: temp.fields,
+      legend: 'Edit Fieldset',
+    }, '#mainform').on('change', function(e){
+      // form = _.extend(form,e.form.get())
+      var workingForm = myform;
+        _.each(path,function(p){
+          workingForm = _.find(workingForm.fields,{name:p})
+        })
+        
+      // workingForm = 
+      _.extend(workingForm,e.form.get())
+      
+
+    })
+
+  }
+}
+
+
+// $('#cobler').on('click', function(e) {
+
+// });
+
+
+$('.target').on('click','[data-map]', function(e) {
+path = _.compact(e.currentTarget.dataset.map.split(','));
+cb.deactivate();
+renderBuilder()
+});
+
+
+setupform = function(index){
+  formIndex = index;
+  myform = working_forms[formIndex].content || {};
+  $('#formlist').html(
+    gform.renderString(
+`<div class="btn-group">
+<button type="button" class="btn  btn-info go pages_new">New Form</span></button>
+<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <span class="caret"></span>
+  <span class="sr-only">Toggle Dropdown</span>
+</button>
+<ul class="dropdown-menu dropdown-menu-right">
+{{#forms}}
+  <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >Edit: {{label}}</a></li>
+{{/forms}}
+</ul>
+</div>
+</div>`
+  ,{forms:working_forms}))
+
+  // $('#cobler').click();
+  path = [];
+  // $(e.target).siblings().removeClass('active');
+  // $(e.target).addClass('active');
+  // $('#form').addClass('hidden');
+  // $('.view_source').removeClass('hidden');
+  renderBuilder();
+
+}
+
+
+document.addEventListener('DOMContentLoaded', function(){
+  // myform = JSON.parse(($.jStorage.get('form') || "{}"));
+  formIndex = 0;
+  working_forms = _.each(loaded.code.forms,function(form,i){
+    form.content = JSON.parse(form.content);
+    form.content.name = form.name || form.content.name;
+    form.i = i;
+    form.label = form.content.legend||form.content.name;
+  })
+  $('#formlist').on('click','.form_edit',function(e){
+    setupform(parseInt(e.target.dataset.index))
+  })
+  setupform(formIndex);
+
+
+});

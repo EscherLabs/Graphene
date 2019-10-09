@@ -43,59 +43,7 @@
     <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:20px">
     <div class="">
       <div class="row">
-          <div class="col-md-2 col-sm-8 col-xs-12">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-              <div class="btn-group" role="group" style="margin-bottom:20px" aria-label="...">
-                  <a class="btn btn-success" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})">Preview </a>
-                  <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
-                  <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
-                </div>
-              </div>
-              <div class="panel-body">
-           
-                <ul id="sortableList" class="list-group">
-                    <li class="list-group-item" data-type="input"><i class="fa fa-font"></i> Input</li>
-                    <li class="list-group-item" data-type="collection"><i class="fa fa-list"></i> Options</li>
-                    <li class="list-group-item" data-type="bool"><i class="fa fa-check-square-o"></i> Boolean</li>
-                    <li class="list-group-item" data-type="section"><i class="fa fa-list-ol"></i> Section</li>
-                  </ul>			
 
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-sm-8 col-xs-12">
-            <div class="target"></div>
-
-            <div class="panel panel-primary">
-       
-              <div class="panel-body" style="position:relative">
-                <form>
-                <div id="editor" style="position:relative;z-index:1" class="form-horizontal widget_container cobler_select"></div>
-                <div><i class="fa fa-arrow-circle-o-left fa-2x pull-left text-muted"></i>Click or Drop Form Elements HERE</div>
-                <style>
-                .margin-bottom{margin-bottom:15px !important}
-                #editor + div {
-    display: none;
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    padding: 11px;
-    text-align: center;
-    border:dashed 1px #080;
-    border-radius:30px;
-}
-
-#editor:empty + div{
-    display: block;
-}
-                </style>
-                </form>
-
-              </div>
-            </div>
-          </div>
           <div class="col-md-4 col-sm-4 hidden-xs">
             <div class="panel panel-default">
 
@@ -107,6 +55,77 @@
                   </div>
               </div>
             </div>
+          </div>
+          <div class="col-md-6 col-sm-8 col-xs-12">
+            <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
+                  <a class="btn btn-success" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})">Preview </a>
+                  <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
+                  <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
+                </div>
+            <ul id="sortableList" class="form-types-group">
+                    <li style="color:#22aa10" data-type="input"><i class="fa fa-font"></i> Input</li>
+                    <li style="color:#ee1515" data-type="collection"><i class="fa fa-list"></i> Options</li>
+                    <li style="color:#0088ff" data-type="bool"><i class="fa fa-check-square-o"></i> Boolean</li>
+                    <li style="color:#555" data-type="section"><i class="fa fa-list-ol"></i> Section</li>
+                  </ul>			
+
+            <div class="panel panel-primary">
+       
+              <div class="panel-body" style="position:relative">
+                <form>
+                <div id="editor" style="position:relative;z-index:1" class="form-horizontal widget_container cobler_select"></div>
+                <div><i class="fa fa-arrow-circle-o-up fa-2x pull-left text-muted"></i>Click or Drag Form Elements HERE</div>
+                <style>
+
+                  .form-types-group{
+                    list-style-type: none;
+                    height:60px;
+                    padding-left:0;
+                  }
+                  .form-types-group li{
+                    cursor:pointer;
+                    display:block;
+                    text-align: center;
+                    padding:10px;
+                    line-height: 40px;
+                    width:80px;
+                    height:60px;
+                    float:left;
+                    border:solid 1px;
+                    border-radius:3px;
+                    background:#fff;
+                    margin-right:10px;
+                  }
+                  .form-types-group li i{
+                    position: relative;
+                    display:block;
+                  }
+
+                                  .margin-bottom{margin-bottom:15px !important}
+                                  #editor + div {
+                      display: none;
+                      position: absolute;
+                      top: 15px;
+                      left: 15px;
+                      right: 15px;
+                      padding: 11px;
+                      text-align: center;
+                      border:dashed 1px #080;
+                      border-radius:30px;
+                  }
+
+                  #editor:empty + div{
+                      display: block;
+                  }
+                </style>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-sm-8 col-xs-12">
+            <div class="target"></div>
           </div>
         </div>
 
@@ -158,11 +177,11 @@
   <div role="tabpanel" class="tab-pane" id="options">
   <div class="options" style="width:0;display:none"></div>
 
-          <div class="col-sm-6">
+          <div class="col-sm-8">
             <div class="btn btn-success pull-right" style="margin-top:15px" id="add-state" ><i class="fa fa-plus"></i> Add</div>
             <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
           </div>
-          <div class="col-sm-6" id="flow-form">
+          <div class="col-sm-4" id="flow-form">
           </div>
         </div>
   <div role="tabpanel" class="tab-pane" id="map">
@@ -187,9 +206,9 @@
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
+  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script> -->
   <script type="text/javascript" src="/assets/js/vendor/mermaid.min.js"></script>
   <script>
     mermaid.initialize({
@@ -202,16 +221,8 @@
     };
     myfunc=function(e){
       graph = mermaid.mermaidAPI.render(gform.getUID(), e, insertSvg);
-
-      
+ 
     }
-    $('body').keydown(function(event) {
-      switch(event.keyCode) {
-        case 27://escape
-            cb.deactivate();
-          break;
-      }
-    });
 </script>
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
 @endsection

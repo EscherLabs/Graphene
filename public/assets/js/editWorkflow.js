@@ -1,15 +1,19 @@
 
 renderBuilder = function(){
 
-  $('.target').html('<div data-map="" class="btn btn-primary">Form Root</div>')
+  var target = document.querySelector('.target');
+  $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>')
   var form = myform;
   var map = "";
   _.each(path,function(p){
     form = _.find(form.fields,{name:p})
     map += form.name+',';
-    $('.target').append(' <a class="fa fa-arrow-right"> </a><div data-map="'+map+'" class="btn btn-default">'+(form.label||form.name)+'</div>')
+    $(target).append('<div style="text-align:center;padding:5px;color: #555;"><i class="fa fa-long-arrow-down fa-2x"> </i></div><div style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" data-map="'+map+'" class="btn btn-default">'+(form.label||form.name)+'</div>')
   })
-  $('.target').append('<hr>')
+  gform.addClass(target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1],'btn-success')
+
+  
+  $(target).append('<hr>')
 
   
   if(typeof cb === 'undefined'){
@@ -32,8 +36,9 @@ renderBuilder = function(){
       mainForm();
     })
     document.getElementById('sortableList').addEventListener('click', function(e) {
+      // debugger;
       cb.deactivate();
-      cb.collections[0].addItem(e.target.dataset.type);
+      cb.collections[0].addItem(e.target.dataset.type || e.target.parentElement.dataset.type);
     })
     cb.on("change", function(){
       var workingForm = myform;
@@ -511,79 +516,79 @@ $(document).keydown(function(e) {
   return true;
 });
 
-function modalForm(form, name, onSave) {
-  if(typeof cb === 'undefined'){
-    if(typeof form === 'string'){
-      form = JSON.parse(form || '{}');
-    }
-    form = form || {};
-    $('#myModal').remove();
-    this.onSave = onSave;
-    this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-    $(this.ref).appendTo('body');
-    this.ref.find('.modal-body').html(templates.formEditor.render());
-    this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-    this.ref.on('hide.bs.modal', function(){
-      cb.destroy();
-      delete cb;
-    });
-    this.ref.find('#saveForm').on('click', function(){
-      this.onSave.call(this)
-      this.ref.modal('hide');
+// function modalForm(form, name, onSave) {
+//   if(typeof cb === 'undefined'){
+//     if(typeof form === 'string'){
+//       form = JSON.parse(form || '{}');
+//     }
+//     form = form || {};
+//     $('#myModal').remove();
+//     this.onSave = onSave;
+//     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+//     $(this.ref).appendTo('body');
+//     this.ref.find('.modal-body').html(templates.formEditor.render());
+//     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
+//     this.ref.on('hide.bs.modal', function(){
+//       cb.destroy();
+//       delete cb;
+//     });
+//     this.ref.find('#saveForm').on('click', function(){
+//       this.onSave.call(this)
+//       this.ref.modal('hide');
       
-    }.bind(this))
-    this.ref.modal({backdrop: 'static'});
+//     }.bind(this))
+//     this.ref.modal({backdrop: 'static'});
 
-    cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-    $('.modal #form').keydown(function(event) {
-      switch(event.keyCode) {
-        case 27://escape
-            event.stopPropagation();
-            cb.deactivate();
-            return false;
-          break;
-      }
-    });
-    list = document.getElementById('sortableList');
-    cb.addSource(list);
-    cb.on('activate', function(){
-      if(list.className.indexOf('hidden') == -1){
-        list.className += ' hidden';
-      }
-      $('#form').removeClass('hidden');
-    })
-    cb.on('deactivate', function(){
-      list.className = list.className.replace('hidden', '');
-      $('#form').addClass('hidden');
-    })
-    document.getElementById('sortableList').addEventListener('click', function(e) {
-      cb.collections[0].addItem(e.target.dataset.type);
-    })
-  }
+//     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
+//     $('.modal #form').keydown(function(event) {
+//       switch(event.keyCode) {
+//         case 27://escape
+//             event.stopPropagation();
+//             cb.deactivate();
+//             return false;
+//           break;
+//       }
+//     });
+//     list = document.getElementById('sortableList');
+//     cb.addSource(list);
+//     cb.on('activate', function(){
+//       if(list.className.indexOf('hidden') == -1){
+//         list.className += ' hidden';
+//       }
+//       $('#form').removeClass('hidden');
+//     })
+//     cb.on('deactivate', function(){
+//       list.className = list.className.replace('hidden', '');
+//       $('#form').addClass('hidden');
+//     })
+//     document.getElementById('sortableList').addEventListener('click', function(e) {
+//       cb.collections[0].addItem(e.target.dataset.type);
+//     })
+//   }
 
-  if(typeof form !== 'undefined'){
-    var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
+//   if(typeof form !== 'undefined'){
+//     var temp = $.extend(true, {}, form);
+//     for(var i in temp.fields){
 
-      temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-          temp.fields[i].widgetType = 'select';
-          break;
-        case "checkbox":
-          temp.fields[i].widgetType = 'checkbox';
-          break;
-        default:
-          temp.fields[i].widgetType = 'textbox';
-      }
+//       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
+//       switch(temp.fields[i].type) {
+//         case "select":
+//         case "radio":
+//           temp.fields[i].widgetType = 'select';
+//           break;
+//         case "checkbox":
+//           temp.fields[i].widgetType = 'checkbox';
+//           break;
+//         default:
+//           temp.fields[i].widgetType = 'textbox';
+//       }
 
-    }
+//     }
 
-    list.className = list.className.replace('hidden', '');
-    cb.collections[0].load(temp.fields);
-  }
-}
+//     list.className = list.className.replace('hidden', '');
+//     cb.collections[0].load(temp.fields);
+//   }
+// }
 
 
 function createFlow() {

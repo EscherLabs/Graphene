@@ -43,7 +43,99 @@
        <div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div>
     </div>
-    <div role="tabpanel" class="tab-pane forms" id="forms"></div>
+    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:20px">
+    <div class="">
+      <div class="row">
+
+
+          <div class="col-md-4 col-sm-4 hidden-xs">
+            <div class="panel panel-default">
+
+              <div class="panel-body">
+                <div class=" source view view_source" id="alt-sidebar">
+
+                  <div id="mainform"></div>				
+                  <div id="form" class="form-horizontal"></div>				
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-8 col-xs-12">
+            <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
+                  <a class="btn btn-success" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})">Preview </a>
+                  <a class="btn btn-info" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})">Descriptor </a>
+                  <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
+                </div>
+            <ul id="sortableList" class="form-types-group">
+                    <li style="color:#22aa10" data-type="input"><i class="fa fa-font"></i> Input</li>
+                    <li style="color:#ee1515" data-type="collection"><i class="fa fa-list"></i> Options</li>
+                    <li style="color:#0088ff" data-type="bool"><i class="fa fa-check-square-o"></i> Boolean</li>
+                    <li style="color:#555" data-type="section"><i class="fa fa-list-ol"></i> Section</li>
+                  </ul>			
+
+            <div class="panel panel-primary">
+       
+              <div class="panel-body" style="position:relative">
+                <form>
+                <div id="editor" style="position:relative;z-index:1" class="form-horizontal widget_container cobler_select"></div>
+                <div><i class="fa fa-arrow-circle-o-up fa-2x pull-left text-muted"></i>Click or Drag Form Elements HERE</div>
+                <style>
+
+                  .form-types-group{
+                    list-style-type: none;
+                    height:60px;
+                    padding-left:0;
+                  }
+                  .form-types-group li{
+                    cursor:pointer;
+                    display:block;
+                    text-align: center;
+                    padding:10px;
+                    line-height: 40px;
+                    width:80px;
+                    height:60px;
+                    float:left;
+                    border:solid 1px;
+                    border-radius:3px;
+                    background:#fff;
+                    margin-right:10px;
+                  }
+                  .form-types-group li i{
+                    position: relative;
+                    display:block;
+                  }
+
+                  .margin-bottom{margin-bottom:15px !important}
+                  #editor + div {
+                    display: none;
+                    position: absolute;
+                    top: 15px;
+                    left: 15px;
+                    right: 15px;
+                    padding: 11px;
+                    text-align: center;
+                    border:dashed 1px #080;
+                    border-radius:30px;
+                  }
+
+                  #editor:empty + div{
+                    display: block;
+                  }
+                </style>
+                </form>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-8 col-xs-12">
+            <div id='formlist'><div class="btn btn-info"><i class="fa fa-plus"></i> New Form</div></div>
+            <hr>
+          <div class="target"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
 </div>
@@ -58,9 +150,10 @@
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
+  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script> -->
+
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
   <!-- TJC 4/22/18 Monaco Test -->
   <!--<script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
@@ -82,7 +175,15 @@
     });
   </script>-->
   <script>var loaded = {!! $app !!};</script>
+
+  <script src='/assets/js/vendor/moment.js'></script>
+  <script src='/assets/js/vendor/moment_datepicker.js'></script>
+  
+  <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
+  <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
+  
   <script type='text/javascript' src='/assets/js/editApp.js'></script>
+  <script type='text/javascript' src='/assets/js/workflow.cob.js'></script>
 @endsection
 
 @section('bottom_page_styles')
