@@ -579,14 +579,14 @@ setupform = function(index){
   $('#formlist').html(
     gform.renderString(
 `<div class="btn-group">
-<button type="button" class="btn  btn-info go pages_new">New Form</span></button>
+<button type="button" class="btn btn-success go pages_new">New</span></button>
 <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  <span class="caret"></span>
+  Change Form <span class="caret"></span>
   <span class="sr-only">Toggle Dropdown</span>
 </button>
 <ul class="dropdown-menu dropdown-menu-right">
 {{#forms}}
-  <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >Edit: {{label}}</a></li>
+  <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >{{label}}</a></li>
 {{/forms}}
 </ul>
 </div>

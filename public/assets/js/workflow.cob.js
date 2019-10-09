@@ -47,13 +47,8 @@ baseFields = _.map([
 	{type: 'select', label: 'Width',forceRow:true, value:"12", name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] },
 	{type: 'select', label: 'Offset', value:"12", name: 'offset', min:1, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
-
-<<<<<<< Updated upstream
 	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
-=======
-	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
-	{type: 'switch', format: {label:""}, label: 'Allow duplication', name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
->>>>>>> Stashed changes
+
 	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
 		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 		{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
@@ -92,11 +87,8 @@ baseCond = _.map([
 
 
 baseConditions = baseCond.concat(_.map([
-<<<<<<< Updated upstream
 	{type: 'switch', label: 'Validate', name: 'validate',format:{label:''},parse:[{type:"not_matches",name:"validate",value:false}]},
-=======
-	{type: 'switch', format: {label:""}, label: 'Validate', name: 'validate',parse:[{type:"not_matches",name:"validate",value:false}]},
->>>>>>> Stashed changes
+
 	{type: 'fieldset',columns:12, label:"{{index}}{{^index}}Validations{{/index}}", show:[{name:"validate",value:true,type:"matches"}],name:"validate",fields:[
 		{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:"test",name:"op",test:function(field,args){
 			return !!field.parent.index;
@@ -439,11 +431,8 @@ Cobler.types.section = function(container) {
 	var fields = [
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Group Label', name: 'label'},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
-<<<<<<< Updated upstream
 		{target: "#collapseBasic .panel-body", type: 'switch',format:{label:''}, label: 'Allow duplication', name: 'array', show:[{name:"type",value:['output'],type:"not_matches"}]},
-=======
-		{target: "#collapseBasic .panel-body", type: 'switch', format: {label:""}, label: 'Allow duplication', name: 'array', show:[{name:"type",value:['output'],type:"not_matches"}]},
->>>>>>> Stashed changes
+
 		{target: "#collapseBasic .panel-body", type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
 			{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 			{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
