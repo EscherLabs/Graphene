@@ -61,9 +61,20 @@
             </div>
           </div>
           <div class="col-md-6 col-sm-8 col-xs-12">
+              <div style="
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    bottom: -20px;
+    z-index:-1;
+    background: #eaeaea;
+    border: solid #9aa5b1;
+    border-width: 0 1px;
+"></div>
             <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
-                  <a class="btn btn-default" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-eye"></i> Preview </a>
-                  <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i> Edit </a>
+                  <a class="btn btn-default" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-eye"></i><span class="visible-lg"> View</span></a>
+                  <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
                   <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
                 </div>
             <ul id="sortableList" class="form-types-group">

@@ -399,7 +399,7 @@ Cobler.types.section = function(container) {
 
 		var content = "";
 		_.each(temp.fields,function(e){
-			var nTemp = new Cobler.types[gform.types[e.type].base]()
+			var nTemp = new Cobler.types[gform.types[e.type||'text'].base]()
 			nTemp.set(e);
 			content += nTemp.render()
 		})

@@ -10,7 +10,7 @@ renderBuilder = function(){
     map += form.name+',';
     $(target).append('<div style="text-align:center;padding:5px;color: #555;"><i class="fa fa-long-arrow-down fa-2x"> </i></div><div style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" data-map="'+map+'" class="btn btn-default">'+(form.label||form.name)+'</div>')
   })
-  gform.addClass(target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1],'btn-success')
+  target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1].style.border = "solid 2px #d85e16";
 
   
   $(target).append('<hr>')

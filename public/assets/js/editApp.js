@@ -393,7 +393,7 @@ renderBuilder = function(){
     map += form.name+',';
     $(target).append('<div style="text-align:center;padding:5px;color: #555;"><i class="fa fa-long-arrow-down fa-2x"> </i></div><div style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" data-map="'+map+'" class="btn btn-default">'+(form.label||form.name)+'</div>')
   })
-  gform.addClass(target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1],'btn-success')
+  target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1].style.border = "solid 2px #d85e16";
 
   
   $(target).append('<hr>')
@@ -579,18 +579,18 @@ setupform = function(index){
   $('#formlist').html(
     gform.renderString(
 `<div class="btn-group">
-<button type="button" class="btn btn-success go pages_new">New</span></button>
-<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  Change Form <span class="caret"></span>
-  <span class="sr-only">Toggle Dropdown</span>
-</button>
-<ul class="dropdown-menu dropdown-menu-right">
-{{#forms}}
-  <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >{{label}}</a></li>
-{{/forms}}
-</ul>
-</div>
-</div>`
+  <button type="button" class="btn btn-success go pages_new">New</span></button>
+  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <span class="visible-lg-inline"> Change</span> <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-right">
+  {{#forms}}
+    <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >{{label}}</a></li>
+  {{/forms}}
+  </ul>
+  </div>
+`
   ,{forms:working_forms}))
 
   // $('#cobler').click();
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function(){
   working_forms = _.each(loaded.code.forms,function(form,i){
     form.content = JSON.parse(form.content);
     form.content.name = form.name || form.content.name;
-    form.i = i;
+    form.i = i+'';
     form.label = form.content.legend||form.content.name;
   })
   $('#formlist').on('click','.form_edit',function(e){
