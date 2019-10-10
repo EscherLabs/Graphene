@@ -43,38 +43,17 @@
        <div class="row"><div class="col-sm-9 styles"></div>
   <div class="col-sm-3"></div></div>
     </div>
-    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:20px">
+    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:5px">
     <div class="">
       <div class="row">
-
-
-          <div class="col-md-4 col-sm-4 hidden-xs">
-            <div class="panel panel-default">
-
-              <div class="panel-body">
-                <div class=" source view view_source" id="alt-sidebar">
-
-                  <div id="mainform"></div>				
-                  <div id="form" class="form-horizontal"></div>				
-                  </div>
-              </div>
-            </div>
+          <div class="col-md-2 col-sm-8 col-xs-12">
+            <div class="target"></div>
           </div>
           <div class="col-md-6 col-sm-8 col-xs-12">
-              <div style="
-    position: absolute;
-    top: -20px;
-    left: 0;
-    right: 0;
-    bottom: -20px;
-    z-index:-1;
-    background: #eaeaea;
-    border: solid #9aa5b1;
-    border-width: 0 1px;
-"></div>
+            <div style="display:none;position: absolute;top: -5px;left: 0;right: 0;bottom: -20px;z-index:-1;background: #eaeaea;border: solid #9aa5b1;border-width: 0 1px;"></div>
             <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
-                  <a class="btn btn-default" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-eye"></i><span class="visible-lg"> View</span></a>
-                  <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
+                  <a class="btn btn-default viewform"><i class="fa fa-eye"></i><span class="visible-lg"> View</span></a>
+                  <a class="btn btn-danger edit"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
                   <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
                 </div>
             <ul id="sortableList" class="form-types-group">
@@ -138,10 +117,20 @@
               </div>
             </div>
           </div>
-          <div class="col-md-2 col-sm-8 col-xs-12">
-            <div id='formlist'><div class="btn btn-info"><i class="fa fa-plus"></i> New Form</div></div>
-            <hr>
-          <div class="target"></div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+          <div style="height:40px" id='formlist'></div>
+            
+            <div class="panel panel-default">
+
+              <div class="panel-body">
+                <div class=" source view view_source" id="alt-sidebar">
+
+                  <div id="mainform"></div>				
+                  <div id="form" class="form-horizontal"></div>				
+                  </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -195,6 +184,8 @@
   
   <script type='text/javascript' src='/assets/js/editApp.js'></script>
   <script type='text/javascript' src='/assets/js/workflow.cob.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/vendor/sass.js'></script> -->
+
 @endsection
 
 @section('bottom_page_styles')

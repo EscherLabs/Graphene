@@ -1000,13 +1000,13 @@ input:checked + .slider:before {
   height:11px
 }
 #flow-preview .edgeLabel{background:#F0F0F4}
-#flow-form {
+/* #flow-form {
   background: #fff;
   box-shadow: inset 2px 0px 1px #ccc;
   overflow: scroll;
   padding:25px;
   margin-bottom: -20px;
-}
+} */
 fieldset fieldset {
   margin-left: 30px !important;
 }

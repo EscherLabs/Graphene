@@ -127,7 +127,7 @@ mainForm = function(){
         // ]},
 
       ],
-      legend: 'Edit Form',
+      legend: false,
     }, '#mainform').on('input:type',function(e){
       if(e.field.value == 'cancel'){
         e.field.parent.set({
@@ -665,39 +665,58 @@ function drawForm(name){
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
-  flowForm = new gform({
-    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{type:"button",modifiers:"btn btn-default",label:"Done",action:"done"}],
+
+
+  formConfig = {
+    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
     // legend:"State",
     // sections:"tab",
-    // clear:true,
+    clear:false,
     data: _.find(flow_states,{name:name}),
-    
-    fields:[
-      // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
-      {name: "name",inline:false, label: "Name"},
-      {name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
-      {label:"<legend>Assignment</legend>",type:"output",name:"assignment_label", parse: false},
+  }
 
-      {type: "fieldset", name: "assignment", label: false, fields: [
-        {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
-          {value: "user", label: "User"},
-          {value: "group", label: "Group"}
-        ]},
+  formConfig.fields=_.map(
+  _.map([
+    {type: "fieldset", name: "assignment", label: false, fields: [
+      {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
+        {value: "user", label: "User"},
+        {value: "group", label: "Group"}
+      ]},
 
-        // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
-        //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
-        // })
+      // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+      //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
+      // })
 
-        {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {
+        "type": "optgroup",
+        "options": "map_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+          return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+      },       
+      {
+        "type": "optgroup",
+        "options": "form_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+          var path = option.data.name
+          var search = option.data;
+          while(search.ischild){
+            path = search.parent.name+'.'+path;
+            search = search.parent;
+          }
+          return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+      }
+      ]},
+      {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
         {
           "type": "optgroup",
-          "options": "map_users",
+          "options": "map_groups",
           "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
             return "{{datamap."+option.name+"}}"},label:"{{name}}"}
         },       
         {
           "type": "optgroup",
-          "options": "form_users",
+          "options": "form_groups",
           "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
             var path = option.data.name
             var search = option.data;
@@ -706,70 +725,65 @@ function drawForm(name){
               search = search.parent;
             }
             return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+        },
+        {
+          "type":"optgroup",
+          "options":'/api/groups?members=20',
+          "format":{label:"{{name}}",value:"{{id}}"}
         }
-        ]},
-        {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
-          {
-            "type": "optgroup",
-            "options": "map_groups",
-            "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
-              return "{{datamap."+option.name+"}}"},label:"{{name}}"}
-          },       
-          {
-            "type": "optgroup",
-            "options": "form_groups",
-            "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
-              var path = option.data.name
-              var search = option.data;
-              while(search.ischild){
-                path = search.parent.name+'.'+path;
-                search = search.parent;
-              }
-              return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
-          },
-          {
-            "type":"optgroup",
-            "options":'/api/groups?members=20',
-            "format":{label:"{{name}}",value:"{{id}}"}
-          }
-        ]},
-        // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
-        // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
-
-        {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
-        {name: "resource", type: "select", label:"Resource", placeholder: "None", options:"resources"},
-
-        // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
-        // {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
       ]},
-      // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
-      {label:"<legend>onEnter</legend>",type:"output",name:"enter_label", parse: false},
+      // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
+      // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
-      {name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
-      // {name: "hasOnLeave", label: "Include Tasks On Leaving State", type: "switch"},
-      {label:"<legend>onLeave</legend>",type:"output",name:"leave_label", parse: false},
-      {name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
-      {label:"<legend>Actions</legend>",type:"output",name:"actions_label", parse: false},
-      {
-        name: "actions", label: false, type: "fieldset", fields: [
-          {name: "label", label: "Label", columns: 6},
-          {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
-          {name: "form", label: "Show Form",type:"switch", columns: 12},
-          {name: "type", label: "Type", type: "select", columns: 6, options:[
-            {value: "success", label: "Success"},
-            {value: "danger", label: "Danger"},
-            {value: "info", label: "Info"},
-            {value: "warning", label: "Warning"},
-            {value: "default", label: "Default"},
-            {value: "primary", label: "Primary"},
-            {value: "link", label: "Simple"}
-          ], show: [{type: "not_matches", name: "label", value: ""}]},
-          {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates', show: [{type: "not_matches", name: "label", value: ""}]},
-          {name: "tasks", label: "Action Tasks", type: "fieldset", fields: taskForm, array: true}
-        ], array: true
-      }
-    ]
-  },'#flow-form').on('input', function(e){
+      {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+      {name: "resource", type: "select", label:"Resource", placeholder: "None", options:"resources"},
+
+      // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+      // {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+    ]}
+      ],function(item){
+    item.target = "#collapseAssignment .panel-body";
+    return item;
+  }).concat([
+   // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
+    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
+    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+    {target:"#collapseActions .panel-body", 
+      name: "actions", label: false, type: "fieldset", fields: [
+        {name: "label", label: "Label", columns: 6},
+        {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
+        {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+        {name: "type", label: "Type", type: "select", columns: 6, options:[
+          {value: "success", label: "Success"},
+          {value: "danger", label: "Danger"},
+          {value: "info", label: "Info"},
+          {value: "warning", label: "Warning"},
+          {value: "default", label: "Default"},
+          {value: "primary", label: "Primary"},
+          {value: "link", label: "Simple"}
+        ], show: [{type: "not_matches", name: "label", value: ""}]},
+        {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates', show: [{type: "not_matches", name: "label", value: ""}]},
+        {name: "tasks", label: "Tasks", type: "fieldset", fields: taskForm, array: true}
+      ], array: true
+    }
+
+  ])
+  
+  )
+  $('#flow-form').html(gform.renderString(flowAccordion))
+
+
+  $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+  $('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+  $('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
+  $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+  $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+
+
+
+  flowForm = new gform(formConfig,'#flow-form').on('input', function(e){
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
     temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
@@ -1033,3 +1047,90 @@ $('#versions').on('click', function() {
   })
 })
 
+flowAccordion = `
+
+
+
+<form>
+<div id="display" style="padding-bottom:15px"></div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+<div class="panel panel-default panelBasic">
+  <div class="panel-heading" role="tab" id="headingBasic">
+    <h4 class="panel-title">
+      <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseBasic" aria-expanded="true" aria-controls="collapseBasic">
+Basic
+      </a>
+    </h4>
+  </div>
+  <div id="collapseBasic" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingBasic">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+<div class="panel panel-default panelAssignment">
+  <div class="panel-heading" role="tab" id="headingAssignment">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseAssignment" aria-expanded="false" aria-controls="collapseAssignment">
+      Assignment
+      </a>
+    </h4>
+  </div>
+  <div id="collapseAssignment" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAssignment">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-default panelOnenter">
+  <div class="panel-heading" role="tab" id="headingOnenter">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOnenter" aria-expanded="false" aria-controls="collapseOnenter">
+On Enter
+      </a>
+    </h4>
+  </div>
+  <div id="collapseOnenter" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOnenter">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+<div class="panel panel-default panelOnleave">
+  <div class="panel-heading" role="tab" id="headingOnleave">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOnleave" aria-expanded="false" aria-controls="collapseOnleave">
+On Leave
+      </a>
+    </h4>
+  </div>
+  <div id="collapseOnleave" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOnleave">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-default panelActions">
+  <div class="panel-heading" role="tab" id="headingActions">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions">
+Actions
+      </a>
+    </h4>
+  </div>
+  <div id="collapseActions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingActions">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+</div>
+</form>
+`

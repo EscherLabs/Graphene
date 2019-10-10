@@ -34,8 +34,8 @@ baseFields = _.map([
 
 	{type: 'textarea',columns:12, label: 'Instructions', name: 'help',parse:[{type:"requires"}],show:[{name:"type",value:['output'],type:"not_matches"}]},
 	{type: 'checkbox', label: 'Mupltiple Selections', name: 'multiple',min:1,show:[{name:"type",value:['select','radio'],type:"matches"}]},
-	{type: 'number', label: 'Limit Selections',parse:[{type:"requires",name:"limit"}],placeholder:"No Limit", name: 'limit',min:1,show:[{name:"type",value:['select','radio'],type:"matches"},{name:"multiple",value:true,type:"matches"}]},
-	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{type:"requires",name:"limit"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]}
+	{type: 'number', label: 'Limit Selections',parse:[{type:"requires"}],placeholder:"No Limit", name: 'limit',min:1,show:[{name:"type",value:['select','radio'],type:"matches"},{name:"multiple",value:true,type:"matches"}]},
+	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{type:"requires"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]}
 ],function(item){
 	item.target = "#collapseBasic .panel-body";
 	return item;
@@ -118,7 +118,7 @@ gformEditor = function(container){
 			autoDestroy: true,
 			legend: 'Edit '+ this.get()['widgetType'],
 			cobler:this,
-			actions:[{type:"button",name:"deativate",action:"deactivate",label:"Done",target:"#display",modifiers:"btn btn-info pull-right"}],
+			actions:[{type:"button",name:"deativate",action:"deactivate",label:'<i class="fa fa-check"></i>',target:"#display",modifiers:"btn btn-info pull-right visible-lg"}],
 			clear:false
 		}
 		var opts = container.owner.options;
@@ -128,7 +128,13 @@ gformEditor = function(container){
 		}
 		$(opts.formTarget).html(gform.renderString(accordion))
 
-		$('.panelOptions').toggle(!!_.find(formConfig.fields,{name:"options"}));
+		$('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
+		$('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+		$('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+
+		// $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"options"}));
 		var temp = _.find(formConfig.fields,{name:"name"});
 		temp.placeholder =  formConfig.data['label'].toLowerCase().split(' ').join('_');
 		var mygform = new gform(formConfig,$(opts.formTarget)[0] ||  $(container.elementOf(this))[0]);
@@ -458,7 +464,7 @@ var accordion = `
 <div id="display"></div>
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-<div class="panel panel-default">
+<div class="panel panel-default panelBasic">
   <div class="panel-heading" role="tab" id="headingBasic">
     <h4 class="panel-title">
       <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseBasic" aria-expanded="true" aria-controls="collapseBasic">
@@ -473,7 +479,7 @@ Basic
 </div>
 
 
-<div class="panel panel-default">
+<div class="panel panel-default panelDisplay">
   <div class="panel-heading" role="tab" id="headingDisplay">
     <h4 class="panel-title">
       <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseDisplay" aria-expanded="false" aria-controls="collapseDisplay">
@@ -489,7 +495,7 @@ Display
 
 
 
-<div class="panel panel-default">
+<div class="panel panel-default panelConditions">
   <div class="panel-heading" role="tab" id="headingConditions">
     <h4 class="panel-title">
       <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseConditions" aria-expanded="false" aria-controls="collapseConditions">
@@ -504,7 +510,7 @@ Conditions
 </div>
 
 
-<div class="panel panel-default">
+<div class="panel panel-default panelValidation">
   <div class="panel-heading" role="tab" id="headingValidation">
     <h4 class="panel-title">
       <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseValidation" aria-expanded="false" aria-controls="collapseValidation">

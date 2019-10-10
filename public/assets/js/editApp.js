@@ -83,7 +83,7 @@ function load(app_version) {
     flatten:false,
     fields:[
       {name:'code', label: false,  type: 'fieldset', fields:[
-        {label:false, name:'css', type:'ace', mode:'ace/mode/css'},
+        {label:false, name:'css', type:'ace', mode:'ace/mode/scss'},
       ]}
     ]
   })
@@ -222,6 +222,13 @@ $('#save').on('click',function() {
   script_errors =scriptPage.errors();
   var data = {code:{}};
   data.code.css = Berries.style.toJSON().code.css;
+  // var sass = new Sass();
+  // sass.compile(Berries.style.toJSON().code.css, function(result) {
+  // $().berry({attributes:{content:result.text},fields:[{name:"content",type:"ace",label:false}]})
+  //   console.log(result);
+  // });
+
+
   data.code.resources = _.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
 
@@ -245,8 +252,14 @@ $('#save').on('click',function() {
 
   if(!errorCount){
     data.code.scripts = scriptPage.toJSON();
-    var temp = formPage.toJSON();
-    data.code.forms = formPage.toJSON();
+    data.code.forms = _.map(working_forms,function(form){
+      if(typeof form.content == 'object'){
+        form.content = JSON.stringify(form.content)
+      }
+      return form;
+    })
+
+
     data.updated_at = attributes.updated_at;
 
     $.ajax({
@@ -510,7 +523,7 @@ mainForm = function(){
         // ]},
 
       ],
-      legend: 'Edit Form',
+      legend: false,
     }, '#mainform').on('input:type',function(e){
       if(e.field.value == 'cancel'){
         e.field.parent.set({
@@ -531,10 +544,14 @@ mainForm = function(){
       renderBuilder();
     })
   }else{
-    var temp = new Cobler.types[gform.types[form.type].base]();
+    var formConfig = new Cobler.types[gform.types[form.type].base]();
     $("#mainform").html(gform.renderString(accordion))
 
-    $('.panelOptions').toggle(false);
+    $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
+		$('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+    $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
     
     new gform({
       name:"editor",
@@ -542,7 +559,7 @@ mainForm = function(){
       data: form,
       actions:[],
       clear:false,
-      fields: temp.fields,
+      fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
       // form = _.extend(form,e.form.get())
@@ -551,9 +568,7 @@ mainForm = function(){
           workingForm = _.find(workingForm.fields,{name:p})
         })
         
-      // workingForm = 
-      _.extend(workingForm,e.form.get())
-      
+      _.extend(workingForm,e.form.get())      
 
     })
 
@@ -578,20 +593,20 @@ setupform = function(index){
   myform = working_forms[formIndex].content || {};
   $('#formlist').html(
     gform.renderString(
-`<div class="btn-group">
-  <button type="button" class="btn btn-success go pages_new">New</span></button>
-  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  <span class="visible-lg-inline"> Change</span> <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu dropdown-menu-right">
-  {{#forms}}
-    <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >{{label}}</a></li>
-  {{/forms}}
-  </ul>
-  </div>
-`
-  ,{forms:working_forms}))
+      `<div class="btn-group">
+        <button type="button" class="btn btn-info go pages_new">New Form</span></button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class=""> Select Form</span> <span class="caret"></span>
+          <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+        {{#forms}}
+          <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >{{label}}</a></li>
+        {{/forms}}
+        </ul>
+        </div>
+      `,{forms:working_forms})
+    )
 
   // $('#cobler').click();
   path = [];
@@ -608,13 +623,49 @@ document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
   formIndex = 0;
   working_forms = _.each(loaded.code.forms,function(form,i){
-    form.content = JSON.parse(form.content);
+    if(typeof form.content == 'string'){
+      form.content = JSON.parse(form.content);
+    }
     form.content.name = form.name || form.content.name;
     form.i = i+'';
     form.label = form.content.legend||form.content.name;
   })
+  // working_forms = _.each(working_forms,function(form,i){
+  //   form.content = JSON.parse(form.content);
+  //   form.content.name = form.name || form.content.name;
+  //   form.i = i+'';
+  //   form.label = form.content.legend||form.content.name;
+  // })
   $('#formlist').on('click','.form_edit',function(e){
     setupform(parseInt(e.target.dataset.index))
+  })  
+  $('#formlist').on('click','.pages_new',function(e){
+
+    new gform({name:'page_name', legend: 'New Form',fields: [{label:'Name'}],actions:[{type:'cancel'},{type:"save",label:'<i class="fa fa-check"></i> Create'}]}).on('save', function(e){
+      // this.add(e.form.get().name,'')
+      working_forms.push({name:e.form.get().name,content:{name:e.form.get().name},i:working_forms.length+'',label:e.form.get().name})
+      setupform(working_forms.length-1);
+      e.form.dispatch('close');
+    }).on('cancel',function(e){e.form.dispatch('close')}).modal();
+
+    
+  })
+  $('.viewform').on('click',function(e){
+    new gform(_.extend({},myform,{name:'modal'}) ).modal().on('cancel',function(e){
+      e.form.trigger('close')
+    })
+  })
+  $('.edit').on('click',function(e){
+    new gform({
+      actions:[{type:'cancel'},{type:"save",label:'<i class="fa fa-check"></i> Update'}],
+      legend:'Edit Form',
+      fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]
+    }).modal().on('save',function(e){
+      myform = JSON.parse(e.form.get('descriptor')); 
+      working_forms[formIndex].content = JSON.parse(e.form.get('descriptor'));
+      e.form.trigger('close');
+      renderBuilder(); 
+    }).on('cancel',function(e){e.form.trigger('close')})
   })
   setupform(formIndex);
 

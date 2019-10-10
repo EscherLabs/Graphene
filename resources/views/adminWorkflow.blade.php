@@ -40,23 +40,16 @@
   <div class="tab-content">
   <div role="tabpanel" class="tab-pane active " id="resources">
       <div class="row"><div class="col-md-12 resources "></div></div></div>
-    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:20px">
+    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:5px">
     <div class="">
       <div class="row">
 
-          <div class="col-md-4 col-sm-4 hidden-xs">
-            <div class="panel panel-default">
 
-              <div class="panel-body">
-                <div class=" source view view_source" id="alt-sidebar">
-
-                  <div id="mainform"></div>				
-                  <div id="form"></div>				
-                  </div>
-              </div>
-            </div>
+          <div class="col-md-2 col-sm-8 col-xs-12">
+            <div class="target"></div>
           </div>
           <div class="col-md-6 col-sm-8 col-xs-12">
+            <div style="display:none;position: absolute;top: -5px;left: 0;right: 0;bottom: -20px;z-index:-1;background: #eaeaea;border: solid #9aa5b1;border-width: 0 1px;"></div>
             <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
                   <a class="btn btn-default" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-eye"></i><span class="visible-lg"> View</span></a>
                   <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
@@ -124,8 +117,17 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-8 col-xs-12">
-            <div class="target"></div>
+          <div class="col-md-4 col-sm-4">
+            <div class="panel panel-default">
+
+              <div class="panel-body">
+                <div class=" source view view_source" id="alt-sidebar">
+
+                  <div id="mainform"></div>				
+                  <div id="form"></div>				
+                  </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -175,15 +177,27 @@
     </div> -->
   </div>
   <div role="tabpanel" class="tab-pane" id="options">
-  <div class="options" style="width:0;display:none"></div>
+    <div class="row">
+      <div class="col-sm-8">
+        <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
+      </div>
+      <div class="col-sm-4" style="margin-top:5px">
 
-          <div class="col-sm-8">
-            <div class="btn btn-success pull-right" style="margin-top:15px" id="add-state" ><i class="fa fa-plus"></i> Add</div>
-            <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
-          </div>
-          <div class="col-sm-4" id="flow-form">
+        <div style="height:40px">          <div class="btn btn-info" id="add-state" >New State</div></div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class=" source view view_source" id="alt-sidebar">
+
+              <div id="flow-form">
+              </div>				
+              </div>
           </div>
         </div>
+
+      </div>
+    </div>
+  </div>
   <div role="tabpanel" class="tab-pane" id="map">
     <div class="col-sm-8">
       <div class="map"></div>
@@ -199,7 +213,6 @@
 @endsection
 
 @section('end_body_scripts_top')
-  <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
   <script src='/assets/js/vendor/ractive.min.js'></script>    
 
   <script src='/assets/js/paged.js'></script> 
