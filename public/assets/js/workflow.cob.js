@@ -48,6 +48,7 @@ baseFields = _.map([
 	{type: 'select', label: 'Offset', value:"12", name: 'offset', min:1, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
+	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
 
 	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
 		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
@@ -294,6 +295,7 @@ Cobler.types.collection = function(container) {
 			{label: 'Range', value: 'range'},
 			// {label: 'Grid', value: 'grid'},
 		]}
+
 	].concat(baseFields,baseConditions,_.map([
 		{type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires",name:"format"}], fields:[
 			{name:"label",label:"Label",parse:[{type:"requires",name:"label"}]},
@@ -442,7 +444,9 @@ Cobler.types.section = function(container) {
 		{target: "#collapseBasic .panel-body", type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
 			{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 			{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
-        ]},
+		]},
+		{target:"#collapseDisplay .panel-body", type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
+
 		{target: "#display",columns:9, type:"button",modifiers:"btn btn-default pull-left margin-bottom",label:"Manage Section",action:"manage",name:"manage",show:[{type:"test",name:"manage",test:function(e){
             return !e.owner.options.nomanage;
 		}}]}

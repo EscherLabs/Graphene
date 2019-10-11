@@ -624,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function(){
   formIndex = 0;
   working_forms = _.each(loaded.code.forms,function(form,i){
     if(typeof form.content == 'string'){
-      form.content = JSON.parse(form.content);
+      form.content = JSON.parse(form.content||'[]');
     }
     form.content.name = form.name || form.content.name;
     form.i = i+'';
