@@ -41,31 +41,30 @@ hr{
 margin:10px 0
 }
 </style>`,
-actions:`{{#actions_data.0}}<div class="hidden-print"><legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div><br></div>{{/actions_data.0}}`,
+actions:`{{#actionable}}<div class="hidden-print"><legend>Available Actions</legend><div>{{#actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions}}</div><br></div>{{/actionable}}`,
+summary:`<dl class="dl-horizontal">
+<dt>Status</dt><dd style="text-transform: capitalize;">{{status}}</dd>
+<dt>State</dt><dd style="text-transform: capitalize;">{{state}}</dd>
+<dt>Original Submission</dt> <dd>{{original.created_at.date}} @ {{original.created_at.time}}</dd>
+<dt>Last Action</dt> <dd>{{history.0.updated_at.date}} @ {{history.0.updated_at.time}}</dd>
+<dt>Assignee</dt><dd>{{assignment.user.name}}{{^assignment.user.name}}{{assignment.user.first_name}} {{assignment.userlast_name}}{{/assignment.user.name}} ({{assignment.type}})</dd>
+
+</dl>`,
 report:`
-    <div>
+<div>
     <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
-    Submitted {{workflow.created_at.fromNow}} by <h4>{{workflow.user.first_name}} {{workflow.user.last_name}}</h4><hr>
+    Submitted {{workflow.created_at.fromNow}} by <h4>{{owner.first_name}} {{owner.last_name}}</h4><hr>
     <div class="row">
       <div class="col-md-6">
-        <dl class="dl-horizontal">
-        <dt>Status</dt><dd style="text-transform: capitalize;">{{workflow.status}}</dd>
-        <dt>State</dt><dd style="text-transform: capitalize;">{{workflow.state}}</dd>
-        <dt>Original Submission</dt> <dd>{{workflow.created_at.date}} @ {{workflow.created_at.time}}</dd>
-        <dt>Last Action</dt> <dd>{{workflow.updated_at.date}} @ {{workflow.updated_at.time}}</dd>
-        <dt>Assignee</dt><dd>{{assignment.name}}{{^assignment.name}}{{assignment.first_name}} {{assignment.last_name}}{{/assignment.name}} ({{workflow.assignment_type}})</dd>
-
-        </dl>
+      {{>summary}}
       </div>
       <div class="col-md-6">
       {{>actions}}
       </div>
     </div>
-
     </div>
 <div class="panel">
-  <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
-
+  <div class="panel-body">
     {{>preview}}
   </div>
 </div>`,
@@ -151,29 +150,87 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }
               ]
             }
-
+            
             if(e.currentTarget.dataset.current){
 
-              this.preview = (_.find(this.get().options.workflow_version.code.templates,{name:"Preview"})||{content:''});
-              if(this.preview.content.length){
-                this.preview = this.preview.content;
-              }else{
+
+             var templates = _.merge({},workflow_report, _.mapValues(_.keyBy(_.filter(this.get().options.workflow_version.code.templates,function(e){
+                return e.content.length;
+              }),function(e){return e.name.toLowerCase();}),'content'))
+
+
+              // this.preview = (_.find(this.get().options.workflow_version.code.templates,{name:"Preview"})||{content:''});
+              // if(this.preview.content.length){
+              //   this.preview = this.preview.content;
+              // }else{
+              if(typeof templates.preview == 'undefined'){
                 previewForm = new gform(form).on('change',function(e){
                   $('#previewForm').html(e.form.toString('_state'))
                 })
-                this.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
+                templates.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
               }
-              workflow_report.preview = this.preview;
+              // workflow_report.preview = this.preview;
               
-              reportData =  {
-                workflow:this.get().options,
-                assignment:this.get().assignment,
-                data:data[0]
-              }
+              // reportData =  {
+              //   workflow:this.get().options,
+              //   assignment:this.get().assignment,
+              //   data:data[0]
+              // }
+              // if(this.get().is_assigned){
+              //   reportData.actions_data = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
+              // }
+
+
+              // console.log(reportData)
+              var mappedData = _.pick(this.get().options,'status','state')
+  
               if(this.get().is_assigned){
-                reportData.actions_data = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
+                mappedData.actions = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
               }
-              document.querySelector('.report').innerHTML =  gform.renderString(workflow_report.report, _.extend({}, workflow_report,reportData));
+
+
+              mappedData.report_url = this.get().report_url;
+
+              mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
+              mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params')
+              mappedData.form = data[0].data;
+              mappedData.owner.is = {actor:mappedData.owner.unique_id == mappedData.actor.unique_id}
+              mappedData.actor.is = {owner:mappedData.owner.unique_id == mappedData.actor.unique_id}
+              mappedData.assignment = {type:this.get().options.assignment_type,id:this.get().options.assignment_id};
+              if(mappedData.assignment.type == "user"){
+                mappedData.assignment.user = _.pick(this.get().assignment,'first_name','last_name','email','unique_id','id','params')
+              }else{
+                mappedData.assignment.group = this.get().assignment;
+              }
+              mappedData.workflow = {name:this.get().options.workflow.name,description:this.get().options.workflow.description ,instance:this.get().options.workflow_instance};
+              if(data.length>1){
+                mappedData.previous = _.pick(data[1],'state','status')
+                mappedData.previous.state = mappedData.previous.state||mappedData.workflow.instance.configuration.initial;
+              }
+              
+              mappedData.is ={
+                open:(mappedData.status == 'open'),
+                closed:(mappedData.status == 'closed'),
+                initial:(mappedData.state == mappedData.workflow.instance.configuration.initial),
+                actionable:(this.get().is_assigned && mappedData.actions.length)
+              }
+              mappedData.was ={
+                open:(mappedData.previous.status == 'open'),
+                closed:(mappedData.previous.status == 'closed'),
+                initial:(mappedData.previous.state == mappedData.workflow.instance.configuration.initial)
+              }
+              mappedData.history = data;
+
+              mappedData.original = data[data.length-1];
+
+              console.log(mappedData);
+
+              // document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates,reportData));
+              document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates, mappedData));
+
+
+
+
 
             }else{
               document.querySelector('.report').innerHTML = gform.renderString(workflow_report.form, this.get());

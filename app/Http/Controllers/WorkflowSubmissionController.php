@@ -436,7 +436,7 @@ class WorkflowSubmissionController extends Controller
     }
 
     public function report(WorkflowSubmission $workflow_submission,Request $request) {
-        $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission->id)->with('user')->with('workflowVersion')->first();
+        $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission->id)->with('user')->with('workflowVersion')->with('workflow')->first();
         // if (Auth::user()->site_developer || Auth::user()->site_admin) {
         //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
         // } else {
@@ -474,7 +474,7 @@ class WorkflowSubmissionController extends Controller
                 'id'=>0,
                 'data'=>[],
                 // 'config'=>json_decode('{"sections":[[{"title":"'.$workflow_instance->name.' ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
-                'config'=>json_decode('{"sections":[[{"title":"TItle here ","widgetType":"WorkflowSubmissionReport","is_assigned":'.json_encode($is_assigned).', "assignment":'.json_encode($assignment).', "options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
+                'config'=>json_decode('{"sections":[[{"title":"Title here ","widgetType":"WorkflowSubmissionReport","report_url":"'.URL::to('/workflows/report/'.$workflow_submission->id).'", "user":'.json_encode($current_user).' ,"is_assigned":'.json_encode($is_assigned).', "assignment":'.json_encode($assignment).', "options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],
