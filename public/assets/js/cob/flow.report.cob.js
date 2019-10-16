@@ -205,7 +205,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               mappedData.workflow = {name:this.get().options.workflow.name,description:this.get().options.workflow.description ,instance:this.get().options.workflow_instance};
               if(data.length>1){
                 mappedData.previous = _.pick(data[1],'state','status')
-                mappedData.previous.state = mappedData.previous.state||mappedData.workflow.instance.configuration.initial;
+                mappedData.previous.state = mappedData.previous.end_state||mappedData.workflow.instance.configuration.initial;
               }
               
               mappedData.is ={
@@ -223,12 +223,15 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
               mappedData.original = data[data.length-1];
 
-              console.log(mappedData);
+              // console.log(mappedData);
 
               // document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates,reportData));
-              document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates, mappedData));
+              // document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates, mappedData));
 
-
+              if(typeof this.ractive !== 'undefined'){
+                this.ractive.teardown();
+              }
+              this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
 
 
 

@@ -93,7 +93,7 @@ class WorkflowSubmissionController extends Controller
         $owner = User::find($workflow_submission->user_id);
 
         $state_data = [];
-        $state_data['is'] = $state_data['was'] = [];
+        $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
         $state_data['form'] = $workflow_submission->data;
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
         $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
@@ -105,11 +105,11 @@ class WorkflowSubmissionController extends Controller
         $state_data['workflow']['instance'] = $myWorkflowInstance->only('group_id','slug','name','icon','public','configuration');
         $state_data['workflow']['version'] = $myWorkflowInstance->version->only('id','summary','description','stable');
         $state_data['comment'] = ($request->has('comment'))?$request->get('comment'):null;
-        $state_data['previous_status'] = $workflow_submission->status;
-        $state_data['previous_state'] = $oldstate->name;
-        $state_data['was']['open'] = ($state_data['previous_status']=='open')?true:false;
-        $state_data['was']['closed'] = ($state_data['previous_status']=='closed')?true:false;
-        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous_state']);
+        $state_data['previous']['status'] = $workflow_submission->status;
+        $state_data['previous']['state'] = $oldstate->name;
+        $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
+        $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
+        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
         // $state_data['datamap'] = [];
         $state_data['assignment'] = [];
 
