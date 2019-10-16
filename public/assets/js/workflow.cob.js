@@ -65,22 +65,22 @@ baseCond = _.map([
 	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value:true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:"{{index}}",name:"show",fields:myconditions,array:true,show:[{name:"show",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:true,show:[{name:"show",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:"{{index}}",name:"edit",fields:myconditions,array:true,show:[{name:"edit",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:true,show:[{name:"edit",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:'Include value in results <span class="pull-right text-muted">"parse"</span>', value:'show',name:"parse",parse:[{type:"not_matches",name:"parse",value:"show"}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:"{{index}}",name:"parse",fields:myconditions,array:true,show:[{name:"parse",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:true,show:[{name:"parse",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:"Required", value:false, name:"required",parse:[{type:"not_matches",name:"required",value:false}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Parse"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:"{{index}}", name:"required", fields:myconditions, array:true, show:[{name:"required",value:['other'], type:"matches"}]}
+	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:true, show:[{name:"required",value:['other'], type:"matches"}]}
 ],function(item){
 	item.target = "#collapseConditions .panel-body";
 	return item;
@@ -90,7 +90,7 @@ baseCond = _.map([
 baseConditions = baseCond.concat(_.map([
 	{type: 'switch', label: 'Validate', name: 'validate',format:{label:''},parse:[{type:"not_matches",name:"validate",value:false}]},
 
-	{type: 'fieldset',columns:12, label:"{{index}}{{^index}}Validations{{/index}}", show:[{name:"validate",value:true,type:"matches"}],name:"validate",fields:[
+	{type: 'fieldset',columns:12, label:false, show:[{name:"validate",value:true,type:"matches"}],name:"validate",fields:[
 		{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:"test",name:"op",test:function(field,args){
 			return !!field.parent.index;
 		}}]},
@@ -235,7 +235,7 @@ Cobler.types.input = function(container) {
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires",name:"format"}], fields:[
-			{name:"input",type:"smallcombo",options:[
+			{name:"input",type:"smallcombo",columns:12,options:[
 				{label:"Datetime",value:"MM/DD/YYYY h:mm A"},
 				{label:"Date",value:"MM/DD/YYYY"},				
 				{label:"Time",value:"h:mm A"},

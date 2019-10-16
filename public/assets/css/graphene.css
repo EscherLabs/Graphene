@@ -1051,7 +1051,34 @@ stroke:#FF0000 !important;
 
 
 .widget.WorkflowSubmissionReport .list{margin: -15px 0 -15px -15px;background:#e8e8e8;padding:15px;position: fixed;overflow: scroll;top: 45px;bottom: 0;}
+.gform_isArray > fieldset:before {
+  content: "";
+  border: dashed 1px #102e7946;
+  border-right:0px;
+  width:5px;
+  position: absolute;
+  bottom: 5px;
+  left: 7px;
 
+  top: 0px;
+}
+fieldset .gform_isArray > fieldset:before {
+  left: 37px;
+
+}
+/* .gform_isArray > fieldset:after {
+  content: "";
+  border: dashed 1px #102e7959;
+  border-left:0px;
+  width:5px;
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  top: 0px;
+} */
+fieldset:disabled .actions{
+  display:none;
+}
 .shake {
   
     animation: bellshake .5s cubic-bezier(.36,.07,.19,.97) both;
