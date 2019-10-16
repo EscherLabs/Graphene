@@ -163,8 +163,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               // if(this.preview.content.length){
               //   this.preview = this.preview.content;
               // }else{
+                previewForm = new gform(form)
               if(typeof templates.preview == 'undefined'){
-                previewForm = new gform(form).on('change',function(e){
+                previewForm.on('change',function(e){
                   $('#previewForm').html(e.form.toString('_state'))
                 })
                 templates.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
@@ -193,7 +194,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
               mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
               mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params')
-              mappedData.form = data[0].data;
               mappedData.owner.is = {actor:mappedData.owner.unique_id == mappedData.actor.unique_id}
               mappedData.actor.is = {owner:mappedData.owner.unique_id == mappedData.actor.unique_id}
               mappedData.assignment = {type:this.get().options.assignment_type,id:this.get().options.assignment_id};
@@ -203,22 +203,24 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 mappedData.assignment.group = this.get().assignment;
               }
               mappedData.workflow = {name:this.get().options.workflow.name,description:this.get().options.workflow.description ,instance:this.get().options.workflow_instance};
-              if(data.length>1){
-                mappedData.previous = _.pick(data[1],'state','status')
-                mappedData.previous.state = mappedData.previous.end_state||mappedData.workflow.instance.configuration.initial;
-              }
-              
+
               mappedData.is ={
                 open:(mappedData.status == 'open'),
                 closed:(mappedData.status == 'closed'),
                 initial:(mappedData.state == mappedData.workflow.instance.configuration.initial),
                 actionable:(this.get().is_assigned && mappedData.actions.length)
               }
-              mappedData.was ={
-                open:(mappedData.previous.status == 'open'),
-                closed:(mappedData.previous.status == 'closed'),
-                initial:(mappedData.previous.state == mappedData.workflow.instance.configuration.initial)
+
+              if(data.length>1){
+                mappedData.previous = _.pick(data[1],'state','status')
+                mappedData.previous.state = mappedData.previous.end_state||mappedData.workflow.instance.configuration.initial;
+                mappedData.was ={
+                  open:(mappedData.previous.status == 'open'),
+                  closed:(mappedData.previous.status == 'closed'),
+                  initial:(mappedData.previous.state == mappedData.workflow.instance.configuration.initial)
+                }
               }
+
               mappedData.history = data;
 
               mappedData.original = data[data.length-1];
@@ -231,8 +233,16 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               if(typeof this.ractive !== 'undefined'){
                 this.ractive.teardown();
               }
-              this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
+              // mappedData.form = previewForm.toString(null,true)._state;
+              mappedData.form = data[0].data;
 
+              this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
+              // else{
+                // previewForm.on('change',function(e){
+                //   this.ractive.set({form:e.form.toString(null,true)._state}) 
+                //   // $('#previewForm').html(e.form.toString('_state'))
+                // }.bind(this))
+              // }
 
 
             }else{

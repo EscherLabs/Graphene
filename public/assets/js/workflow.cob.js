@@ -45,7 +45,7 @@ baseFields = _.map([
 	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
 
 	{type: 'select', label: 'Width',forceRow:true, value:"12", name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] },
-	{type: 'select', label: 'Offset', value:"12", name: 'offset', min:1, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
+	{type: 'select', label: 'Offset', value:"12", name: 'offset', min:0, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
 	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
