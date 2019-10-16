@@ -233,15 +233,16 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               if(typeof this.ractive !== 'undefined'){
                 this.ractive.teardown();
               }
-              // mappedData.form = previewForm.toString(null,true)._state;
-              mappedData.form = data[0].data;
+              mappedData.form = previewForm.toString('_state',true);
+              // debugger;
+              // mappedData.form = data[0].data;
 
               this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
               // else{
-                // previewForm.on('change',function(e){
-                //   this.ractive.set({form:e.form.toString(null,true)._state}) 
-                //   // $('#previewForm').html(e.form.toString('_state'))
-                // }.bind(this))
+                previewForm.on('change',function(e){
+                  this.ractive.set({form:e.form.toString('_state',true)}) 
+                  // $('#previewForm').html(e.form.toString('_state'))
+                }.bind(this))
               // }
 
 
