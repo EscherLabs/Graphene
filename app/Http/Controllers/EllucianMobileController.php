@@ -141,6 +141,8 @@ class EllucianMobileController extends Controller
                         $homeScreenOrder = array_search('p'.$page->id,config('ellucianmobile.homeIcons'));
                         if ($homeScreenOrder !== false) {
                             $ellucian_group_apps['mappp'.$page->id]['homeScreenOrder'] = (string)($homeScreenOrder+1);
+                            $ellucian_group_apps['mappp'.$page->id]['hideBeforeLogin'] = "false";
+                            $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false";
                         }
                         $counter++;
                     }
@@ -162,6 +164,8 @@ class EllucianMobileController extends Controller
                         $homeScreenOrder = array_search('a'.$app_instance->id,config('ellucianmobile.homeIcons'));
                         if ($homeScreenOrder !== false) {
                             $ellucian_group_apps['mappa'.$app_instance->id]['homeScreenOrder'] = (string)($homeScreenOrder+1);
+                            $ellucian_group_apps['mappa'.$app_instance->id]['hideBeforeLogin'] = "false";
+                            $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false";
                         }
                         $counter++;
                     }
@@ -192,7 +196,11 @@ class EllucianMobileController extends Controller
                 "contact"=> "Endwell, NY",
                 'version'=>['url'=>''],
             ],
-            'home'=>["icons"=>(string)count(config('ellucianmobile.homeIcons')),"overlay"=> "dark"],
+            'home'=>[
+                "icons"=>
+                    (string)((count(config('ellucianmobile.homeIcons'))<=5)?count(config('ellucianmobile.homeIcons')):5),
+                "overlay"=> "dark"
+            ],
             "security"=> [
                 "url"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/userinfo',
                 "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout',
