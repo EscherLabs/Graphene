@@ -1008,7 +1008,7 @@ input:checked + .slider:before {
   margin-bottom: -20px;
 } */
 fieldset fieldset {
-  margin-left: 30px !important;
+  margin-left: 10px !important;
 }
 
 .nodes .node:hover{
@@ -1055,16 +1055,14 @@ stroke:#FF0000 !important;
   content: "";
   border: dashed 1px #102e7946;
   border-right:0px;
-  width:5px;
+  width:10px;
   position: absolute;
   bottom: 5px;
   left: 7px;
-
   top: 0px;
 }
 fieldset .gform_isArray > fieldset:before {
-  left: 37px;
-
+  left: 16px;
 }
 /* .gform_isArray > fieldset:after {
   content: "";

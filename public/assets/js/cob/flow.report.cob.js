@@ -190,6 +190,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               }
 
 
+
               mappedData.report_url = this.get().report_url;
 
               mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
@@ -221,7 +222,21 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }
               }
 
-              mappedData.history = data;
+              mappedData.history = _.map(data, function(event){
+                var newEvent = _.pick(event,'id','data','comment','action','status','created_at','updated_at');
+                newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
+                newEvent.state = event.end_state;
+                newEvent.actor = _.pick(event.user,'first_name','last_name','email','unique_id','id','params')
+                newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
+                newEvent.previous ={state:event.start_state}
+                newEvent.is ={
+                  open:(newEvent.status == 'open'),
+                  closed:(newEvent.status == 'closed'),
+                  initial:(newEvent.state == mappedData.workflow.instance.configuration.initial)
+                }
+                // return event;
+                return newEvent
+              })
 
               mappedData.original = data[data.length-1];
 
@@ -236,12 +251,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               mappedData.form = previewForm.toString('_state',true);
               // debugger;
               // mappedData.form = data[0].data;
-
+              console.log(mappedData.actions)
               this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
               previewForm.on('change',function(e){
                 this.ractive.set({form:e.form.toString('_state',true)}) 
               }.bind(this))
-
 
             }else{
               document.querySelector('.report').innerHTML = gform.renderString(workflow_report.form, this.get());

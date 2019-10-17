@@ -43,8 +43,6 @@
     <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:5px">
     <div class="">
       <div class="row">
-
-
           <div class="col-md-2 col-sm-8 col-xs-12">
             <div class="target"></div>
           </div>

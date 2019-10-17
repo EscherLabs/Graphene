@@ -303,7 +303,7 @@ Cobler.types.Workflow = function(container){
     //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
         success  : function(data){
           loaded = data;
-          this.container.elementOf(this).querySelector('.flow-title').innerText = data.workflow.name;
+          this.container.elementOf(this).querySelector('.flow-title').innerHTML = data.workflow.name+'<span class="badge pull-right status"></span>';
           var formSetup = {
             "data":{_state:this.get().data},
             "actions": [
@@ -321,7 +321,7 @@ Cobler.types.Workflow = function(container){
             "fields":[
                 {"name":"_state","label":false,"type":"fieldset","fields": data.version.code.form.fields
               }
-                ]
+            ]
           }
           _.each((_.find(data.version.code.flow,{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
             action.modifiers = 'btn btn-'+action.type;
@@ -331,7 +331,7 @@ Cobler.types.Workflow = function(container){
           });
         
           this.form = new gform(formSetup, '.g_'+get().guid);
-
+          this.initialstate = gform.instances.f0.get();//
           this.form.on('save',function(e){
             if(!e.form.validate(true))return;
             // e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saving',"modifiers": "btn btn-warning"})
@@ -367,11 +367,22 @@ Cobler.types.Workflow = function(container){
 
               }
             })
-          }.bind(this)).on('canceled',function(e){
+          }.bind(this))
+          .on('canceled',function(e){
             // gform.types.fieldset.edit.call(e.form.find('_state'), false);
             // gform.types.button.edit.call(e.field, false);
-            e.form.trigger('clear');
-          })
+            // e.form.trigger('clear');
+            debugger;
+            e.form.set(this.initialstate)
+          }.bind(this))
+          this.form.on('input canceled',function(){
+            debugger;
+            if(!_.isEqual(this.initialstate,gform.instances.f0.get())){
+              $('.flow-title .status').html('Changed')
+            }else{
+              $('.flow-title .status').html('')
+            }
+          }.bind(this))
           // .on('submitted',function(e){
           //   e.form.find('_state').el.style.opacity = 1
           //   gform.types.fieldset.edit.call(e.form.find('_state'),true)
