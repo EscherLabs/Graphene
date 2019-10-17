@@ -13,7 +13,11 @@ class EllucianMobileController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('config');
-        $this->customAuth = new CustomAuth();     
+        $this->customAuth = new CustomAuth();
+        config(['ellucianmobile.loginType'=>
+            env(config('app.site')->name.'_EM_LOGIN_TYPE','browser')]);
+        config(['ellucianmobile.homeIcons'=>
+            explode(',',env(config('app.site')->name.'_EM_HOME_ICONS',''))]);
     }
     
     public function login(Request $request) {
@@ -110,7 +114,7 @@ class EllucianMobileController extends Controller
         $counter = 1;
         $max_time = 0;
         foreach($group_apps as $group) {
-            if ($group->updated_at->timestamp > $max_time) {
+            if (is_object($group->updated_at) && $group->updated_at->timestamp > $max_time) {
                 $max_time = $group->updated_at->timestamp;
             }
             $composites_array = array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray())));
@@ -134,6 +138,10 @@ class EllucianMobileController extends Controller
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/r/app/'.$group->slug.'/'.$page->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
                         if ($page->public==1) { $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false"; }
+                        $homeScreenOrder = array_search('p'.$page->id,config('ellucianmobile.homeIcons'));
+                        if ($homeScreenOrder !== false) {
+                            $ellucian_group_apps['mappp'.$page->id]['homeScreenOrder'] = (string)($homeScreenOrder+1);
+                        }
                         $counter++;
                     }
                 }
@@ -150,6 +158,11 @@ class EllucianMobileController extends Controller
                             ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/ar/app/'.$group->slug.'/'.$app_instance->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
+                        if ($app_instance->public==1) { $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false"; }
+                        $homeScreenOrder = array_search('a'.$app_instance->id,config('ellucianmobile.homeIcons'));
+                        if ($homeScreenOrder !== false) {
+                            $ellucian_group_apps['mappa'.$app_instance->id]['homeScreenOrder'] = (string)($homeScreenOrder+1);
+                        }
                         $counter++;
                     }
                 }
@@ -179,7 +192,7 @@ class EllucianMobileController extends Controller
                 "contact"=> "Endwell, NY",
                 'version'=>['url'=>''],
             ],
-            'home'=>["icons"=> "1","overlay"=> "dark"],
+            'home'=>["icons"=>(string)count(config('ellucianmobile.homeIcons')),"overlay"=> "dark"],
             "security"=> [
                 "url"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/userinfo',
                 "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout',
