@@ -7,6 +7,7 @@ use App\Group;
 use App\AppInstance;
 use Illuminate\Http\Request;
 use App\Libraries\CustomAuth;
+use Illuminate\Support\Facades\Log;
 
 class EllucianMobileController extends Controller
 {
@@ -58,10 +59,18 @@ class EllucianMobileController extends Controller
     }
 
     public function userinfo(Request $request) {
-        if(!Auth::user()){ 
-            $return = $this->customAuth->authenticate($request);
-            if(isset($return)){
-                return $return;
+        if (config('ellucianmobile.loginType') === 'browser') {
+            if(!Auth::user()){ 
+                $return = $this->customAuth->authenticate($request);
+                if(isset($return)){
+                    return $return;
+                }
+            }
+        } else if (config('ellucianmobile.loginType') === 'native') {
+            if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
+                // continue
+            } else {
+                return response('Access Denied!', 401);
             }
         }
 
@@ -119,11 +128,12 @@ class EllucianMobileController extends Controller
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
                             'access'=>$page->public==1?['Everyone']:$composites_array,
-                            'hideBeforeLogin'=>"true",
+                            'hideBeforeLogin'=>$page->public==1?"false":"true",
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                                 ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/r/app/'.$group->slug.'/'.$page->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
+                        if ($page->public==1) { $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false"; }
                         $counter++;
                     }
                 }
@@ -156,9 +166,9 @@ class EllucianMobileController extends Controller
                 "accentColor"=> "edf3f1",
                 "menuIconUrl"=> "",
                 "subheaderTextColor"=> "a5460f",
-                "homeUrlPhone"=> "http://files.harrowakker.webnode.nl/200000058-28fec29f90/EscherOmhoogOmlaag.jpg",
+                "homeUrlPhone"=> url("/assets/img/tessellation.jpg"),
                 "schoolLogoPhone"=> "",
-                "homeUrlTablet"=> "http://files.harrowakker.webnode.nl/200000058-28fec29f90/EscherOmhoogOmlaag.jpg",
+                "homeUrlTablet"=> url("/assets/img/tessellation.jpg"),
             ],
             'about'=>[
                 'icon'=>'',
@@ -174,7 +184,7 @@ class EllucianMobileController extends Controller
                 "url"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/userinfo',
                 "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout',
                 "cas"=> [
-                    "loginType"=> "browser",
+                    "loginType"=> config('ellucianmobile.loginType'),
                     "loginUrl"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/login',
                     "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout'
                 ]
