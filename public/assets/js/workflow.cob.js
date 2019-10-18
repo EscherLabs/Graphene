@@ -303,7 +303,7 @@ Cobler.types.collection = function(container) {
 			{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 			// {name:"Title",label:"title"}
 		] },
-		{type: 'fieldset', label: false, array: true,columns:12,parse:[{type:"requires"}], name: 'options', 
+		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"External",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
@@ -317,7 +317,7 @@ Cobler.types.collection = function(container) {
 					return result;
 				}},
 				{name:"type",type:"hidden",value:"optgroup"},
-				{type: 'fieldset', label: false, array: true, name: 'options', fields:[
+				{type: 'fieldset', label: false, array: {min:1,max:100}, name: 'options', fields:[
 					{name:"label",label:"Label",parse:[{type:"requires"}]},
 					{name:"value",label:"Value",parse:[{type:"requires"}]}
 				],parse:[{type:"requires"}],show:[{type:"matches",name:"options_type",value:"object"}]},

@@ -372,11 +372,11 @@ Cobler.types.Workflow = function(container){
             // gform.types.fieldset.edit.call(e.form.find('_state'), false);
             // gform.types.button.edit.call(e.field, false);
             // e.form.trigger('clear');
-            debugger;
-            e.form.set(this.initialstate)
+            // debugger;
+            e.form.set('_state',this.initialstate._state)
           }.bind(this))
           this.form.on('input canceled',function(){
-            debugger;
+            // debugger;
             if(!_.isEqual(this.initialstate,gform.instances.f0.get())){
               $('.flow-title .status').html('Changed')
             }else{
