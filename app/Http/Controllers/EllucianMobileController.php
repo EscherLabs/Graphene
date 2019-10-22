@@ -7,12 +7,17 @@ use App\Group;
 use App\AppInstance;
 use Illuminate\Http\Request;
 use App\Libraries\CustomAuth;
+use Illuminate\Support\Facades\Log;
 
 class EllucianMobileController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('config');
-        $this->customAuth = new CustomAuth();     
+        $this->customAuth = new CustomAuth();
+        config(['ellucianmobile.loginType'=>
+            env(config('app.site')->name.'_EM_LOGIN_TYPE','browser')]);
+        config(['ellucianmobile.homeIcons'=>
+            explode(',',env(config('app.site')->name.'_EM_HOME_ICONS',''))]);
     }
     
     public function login(Request $request) {
@@ -58,10 +63,18 @@ class EllucianMobileController extends Controller
     }
 
     public function userinfo(Request $request) {
-        if(!Auth::user()){ 
-            $return = $this->customAuth->authenticate($request);
-            if(isset($return)){
-                return $return;
+        if (config('ellucianmobile.loginType') === 'browser') {
+            if(!Auth::user()){ 
+                $return = $this->customAuth->authenticate($request);
+                if(isset($return)){
+                    return $return;
+                }
+            }
+        } else if (config('ellucianmobile.loginType') === 'native') {
+            if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
+                // continue
+            } else {
+                return response('Access Denied!', 401);
             }
         }
 
@@ -101,7 +114,7 @@ class EllucianMobileController extends Controller
         $counter = 1;
         $max_time = 0;
         foreach($group_apps as $group) {
-            if ($group->updated_at->timestamp > $max_time) {
+            if (is_object($group->updated_at) && $group->updated_at->timestamp > $max_time) {
                 $max_time = $group->updated_at->timestamp;
             }
             $composites_array = array_values(array_unique(array_merge([(string)$group->id],$group->composites->map(function($item, $key) {return (string)$item->composite_group_id;})->toArray())));
@@ -119,11 +132,18 @@ class EllucianMobileController extends Controller
                         $ellucian_group_apps['mappp'.$page->id] = 
                             ['type'=>'web','name'=>$page->name,
                             'access'=>$page->public==1?['Everyone']:$composites_array,
-                            'hideBeforeLogin'=>"true",
+                            'hideBeforeLogin'=>$page->public==1?"false":"true",
                             'icon'=>$http_protocol.request()->getHttpHost().'/assets/icons/fontawesome/white/36/'.
                                 ((isset($page->icon)&&$page->icon!='')?$page->icon:'file').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/r/app/'.$group->slug.'/'.$page->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
+                        if ($page->public==1) { $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false"; }
+                        $homeScreenOrder = array_search('p'.$page->id,config('ellucianmobile.homeIcons'));
+                        if ($homeScreenOrder !== false) {
+                            $ellucian_group_apps['mappp'.$page->id]['homeScreenOrder'] = (string)($homeScreenOrder+1);
+                            $ellucian_group_apps['mappp'.$page->id]['hideBeforeLogin'] = "false";
+                            $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false";
+                        }
                         $counter++;
                     }
                 }
@@ -140,6 +160,13 @@ class EllucianMobileController extends Controller
                             ((isset($app_instance->icon)&&$app_instance->icon!='')?$app_instance->icon:'cube').'.png',
                             'urls'=>['url'=>$http_protocol.request()->getHttpHost().'/ar/app/'.$group->slug.'/'.$app_instance->slug],'order'=>(string)$counter,
                             'useBeaconToLaunch'=>'false'];
+                        if ($app_instance->public==1) { $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false"; }
+                        $homeScreenOrder = array_search('a'.$app_instance->id,config('ellucianmobile.homeIcons'));
+                        if ($homeScreenOrder !== false) {
+                            $ellucian_group_apps['mappa'.$app_instance->id]['homeScreenOrder'] = (string)($homeScreenOrder+1);
+                            $ellucian_group_apps['mappa'.$app_instance->id]['hideBeforeLogin'] = "false";
+                            $ellucian_group_apps['mappg'.$group->id]['hideBeforeLogin'] = "false";
+                        }
                         $counter++;
                     }
                 }
@@ -156,9 +183,9 @@ class EllucianMobileController extends Controller
                 "accentColor"=> "edf3f1",
                 "menuIconUrl"=> "",
                 "subheaderTextColor"=> "a5460f",
-                "homeUrlPhone"=> "http://files.harrowakker.webnode.nl/200000058-28fec29f90/EscherOmhoogOmlaag.jpg",
+                "homeUrlPhone"=> url("/assets/img/tessellation.jpg"),
                 "schoolLogoPhone"=> "",
-                "homeUrlTablet"=> "http://files.harrowakker.webnode.nl/200000058-28fec29f90/EscherOmhoogOmlaag.jpg",
+                "homeUrlTablet"=> url("/assets/img/tessellation.jpg"),
             ],
             'about'=>[
                 'icon'=>'',
@@ -169,12 +196,16 @@ class EllucianMobileController extends Controller
                 "contact"=> "Endwell, NY",
                 'version'=>['url'=>''],
             ],
-            'home'=>["icons"=> "1","overlay"=> "dark"],
+            'home'=>[
+                "icons"=>
+                    (string)((count(config('ellucianmobile.homeIcons'))<=5)?count(config('ellucianmobile.homeIcons')):5),
+                "overlay"=> "dark"
+            ],
             "security"=> [
                 "url"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/userinfo',
                 "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout',
                 "cas"=> [
-                    "loginType"=> "browser",
+                    "loginType"=> config('ellucianmobile.loginType'),
                     "loginUrl"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/login',
                     "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout'
                 ]
