@@ -294,6 +294,7 @@ Route::get('/ellucianmobile/login','EllucianMobileController@login');
 Route::get('/ellucianmobile/redirect/{base_64_redirect}','EllucianMobileController@redirect');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');
+Route::get('/ellucianmobile/version','EllucianMobileController@version');
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin/apiserver'], function () {
   Route::get('/{slug}/apis/{api_id}', 'APIServerController@api')->middleware('can:create,App\App');

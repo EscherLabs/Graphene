@@ -19,6 +19,15 @@ class EllucianMobileController extends Controller
         config(['ellucianmobile.homeIcons'=>
             explode(',',env(config('app.site')->name.'_EM_HOME_ICONS',''))]);
     }
+
+    public function version(Request $request) {
+        return [
+            'application' => [
+                'name' => "Graphene",
+                "version" => "1.0",
+            ], 'plugins' => []
+        ];
+    }
     
     public function login(Request $request) {
         if(!Auth::user()){ 
@@ -194,7 +203,7 @@ class EllucianMobileController extends Controller
                 "logoUrlPhone"=> "",
                 'email'=>['address'=>'tim@escherlabs.com'],
                 "contact"=> "Endwell, NY",
-                'version'=>['url'=>''],
+                'version'=>['url'=>url("/ellucianmobile/version")],
             ],
             'home'=>[
                 "icons"=>
