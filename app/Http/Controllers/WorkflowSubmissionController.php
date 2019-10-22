@@ -36,33 +36,33 @@ class WorkflowSubmissionController extends Controller
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
         $myWorkflowInstance = WorkflowInstance::with('workflow')
             ->where('id', '=', $workflow_instance->id)->with('workflow')->first();
-
+        if(is_null($myWorkflowInstance)) {
+            abort(404,'Workflow not found');
+        }
+        $myWorkflowInstance->findVersion();
         $current_user = Auth::check()?Auth::user():(new User);
 
-        if($myWorkflowInstance != null) {
-            $myWorkflowInstance->findVersion();
-
-            // Get any existing workflow submissions with a 'new' status
-            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)->where('status','new')->first();
-            if (is_null($workflow_submission)) {
-                $workflow_submission = new WorkflowSubmission();
-            }
-            $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
-            $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
-            $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
-            $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
-            $workflow_submission->data = $request->has('_state')?$request->get('_state'):(Object)[];
-            $workflow_submission->state = $myWorkflowInstance->configuration->initial;
-            $workflow_submission->status = 'new';
-            $workflow_submission->user_id = $current_user->id;
-            $workflow_submission->save();
-            if ($save_or_submit === 'save') {
-                return $workflow_submission;
-            } else if ($save_or_submit === 'submit'){
-                return $this->action($workflow_submission, $request);
-            }
+        // Get any existing workflow submissions with a 'new' status
+        $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)->where('status','new')->first();
+        if (is_null($workflow_submission)) {
+            $workflow_submission = new WorkflowSubmission();
         }
-        abort(404,'Workflow not found');
+        $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
+        $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
+        $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
+        $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
+        $workflow_submission->data = $request->has('_state')?$request->get('_state'):(Object)[];
+        $workflow_submission->state = $myWorkflowInstance->configuration->initial;
+        $workflow_submission->status = 'new';
+        $workflow_submission->user_id = $current_user->id;
+        $workflow_submission->assignment_type = 'user';
+        $workflow_submission->assignment_id = Auth::user()->id;
+        $workflow_submission->save();
+        if ($save_or_submit === 'save') {
+            return $workflow_submission;
+        } else if ($save_or_submit === 'submit'){
+            return $this->action($workflow_submission, $request);
+        }
     }
 
     public function action(WorkflowSubmission $workflow_submission, Request $request) {

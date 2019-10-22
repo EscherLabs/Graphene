@@ -12,11 +12,14 @@ use App\Group;
 
 class ImageController extends Controller
 {
+    private $root_dir = '';
     private $img_dir = '';
+    private $img_dir_DEPRECATED = '';
 
-    public function __construct()
-    {
-        $this->img_dir = config('filesystems.disks.local.root').'/images';
+    public function __construct() {
+        $this->root_dir = config('filesystems.disks.local.root');
+        $this->img_dir = 'sites/'.config('app.site')->id.'/images';
+        $this->img_dir_DEPRECATED = 'images';
     }
     
     public function get(Image $image) {
@@ -32,9 +35,17 @@ class ImageController extends Controller
             "Pragma"=>"cache",
             "Content-Disposition"=>'inline; filename="'.$image->name.'.'.$image->ext.'"'
         ];
-        $img_path = $this->img_dir.'/'.$image->id.'.'.$image->ext;
+        $img_path = $this->root_dir.'/'.$this->img_dir.'/'.$image->id.'.'.$image->ext;
+        $img_path_DEPRECATED = $this->root_dir.'/'.$this->img_dir_DEPRECATED.'/'.$image->id.'.'.$image->ext;
         if (file_exists($img_path) && is_file($img_path)) {
             return response()->file($img_path, $headers);
+        } // HANDLE OLD IMAGE PATHS (Not Multi-Site Compatible)
+        else if (file_exists($img_path_DEPRECATED) && is_file($img_path_DEPRECATED)) {
+            Storage::move(
+                $this->img_dir_DEPRECATED.'/'.$image->id.'.'.$image->ext, 
+                $this->img_dir.'/'.$image->id.'.'.$image->ext
+            );
+            return response()->file($img_path_DEPRECATED, $headers);
         } else {
             return response('Image Not Found', 404);
         }
@@ -64,7 +75,7 @@ class ImageController extends Controller
         $image->save();
 
         $path = Storage::putFileAs(
-            'images/', $request->file('image_filename'), $image->id.'.'.$image->ext
+            $this->img_dir, $request->file('image_filename'), $image->id.'.'.$image->ext
         );
         return $image;
     }
@@ -79,6 +90,7 @@ class ImageController extends Controller
 
     public function destroy(Image $image)
     {
+        $img = $this->img_dir.'/'.$image->id.'.'.$image->ext;
         Storage::delete($this->img_dir.'/'.$image->id.'.'.$image->ext);
         if ($image->delete()) {
             return 1;
