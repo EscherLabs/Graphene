@@ -21,6 +21,6 @@ class WorkflowSubmissionFile extends Model
     }
 
     public function getPathAttribute() {
-        return url('/workflowsubmissions/'.$this->workflow_submission_id.'/files/'.$this->id);
+        return url('/api/workflowsubmissions/'.$this->workflow_submission_id.'/files/'.$this->id);
     }
 }
