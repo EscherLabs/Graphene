@@ -45,7 +45,7 @@ class ImageController extends Controller
                 $this->img_dir_DEPRECATED.'/'.$image->id.'.'.$image->ext, 
                 $this->img_dir.'/'.$image->id.'.'.$image->ext
             );
-            return response()->file($img_path_DEPRECATED, $headers);
+            return response()->file($img_path, $headers);
         } else {
             return response('Image Not Found', 404);
         }
