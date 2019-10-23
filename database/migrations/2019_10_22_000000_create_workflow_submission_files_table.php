@@ -19,7 +19,12 @@ class CreateWorkflowSubmissionFilesTable extends Migration
 			$table->string('name')->default('');
             $table->string('ext',5)->default('');
             $table->string('mime_type')->default('');
+            $table->integer('user_id_created')->unsigned()->index()->nullable()->default(null);
+            $table->integer('user_id_deleted')->unsigned()->index()->nullable()->default(null);
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('user_id_created')->references('id')->on('users');
+            $table->foreign('user_id_deleted')->references('id')->on('users');
             $table->foreign('workflow_submission_id')->references('id')->on('workflow_submissions')->onDelete('cascade');
         });
     }

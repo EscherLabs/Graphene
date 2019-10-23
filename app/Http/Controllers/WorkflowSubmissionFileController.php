@@ -52,6 +52,7 @@ class WorkflowSubmissionFileController extends Controller
             'mime_type'=>$request->file('file')->getClientMimeType(),
             'ext'=>pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_EXTENSION),
         ]);
+        $file->user_id_created = Auth::user()->id;
         $file->save();
 
         $path = Storage::putFileAs(
@@ -75,8 +76,9 @@ class WorkflowSubmissionFileController extends Controller
         if ($workflow_submission->id != $file->workflow_submission_id) {
             return response('File '.$file->id.' does not belong to workflow submission '.$workflow_submission->id, 400);
         }
-        $img = $this->file_dir.'/'.$file->id.'.'.$file->ext;
         Storage::delete($this->file_dir.'/'.$file->id.'.'.$file->ext);
+        $file->user_id_deleted = Auth::user()->id;
+        $file->save();
         if ($file->delete()) {
             return 1;
         }
