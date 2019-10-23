@@ -46,7 +46,7 @@ class WorkflowSubmissionFileController extends Controller
 
     public function create(Request $request, WorkflowSubmission $workflow_submission)
     {
-         $file = new File([
+         $file = new WorkflowSubmissionFile([
             'workflow_submission_id'=>$workflow_submission->id,
             'name'=>pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_FILENAME),
             'mime_type'=>$request->file('file')->getClientMimeType(),
