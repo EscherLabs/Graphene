@@ -40,7 +40,7 @@ class WorkflowSubmissionFileController extends Controller
         }
     }
     public function list_all_files(Request $request, WorkflowSubmission $workflow_submission) {
-        $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
+        $files = WorkflowSubmissionFile::withTrashed()->where('workflow_submission_id',$workflow_submission->id)->get();
         return $files;
     }
 
