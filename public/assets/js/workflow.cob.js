@@ -19,7 +19,7 @@ baseFields = _.map([
 	{type: 'text', required: true, title: 'Field Label', name: 'label'},
 	{type: 'text', label: 'Name', name: 'name'},
 	{type: 'text', label: 'Placeholder', name: 'placeholder',parse:[{type:"requires",name:"placeholder"}],show:[{name:"type",value:['radio','checkbox','switch'],type:"not_matches"}]},
-	{type: 'text', label: 'Display', name: 'display',parse:[{type:"requires",name:"details"}],show:[{name:"type",value:['checkbox'],type:"matches"}]},
+	{type: 'text', label: 'Display', name: 'display',columns:12,parse:[{type:"requires"}],show:[{name:"type",value:['checkbox'],type:"matches"}]},
 	{type: 'text', label: false, forceRow:true, pre: "Pre", name: 'pre',parse:[{type:"requires"}],show:[{name:"type",value:['radio','checkbox','switch','color','select'],type:"not_matches"}]},
 	{type: 'text', label: false, post:"Post", name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['radio','checkbox','switch','color','select'],type:"not_matches"}]},
 	{type: 'text', label: false, post:"Post",offset:6, name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['select'],type:"matches"}]},
@@ -137,7 +137,7 @@ gformEditor = function(container){
 
 		// $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"options"}));
 		var temp = _.find(formConfig.fields,{name:"name"});
-		temp.placeholder =  formConfig.data['label'].toLowerCase().split(' ').join('_');
+		temp.placeholder =  (formConfig.data['label']||"").toLowerCase().split(' ').join('_');
 		var mygform = new gform(formConfig,$(opts.formTarget)[0] ||  $(container.elementOf(this))[0]);
 		mygform.on('change:label',function(e){
 			if(e.field.name == 'label' && e.form.get('name') == ""){
@@ -275,6 +275,20 @@ Cobler.types.collection = function(container) {
 		return _.omit(get(),'widgetType','editable')
 	}
 	function set(newItem) {
+		newItem.options = _.map(newItem.options, function(e) {
+			if(typeof e == 'string'){
+				return {label:e,value:e};
+			}else{
+				return e;
+			}
+		})
+		if(_.every(newItem.options, function(e) {return ((typeof e == 'object') && e.type !== 'optgroup');})){
+			var temp = _.pick(newItem,['options','max','min','path','format'])
+			newItem = _.omit(newItem,['options','max','min','path','format'])
+			temp.type = 'optgroup';
+			temp.label = temp.label||"";
+			newItem.options =[temp]
+		}
 		item = newItem;
 	}
 	var item = {
@@ -317,7 +331,7 @@ Cobler.types.collection = function(container) {
 					return result;
 				}},
 				{name:"type",type:"hidden",value:"optgroup"},
-				{type: 'fieldset', label: false, array: {min:1,max:100}, name: 'options', fields:[
+				{type: 'fieldset', label: false, array: {min:1,max:100},columns:12, name: 'options', fields:[
 					{name:"label",label:"Label",parse:[{type:"requires"}]},
 					{name:"value",label:"Value",parse:[{type:"requires"}]}
 				],parse:[{type:"requires"}],show:[{type:"matches",name:"options_type",value:"object"}]},
@@ -371,6 +385,7 @@ Cobler.types.bool = function(container) {
 		// return  _.transform(get(),function(r,v) {_.extend(r,v)},{});//get();
 	}
 	function set(newItem) {
+		newItem.display = newItem.display||newItem.details;
 		item = newItem;
 	}
 	var item = {

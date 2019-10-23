@@ -227,7 +227,7 @@
     return (new Date().getTime() - date.getTime());
   }
 
-  // fix for IE6 suckage
+  // fix for IE6
   document.createElement("abbr");
   document.createElement("time");
 }));
@@ -243,7 +243,6 @@ Cobler.types.Workflow = function(container){
 	var fields = {
 		Title: {},
 		'Workflow ID': {type: 'select', choices: '/api/groups/'+group_id+'/workflowinstances'},
-    // 'User Options':{name:'user_edit',type:'checkbox'}
 	}
 	return {
     container:container,
@@ -251,27 +250,48 @@ Cobler.types.Workflow = function(container){
 		render: function() {
       var temp = get();
       temp.workflow_admin = group_admin;
-      // this.id = gform.getUID();
-      // temp.id = this.id;
-      // return templates['widgets_microapp'].render(temp, templates);
       return gform.renderString(`
+
       <div class="btn-group pull-right slice-actions parent-hover">
 	    {{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
       </div>
       {{#container}}
+
       <div class="panel panel-default">
-            <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-        <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-      </div>
-      {{>widgets__header}}
-      <div class="collapsible panel-body">
+
+
+        <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
+          <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
+        </div>
+        {{>widgets__header}}
+        <div class="collapsible panel-body">
+          <h3 class="flow-title"></h3>
+          <div>
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#form" aria-controls="form" role="tab" data-toggle="tab">Form</a></li>
+            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Files</a></li>
+          </ul>
         
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}">
-        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+          <!-- Tab panes -->
+          <div class="tab-content" style="padding-top:15px">
+            <div role="tabpanel" class="tab-pane active" id="form">
+              <div class="g_{{guid}}">
+                <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+              </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="files">
+            <div class="f_{{guid}}"></div>
+            </div>
+          </div>
+        
         </div>
         </div>
+        <div class="dropzone" id="myId"></div>
       </div>
+
+
+
       {{/container}}
       {{^container}}
 
@@ -279,8 +299,8 @@ Cobler.types.Workflow = function(container){
         <h3 class="flow-title"></h3>
         <div class="g_{{guid}}"></div>
         </div>
-      {{/container}}`,temp);
-
+      {{/container}}
+      `, temp);
 		},
 		edit: berryEditor.call(this, container),
 		toJSON: get,
@@ -288,113 +308,179 @@ Cobler.types.Workflow = function(container){
 		set: function (newItem) {
 			$.extend(item, newItem);
 		},
-		initialize: function(el){
-    if(typeof this.get().workflow_id == 'undefined'){return false;};
-      this.fields['Workflow ID'].enabled = false;
+		initialize: function(el) {
+      if(typeof this.get().workflow_id == 'undefined'){return false;};
+        this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
-          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
-          this.set({collapsed:collapsed});
-          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+        var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+        this.set({collapsed:collapsed});
+        $(el).find('.widget').toggleClass('cob-collapsed', collapsed)
       }
-      $.ajax({
-        url:'/api/workflowinstances/'+this.get().workflow_id,
-        dataType : 'json',
-        type: 'GET',
-    //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
-        success  : function(data){
-          loaded = data;
-          this.container.elementOf(this).querySelector('.flow-title').innerHTML = data.workflow.name+'<span class="badge pull-right status"></span>';
-          var formSetup = {
-            "data":{_state:this.get().data},
-            "actions": [
-              {
-                "type": "cancel",
-                "name": "cancel",
-                "action":"canceled",
-                "label": "<i class='fa fa-times'></i> Clear"
-              },{
-                "type": "hidden",
-                "name": "_flowstate",
-                "value":data.configuration.initial
-              }
-            ],
-            "fields":[
-                {"name":"_state","label":false,"type":"fieldset","fields": data.version.code.form.fields
-              }
-            ]
+      
+      var instance = this.get().workflow;
+      this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="badge pull-right status"></span>';
+      var formSetup = {
+        "data":{_state:(this.get().current||this.get()).data},
+        "actions": [
+          {
+            "type": "cancel",
+            "name": "cancel",
+            "action":"canceled",
+            "label": "<i class='fa fa-times'></i> Clear"
+          },{
+            "type": "hidden",
+            "name": "_flowstate",
+            "value":instance.configuration.initial
           }
-          _.each((_.find(data.version.code.flow,{name:data.configuration.initial}) || {"actions": []}).actions,function(action){
-            action.modifiers = 'btn btn-'+action.type;
-            action.action = 'save';
-            action.type = 'button';
-            formSetup.actions.push(action);
-          });
+        ],
+        "fields":[
+            {"name":"_state","label":false,"type":"fieldset","fields": instance.version.code.form.fields
+          }
+        ]
+      }
+
+      //create actions buttons that are active in current(initial) state
+      _.each((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(action){
+        action.modifiers = 'btn btn-'+action.type;
+        action.action = 'save';
+        action.type = 'button';
+        formSetup.actions.push(action);
+      });
+    
+      this.form = new gform(formSetup, '.g_'+get().guid);
+      if(this.get().current != null){
+        this.initialstate = this.get().current.data;
+        this.id = this.get().current.id;
+      }else{
+        this.initialstate = gform.instances.f0.get();
+      }
+      update = function(file,response){
+        if(typeof response !== 'undefined'){
+          this.get().current.files.push(response)
+        }
+
+        $('.f_'+get().guid).html(gform.renderString(`
+        <div class="list-group">
+        {{#files}}
+        <a href="{{path}}" target="_blank" class="list-group-item">{{name}} <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
+				<span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+        <span data-id="{{id}}" data-action="remove" class="remove-item btn btn-danger fa fa-trash-o" data-title="Remove"></span>
+			</div></a>
+        {{/files}}
+        </div>
+        `,this.get().current))
+
+      }.bind(this)
+      if(this.id){
+        this.Dropzone = new Dropzone("div#myId", { url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
+          this.on("success", update);
+        }});
         
-          this.form = new gform(formSetup, '.g_'+get().guid);
-          this.initialstate = gform.instances.f0.get();//
-          this.form.on('save',function(e){
-            if(!e.form.validate(true))return;
-            // e.field.update({label:'<i class="fa fa-spinner fa-spin"></i> Saving',"modifiers": "btn btn-warning"})
-            gform.types.fieldset.edit.call(e.form.find('_state'),false)
-            e.form.find('_state').el.style.opacity = .7
-            // gform.types.button.edit.call(e.field,false)
-            $('.gform-footer').hide();
-            var data = e.form.toJSON();
-            data.action = e.field.name;
-            $.ajax({
-              url:'/api/workflowsubmissions/'+this.get().workflow_id,
-              dataType : 'json',
-              contentType: 'application/json',
-              data: JSON.stringify(data),
-              type: 'POST',
-              success  : function(data){
-                e.form.find('_state').el.style.opacity = 1
-                // e.form.destroy();
-                document.location = "/workflows/report/"+data.id;
-                // document.querySelector('.g_'+this.get().guid).innerHTML = gform.renderString('Thanks for your submission! <br> Track your results <a href="/workflows/report/{{id}}">here</a>',data)
-                // gform.types.fieldset.edit.call(e.form.find('_state'),true)
-                // gform.types.button.edit.call(e.form.find('submit'),true)
-                // e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
-              }.bind(this),
-              error:function(){
+        update();
+      }
+      $('.f_'+get().guid).on('click','[data-id]',function(e){
+e.stopPropagation();
+e.preventDefault();
+        if(e.currentTarget.dataset.action == 'remove'){
+          
 
-                e.form.find('_state').el.style.opacity = 1
-                gform.types.fieldset.edit.call(e.form.find('_state'),true)
+          $.ajax({
+            url:'/api/workflowsubmissions/'+this.id+'/file/'+e.currentTarget.dataset.id,
 
-                $('.gform-footer').show();
-                toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+            type: 'delete',
+            success  : update,
+            error:function(){
 
-
-              }
-            })
-          }.bind(this))
-          .on('canceled',function(e){
-            // gform.types.fieldset.edit.call(e.form.find('_state'), false);
-            // gform.types.button.edit.call(e.field, false);
-            // e.form.trigger('clear');
-            // debugger;
-            e.form.set('_state',this.initialstate._state)
-          }.bind(this))
-          this.form.on('input canceled',function(){
-            // debugger;
-            if(!_.isEqual(this.initialstate,gform.instances.f0.get())){
-              $('.flow-title .status').html('Changed')
-            }else{
-              $('.flow-title .status').html('')
             }
-          }.bind(this))
-          // .on('submitted',function(e){
-          //   e.form.find('_state').el.style.opacity = 1
-          //   gform.types.fieldset.edit.call(e.form.find('_state'),true)
-          //   gform.types.button.edit.call(e.form.find('submit'),true)
-          //   e.form.find('submit').update({label:'<i class="fa fa-check"></i> Submit',"modifiers": "btn btn-success"})
-          //   e.form.set({_state:{first_name:"hello"}})
-          // })
-        }.bind(this)
-      })
+          })
+
+
+        }else if(e.currentTarget.dataset.action == 'edit'){
+
+        }
+        debugger;
+      }.bind(this))
+      this.form.on('save',function(e){
+        if(!e.form.validate(true))return;
+        gform.types.fieldset.edit.call(e.form.find('_state'),false)
+        e.form.find('_state').el.style.opacity = .7
+        $('.gform-footer').hide();
+        var data = e.form.toJSON();
+        data.action = e.field.name;
+        $.ajax({
+          url:'/api/workflowsubmissions/'+this.get().workflow_id,
+          dataType : 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          type: 'POST',
+          success  : function(data){
+            e.form.find('_state').el.style.opacity = 1
+            document.location = "/workflows/report/"+data.id;
+          }.bind(this),
+          error:function(){
+            e.form.find('_state').el.style.opacity = 1
+            gform.types.fieldset.edit.call(e.form.find('_state'),true)
+            $('.gform-footer').show();
+            toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+          }
+        })
+      }.bind(this))
+      .on('canceled',function(e){
+        e.form.set('_state',this.initialstate._state)
+      }.bind(this))
+      this.form.on('input canceled', function() {
+        if(!_.isEqual(this.initialstate,gform.instances.f0.get())){
+          if($('.flow-title .status').html() != 'Changed'){
+            $('.flow-title .status').html('Changed')
+            setTimeout(interval, 5000);
+          }
+        }else{
+          $('.flow-title .status').html('')
+        }
+      }.bind(this))
+
+
+      interval = function() {
+        if($('.flow-title .status').html() == 'Changed'){
+          $.ajax({
+            url:'/api/workflowsubmissions/'+this.get().workflow_id+'/save',
+            dataType : 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(this.form.get()),
+            type: 'POST',
+            success  : function(data){
+              $('.flow-title .status').html('')
+              // debugger;
+              this.id = data.id;
+              if(typeof this.Dropzone == "undefined"){
+                this.Dropzone = new Dropzone("div#myId", { url: "/workflowsubmissions/"+this.id+"/files"});
+              }
+              this.initialstate = data.data;
+            }.bind(this),
+            error:function(){
+          
+              this.form.find('_state').el.style.opacity = 1
+              gform.types.fieldset.edit.call(e.form.find('_state'),true)
+          
+              $('.gform-footer').show();
+              toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+          
+          
+            }
+          })
+        }
+
+      }.bind(this)
+      if(!this.id){
+        $('.flow-title .status').html('Changed');
+        interval();
+      }
 		}
 	}
 }
+
+
+
 
 Cobler.types.Workflows = function(container){
 	function get() {

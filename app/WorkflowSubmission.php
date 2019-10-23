@@ -27,6 +27,9 @@ class WorkflowSubmission extends Model
     public function logs() {
         return $this->hasMany(WorkflowActivityLog::class);
     }
+    public function files() {
+        return $this->hasMany(WorkflowSubmissionFile::class);
+    }
 
     public function Assignment() {
 

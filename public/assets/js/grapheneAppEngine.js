@@ -336,7 +336,7 @@ function(options){
 		this.$el.find('[data-toggle="popover"]').popover();
 
 		if(this.$el.find('[data-inline]').length && this.options.config.forms[1].content.length) {//} > 0 && this.userEdit.length > 0){
-			this.inline = new gform({default:{hideLabel:true,type:'text',format:{label: '{{label}}', value: '{{value}}'},target:function(){
+			this.inline = new gform({actions:JSON.parse(this.options.config.forms[1].content).actions||[],default:{hideLabel:true,type:'text',format:{label: '{{label}}', value: '{{value}}'},target:function(){
                 return '[data-inline="'+this.name+'"]'
             }},clear:false,data:this.options.data.user.options,fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type},this.$el[0])
 			.on('save', function(e) {

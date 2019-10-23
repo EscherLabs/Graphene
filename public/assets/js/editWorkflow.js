@@ -996,7 +996,7 @@ $('#publish').on('click', function() {
 });
 
 $('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
+  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
   $.get('/api/workflowinstances?workflow_id=' + loaded.workflow_id, function(data) {
     if(data.length > 0){
       modal({title: 'This Workflow has the following instances', content: viewTemplate.render({items: data})});

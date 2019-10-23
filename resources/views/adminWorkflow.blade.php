@@ -26,21 +26,19 @@
   <span class="label label-default" style="float:right;margin-right:15px;" id="version"></span>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="active"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
 
-    <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li>
+    <li role="presentation" class="active"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li>
     <!-- <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li> -->
     <li role="presentation"><a href="#options" aria-controls="options" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
-    <li role="presentation"><a href="#map" aria-controls="map" role="tab" data-toggle="tab"><i class="fa fa-table"></i> <span class="hidden-xs hidden-sm">Data Map<span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
+    <li role="presentation"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
+    <li role="presentation"><a href="#map" aria-controls="map" role="tab" data-toggle="tab"><i class="fa fa-table"></i> <span class="hidden-xs hidden-sm">Data Map<span></a></li>
     <!-- <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li> -->
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
-  <div role="tabpanel" class="tab-pane active " id="resources">
-      <div class="row"><div class="col-md-12 resources "></div></div></div>
-    <div role="tabpanel" class="tab-pane forms" id="forms" style="margin-top:5px">
+    <div role="tabpanel" class="tab-pane forms active" id="forms" style="margin-top:5px">
     <div class="">
       <div class="row">
           <div class="col-md-2 col-sm-8 col-xs-12">
@@ -121,8 +119,8 @@
               <div class="panel-body">
                 <div class=" source view view_source" id="alt-sidebar">
 
-                  <div id="mainform"></div>				
-                  <div id="form"></div>				
+                  <div id="mainform"></div>
+                  <div id="form"></div>
                   </div>
               </div>
             </div>
@@ -131,11 +129,12 @@
 
       </div>
     </div>
+
+    <div role="tabpanel" class="tab-pane " id="resources">
+      <div class="row"><div class="col-md-12 resources "></div></div></div>
     <!-- <div role="tabpanel" class="tab-pane scripts" id="scripts"></div> -->
     <div role="tabpanel" class="tab-pane" id="flow" style="padding-top: 15px">
         <div class="row">
-
-        
           <div class="col-sm-3">
             <ul id="sortableListflow" class="list-group ">
             <li class="list-group-item" data-type="state">State</li>
