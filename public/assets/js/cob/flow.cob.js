@@ -385,7 +385,7 @@ e.preventDefault();
           
 
           $.ajax({
-            url:'/api/workflowsubmissions/'+this.id+'/file/'+e.currentTarget.dataset.id,
+            url:'/api/workflowsubmissions/'+this.id+'/files/'+e.currentTarget.dataset.id,
 
             type: 'delete',
             success  : update,
