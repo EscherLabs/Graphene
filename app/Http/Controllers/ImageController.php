@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Gumlet\ImageResize;
 
 use Storage;
 use App\Image;
@@ -12,12 +13,10 @@ use App\Group;
 
 class ImageController extends Controller
 {
-    private $root_dir = '';
     private $img_dir = '';
     private $img_dir_DEPRECATED = '';
 
     public function __construct() {
-        $this->root_dir = config('filesystems.disks.local.root');
         $this->img_dir = 'sites/'.config('app.site')->id.'/images';
         $this->img_dir_DEPRECATED = 'images';
     }
@@ -35,8 +34,8 @@ class ImageController extends Controller
             "Pragma"=>"cache",
             "Content-Disposition"=>'inline; filename="'.$image->name.'.'.$image->ext.'"'
         ];
-        $img_path = $this->root_dir.'/'.$this->img_dir.'/'.$image->id.'.'.$image->ext;
-        $img_path_DEPRECATED = $this->root_dir.'/'.$this->img_dir_DEPRECATED.'/'.$image->id.'.'.$image->ext;
+        $img_path = storage_path('app/'.$this->img_dir.'/'.$image->id.'.'.$image->ext);
+        $img_path_DEPRECATED = storage_path('app/'.$this->img_dir_DEPRECATED.'/'.$image->id.'.'.$image->ext);
         if (file_exists($img_path) && is_file($img_path)) {
             return response()->file($img_path, $headers);
         } // HANDLE OLD IMAGE PATHS (Not Multi-Site Compatible)
@@ -65,18 +64,26 @@ class ImageController extends Controller
 
     public function create(Request $request)
     {
-         $image = new Image([
+        $request->validate(['image_filename' => 'required|max:10240']);
+        $image = new Image([
             'group_id'=>$request->group_id,
             'name'=>pathinfo($request->file('image_filename')->getClientOriginalName(), PATHINFO_FILENAME),
             'mime_type'=>$request->file('image_filename')->getClientMimeType(),
-            'ext'=>pathinfo($request->file('image_filename')->getClientOriginalName(), PATHINFO_EXTENSION),
+            'ext'=>strtolower(pathinfo($request->file('image_filename')->getClientOriginalName(), PATHINFO_EXTENSION)),
         ]);
         $image->public = (isset($request->public) && ($request->public===true || $request->public==="true"));
         $image->save();
 
-        $path = Storage::putFileAs(
-            $this->img_dir, $request->file('image_filename'), $image->id.'.'.$image->ext
-        );
+        // If Supported Image Type, Resize -- Disabled for now
+        if (in_array($image->ext,[/*'png','jpg','jpeg','gif','webp'*/])) {
+            $img = new ImageResize($request->file('image_filename')->getRealPath());
+            $img->resizeToLongSide(1024);
+            $img->save(storage_path('app/'.$this->img_dir.'/'.$image->id.'.'.$image->ext));
+        } else {
+            $path = Storage::putFileAs(
+                $this->img_dir, $request->file('image_filename'), $image->id.'.'.$image->ext
+            );
+        }
         return $image;
     }
 

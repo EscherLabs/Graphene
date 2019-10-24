@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Gumlet\ImageResize;
 
 use Storage;
 use App\WorkflowSubmissionFile;
@@ -13,12 +14,9 @@ use App\Group;
 
 class WorkflowSubmissionFileController extends Controller
 {
-    private $root_dir = '';
     private $file_dir = '';
-    private $file_dir_DEPRECATED = '';
 
     public function __construct() {
-        $this->root_dir = config('filesystems.disks.local.root');
         $this->file_dir = 'sites/'.config('app.site')->id.'/workflow_submissions/files';
     }
     
@@ -32,7 +30,7 @@ class WorkflowSubmissionFileController extends Controller
             "Pragma"=>"cache",
             "Content-Disposition"=>'inline; filename="'.$file->name.'.'.$file->ext.'"'
         ];
-        $file_path = $this->root_dir.'/'.$this->file_dir.'/'.$file->id.'.'.$file->ext;
+        $file_path = storage_path('app/'.$this->file_dir.'/'.$file->id.'.'.$file->ext);
         if (file_exists($file_path) && is_file($file_path)) {
             return response()->file($file_path, $headers);
         } else {
@@ -46,18 +44,26 @@ class WorkflowSubmissionFileController extends Controller
 
     public function create(Request $request, WorkflowSubmission $workflow_submission)
     {
-         $file = new WorkflowSubmissionFile([
+        $request->validate(['file' => 'required|max:10240']);
+        $file = new WorkflowSubmissionFile([
             'workflow_submission_id'=>$workflow_submission->id,
             'name'=>pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_FILENAME),
             'mime_type'=>$request->file('file')->getClientMimeType(),
-            'ext'=>pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_EXTENSION),
+            'ext'=>strtolower(pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_EXTENSION)),
         ]);
         $file->user_id_created = Auth::user()->id;
         $file->save();
 
-        $path = Storage::putFileAs(
-            $this->file_dir, $request->file('file'), $file->id.'.'.$file->ext
-        );
+        // If Image, Resize
+        if (in_array($file->ext,['png','jpg','jpeg','gif','webp'])) {
+            $image = new ImageResize($request->file('file')->getRealPath());
+            $image->resizeToLongSide(1024);
+            $image->save(storage_path('app/'.$this->file_dir.'/'.$file->id.'.'.$file->ext));
+        } else {
+            $path = Storage::putFileAs(
+                $this->file_dir, $request->file('file'), $file->id.'.'.$file->ext
+            );
+        }
         return $file;
     }
 
