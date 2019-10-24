@@ -258,8 +258,6 @@ Cobler.types.Workflow = function(container){
       {{#container}}
 
       <div class="panel panel-default">
-
-
         <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
           <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
         </div>
@@ -268,10 +266,13 @@ Cobler.types.Workflow = function(container){
           <h3 class="flow-title"></h3>
           <div>
           <!-- Nav tabs -->
+          {{#workflow.version.code.form.files}}
+
           <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#form" aria-controls="form" role="tab" data-toggle="tab">Form</a></li>
             <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Documents</a></li>
           </ul>
+          {{/workflow.version.code.form.files}}
         
           <!-- Tab panes -->
           <div class="tab-content" style="padding-top:15px">
@@ -280,15 +281,19 @@ Cobler.types.Workflow = function(container){
                 <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
               </div>
             </div>
+            {{#workflow.version.code.form.files}}
             <div role="tabpanel" class="tab-pane" id="files">
             <div class="f_{{guid}}"></div>
             </div>
+            {{/workflow.version.code.form.files}}
           </div>
         
         </div>
+        {{#workflow.version.code.form.files}}
         </div>
         <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
         </div>
+        {{/workflow.version.code.form.files}}
       </div>
 
 
@@ -347,7 +352,6 @@ Cobler.types.Workflow = function(container){
         action.type = 'button';
         formSetup.actions.push(action);
       });
-      debugger;
 
       this.form = new gform(formSetup, '.g_'+get().guid);
       if(this.get().current != null){
@@ -440,7 +444,7 @@ Cobler.types.Workflow = function(container){
         gform.collections.update('files', this.get().current.files)
 
       }.bind(this)
-      if(this.id){
+      if(this.id && this.get().workflow.version.code.form.files){
         $('#myId').html('');
         this.Dropzone = new Dropzone("div#myId", { url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
           this.on("success", update);
@@ -535,7 +539,7 @@ Cobler.types.Workflow = function(container){
               $('.flow-title .status').html('')
               // debugger;
               this.id = data.id;
-              if(typeof this.Dropzone == "undefined"){
+              if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files){
                 $('#myId').html('');
 
                 this.Dropzone = new Dropzone("div#myId", { url: "/workflowsubmissions/"+this.id+"/files"});

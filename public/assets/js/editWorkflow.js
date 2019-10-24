@@ -112,6 +112,7 @@ mainForm = function(){
         {name:"default",label:false,type:'fieldset',fields:[
           {name:"horizontal",label:"Horizontal",type:"checkbox"}
         ]},
+        {name:"files",label:"Allow File uploads",type:"checkbox"},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
         // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
         // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[

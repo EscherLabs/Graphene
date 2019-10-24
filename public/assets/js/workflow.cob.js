@@ -278,14 +278,20 @@ Cobler.types.collection = function(container) {
 		return _.omit(get(),'widgetType','editable')
 	}
 	function set(newItem) {
-		newItem.options = _.map(newItem.options, function(e) {
-			if(typeof e == 'string'){
-				return {label:e,value:e};
-			}else{
-				return e;
-			}
-		})
-		if(_.every(newItem.options, function(e) {return ((typeof e == 'object') && e.type !== 'optgroup');})){
+		debugger;
+		if(typeof newItem.options == "string"){
+			newItem.path = newItem.options
+			delete newItem.options;
+		}else{
+			newItem.options = _.map(newItem.options, function(e) {
+				if(typeof e == 'string'){
+					return {label:e,value:e};
+				}else{
+					return e;
+				}
+			})
+		}
+		if(typeof newItem.options == 'undefined' || _.every(newItem.options, function(e) {return ((typeof e == 'object') && e.type !== 'optgroup');})){
 			var temp = _.pick(newItem,['options','max','min','path','format'])
 			newItem = _.omit(newItem,['options','max','min','path','format'])
 			temp.type = 'optgroup';
@@ -325,7 +331,7 @@ Cobler.types.collection = function(container) {
 		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
-				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"External",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
+				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"Resource",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
 					var result = "object";
 					if(typeof e.field.parent.value['max'] !== 'undefined'){
 						result = "int";
@@ -341,7 +347,7 @@ Cobler.types.collection = function(container) {
 					{name:"value",label:"Value",parse:[{type:"requires"}]}
 				],parse:[{type:"requires"}],show:[{type:"matches",name:"options_type",value:"object"}]},
 
-				{type: 'text', label: "Url", name: 'path',show:[{type:"matches",name:"options_type",value:"string"}]},
+				{type: 'text', label: "Resource Name", name: 'path',show:[{type:"matches",name:"options_type",value:"string"}]},
 				{type: 'number', label: "Min", name: 'min',placeholder:"0",show:[{type:"matches",name:"options_type",value:"int"}]},
 				{type: 'number', label: "Max", name: 'max',required:true,show:[{type:"matches",name:"options_type",value:"int"}]},
 				{type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires"}], fields:[

@@ -497,17 +497,34 @@ mainForm = function(){
     form = _.find(form.fields,{name:p})
   })
   if(!path.length){
+
     new gform({
       name:"editor",
       data: form,
       actions:[],
       fields: [
         {name:"legend",label:"Label",columns:6},
-        {name:"name",label:"Name",columns:6},
+        {name:"name",label:"Name",columns:6,edit:[{type:"matches",name:"disabled",value:false}]},
         {name:"default",label:false,type:'fieldset',fields:[
           {name:"horizontal",label:"Horizontal",type:"checkbox"}
         ]},
+        {name:"disabled",show:false,label:false,type:"checkbox",value:_.find(working_forms,{name:form.name}).disabled},
+
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
+
+        {type: 'switch',format:{label:""}, label: 'Custom Actions', name: 'actions', show:[{name:"type",value:['output'],type:"not_matches"}],parse:[{type:"not_matches",name:"actions",value:false}]},
+        {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
+          
+          {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
+          // {name:"name",columns:6,label:"Name"},
+          {name:"action",columns:6,label:"Action"},
+          {name:"label",columns:6,label:"Label"},
+          {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
+            {label:"Danger",value:"btn btn-danger"},
+            {label:"Success",value:"btn btn-success"},
+            {label:"Info",value:"btn btn-info"}]}
+
+        ]},
         // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
         // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
           
@@ -610,12 +627,8 @@ setupform = function(index){
 
   // $('#cobler').click();
   path = [];
-  // $(e.target).siblings().removeClass('active');
-  // $(e.target).addClass('active');
-  // $('#form').addClass('hidden');
-  // $('.view_source').removeClass('hidden');
-  renderBuilder();
 
+  renderBuilder();
 }
 
 
@@ -624,7 +637,10 @@ document.addEventListener('DOMContentLoaded', function(){
   formIndex = 0;
   working_forms = _.each(loaded.code.forms,function(form,i){
     if(typeof form.content == 'string'){
-      form.content = JSON.parse(form.content||'[]');
+      form.content = JSON.parse(form.content||'{fields:[]}');
+      if(_.isArray(form.content) &&  form.content.length){
+        form.content = {fields:[]};
+      }
     }
     form.content.name = form.name || form.content.name;
     form.i = i+'';
