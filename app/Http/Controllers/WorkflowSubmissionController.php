@@ -43,7 +43,9 @@ class WorkflowSubmissionController extends Controller
         $current_user = Auth::check()?Auth::user():(new User);
 
         // Get any existing workflow submissions with a 'new' status
-        $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)->where('status','new')->first();
+        $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
+            ->where('workflow_instance_id',$workflow_instance->id)
+            ->where('status','new')->first();
         if (is_null($workflow_submission)) {
             $workflow_submission = new WorkflowSubmission();
         }
