@@ -269,6 +269,9 @@ Cobler.types.collection = function(container) {
 	function get() {		
 		item.widgetType = 'collection';
 		item.editable = true;
+		if(item.type == 'files'){
+			delete item.options;
+		}
 		return item;
 	}
 	function toJSON() {
@@ -305,6 +308,8 @@ Cobler.types.collection = function(container) {
 			{label: 'Combobox', value: 'smallcombo'},
 			{label: 'User', value: 'user'},
 			{label: 'Groups', value: 'Groups'},
+
+			{label: 'File', value: 'files'},
 			// {label: 'Scale', value: 'scale'},
 			{label: 'Range', value: 'range'},
 			// {label: 'Grid', value: 'grid'},
@@ -317,7 +322,7 @@ Cobler.types.collection = function(container) {
 			{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 			// {name:"Title",label:"title"}
 		] },
-		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'options', 
+		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"External",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){

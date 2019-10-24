@@ -270,7 +270,7 @@ Cobler.types.Workflow = function(container){
           <!-- Nav tabs -->
           <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#form" aria-controls="form" role="tab" data-toggle="tab">Form</a></li>
-            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Files</a></li>
+            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Documents</a></li>
           </ul>
         
           <!-- Tab panes -->
@@ -287,7 +287,8 @@ Cobler.types.Workflow = function(container){
         
         </div>
         </div>
-        <div class="dropzone" id="myId"></div>
+        <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
       </div>
 
 
@@ -346,32 +347,101 @@ Cobler.types.Workflow = function(container){
         action.type = 'button';
         formSetup.actions.push(action);
       });
-    
+      debugger;
+
       this.form = new gform(formSetup, '.g_'+get().guid);
       if(this.get().current != null){
         this.initialstate = this.get().current.data;
         this.id = this.get().current.id;
+        gform.collections.add('files', this.get().current.files)
       }else{
         this.initialstate = gform.instances.f0.get();
+        gform.collections.add('files', [])
       }
+
       update = function(file,response){
         if(typeof response !== 'undefined'){
-          this.get().current.files.push(response)
+          var exists = _.find(this.get().current.files,{id:response.id});
+          if(typeof exists !== 'undefined'){
+            _.merge(exists,response);
+          }else{
+            this.get().current.files.push(response)
+          }
         }
+        this.get().current.files = _.map(this.get().current.files,function(file){
+          switch(file.mime_type){
+            case "image/jpeg":
+            case "image/png":
+            case "image/jpg":
+            case "image/gif":
+              break;
+            // case "application/pdf":
+            //   file.icon = '<i class="fa fa-file-pdf-o fa-3x" style="padding-top: 4px;"></i>';
+            //   break;
+            // case "application/zip":
+            //   file.icon = '<i class="fa fa-file-zip-o fa-3x" style="padding-top: 4px;"></i>';
+            //   break;
+            default:
+              var icons = {
+                // Media
+                image: "fa-file-image-o",
+                audio: "fa-file-audio-o",
+                video: "fa-file-video-o",
+                // Documents
+                "application/pdf": "fa-file-pdf-o",
+                "application/msword": "fa-file-word-o",
+                "application/vnd.ms-word": "fa-file-word-o",
+                "application/vnd.oasis.opendocument.text": "fa-file-word-o",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml":
+                  "fa-file-word-o",
+                "application/vnd.ms-excel": "fa-file-excel-o",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml":
+                  "fa-file-excel-o",
+                "application/vnd.oasis.opendocument.spreadsheet": "fa-file-excel-o",
+                "application/vnd.ms-powerpoint": "fa-file-powerpoint-o",
+                "application/vnd.openxmlformats-officedocument.presentationml":
+                  "fa-file-powerpoint-o",
+                "application/vnd.oasis.opendocument.presentation": "fa-file-powerpoint-o",
+                "text/plain": "fa-file-text-o",
+                "text/html": "fa-file-code-o",
+                "application/json": "fa-file-code-o",
+                // Archives
+                "application/gzip": "fa-file-archive-o",
+                "application/zip": "fa-file-archive-o"
+              }
+              var icon = icons[file.mime_type] || icons[file.mime_type.split('/')[0]] || icons[file.ext] || "fa-file-o";
+              file.icon = '<i class="fa '+icon+' fa-3x" style="padding-top: 4px;"></i>';
+          }
+          file.date =  moment(file.deleted_at||file.created_at).format('MM/DD/YY h:mm a');
+          return file;
 
+        })
         $('.f_'+get().guid).html(gform.renderString(`
         <div class="list-group">
         {{#files}}
-        <a href="{{path}}" target="_blank" class="list-group-item">{{name}} <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
-				<span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
-        <span data-id="{{id}}" data-action="remove" class="remove-item btn btn-danger fa fa-trash-o" data-title="Remove"></span>
-			</div></a>
+        <a style="height:60px;padding-left:70px" href="{{path}}" target="_blank" class="list-group-item {{#deleted_at}}list-group-item-danger{{/deleted_at}}">
+        <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:5px;left:5px">
+        {{{icon}}}
+        </div>{{name}}
+        <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
+          {{^deleted_at}}
+          <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
+            <span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+            <span data-id="{{id}}" data-action="delete" class="remove-item btn btn-danger fa fa-trash-o" data-title="Delete"></span>
+          </div>
+          {{/deleted_at}}
+        </a>
+        {{/files}}
+        {{^files}}
+          No files yet...click below or drop some files there to begin.
         {{/files}}
         </div>
         `,this.get().current))
+        gform.collections.update('files', this.get().current.files)
 
       }.bind(this)
       if(this.id){
+        $('#myId').html('');
         this.Dropzone = new Dropzone("div#myId", { url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
           this.on("success", update);
         }});
@@ -379,26 +449,39 @@ Cobler.types.Workflow = function(container){
         update();
       }
       $('.f_'+get().guid).on('click','[data-id]',function(e){
-e.stopPropagation();
-e.preventDefault();
-        if(e.currentTarget.dataset.action == 'remove'){
-          
-
+        e.stopPropagation();
+        e.preventDefault();
+        if(e.currentTarget.dataset.action == 'delete'){
           $.ajax({
             url:'/api/workflowsubmissions/'+this.id+'/files/'+e.currentTarget.dataset.id,
-
             type: 'delete',
-            success  : update,
+            success  : update.bind(null,{}),
             error:function(){
 
             }
           })
 
-
         }else if(e.currentTarget.dataset.action == 'edit'){
-
+          myModal = new gform({legend:"Edit file name",data:_.find(this.get().current.files,{id:parseInt(e.currentTarget.dataset.id)}),fields:[
+            {name:"name",label:false},
+            {name:"id", type:"hidden"}
+          ]}).on('cancel',function(e){
+            e.form.trigger('close');
+          }).on('save',function(e){
+            $.ajax({
+              url:'/api/workflowsubmissions/'+this.id+'/files/'+e.form.get('id'),
+              type: 'put',
+              dataType : 'json',
+              contentType: 'application/json',
+              data: JSON.stringify(e.form.get()),
+              success  : update.bind(null,{}),
+              error:function(){
+  
+              }
+            })
+            e.form.trigger('close');
+          }.bind(this)).modal();
         }
-        debugger;
       }.bind(this))
       this.form.on('save',function(e){
         if(!e.form.validate(true))return;
@@ -453,6 +536,8 @@ e.preventDefault();
               // debugger;
               this.id = data.id;
               if(typeof this.Dropzone == "undefined"){
+                $('#myId').html('');
+
                 this.Dropzone = new Dropzone("div#myId", { url: "/workflowsubmissions/"+this.id+"/files"});
               }
               this.initialstate = data.data;
@@ -742,7 +827,6 @@ Cobler.types.WorkflowStatus = function(container){
                       // e.event.split("click_")[1]
                       if(_.find(e.model.attributes.actions,{name:e.event.split("click_")[1]}).form){
                         e.model.waiting(false);
-
                         new gform(
                           {
                             "legend":e.model.attributes.workflow.name,

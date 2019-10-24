@@ -68,6 +68,7 @@ renderBuilder = function(){
         case "grid":
         case "user":
         case "groups":
+        case "files":
         case "smallcombo":
           temp.fields[i].widgetType = 'collection';
           break;

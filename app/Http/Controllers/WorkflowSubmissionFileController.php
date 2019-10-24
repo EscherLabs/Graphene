@@ -86,7 +86,7 @@ class WorkflowSubmissionFileController extends Controller
         $file->user_id_deleted = Auth::user()->id;
         $file->save();
         if ($file->delete()) {
-            return 1;
+            return $file;
         }
     }
 }

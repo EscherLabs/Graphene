@@ -104,3 +104,6 @@ gform.types['user_email']= _.extend({}, gform.types['user'], {
 gform.types['group']= _.extend({}, gform.types['smallcombo'], {
   defaults:{options: '/api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
 })
+gform.types['files']= _.extend({}, gform.types['smallcombo'], {
+  defaults:{options: 'files',format:{label:"{{name}}",value:"{{id}}",display:'<div style="height:50px;padding-left:60px;position:relative" href="{{path}}" target="_blank"><div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url({{path}});background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:0px;left:5px">{{{icon}}}</div> {{name}} <span class="pull-right">{{date}}</span></div>'}}
+})

@@ -168,7 +168,7 @@ class WorkflowInstanceController extends Controller
         $myWorkflow->findVersion();
 
 
-        $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
+        $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
         $scripts = [];
         $styles = [];
         if($myWorkflow != null) {
