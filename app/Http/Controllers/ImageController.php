@@ -80,6 +80,7 @@ class ImageController extends Controller
         if (in_array($image->ext,[/*'png','jpg','jpeg','gif','webp'*/])) {
             $img = new ImageResize($request->file('image_filename')->getRealPath());
             $img->resizeToLongSide(1024);
+            if(!Storage::exists($this->img_dir)) { Storage::makeDirectory($this->img_dir);}
             $img->save($this->root_dir.'/'.$this->img_dir.'/'.$image->id.'.'.$image->ext);
         } else {
             $path = Storage::putFileAs(

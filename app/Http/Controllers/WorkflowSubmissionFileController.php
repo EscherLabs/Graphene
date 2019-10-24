@@ -60,6 +60,7 @@ class WorkflowSubmissionFileController extends Controller
         if (in_array($file->ext,['png','jpg','jpeg','gif','webp'])) {
             $image = new ImageResize($request->file('file')->getRealPath());
             $image->resizeToLongSide(1024);
+            if(!Storage::exists($this->file_dir)) { Storage::makeDirectory($this->file_dir);}
             $image->save($this->root_dir.'/'.$this->file_dir.'/'.$file->id.'.'.$file->ext);
         } else {
             $path = Storage::putFileAs(
