@@ -324,7 +324,7 @@ Cobler.types.Workflow = function(container){
       }
       
       var instance = this.get().workflow;
-      this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="badge pull-right status"></span>';
+      this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="label label-default pull-right status"></span>';
       var formSetup = {
         "data":{_state:(this.get().current||this.get()).data},
         "actions": [
@@ -517,18 +517,19 @@ Cobler.types.Workflow = function(container){
       }.bind(this))
       this.form.on('input canceled', function() {
         if(!_.isEqual(this.initialstate,gform.instances.f0.get())){
-          if($('.flow-title .status').html() != 'Changed'){
-            $('.flow-title .status').html('Changed')
+          if($('.flow-title .status').html() != 'Saving...'){
+            $('.flow-title .status').html('Saving...').removeClass('label-success')
             setTimeout(interval, 5000);
+            // interval()
           }
         }else{
-          $('.flow-title .status').html('')
+           $('.flow-title .status').html('All Changes Saved').addClass('label-success')
         }
       }.bind(this))
 
 
       interval = function() {
-        if($('.flow-title .status').html() == 'Changed'){
+        if($('.flow-title .status').html() == 'Saving...'){
           $.ajax({
             url:'/api/workflowsubmissions/'+this.get().workflow_id+'/save',
             dataType : 'json',
@@ -536,7 +537,7 @@ Cobler.types.Workflow = function(container){
             data: JSON.stringify(this.form.get()),
             type: 'POST',
             success  : function(data){
-              $('.flow-title .status').html('')
+               $('.flow-title .status').html('All Changes Saved').addClass('label-success')
               // debugger;
               this.id = data.id;
               if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files){
@@ -561,7 +562,7 @@ Cobler.types.Workflow = function(container){
 
       }.bind(this)
       if(!this.id){
-        $('.flow-title .status').html('Changed');
+        $('.flow-title .status').html('Saving...').removeClass('label-success');
         interval();
       }
 		}
