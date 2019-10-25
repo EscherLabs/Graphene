@@ -446,7 +446,7 @@ Cobler.types.Workflow = function(container){
       }.bind(this)
       if(this.id && this.get().workflow.version.code.form.files){
         $('#myId').html('');
-        this.Dropzone = new Dropzone("div#myId", { url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
+        this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
           this.on("success", update);
         }});
         
@@ -543,7 +543,9 @@ Cobler.types.Workflow = function(container){
               if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files){
                 $('#myId').html('');
 
-                this.Dropzone = new Dropzone("div#myId", { url: "/workflowsubmissions/"+this.id+"/files"});
+                this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/workflowsubmissions/"+this.id+"/files", init: function() {
+                  this.on("success", update);
+                }});
               }
               this.initialstate = data.data;
             }.bind(this),
