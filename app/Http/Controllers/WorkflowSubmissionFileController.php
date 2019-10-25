@@ -26,7 +26,7 @@ class WorkflowSubmissionFileController extends Controller
         if ($workflow_submission->id != $file->workflow_submission_id) {
             return response('File '.$file->id.' does not belong to workflow submission '.$workflow_submission->id, 400);
         }
-        $max_age = 0; // Don't Cache Files
+        $max_age = 2592000; // Cache Images for 30 days
         $headers = [
             "Cache-Control"=>"max-age=".$max_age,
             "Pragma"=>"cache",
