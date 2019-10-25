@@ -29,7 +29,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::post('/workflowsubmissions/{workflow_instance}/{save_or_submit?}','WorkflowSubmissionController@create')->middleware('can:create_submission,workflow_instance');
     Route::get('/workflowsubmissions/user','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflowsubmissions/user/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
-    Route::get('/workflowsubmissions/{workflow_submission}/log','WorkflowSubmissionController@workflow_submission_log')->middleware('can:view,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/history','WorkflowSubmissionController@workflow_submission_history')->middleware('can:view,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@status')->middleware('can:view,workflow_submission');
     Route::put('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@action')->middleware('can:take_action,workflow_submission');
     Route::delete('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@destroy')->middleware('can:delete,workflow_submission');

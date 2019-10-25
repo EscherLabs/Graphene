@@ -356,11 +356,18 @@ class WorkflowSubmissionController extends Controller
         return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_instance_id','=',$workflow_instance->id)->orderBy('created_at')->get();
     }   
     
-    public function workflow_submission_log(WorkflowSubmission $workflow_submission, Request $request) {
+    public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
+        return WorkflowSubmission::where('id','=',$workflow_submission->id)->with(array('user'=>function($query){
+        },'logs'=>function($query){
+            $query->with('user')->orderBy('updated_at','DESC')->get();
+        },'files'=>function($query){
+            // ->with('user')
+            $query->orderBy('updated_at','DESC')->get();
+        }) )->first();
+        // return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
     }
 
     // public function view(WorkflowSubmission $workflow_submission, Request $request) {

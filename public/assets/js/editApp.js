@@ -517,9 +517,9 @@ mainForm = function(){
           
           {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
           // {name:"name",columns:6,label:"Name"},
-          {name:"action",columns:6,label:"Action"},
-          {name:"label",columns:6,label:"Label"},
-          {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
+          {name:"action",columns:6,label:"Action",parse:[{type:"requires"}]},
+          {name:"label",columns:6,label:"Label",parse:[{type:"requires"}]},
+          {name:"modifiers",columns:6,label:"Classes",parse:[{type:"requires"}],type:"smallcombo",options:[
             {label:"Danger",value:"btn btn-danger"},
             {label:"Success",value:"btn btn-success"},
             {label:"Info",value:"btn btn-info"}]}

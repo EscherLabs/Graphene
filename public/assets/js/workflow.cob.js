@@ -120,7 +120,28 @@ gformEditor = function(container){
 			legend: 'Edit '+ this.get()['widgetType'],
 			cobler:this,
 			actions:[{type:"button",name:"deativate",action:"deactivate",label:'<i class="fa fa-check"></i>',target:"#display",modifiers:"btn btn-info pull-right visible-lg"}],
-			clear:false
+			clear:false,
+			onSet:function(data){
+				data.events = {
+					first:'1',
+					last:'2'
+				}
+				if(typeof data.events !== 'undefined'){
+					data.events = _.map(data.events,function(e,i){
+						return {name:i,value:e}
+					})
+				}
+				return data;
+			},
+			onGet:function(data){
+				if(typeof data.events !== 'undefined'){
+					
+					data.events = _.map(data.events,function(e,i){
+						return {name:i,value:e}
+					})
+				}
+				return data;
+			}
 		}
 		var opts = container.owner.options;
 
