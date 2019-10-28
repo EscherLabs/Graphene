@@ -8,7 +8,7 @@ If you are interested in piloting Graphene at your campus, please contact [graph
 
 ## Dependencies
  - MySQL 5.7.8+ or MariaDB 10.2+
- - PHP 7.1+
+ - PHP 7.2+
  - Composer
 
 ## Installation Instructions / Tutorials / Documentation
