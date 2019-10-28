@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function(){
   formIndex = 0;
   working_forms = _.each(loaded.code.forms,function(form,i){
     if(typeof form.content == 'string'){
-      form.content = JSON.parse(form.content||'{fields:[]}');
+      form.content = JSON.parse(form.content||'{"fields":[]}');
       if(_.isArray(form.content) &&  form.content.length){
         form.content = {fields:[]};
       }
