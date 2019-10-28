@@ -5,17 +5,26 @@ file:` <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}
 </div>{{name}}
 <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
 </div>`,
+files:`
+<ul class="list-group workflow-files" style="margin:10px 0 0">
+{{#history}}
+  {{#file}}
+    {{>file}}
+  {{/file}}
+{{/history}}
+</ul>
+`,
 history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
-<div class="filterable submission list-group-item" target="_blank" data-current=true data-id="{{data.0.id}}">
+<div class="filterable submission list-group-item" target="_blank" data-current=true data-id="{{history.0.id}}">
 <div>{{workflow.user.first_name}} {{workflow.user.last_name}} (Originator)
-<span class="label pull-right label-success{{#data.0.closed}} label-danger{{/data.0.closed}}">{{data.0.end_state}}</span>
+<span class="label pull-right label-success{{#history.0.closed}} label-danger{{/history.0.closed}}">{{history.0.end_state}}</span>
 
 </div>
 <hr>
-<div><h5 style="text-align:right"><span data-toggle="tooltip" title="{{data.0.updated_at.date}} @ {{data.0.updated_at.time}}" data-placement="top">({{data.0.updated_at.fromNow}})</span></h5></div>
+<div><h5 style="text-align:right"><span data-toggle="tooltip" title="{{history.0.updated_at.date}} @ {{history.0.updated_at.time}}" data-placement="top">({{history.0.updated_at.fromNow}})</span></h5></div>
 </div>
 <div class="list-group-item bg-info" style="color: white;background: #aaa;" ><h4>History</h4></div>
-{{#data}}
+{{#history}}
   {{#log}}
     <div class="filterable list-group-item submission" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>
     <span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span>
@@ -25,7 +34,7 @@ history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
   {{#file}}
     {{>file}}
   {{/file}}
-{{/data}}
+{{/history}}
 </ul>`,
 container:`<div class="row">
 <div class="list col-md-4 hidden-xs hidden-sm " style="">
@@ -61,10 +70,11 @@ summary:`<dl class="dl-horizontal">
 <dt>Original Submission</dt> <dd>{{original.created_at.date}} @ {{original.created_at.time}}</dd>
 <dt>Last Action</dt> <dd>{{history.0.updated_at.date}} @ {{history.0.updated_at.time}}</dd>
 <dt>Assignee</dt><dd>{{assignment.user.name}}{{^assignment.user.name}}{{assignment.user.first_name}} {{assignment.userlast_name}}{{/assignment.user.name}} ({{assignment.type}})</dd>
+<dt>Submission ID</dt> <dd>{{original.workflow_submission_id}}</dd>
 
 </dl>`,
 report:`
-<div>
+  <div>
     <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
     Submitted {{workflow.created_at.fromNow}} by <h4>{{owner.first_name}} {{owner.last_name}}</h4><hr>
     <div class="row">
@@ -75,18 +85,23 @@ report:`
       {{>actions}}
       </div>
     </div>
-    </div>
-<div class="panel">
-  <div class="panel-body">
-    {{>preview}}
   </div>
-</div>`,
-form:`<div class="panel panel-default">
+  <div class="panel">
+    <div class="panel-body">
+      {{>preview}}
+    </div>
+  </div>
+  <div>
+  <h3>Attachments</h3><hr/>
+  {{>files}}
+  </div>
+`,
+view:`<div class="panel panel-default">
 <div class="panel-heading" style="position:relative">
     <h3 class="panel-title">{{options.workflow_instance.name}}</h3>
   </div>
   <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
-    <div class="form" style="padding-right: 50px;padding-left: 35px;"></div>
+    <div class="view_container" style="padding-right: 50px;padding-left: 35px;"></div>
   </div>
 </div>`
 }
@@ -200,24 +215,28 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             this.history.teardown();
           }
 
-          this.history = new Ractive({el: this.container.elementOf(this).querySelector('.row .list'), template: templates.history, data: {workflow: this.get().options,data:data}, partials: templates});
-
+          this.history = new Ractive({el: this.container.elementOf(this).querySelector('.row .list'), template: templates.history, data: {workflow: this.get().options,history:data}, partials: templates});
 
 
           // this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
-  $('[data-toggle="tooltip"]').tooltip()
+          $('[data-toggle="tooltip"]').tooltip()
 
-  $('.filterable.file').on('click',function(data,e){
-    $('.active').removeClass('active')
-    $(e.currentTarget).addClass('active')
-    if(typeof previewForm !== 'undefined'){previewForm.destroy();}
-    var file = _.find(data,{id:parseInt(e.currentTarget.dataset.id),file:true});
-    if(file.ext == "pdf"){
-      $('.report').html('<iframe width="100%" height="'+($( document ).height()-$('.report').position().top-100)+'px" src="'+file.path+'"></iframe>')
-    }else{
-      $('.report').html('<img src="'+file.path+'"/>')
-    }
-  }.bind(null,data))
+          $('.filterable.file').on('click',function(data,e){
+            $('.active').removeClass('active')
+            $(e.currentTarget).addClass('active')
+            if(typeof previewForm !== 'undefined'){previewForm.destroy();}
+            var file = _.find(data,{id:parseInt(e.currentTarget.dataset.id),file:true});
+
+            document.querySelector('.report').innerHTML = gform.renderString(workflow_report.view, this.get());
+            $('.report .view_container').append(gform.renderString(workflow_report.file, file))
+
+            if(file.ext == "pdf"){
+              $('.report .view_container').append('<iframe width="100%" height="'+($( document ).height()-$('.report').position().top-100)+'px" src="'+file.path+'"></iframe>')
+            }else{
+              $('.report .view_container').append('<div style="text-align:center;padding:10px;"><img style="max-width:100%" src="'+file.path+'"/></div>')
+            }
+          }.bind(this,data))
+
           $('.filterable.submission').on('click',function(data,e){
             $('.active').removeClass('active')
             $(e.currentTarget).addClass('active')
@@ -274,10 +293,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 mappedData.actions = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
               }
 
-
-
               mappedData.report_url = this.get().report_url;
-
               mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
               mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params')
               mappedData.owner.is = {actor:mappedData.owner.unique_id == mappedData.actor.unique_id}
@@ -306,9 +322,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   initial:(mappedData.previous.state == mappedData.workflow.instance.configuration.initial)
                 }
               }
-
               mappedData.history = _.map(data, function(event){
-                var newEvent = _.pick(event,'id','data','comment','action','status','created_at','updated_at');
+                var newEvent = _.pick(event,'id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','date');
                 newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
                 newEvent.state = event.end_state;
                 newEvent.actor = _.pick(event.user,'first_name','last_name','email','unique_id','id','params')
@@ -345,9 +360,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               }.bind(this))
 
             }else{
-              document.querySelector('.report').innerHTML = gform.renderString(workflow_report.form, this.get());
+              document.querySelector('.report').innerHTML = gform.renderString(workflow_report.view, this.get());
               
-              previewForm = new gform(form, document.querySelector('.form'))
+              previewForm = new gform(form, document.querySelector('.view_container'))
             }
           }.bind(this,data))
 

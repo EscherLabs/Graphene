@@ -121,27 +121,27 @@ gformEditor = function(container){
 			cobler:this,
 			actions:[{type:"button",name:"deativate",action:"deactivate",label:'<i class="fa fa-check"></i>',target:"#display",modifiers:"btn btn-info pull-right visible-lg"}],
 			clear:false,
-			onSet:function(data){
-				data.events = {
-					first:'1',
-					last:'2'
-				}
-				if(typeof data.events !== 'undefined'){
-					data.events = _.map(data.events,function(e,i){
-						return {name:i,value:e}
-					})
-				}
-				return data;
-			},
-			onGet:function(data){
-				if(typeof data.events !== 'undefined'){
+			// onSet:function(data){
+			// 	data.events = {
+			// 		first:'1',
+			// 		last:'2'
+			// 	}
+			// 	if(typeof data.events !== 'undefined'){
+			// 		data.events = _.map(data.events,function(e,i){
+			// 			return {name:i,value:e}
+			// 		})
+			// 	}
+			// 	return data;
+			// },
+			// onGet:function(data){
+			// 	if(typeof data.events !== 'undefined'){
 					
-					data.events = _.map(data.events,function(e,i){
-						return {name:i,value:e}
-					})
-				}
-				return data;
-			}
+			// 		data.events = _.map(data.events,function(e,i){
+			// 			return {name:i,value:e}
+			// 		})
+			// 	}
+			// 	return data;
+			// }
 		}
 		var opts = container.owner.options;
 
@@ -181,7 +181,7 @@ gformEditor = function(container){
 					e.form.find('name').update({value:gform.getUID()})
 				}
 			}
-		 	container.update(mygform.toJSON(), this);
+			container.update(mygform.toJSON(), this);
 			path.push(e.form.get('name'));
 			cb.deactivate();
 			renderBuilder()
@@ -299,7 +299,6 @@ Cobler.types.collection = function(container) {
 		return _.omit(get(),'widgetType','editable')
 	}
 	function set(newItem) {
-		debugger;
 		if(typeof newItem.options == "string"){
 			newItem.path = newItem.options
 			delete newItem.options;

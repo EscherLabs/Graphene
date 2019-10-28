@@ -270,7 +270,7 @@ Cobler.types.Workflow = function(container){
 
           <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#form" aria-controls="form" role="tab" data-toggle="tab">Form</a></li>
-            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Documents</a></li>
+            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Attachments</a></li>
           </ul>
           {{/workflow.version.code.form.files}}
         
@@ -962,6 +962,7 @@ Cobler.types.WorkflowStatus = function(container){
                     // actions:[{name:"delete"}],
                     actions:[],
                     upload:false,download:false,columns:false,
+                    sortBy:"state",
                     form:{
                       fields:[
                         {label:"Workflow Name",name:"name",type:"select",options:function(data){
