@@ -365,7 +365,7 @@ class WorkflowSubmissionController extends Controller
             $query->with('user')->orderBy('updated_at','DESC')->get();
         },'files'=>function($query){
             // ->with('user')
-            $query->orderBy('updated_at','DESC')->get();
+            $query->orderBy('updated_at','DESC')->with('user')->get();
         }) )->first();
         // return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
     }
