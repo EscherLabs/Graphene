@@ -46,7 +46,7 @@ class WorkflowSubmissionFileController extends Controller
         }
         $file_path = $this->root_dir.'/'.$this->file_dir.'/'.$file->id.'.'.$file->ext;
         if (file_exists($file_path) && is_file($file_path)) {
-            return Storage::download($this->file_dir.'/'.$file->id.'.'.$file->ext,$file->id.'.'.$file->ext);
+            return Storage::download($this->file_dir.'/'.$file->id.'.'.$file->ext,$file->name.'.'.$file->ext);
         } else {
             return response('File Not Found', 404);
         }
