@@ -1,5 +1,5 @@
 workflow_report = {
-file:` <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file">
+file:` <a {{^deleted_at}}href="{{path}}/download"{{/deleted_at}} style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file">
 <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}{{^deleted_at}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/deleted_at}}{{/icon}}position:absolute;top:5px;left:5px">
 {{{icon}}}
 </div>{{name}}
@@ -12,7 +12,7 @@ file:` <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}
 </div>
 {{/current_state.uploads}}
 {{/deleted_at}}
-</div>
+</a>
 `,
 files:`
 <ul class="list-group workflow-files" style="margin:10px 0 0">
@@ -317,6 +317,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           $('[data-toggle="tooltip"]').tooltip()
 
           $('.filterable.file').on('click',function(e){
+            debugger;
             $('.active').removeClass('active')
             $(e.currentTarget).addClass('active')
             if(typeof previewForm !== 'undefined'){previewForm.destroy();}
@@ -398,6 +399,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
             var log = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),log:true});
 
+var states =  _.map(mappedData.history,function(item){return item.state;})
+  states.push(mappedData.workflow.instance.configuration.initial)
+
+
+
             form = {
               actions:[],
               data:{
@@ -408,7 +414,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 {
                   "type": "hidden",
                   "name": "_flowstate",
-                  "value": log.start_state
+                  "value": _.uniq(_.compact(states))
                 }
               ]
             }
@@ -447,9 +453,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               }
               
               $('.workflow-files, .report').on('click','[data-id]',function(e){
-                e.stopPropagation();
-                e.preventDefault();
+   
                 if(e.currentTarget.dataset.action == 'delete'){
+                  e.stopPropagation();
+                  e.preventDefault();
                   $.ajax({
                     url:'/api/workflowsubmissions/'+mappedData.original.workflow_submission_id+'/files/'+e.currentTarget.dataset.id,
                     type: 'delete',
@@ -460,6 +467,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   })
         
                 }else if(e.currentTarget.dataset.action == 'edit'){
+                  e.stopPropagation();
+                  e.preventDefault();
                   myModal = new gform({legend:"Edit file name",data:_.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id)}),fields:[
                     {name:"name",label:false},
                     {name:"id", type:"hidden"}

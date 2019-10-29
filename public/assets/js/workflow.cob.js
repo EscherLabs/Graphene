@@ -299,24 +299,29 @@ Cobler.types.collection = function(container) {
 		return _.omit(get(),'widgetType','editable')
 	}
 	function set(newItem) {
-		if(typeof newItem.options == "string"){
-			newItem.path = newItem.options
-			delete newItem.options;
+
+		if(['user','group','files'].indexOf(newItem.type) ==  -1){
+			if(typeof newItem.options == "string"){
+				newItem.path = newItem.options
+				delete newItem.options;
+			}else{
+				newItem.options = _.map(newItem.options, function(e) {
+					if(typeof e == 'string'){
+						return {label:e,value:e};
+					}else{
+						return e;
+					}
+				})
+			}
+			if(typeof newItem.options == 'undefined' || _.every(newItem.options, function(e) {return ((typeof e == 'object') && e.type !== 'optgroup');})){
+				var temp = _.pick(newItem,['options','max','min','path','format'])
+				newItem = _.omit(newItem,['options','max','min','path','format'])
+				temp.type = 'optgroup';
+				temp.label = temp.label||"";
+				newItem.options =[temp]
+			}
 		}else{
-			newItem.options = _.map(newItem.options, function(e) {
-				if(typeof e == 'string'){
-					return {label:e,value:e};
-				}else{
-					return e;
-				}
-			})
-		}
-		if(typeof newItem.options == 'undefined' || _.every(newItem.options, function(e) {return ((typeof e == 'object') && e.type !== 'optgroup');})){
-			var temp = _.pick(newItem,['options','max','min','path','format'])
-			newItem = _.omit(newItem,['options','max','min','path','format'])
-			temp.type = 'optgroup';
-			temp.label = temp.label||"";
-			newItem.options =[temp]
+			delete newItem.options;
 		}
 		item = newItem;
 	}
@@ -342,12 +347,12 @@ Cobler.types.collection = function(container) {
 		]}
 
 	].concat(baseFields,baseConditions,_.map([
-		{type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires",name:"format"}], fields:[
-			{name:"label",label:"Label",parse:[{type:"requires",name:"label"}]},
-			{name:"value",label:"Value",parse:[{type:"requires",name:"value"}]},
-			{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
-			// {name:"Title",label:"title"}
-		] },
+		// {type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires",name:"format"}], fields:[
+		// 	{name:"label",label:"Label",parse:[{type:"requires",name:"label"}]},
+		// 	{name:"value",label:"Value",parse:[{type:"requires",name:"value"}]},
+		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
+		// 	// {name:"Title",label:"title"}
+		// ] },
 		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
