@@ -5,10 +5,12 @@ file:` <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}
 </div>{{name}}
 <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
 {{^deleted_at}}
+{{#current_state.uploads}}
 <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
   <span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
   <span data-id="{{id}}" data-action="delete" class="remove-item btn btn-danger fa fa-trash-o" data-title="Delete"></span>
 </div>
+{{/current_state.uploads}}
 {{/deleted_at}}
 </div>
 `,
@@ -76,7 +78,7 @@ margin:10px 0
 actions:`{{#is.actionable}}<div class="hidden-print"><legend>Available Actions</legend><div>{{#actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions}}</div><br></div>{{/is.actionable}}`,
 summary:`<dl class="dl-horizontal">
 <dt>Status</dt><dd style="text-transform: capitalize;">{{status}}</dd>
-<dt>State</dt><dd style="text-transform: capitalize;">{{state}}</dd>
+<dt>State</dt><dd>{{state}}</dd>
 <dt>Original Submission</dt> <dd>{{original.created_at.date}} @ {{original.created_at.time}}</dd>
 <dt>Last Action</dt> <dd>{{latest.updated_at.date}} @ {{latest.updated_at.time}}</dd>
 <dt>Assignee</dt><dd>{{assignment.user.name}}{{^assignment.user.name}}{{assignment.user.first_name}} {{assignment.userlast_name}}{{/assignment.user.name}} ({{assignment.type}})</dd>
@@ -101,16 +103,15 @@ report:`
       {{>preview}}
     </div>
   </div>
-        {{#workflow.instance.version.code.form.files}}
-        {{#current_state.uploads}}
-        <div>
-        <h3>Attachments</h3><hr/>
-        {{>files}}
-        </div>
-        <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
-        {{/current_state.uploads}}
-        {{/workflow.instance.version.code.form.files}}
-
+      {{#workflow.instance.version.code.form.files}}
+      <div>
+      <h3>Attachments</h3><hr/>
+      {{>files}}
+      </div>
+      {{#current_state.uploads}}
+      <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
+      {{/current_state.uploads}}
+      {{/workflow.instance.version.code.form.files}}
 `,
 view:`<div class="panel panel-default">
 <div class="panel-heading" style="position:relative">
@@ -430,9 +431,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 this.ractive.teardown();
               }
               mappedData.form = previewForm.toString('_state',true);
+              mappedData.form = log.data;
               this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
               previewForm.on('change',function(e){
-                this.ractive.set({form:e.form.toString('_state',true)}) 
+                // this.ractive.set({form:e.form.toString('_state',true)}) 
               }.bind(this))
 
               if(mappedData.workflow.instance.version.code.form.files && mappedData.current_state.uploads){
