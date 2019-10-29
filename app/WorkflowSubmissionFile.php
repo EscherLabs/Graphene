@@ -21,7 +21,11 @@ class WorkflowSubmissionFile extends Model
     }
     public function user() {
       return $this->belongsTo(User::class,'user_id_created');
-  }
+    }
+    public function deleted_by() {
+      return $this->belongsTo(User::class,'user_id_deleted');
+    }
+  
     public function getPathAttribute() {
         return url('/api/workflowsubmissions/'.$this->workflow_submission_id.'/files/'.$this->id);
     }

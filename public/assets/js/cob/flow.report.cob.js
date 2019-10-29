@@ -1,6 +1,6 @@
 workflow_report = {
-file:` <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file {{#deleted_at}}list-group-item-danger{{/deleted_at}}">
-<div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:5px;left:5px">
+file:` <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file">
+<div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}{{^deleted_at}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/deleted_at}}{{/icon}}position:absolute;top:5px;left:5px">
 {{{icon}}}
 </div>{{name}}
 <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
@@ -16,7 +16,7 @@ files:`
 <ul class="list-group workflow-files" style="margin:10px 0 0">
 {{#history}}
   {{#file}}
-    {{>file}}
+  {{^deleted_at}}{{>file}}{{/deleted_at}}
   {{/file}}
 {{/history}}
 </ul>
@@ -39,10 +39,10 @@ history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
   {{/log}}
   {{#file}}
     <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file {{#deleted_at}}list-group-item-danger{{/deleted_at}}">
-    <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:5px;left:5px">
+    <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}{{^deleted_at}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/deleted_at}}{{/icon}}position:absolute;top:5px;left:5px">
     {{{icon}}}
     </div>
-    <div><h5><div style="position: relative;top: -5px;">{{name}}</div> <span class="text-muted">Attached by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>    </div>
+    <div><h5><div style="position: relative;top: -5px;">{{name}}</div> <span class="text-muted">{{^deleted_at}}Attached{{/deleted_at}}{{#deleted_at}}Deleted {{/deleted_at}} by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>    </div>
   {{/file}}
 {{/history}}
 </ul>`,
@@ -102,11 +102,13 @@ report:`
     </div>
   </div>
         {{#workflow.instance.version.code.form.files}}
+        {{#current_state.uploads}}
         <div>
         <h3>Attachments</h3><hr/>
         {{>files}}
         </div>
         <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
+        {{/current_state.uploads}}
         {{/workflow.instance.version.code.form.files}}
 
 `,
@@ -147,6 +149,14 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         date:uat.format('MM/DD/YY'),
         fromNow:uat.fromNow()
       }
+      // if(typeof log.deleted_at !== 'undefined'){
+      //   log.deleted_at = {
+      //     original:log.deleted_at,
+      //     time:uat.format('h:mma'),
+      //     date:uat.format('MM/DD/YY'),
+      //     fromNow:uat.fromNow()
+      //   }
+      // }
       log.date = log.created_at.original;
       log.closed = log.status == 'closed';
       log.open = log.status == 'open';
@@ -172,6 +182,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               case "image/png":
               case "image/jpg":
               case "image/gif":
+                  if(file.deleted_at){
+                    file.icon = '<i class="fa fa-image fa-3x" style="padding-top: 4px;"></i>';
+                  }
+                  file.preview = '<div style="text-align:center;padding:10px;"><img style="max-width:100%" src="'+file.path+'"/></div>';
+
                 break;
               // case "application/pdf":
               //   file.icon = '<i class="fa fa-file-pdf-o fa-3x" style="padding-top: 4px;"></i>';
@@ -212,6 +227,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               }
 
 
+              if(file.ext == "pdf"){
+                file.preview = '<iframe width="100%" height="'+($( document ).height()-$('.report').position().top-100)+'px" src="'+file.path+'"></iframe>';
+              }
+
             return file;
           }.bind(this)
 
@@ -222,7 +241,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           }.bind(this)).concat(_.map(response.files, processFile)),'date','desc')
           
 
-          var templates = _.merge({},workflow_report, _.mapValues(_.keyBy(_.filter(this.get().options.workflow_version.code.templates,function(e){
+          templates = _.merge({},workflow_report, _.mapValues(_.keyBy(_.filter(this.get().options.workflow_version.code.templates,function(e){
             return e.content.length;
           }),function(e){return e.name.toLowerCase();}),'content'))
 
@@ -232,7 +251,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
  
  
           mappedData = _.pick(this.get().options,'status','state')
-  
           if(this.get().is_assigned){
             mappedData.actions = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
           }
@@ -249,6 +267,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             mappedData.assignment.group = this.get().assignment;
           }
           mappedData.workflow = {name:this.get().options.workflow.name,description:this.get().options.workflow.description ,instance:this.get().options.workflow_instance};
+          mappedData.current_state = _.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state});
+
 
           mappedData.is ={
             open:(mappedData.status == 'open'),
@@ -267,10 +287,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             }
           }
           mappedData.history = _.map(data, function(event){
-            var newEvent = _.pick(event,'id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','date');
+            var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+
             newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
             newEvent.state = event.end_state;
-            newEvent.actor = _.pick(event.user,'first_name','last_name','email','unique_id','id','params')
+            newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
             newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
             newEvent.previous ={state:event.start_state}
             newEvent.is ={
@@ -284,18 +305,12 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           mappedData.original = data[data.length-1];
           mappedData.latest = _.find(data, {log:true});
 
-
-
- 
- 
- 
  
           if(typeof this.history !== 'undefined'){
             this.history.teardown();
           }
  
           this.history = new Ractive({el: this.container.elementOf(this).querySelector('.row .list'), template: templates.history, data: mappedData, partials: templates});
-
 
           // this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
           $('[data-toggle="tooltip"]').tooltip()
@@ -304,31 +319,55 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             $('.active').removeClass('active')
             $(e.currentTarget).addClass('active')
             if(typeof previewForm !== 'undefined'){previewForm.destroy();}
-            var file = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),file:true});
 
             document.querySelector('.report').innerHTML = gform.renderString(workflow_report.view, this.get());
-            $('.report .view_container').append(gform.renderString(workflow_report.file, file))
-
-
-
-            if(file.ext == "pdf"){
-              $('.report .view_container').append('<iframe width="100%" height="'+($( document ).height()-$('.report').position().top-100)+'px" src="'+file.path+'"></iframe>')
-            }else if(file.mime_type.indexOf('image') !== -1){
-              $('.report .view_container').append('<div style="text-align:center;padding:10px;"><img style="max-width:100%" src="'+file.path+'"/></div>')
+            // $('.report .view_container').append(gform.renderString(workflow_report.file, file))
+            var file = _.find(mappedData.history,{selected:true});
+            if(typeof file !== 'undefined'){
+              file.selected = false;
             }
+            file = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),file:true});
+            if(typeof file !== 'undefined'){
+              file.selected = true;
+            }
+
+            var temp = `
+            {{#history}}
+            {{#selected}}
+              {{>file}}
+              <div><h5> <span class="text-muted">Attached by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{created_at.date}} @ {{created_at.time}}" data-placement="top">({{created_at.fromNow}})</span></h5></div>
+              
+              {{#deleted_at}}<div><h5><span class="text-muted">Deleted by {{deleted_by.first_name}} {{deleted_by.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>{{/deleted_at}}
+              {{^deleted_at}}{{{preview}}}{{/deleted_at}}
+            {{/selected}}{{/history}}`
+            // $('.report .view_container').append(gform.renderString(temp,file))
+
+            if(typeof this.ractive !== 'undefined'){
+              this.ractive.teardown();
+            }
+            this.ractive = new Ractive({el: document.querySelector('.report .view_container'), template: temp, data: mappedData, partials: templates});
+            $('[data-toggle="tooltip"]').tooltip()
+
           }.bind(this))
           
           update = function (dummy, response){
-            // debugger;
             if(typeof response !== 'undefined'){
        
-
-
               var event = processFile(response);
-              var newEvent = _.pick(event,'id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','date','deleted_at');
+              if(typeof event.user == 'undefined' && event.user_id_created == this.get().user.id){
+                event.user = this.get().user;
+              }
+              if(event.deleted_at && typeof event.deleted_by == 'undefined' && event.user_id_deleted == this.get().user.id){
+                event.deleted_by = this.get().user;
+              }
+              var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+
               newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
               newEvent.state = event.end_state;
-              newEvent.actor = _.pick(event.user,'first_name','last_name','email','unique_id','id','params')
+
+       
+              
+              newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
               newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
               newEvent.previous ={state:event.start_state}
               newEvent.is ={
@@ -374,7 +413,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             }
             
             if(e.currentTarget.dataset.current){
-                previewForm = new gform(form)
+              previewForm = new gform(form);
+              previewForm.collections.update('files',_.where(mappedData.history,{file:true}));
+              // file = _.find(mappedData.history,{file:true});
+              // debugger;
+
               if(typeof templates.preview == 'undefined'){
                 previewForm.on('change',function(e){
                   $('#previewForm').html(e.form.toString('_state'))
@@ -382,25 +425,17 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 templates.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
               }
 
-              // console.log(mappedData);
-
-              // document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates,reportData));
-              // document.querySelector('.report').innerHTML =  gform.renderString(templates.report, _.extend({}, templates, mappedData));
 
               if(typeof this.ractive !== 'undefined'){
                 this.ractive.teardown();
               }
               mappedData.form = previewForm.toString('_state',true);
-              // debugger;
-              // mappedData.form = data[0].data;
-              // console.log(mappedData.actions)
-
               this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
               previewForm.on('change',function(e){
                 this.ractive.set({form:e.form.toString('_state',true)}) 
               }.bind(this))
-              
-              if(mappedData.workflow.instance.version.code.form.files){
+
+              if(mappedData.workflow.instance.version.code.form.files && mappedData.current_state.uploads){
                 $('#myId').html('');
                 this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+mappedData.original.workflow_submission_id+"/files", init: function() {
                   this.on("success", update);
@@ -409,10 +444,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 update();
               }
               
-              $('.workflow-files').on('click','[data-id]',function(e){
+              $('.workflow-files, .report').on('click','[data-id]',function(e){
                 e.stopPropagation();
                 e.preventDefault();
-                debugger;
                 if(e.currentTarget.dataset.action == 'delete'){
                   $.ajax({
                     url:'/api/workflowsubmissions/'+mappedData.original.workflow_submission_id+'/files/'+e.currentTarget.dataset.id,
@@ -509,12 +543,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 type: 'PUT',
-                success  : function(data){
-                  document.location.reload();
-                  // data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
-                  // data.updated_at = moment(data.updated_at).fromNow()
-                  // e.model.set(data)
-                  }
+                success  : function(data){ document.location.reload(); }
               })
             }.bind(this)).on('canceled',function(e){
               e.form.trigger('close')

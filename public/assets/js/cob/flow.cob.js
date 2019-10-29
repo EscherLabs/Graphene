@@ -250,6 +250,7 @@ Cobler.types.Workflow = function(container){
 		render: function() {
       var temp = get();
       temp.workflow_admin = group_admin;
+      temp.allowFiles = temp.workflow.version.code.form.files && _.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads
       return gform.renderString(`
 
       <div class="btn-group pull-right slice-actions parent-hover">
@@ -266,13 +267,13 @@ Cobler.types.Workflow = function(container){
           <h3 class="flow-title"></h3>
           <div>
           <!-- Nav tabs -->
-          {{#workflow.version.code.form.files}}
+          {{#allowFiles}}
 
           <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#form" aria-controls="form" role="tab" data-toggle="tab">Form</a></li>
             <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Attachments</a></li>
           </ul>
-          {{/workflow.version.code.form.files}}
+          {{/allowFiles}}
         
           <!-- Tab panes -->
           <div class="tab-content" style="padding-top:15px">
@@ -281,19 +282,19 @@ Cobler.types.Workflow = function(container){
                 <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
               </div>
             </div>
-            {{#workflow.version.code.form.files}}
+            {{#allowFiles}}
             <div role="tabpanel" class="tab-pane" id="files">
             <div class="f_{{guid}}"></div>
             </div>
-            {{/workflow.version.code.form.files}}
+            {{/allowFiles}}
           </div>
         
         </div>
-        {{#workflow.version.code.form.files}}
+        {{#allowFiles}}
         </div>
         <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
         </div>
-        {{/workflow.version.code.form.files}}
+        {{/allowFiles}}
       </div>
 
 
@@ -444,7 +445,7 @@ Cobler.types.Workflow = function(container){
         gform.collections.update('files', this.get().current.files)
 
       }.bind(this)
-      if(this.id && this.get().workflow.version.code.form.files){
+      if(this.id && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
         $('#myId').html('');
         this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
           this.on("success", update);
@@ -540,7 +541,7 @@ Cobler.types.Workflow = function(container){
                $('.flow-title .status').html('All Changes Saved').addClass('label-success')
               // debugger;
               this.id = data.id;
-              if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files){
+              if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
                 $('#myId').html('');
 
                 this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/workflowsubmissions/"+this.id+"/files", init: function() {
