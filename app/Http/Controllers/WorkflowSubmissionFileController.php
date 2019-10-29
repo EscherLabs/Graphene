@@ -39,6 +39,19 @@ class WorkflowSubmissionFileController extends Controller
             return response('File Not Found', 404);
         }
     }
+
+    public function download(WorkflowSubmission $workflow_submission, WorkflowSubmissionFile $file) {
+        if ($workflow_submission->id != $file->workflow_submission_id) {
+            return response('File '.$file->id.' does not belong to workflow submission '.$workflow_submission->id, 400);
+        }
+        $file_path = $this->root_dir.'/'.$this->file_dir.'/'.$file->id.'.'.$file->ext;
+        if (file_exists($file_path) && is_file($file_path)) {
+            return Storage::download($this->file_dir.'/'.$file->id.'.'.$file->ext);
+        } else {
+            return response('File Not Found', 404);
+        }
+    }
+
     public function list_all_files(Request $request, WorkflowSubmission $workflow_submission) {
         $files = WorkflowSubmissionFile::withTrashed()->where('workflow_submission_id',$workflow_submission->id)->get();
         return $files;

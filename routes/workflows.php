@@ -22,6 +22,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::post('/workflowsubmissions/{workflow_submission}/files','WorkflowSubmissionFileController@create')->middleware('can:take_action,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}/files','WorkflowSubmissionFileController@list_all_files')->middleware('can:view,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@get')->middleware('can:view,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/files/{file}/download','WorkflowSubmissionFileController@download')->middleware('can:view,workflow_submission');
     Route::put('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@update')->middleware('can:take_action,workflow_submission');
     Route::delete('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@destroy')->middleware('can:take_action,workflow_submission');
 
