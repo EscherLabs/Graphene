@@ -431,10 +431,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 this.ractive.teardown();
               }
               mappedData.form = previewForm.toString('_state',true);
-              mappedData.form = log.data;
+              // mappedData.form = log.data;
               this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
               previewForm.on('change',function(e){
-                // this.ractive.set({form:e.form.toString('_state',true)}) 
+                this.ractive.set({form:e.form.toString('_state',true)}) 
               }.bind(this))
 
               if(mappedData.workflow.instance.version.code.form.files && mappedData.current_state.uploads){

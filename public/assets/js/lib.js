@@ -105,8 +105,7 @@ gform.types['user']= _.extend({}, gform.types['smallcombo'], {
 			}
     }else{
       if(typeof this.options !== 'undefined' && this.options.length){
-        debugger;
-        return _.find(this.options,{id:parseInt(this.value)})||this.value;
+        return _.find(this.options,{unique_id:parseInt(this.value)})||this.value;
       }else{
         return this.value;
       }
