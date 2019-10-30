@@ -21,9 +21,9 @@ $.ajax({
 					fields:[
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
-						{label: 'Environment', name:'environment_id', enabled: false,type:'select',options:'/api/proxy/'+slug+'/environments',format:{label:"{{name}}",value:"{{id}}"}},
-						{label: 'API', name:'api_id',type:'select', enabled: false,options:'/api/proxy/'+slug+'/apis',format:{label:"{{name}}",value:"{{id}}"}},
-						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,format:{value:"{{id}}"}},		
+						{label: 'Environment', name:'environment_id', enabled: false,type:'select',options:'/api/proxy/'+slug+'/environments',format:{label:"{{name}}",value:function(item){return item.id;}}},
+						{label: 'API', name:'api_id',type:'select', enabled: false,options:'/api/proxy/'+slug+'/apis',format:{label:"{{name}}",value:function(item){return item.id;}}},
+						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,format:{value:function(item){return item.id;}}		},
 						{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},	
 					]},'.main')
 
@@ -37,7 +37,7 @@ $.ajax({
 						fields:[
 								{array:{min:data.resources.length,max:data.resources.length},label: '', name: 'resources', type: 'fieldset', fields:[
 									{label:false, name: 'name',columns:4, type:'output', format:{value:'<label class="control-label" style="float:right">{{value}}: </lable>'}},
-									{name: 'resource',label:false,columns:8, type: 'select', options: '/api/proxy/'+slug+'/resources/type/'+api.environment.type,format:{label:"{{name}}",value:"{{id}}"}},
+									{name: 'resource',label:false,columns:8, type: 'select', options: '/api/proxy/'+slug+'/resources/type/'+api.environment.type,format:{label:"{{name}}",value:function(item){return item.id;}}},
 									{label:false, name: 'name',columns:0, type:'hidden'}
 								]}			
 					]
@@ -74,10 +74,10 @@ $.ajax({
 			el: '.permissions',
 
 		title:'Permissions',
-
+		
 		name:"permissions",	
 		schema:[
-			{name: 'api_user',label:'Auth User', type: 'select', options: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',format:{label:'{{app_name}}',value:'{{id}}'}},
+			{name: 'api_user',label:'Auth User', type: 'select', options: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',format:{label:'{{app_name}}',value:function(item){return item.id;}}},
 							{label:'Path', name: 'route', type:'select', options:routes_partials},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{value}}<br>{{/attributes.params}}'}
@@ -162,7 +162,7 @@ $.ajax({
 
 			$('body').on('click','#version', function(){
 				new gform({name:'versionForm',attributes:api,legend:'Select Version',fields:[
-						{label: 'Version', name:'api_version_id', required:true, options:versions,type:'select', format:{value:'{{id}}',label:'{{label}}'}},
+						{label: 'Version', name:'api_version_id', required:true, options:versions,type:'select', format:{value:function(item){return item.id;},label:'{{label}}'}},
 				]}).on('save',function(e){
 					$.ajax({url: url, type: 'PUT', data: e.form.get(),
 						success:function() {
