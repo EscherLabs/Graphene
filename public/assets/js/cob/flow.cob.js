@@ -820,7 +820,7 @@ Cobler.types.WorkflowStatus = function(container){
                         {label:"Initiated",name:"created_at",template:"{{attributes.created_at}} by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
                         {label:"Last Action",name:"updated_at",template:'<div class="label label-default">{{attributes.logs.0.action}}</div> <time class="timeago" datetime="{{attributes.updated_at}}" title="{{attributes.updated_at}}">{{attributes.updated_at}}</time>'},
                         {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
-                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                        // {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"State",name:"state",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.state}))
                         }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
