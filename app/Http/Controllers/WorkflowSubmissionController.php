@@ -112,13 +112,12 @@ class WorkflowSubmissionController extends Controller
         $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
         $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
         $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
-        // $state_data['datamap'] = [];
+        $state_data['datamap'] = [];
         $state_data['assignment'] = [];
 
-        // foreach($myWorkflowInstance->configuration->resources as $resource){
-        //     // switch($resource->type)
-        //     $state_data['datamap']{$resource->name} = $resource->value;
-        // }
+        foreach($myWorkflowInstance->configuration->map as $resource){
+            $state_data['datamap'][$resource->name] = $resource->value;
+        }
 
         $state = null;
 
@@ -184,12 +183,13 @@ class WorkflowSubmissionController extends Controller
         $state_data['assignment']['type'] = $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
         $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
 
+        $assignment_id = $m->render($state_data['assignment']['id'], $state_data);
         if($state->assignment->type == "user"){
-            $user = User::where("unique_id", '=', $state_data['assignment']['id'])->first();
+            $user = User::where("unique_id", '=', $assignment_id)->first();
             if($user !== null) {
                 $workflow_submission->assignment_id = $user->id;
             }else{
-                $user = User::where("id",'=',$state_data['assignment']['id'])->first();
+                $user = User::where("id",'=',$assignment_id)->first();
                 $workflow_submission->assignment_id = $user->id;
                 if($user === null) {
                     throw new \Exception('Assigned User Does Not Exist');
@@ -197,11 +197,11 @@ class WorkflowSubmissionController extends Controller
             }
             $state_data['assignment']['user'] = $user->only('first_name','last_name','email','unique_id','params');
         }elseif($state->assignment->type == "group"){
-            $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
+            $group = Group::where("id",'=',$assignment_id)->where('site_id',config('app.site')->id)->first();
             if($group !== null) {
                 $workflow_submission->assignment_id = $group->id;
             }else{
-                $group = Group::where("slug",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
+                $group = Group::where("slug",'=',$assignment_id)->where('site_id',config('app.site')->id)->first();
                 $workflow_submission->assignment_id = $group->id;
                 if($group === null) {
                     throw new \Exception('Assigned Group Does Not Exist');
