@@ -757,7 +757,6 @@ function drawForm(name){
       name: "actions", label: false, type: "fieldset", fields: [
         {name: "label", label: "Label", columns: 6},
         {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
-        {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
         {name: "type", label: "Type", type: "select", columns: 6, options:[
           {value: "success", label: "Success"},
           {value: "danger", label: "Danger"},
@@ -766,8 +765,10 @@ function drawForm(name){
           {value: "default", label: "Default"},
           {value: "primary", label: "Primary"},
           {value: "link", label: "Simple"}
-        ], show: [{type: "not_matches", name: "label", value: ""}]},
-        {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates', show: [{type: "not_matches", name: "label", value: ""}]},
+        ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+      {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+        {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+
         {name: "tasks", label: "Tasks", type: "fieldset", fields: taskForm, array: true}
       ], array: true
     }
