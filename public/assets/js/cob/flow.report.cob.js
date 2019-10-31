@@ -306,7 +306,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           mappedData.original = data[data.length-1];
           mappedData.latest = _.find(data, {log:true});
 
- 
           if(typeof this.history !== 'undefined'){
             this.history.teardown();
           }
@@ -399,12 +398,11 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
             var log = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),log:true});
 
-var states =  _.map(mappedData.history,function(item){return item.state;})
-  states.push(mappedData.workflow.instance.configuration.initial)
 
 
 
             form = {
+              name:"display",
               actions:[],
               data:{
                 _state:log.data
@@ -414,12 +412,16 @@ var states =  _.map(mappedData.history,function(item){return item.state;})
                 {
                   "type": "hidden",
                   "name": "_flowstate",
-                  "value": _.uniq(_.compact(states))
+                  "value": log.start_state||mappedData.workflow.instance.configuration.initial
                 }
               ]
             }
             
             if(e.currentTarget.dataset.current){
+              var states =  _.map(mappedData.history,function(item){return item.state;})
+              states.push(mappedData.workflow.instance.configuration.initial)
+              form.fields[1].value = _.uniq(_.compact(states));
+
               previewForm = new gform(form);
               previewForm.collections.update('files',_.where(mappedData.history,{file:true}));
               // file = _.find(mappedData.history,{file:true});
@@ -494,7 +496,12 @@ var states =  _.map(mappedData.history,function(item){return item.state;})
 
             }else{
               document.querySelector('.report').innerHTML = gform.renderString(workflow_report.view, this.get());
-              
+              form.fields.push({
+                "type": "hidden",
+                "name": "_flowaction",
+                "value": log.action
+              })
+
               previewForm = new gform(form, document.querySelector('.view_container'))
             }
           }.bind(this))
@@ -563,6 +570,78 @@ var states =  _.map(mappedData.history,function(item){return item.state;})
 
         }.bind(this)
       })
+
 		}
 	}
 }
+
+debug = {};
+Object.defineProperty(debug,'about',{
+  get: function(){
+    console.log('%c Workflow:\t%c'+mappedData.workflow.name+' %c(ID: '+mappedData.workflow.instance.workflow_id+')','color: #d85e16','color: #aaa','color: #aaa')
+    console.log('%c Instance:\t%c'+mappedData.workflow.instance.name+' %c(ID: '+mappedData.workflow.instance.id+')','color: #d85e16','color: #aaa','color: #aaa')
+    console.log('%c Version:\t%c'+(mappedData.workflow.instance.version_id||'Latest')+' %c(Using ID: '+mappedData.workflow.instance.version.id+')  %cUpdated  %c'+mappedData.workflow.instance.updated_at,'color: #d85e16','color: #aaa','color: #aaa','color: #d85e16','color: #aaa')
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'summary',{
+  get: function(){
+    console.log('%c Status:\t\t%c'+mappedData.status,'color: #d85e16','color: #aaa')
+    console.log('%c State:\t\t\t%c'+mappedData.state,'color: #d85e16','color: #aaa')
+
+    if(typeof gform.instances.display !== 'undefined'){
+      console.log('%c _flowstate:\t%c'+gform.instances.display.get('_flowstate'),'color: #d85e16','color: #aaa')
+      console.log('%c Current Form Data:','color: #0088FF',)
+      console.log(gform.instances.display.get('_state'))
+    }
+    console.log('%c Template Data:','color: #0088FF',)
+    console.log(mappedData)
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'form',{
+  get: function(){
+    if(typeof gform.instances.display !== 'undefined'){
+      return gform.instances.display;
+    }
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'data',{
+  get: function(){
+    return mappedData;
+  },
+  configurable: false,
+});
+
+Object.defineProperty(debug,'history',{
+  get: function(){
+    console.table(_.map(mappedData.history,function(item){
+      // item = _.omit(item,'is','log','file','data','date');
+      item.owner = item.user.first_name+' '+item.user.last_name;
+      item.created_at = item.created_at.date+' '+item.created_at.time;
+      item.updated_at = item.updated_at.date+' '+item.updated_at.time;
+      if(item.assignemnt.type == "group"){
+        item.assignemnt = "Group:"+item.assignemnt.id
+      }else{
+        item.assignemnt = "User:"+item.assignemnt.id
+      }
+      item.actor = item.actor.first_name+' '+item.actor.last_name;
+      item.previous = item.state+'('+item.status+')';
+
+      // item.user = item.user.first_name+' '+item.user.last_name;
+      return _.omit(item,'is','log','file','data','date','user');
+    }))
+  },
+  configurable: false,
+});
+Object.defineProperty(window,'help',{
+  get: function(){
+    console.log('%c debug.about\t%c - info about the workflow configuration','color: #0088FF','color: #aaa')
+    console.log('%c debug.summary\t%c - summary','color: #0088FF','color: #aaa')
+    console.log('%c debug.form\t\t%c - reference to the displayed form','color: #0088FF','color: #aaa')
+    console.log('%c debug.data\t\t%c - template data','color: #0088FF','color: #aaa')
+    console.log('%c debug.history\t%c - template data','color: #0088FF','color: #aaa')
+  },
+  configurable: false,
+});
