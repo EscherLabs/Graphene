@@ -856,6 +856,10 @@ Cobler.types.WorkflowStatus = function(container){
                                 "type": "hidden",
                                 "name": "_flowstate",
                                 "value":e.model.attributes.state
+                              },{
+                                "type": "hidden",
+                                "name": "_flowstate_history",
+                                "value": e.model.attributes.state
                               }
 
                             ],

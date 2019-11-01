@@ -412,6 +412,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   "type": "hidden",
                   "name": "_flowstate",
                   "value": log.start_state||mappedData.workflow.instance.configuration.initial
+                },{
+                  "type": "hidden",
+                  "name": "_flowstate_history",
+                  "value": ''
                 }
               ]
             }
@@ -419,7 +423,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             if(e.currentTarget.dataset.current){
               var states =  _.map(mappedData.history,function(item){return item.state;})
               states.push(mappedData.workflow.instance.configuration.initial)
-              form.fields[1].value = _.uniq(_.compact(states));
+              form.fields[2].value = _.uniq(_.compact(states));
 
               previewForm = new gform(form);
               previewForm.collections.update('files',_.where(mappedData.history,{file:true}));
@@ -500,6 +504,14 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 "value": log.action
               })
 
+              var states =  _.map(mappedData.history,function(compareDate,item){
+                if(compareDate.isAfter(moment(item.created_at.original))){
+                  return item.state;
+                }
+              }.bind(null,moment(log.created_at.original)))
+              states.push(mappedData.workflow.instance.configuration.initial)
+              form.fields[2].value = _.uniq(_.compact(states));
+
               previewForm = new gform(form, document.querySelector('.view_container'))
             }
           }.bind(this))
@@ -525,6 +537,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   "value":this.get().options.state
                 },{
                   "type": "hidden",
+                  "name": "_flowstate_history",
+                  "value": ''
+                },{
+                  "type": "hidden",
                   "name": "_flowaction",
                   "value": e.currentTarget.dataset.event
                 },{
@@ -537,10 +553,21 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 {"name":"comment","type":"textarea","length":255}
               ]
             }
+
+          
             if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
               formStructure.data = {_state:this.get().options.data},
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
             }
+
+            var states =  _.map(mappedData.history,function(item){
+              return item.state;
+            })
+            states.push(mappedData.workflow.instance.configuration.initial)
+            formStructure.actions[3].value = _.uniq(_.compact(states));
+
+
+
 
             new gform(formStructure).on('save',function(e){
               document.querySelector('.report').innerHTML = '<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>';
