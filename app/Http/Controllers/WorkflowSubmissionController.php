@@ -317,9 +317,9 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        $submissions = WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('user_id','=',Auth::user()->id)->with(array('logs'=>function($q){
-            $q->orderBy('created_at','desc');
-        }))->get();
+        $submissions = WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('user_id','=',Auth::user()->id)->where('status',"!=",'new')->with(array('logs'=>function($q){
+            $q->orderBy('updated_at','desc');
+        }))->orderBy('updated_at','asc')->get();
         foreach ($submissions as $submission) {
             echo $submission->Assignment();
         }
@@ -331,12 +331,10 @@ class WorkflowSubmissionController extends Controller
         }
         $submissions = array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'user')->where('status',"=",'open')->where('assignment_id','=',Auth::user()->id)->with(array('logs'=>function($q){
             $q->orderBy('updated_at','desc');
-        }))->get(),
+        }))->orderBy('updated_at','asc')->get(),
         'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'group')->where('status',"=",'open')->whereIn('assignment_id',Auth::user()->groups)->with(array('logs'=>function($q){
             $q->orderBy('updated_at','desc');
-        }))->get());
-
-
+        }))->orderBy('updated_at','asc')->get());
 
         foreach ($submissions['direct'] as $submission) {
             echo $submission->Assignment();
