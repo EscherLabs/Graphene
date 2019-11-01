@@ -77,10 +77,10 @@ baseCond = _.map([
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:true,show:[{name:"parse",value:['other'],type:"matches"}]},
 	
-	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"parse",value:"show"}],options:		
+	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"report",value:"show"}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:true,show:[{name:"parse",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:true,show:[{name:"report",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:"Required", value:false, name:"required",parse:[{type:"not_matches",name:"required",value:false}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Parse"',value:'show'}, {label:"Conditionally",value:"other"}]
