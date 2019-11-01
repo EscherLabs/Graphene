@@ -460,7 +460,9 @@ class WorkflowSubmissionController extends Controller
             }
         }
         $workflow_submission->load('workflowInstance');
-
+        if(is_null($workflow_submission->workflowInstance)){
+            abort(404,'Workflow Instance no longer exists');
+        }
         $is_assigned = false;//(Auth::user()->site_developer || Auth::user()->site_admin);
 
         if($workflow_submission->assignment_type == "user"){
