@@ -268,7 +268,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             mappedData.assignment.group = this.get().assignment;
           }
           mappedData.workflow = {name:this.get().options.workflow.name,description:this.get().options.workflow.description ,instance:this.get().options.workflow_instance};
-          mappedData.current_state = _.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state});
+          mappedData.current_state = _.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state})||mappedData.workflow.instance.version.code.flow[0];
 
 
           mappedData.is ={
@@ -316,7 +316,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           $('[data-toggle="tooltip"]').tooltip()
 
           $('.filterable.file').on('click',function(e){
-            debugger;
             $('.active').removeClass('active')
             $(e.currentTarget).addClass('active')
             if(typeof previewForm !== 'undefined'){previewForm.destroy();}
@@ -433,7 +432,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 })
                 templates.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
               }
-
 
               if(typeof this.ractive !== 'undefined'){
                 this.ractive.teardown();

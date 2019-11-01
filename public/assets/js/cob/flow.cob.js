@@ -544,7 +544,7 @@ Cobler.types.Workflow = function(container){
               if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
                 $('#myId').html('');
 
-                this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/workflowsubmissions/"+this.id+"/files", init: function() {
+                this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
                   this.on("success", update);
                 }});
               }
