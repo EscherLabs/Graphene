@@ -131,8 +131,7 @@
       return $t.parse(iso8601);
     },
     isTime: function(elem) {
-      // jQuery's `is()` doesn't play well with HTML5 in IE
-      return $(elem).get(0).tagName.toLowerCase() === "time"; // $(elem).is("time");
+      return $(elem).get(0).tagName.toLowerCase() === "time"; 
     }
   });
 
@@ -251,63 +250,7 @@ Cobler.types.Workflow = function(container){
       var temp = get();
       temp.workflow_admin = group_admin;
       temp.allowFiles = temp.workflow.version.code.form.files && _.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads
-      return gform.renderString(`
-
-      <div class="btn-group pull-right slice-actions parent-hover">
-	    {{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-      </div>
-      {{#container}}
-
-      <div class="panel panel-default">
-        <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-          <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-        </div>
-        {{>widgets__header}}
-        <div class="collapsible panel-body">
-          <h3 class="flow-title"></h3>
-          <div>
-          <!-- Nav tabs -->
-          {{#allowFiles}}
-
-          <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#form" aria-controls="form" role="tab" data-toggle="tab">Form</a></li>
-            <li role="presentation"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">Attachments</a></li>
-          </ul>
-          {{/allowFiles}}
-        
-          <!-- Tab panes -->
-          <div class="tab-content" style="padding-top:15px">
-            <div role="tabpanel" class="tab-pane active" id="form">
-              <div class="g_{{guid}}">
-                <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-              </div>
-            </div>
-            {{#allowFiles}}
-            <div role="tabpanel" class="tab-pane" id="files">
-            <div class="f_{{guid}}"></div>
-            </div>
-            {{/allowFiles}}
-          </div>
-        
-        </div>
-        {{#allowFiles}}
-        </div>
-        <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-        </div>
-        {{/allowFiles}}
-      </div>
-
-
-
-      {{/container}}
-      {{^container}}
-
-        <div class="collapsible">
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}"></div>
-        </div>
-      {{/container}}
-      `, temp);
+      return gform.renderString(workflow_report.workflow, temp);
 		},
 		edit: berryEditor.call(this, container),
 		toJSON: get,
@@ -421,27 +364,7 @@ Cobler.types.Workflow = function(container){
           return file;
 
         })
-        $('.f_'+get().guid).html(gform.renderString(`
-        <div class="list-group">
-        {{#files}}
-        <a style="height:60px;padding-left:70px" href="{{path}}" target="_blank" class="list-group-item {{#deleted_at}}list-group-item-danger{{/deleted_at}}">
-        <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:5px;left:5px">
-        {{{icon}}}
-        </div>{{name}}
-        <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
-          {{^deleted_at}}
-          <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
-            <span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
-            <span data-id="{{id}}" data-action="delete" class="remove-item btn btn-danger fa fa-trash-o" data-title="Delete"></span>
-          </div>
-          {{/deleted_at}}
-        </a>
-        {{/files}}
-        {{^files}}
-          No files yet...click below or drop some files there to begin.
-        {{/files}}
-        </div>
-        `,this.get().current))
+        $('.f_'+get().guid).html(gform.renderString(workflow_report.attachments, this.get().current))
         gform.collections.update('files', this.get().current.files)
 
       }.bind(this)
@@ -596,32 +519,7 @@ Cobler.types.Workflows = function(container){
       // this.id = gform.getUID();
       // temp.id = this.id;
       // return templates['widgets_microapp'].render(temp, templates);
-      return gform.renderString(`
-      <div class="btn-group pull-right slice-actions parent-hover">
-	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-</div>
-
-      {{#container}}
-      <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-</div>
-      {{>widgets__header}}
-        <div class="collapsible panel-body">
-        
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}">
-        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-        </div>
-        </div>
-      </div>
-      {{/container}}
-      {{^container}}
-
-        <div class="collapsible">
-  
-        </div>
-      {{/container}}`,temp);
+      return gform.renderString(workflow_report.workflows,temp);
 
 		},
 		edit: berryEditor.call(this, container),
@@ -642,11 +540,7 @@ Cobler.types.Workflows = function(container){
         type: 'GET',
     //     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
         success  : function(data){
-          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-          <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-          <ul class="list-group available_workflow" style="margin:10px 0 0">
-          {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-          </ul>`,{data:data});
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(workflow_report.links, {data:data});
           }.bind(this)
       })
 		}
@@ -673,32 +567,7 @@ Cobler.types.WorkflowStatus = function(container){
       // this.id = gform.getUID();
       // temp.id = this.id;
       // return templates['widgets_microapp'].render(temp, templates);
-      return gform.renderString(`
-      <div class="btn-group pull-right slice-actions parent-hover">
-	{{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
-</div>
-
-      {{#container}}
-      <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-	<h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-</div>
-      {{>widgets__header}}
-        <div class="collapsible panel-body">
-        
-        <h3 class="flow-title"></h3>
-        <div class="g_{{guid}}">
-        <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-        </div>
-        </div>
-      </div>
-      {{/container}}
-      {{^container}}
-
-        <div class="collapsible">
-  
-        </div>
-      {{/container}}`,temp);
+      return gform.renderString(workflow_report.status, temp);
 
 		},
 		edit: berryEditor.call(this, container),
@@ -748,58 +617,7 @@ Cobler.types.WorkflowStatus = function(container){
                   assignments.direct = _.each(assignments.direct, getActions)
                   assignments.group = _.each(assignments.group, getActions)
 
-                //   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
-                //   <div>
-        
-                //   <!-- Nav tabs -->
-                //   <ul class="nav nav-tabs" role="tablist">
-                //     <li role="presentation" class="active"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab">Available Workflows</a></li>
-                //     <li role="presentation"><a href="#open" aria-controls="open" role="tab" data-toggle="tab">My Workflows</a></li>
-                //     <li role="presentation"><a href="#assignments" aria-controls="assignments" role="tab" data-toggle="tab">Assignments</a></li>
-                //   </ul>
-                
-                //   <!-- Tab panes -->
-                //   <div class="tab-content">
-                //     <div role="tabpanel" class="tab-pane active" id="workflows">
-                //       <ul class="list-group">
-                //       {{#data}}<a class="list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-                //       </ul>
-                //     </div>
-                //     <div role="tabpanel" class="tab-pane" id="open">
-                //     <ul class="list-group">
-                //     {{#open}}<a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span></a>{{/open}}
-                //     </ul>
-                //     </div>
-                //     <div role="tabpanel" class="tab-pane" id="assignments">
-                //     <ul class="list-group">
-                //     {{#assignments}}
-                //     {{#direct}}
-                //     <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span>{{#actions}}<span class="btn btn-default" data-action="{{name}}">{{label}}</span>{{/actions}}</a>
-                //     {{/direct}}
-                //     {{#group}}
-                //     <a class="list-group-item" target="_blank" href="/api/workflow/{{id}}"><time class="timeago" datetime="{{created_at}}" title="{{created_at}}"></time> - {{workflow.name}} <span style="text-transform: capitalize;" class="badge">{{status}}</span>{{#actions}}<span class="btn btn-default" data-action="{{name}}">{{label}}</span>{{/actions}}</a>
-                //     {{/group}}
-                //     {{/assignments}}
-                //     </ul>
-                //     </div>
-                //   </div>
-                
-                // </div>
-                //   `,{data:data,open:newdata,assignments:assignments});
-
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`
-                  <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab">My Workflows</a></li>
-                    <li role="presentation"><a href="#assignments" aria-controls="assignments" role="tab" data-toggle="tab">My Assignments</a></li>
-                  </ul>
-                  <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="workflows">
-                    <h5>Your workflows</h5><div id="mygrid"></div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="assignments">
-                    <h5>These workflows waiting for your action</h5><div id="assignmentgrid"></div>
-                    </div>
-                  </div>`,{data:data,open:newdata,assignments:assignments});
+                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(workflow_report.assignments,{data:data,open:newdata,assignments:assignments});
                   assignmentData = assignments.direct.concat(assignments.group);
 
                   // assignmentData = _.each(assignmentData, function(item){
@@ -886,13 +704,7 @@ Cobler.types.WorkflowStatus = function(container){
                                 data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
                                 // data.updated_at = moment(data.updated_at).fromNow()
                                 e.model.set(data)
-                                
-                                // console.log(data);
-                                // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-                                // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-                                // <ul class="list-group available_workflow" style="margin:10px 0 0">
-                                // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-                                // </ul>`,{data:data});
+          
                                 }.bind(null,e)
                             })
                           }.bind(null,e)).on('canceled',function(eForm){
@@ -943,12 +755,7 @@ Cobler.types.WorkflowStatus = function(container){
                             data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
                             // data.updated_at = moment(data.updated_at).fromNow()
                             e.model.set(data)
-                            // console.log(data);
-                            // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-                            // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-                            // <ul class="list-group available_workflow" style="margin:10px 0 0">
-                            // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-                            // </ul>`,{data:data});
+
                             }.bind(null,e)
                         })
 
@@ -1005,16 +812,6 @@ Cobler.types.WorkflowStatus = function(container){
                       type: 'delete',
                       // data: {_state:e.model.attributes.data,action:e.event.split("click_")[1]},
                       success  : function(e,data){
-                        // e.model.waiting(false);
-                        // data.actions = (JSON.parse(data.workflow_version.code.flow)[data.state] || {"actions": []}).actions;
-                        // data.updated_at = moment(data.updated_at).fromNow()
-                        // e.model.set(data)
-                        // console.log(data);
-                        // this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(` 
-                        // <label for="link_filter" class="sr-only">Filter</label><input id="link_filter" type="text" class="form-control filter" data-selector=".available_workflow" name="filter" placeholder="Filter...">
-                        // <ul class="list-group available_workflow" style="margin:10px 0 0">
-                        // {{#data}}<a class="filterable list-group-item" target="_blank" href="/workflow/{{group_id}}/{{slug}}">{{name}}</a>{{/data}}
-                        // </ul>`,{data:data});
                         }.bind(null,e)
                     })
 
