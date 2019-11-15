@@ -503,6 +503,7 @@ mainForm = function(){
       data: form,
       actions:[],
       fields: [
+
         {name:"legend",label:"Label",columns:6},
         {name:"name",label:"Name",columns:6,edit:[{type:"matches",name:"disabled",value:false}]},
         {name:"default",label:false,type:'fieldset',fields:[
@@ -525,6 +526,8 @@ mainForm = function(){
             {label:"Info",value:"btn btn-info"}]}
 
         ]},
+        {target: "#display",columns:9, type:"button",modifiers:"btn btn-danger pull-right margin-bottom",label:'<i class="fa fa-times"></i> Delete Form',action:"delete",name:"delete",show:[{type:"matches",name:"disabled",value:false}]},
+
         // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
         // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
           
@@ -558,7 +561,42 @@ mainForm = function(){
       // }
 
     }) ).on('input:horizontal',function(){
-      renderBuilder();
+    }).on('input:name input:legend',function(e){
+      working_forms[formIndex].content.name = e.form.get('name')
+      working_forms[formIndex].content.legend = e.form.get('legend')
+      working_forms[formIndex].name = e.form.get('name')
+      working_forms[formIndex].label = working_forms[formIndex].content.legend||working_forms[formIndex].content.name;
+      // setupform(formIndex);
+      myform = working_forms[formIndex].content || {};
+      $('#formlist').html(
+        gform.renderString(
+          `<div class="btn-group">
+            <button type="button" class="btn btn-info go pages_new">New Form</span></button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class=""> Select Form</span> <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+            {{#forms}}
+              <li><a href="javascript:void(0);" data-index="{{i}}" class="form_edit" >{{label}}</a></li>
+            {{/forms}}
+            </ul>
+            </div>
+          `,{forms:working_forms})
+        )
+        var target = document.querySelector('.target');
+        $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">'+working_forms[formIndex].label+'</div>')
+        target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1].style.border = "solid 2px #d85e16";
+
+    }).on('delete',function(e){
+      if(confirm("Are you sure you want to delete the form: '"+working_forms[formIndex].label+"'?")){
+        working_forms.splice(formIndex,1)
+        working_forms = _.map(working_forms,function(form,i){
+          form.i = i+'';
+          return form
+        })
+        setupform(0);
+      }
     })
   }else{
     var formConfig = new Cobler.types[gform.types[form.type].base]();

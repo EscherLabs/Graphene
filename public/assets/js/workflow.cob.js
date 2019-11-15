@@ -1,18 +1,24 @@
 myconditions=[
 	{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:"test",name:"op",test:function(field,args){
-		return !!field.parent.index;
+		// return 
+		return true;
 	}}]},
-	{label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires','conditions']},
+	{type: 'fieldset',label:false,name:"conditions",columns:12,fields:
+	[
+		{label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires','conditions']},
 	{label: 'Name',name:"name",show:[{type:'matches',name:"type",value:["matches","not_matches","contains","requires"]}]},
 	{ label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1},show:[{type:'matches',name:"type",value:["matches","not_matches","contains"]}]},
+	{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:'matches',name:"type",value:"conditions"}]},
 	{name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
-		{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:"test",name:"op",test:function(field,args){
-			return !!field.parent.index;
-		}}]},
+	
 		{label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires']},
 		{label: 'Name',name:"name"},
 		{ label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1}}
 	]}
+	]
+	,array:true},
+
+	
 ]
 
 baseFields = _.map([
@@ -65,27 +71,27 @@ baseCond = _.map([
 	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value:true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:true,show:[{name:"show",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:true,show:[{name:"edit",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:'Include value in data <span class="pull-right text-muted">"parse"</span>', value:'show',name:"parse",parse:[{type:"not_matches",name:"parse",value:"show"}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:true,show:[{name:"parse",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:{min:1,max:1},show:[{name:"parse",value:['other'],type:"matches"}]},
 	
 	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"report",value:"show"}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:true,show:[{name:"report",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:{min:1,max:1},show:[{name:"report",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:"Required", value:false, name:"required",parse:[{type:"not_matches",name:"required",value:false}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Parse"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:true, show:[{name:"required",value:['other'], type:"matches"}]}
+	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:{min:1,max:1}, show:[{name:"required",value:['other'], type:"matches"}]}
 	
 ],function(item){
 	item.target = "#collapseConditions .panel-body";
@@ -108,7 +114,7 @@ baseConditions = baseCond.concat(_.map([
 		{type: 'select',other:true,value:true,columns:12, label:"Apply",name:"conditions", show:[{name:"type",value:['none'],type:"not_matches"}], options:		
 			[{label:'Always',value:true},{label:"Conditionally",value:"other"}]
 		},
-		{type: 'fieldset',columns:11,offset:1, label:"{{index}}{{^index}}Conditions{{/index}}",name:"conditions",fields:myconditions,array:true,show:[{name:"conditions",value:['other'],type:"matches"}]}
+		{type: 'fieldset',columns:11,offset:1, label:"{{index}}{{^index}}Conditions{{/index}}",name:"conditions",fields:myconditions,array:{min:1,max:1},show:[{name:"conditions",value:['other'],type:"matches"}]}
 	],array:true}
 ],function(item){
 	item.target = "#collapseValidation .panel-body";
@@ -116,14 +122,31 @@ baseConditions = baseCond.concat(_.map([
 }))
 gformEditor = function(container){
 	return function(){
+
+
+		var fieldConfig = this.get();
+		_.each(['show','edit','parse','report','required'],function(index){
+			if(_.isArray(fieldConfig[index]) && typeof fieldConfig[index][0].conditions == 'undefined'){
+				fieldConfig[index] = [{conditions:fieldConfig[index]}]
+			}
+		})
+		if(_.isArray(fieldConfig.validate)){
+			_.each(fieldConfig.validate,function(item){
+				if(_.isArray(item.conditions) && typeof item.conditions[0].conditions == 'undefined'){
+					item.conditions = [{conditions:item.conditions}]
+				}
+			})
+		}
+
+
 		var formConfig = {
 			// sections: 'tab'
 			name:"editor",
 			default:{type:"text",columns:6},
-			data: this.get(),
+			data: fieldConfig,
 			fields: this.fields,
 			autoDestroy: true,
-			legend: 'Edit '+ this.get()['widgetType'],
+			legend: 'Edit '+ fieldConfig['widgetType'],
 			cobler:this,
 			actions:[{type:"button",name:"deativate",action:"deactivate",label:'<i class="fa fa-check"></i>',target:"#display",modifiers:"btn btn-info pull-right visible-lg"}],
 			clear:false,
@@ -165,6 +188,8 @@ gformEditor = function(container){
 		// $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"options"}));
 		var temp = _.find(formConfig.fields,{name:"name"});
 		temp.placeholder =  (formConfig.data['label']||"").toLowerCase().split(' ').join('_');
+
+
 		var mygform = new gform(formConfig,$(opts.formTarget)[0] ||  $(container.elementOf(this))[0]);
 		mygform.on('change:label',function(e){
 			if(e.field.name == 'label' && e.form.get('name') == ""){
@@ -270,7 +295,7 @@ Cobler.types.input = function(container) {
 				{label:"Year",value:"YYYYY"},
 				{label:"Day",value:"MM/DD"}
 
-			],label:"Date Format",parse:[{type:"requires",name:"input"}]}
+			],label:"Date Format",strict:false,parse:[{type:"requires",name:"input"}]}
 		] }
 	])
 	return {

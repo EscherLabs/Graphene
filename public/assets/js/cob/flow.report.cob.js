@@ -670,3 +670,10 @@ Object.defineProperty(window,'help',{
   },
   configurable: false,
 });
+
+Object.defineProperty(debug,'app',{
+  get: function(){
+    return cb.collections[0].getItems()[0]
+  },
+  configurable: false,
+});
