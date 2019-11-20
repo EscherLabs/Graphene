@@ -9,11 +9,29 @@ $.ajax({
 		api.server = server;
 		$('#table').html(templates.api_instance.render(api));
 		$.ajax({
+			url: '/api/proxy/'+slug+'/apis',	
+			success: function(apis){
+				gform.collections.add('/api/proxy/'+slug+'/apis',apis)
+
+				$.ajax({
+					url: '/api/proxy/'+slug+'/environments',		
+					success: function(environments){
+						gform.collections.add('/api/proxy/'+slug+'/environments',environments)
+
+						$.ajax({
+							url: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',		
+							success: function(api_users){
+								gform.collections.add('/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',api_users)
+
+						
+		$.ajax({
 			url: '/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',		
 			success: function(versions){
 
 				versions.unshift({id:0,label:'Latest Published'})
 				versions.unshift({id:-1,label:'Latest (Working or Published)'})
+				gform.collections.add('/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',versions)
+
 				new gform({
 					name:'main',
 					data:api,
@@ -21,9 +39,9 @@ $.ajax({
 					fields:[
 						{label: 'Name', name:'name', required: true},
 						{label: 'Slug', name:'slug', required: true},
-						{label: 'Environment', name:'environment_id', enabled: false,type:'select',options:'/api/proxy/'+slug+'/environments',format:{label:"{{name}}",value:function(item){return item.id;}}},
-						{label: 'API', name:'api_id',type:'select', enabled: false,options:'/api/proxy/'+slug+'/apis',format:{label:"{{name}}",value:function(item){return item.id;}}},
-						{label: 'API Version', name:'api_version_id', enabled: false,type:'select',options:versions,format:{value:function(item){return item.id;}}		},
+						{label: 'Environment', name:'environment_id', edit: false,type:'select',options:'/api/proxy/'+slug+'/environments',format:{label:"{{name}}",value:function(item){return item.id;}}},
+						{label: 'API', name:'api_id',type:'select', edit: false,options:'/api/proxy/'+slug+'/apis',format:{label:"{{name}}",value:function(item){return item.id;}}},
+						{label: 'API Version', name:'api_version_id', edit: false,type:'select',options:'/api/proxy/'+slug+'/apis/'+api.api_id+'/versions',format:{value:function(item){return item.id;}}		},
 						{label: 'Error Level', name:"errors", options:[{label:"None",value:"none"},{label:"All",value:"all"}],type:"select"},	
 					]},'.main')
 
@@ -69,7 +87,6 @@ $.ajax({
 		routes_partials = _.map(_.uniq(routes_partials),function(item){
 			return {value:item,label:item+'*'}
 		})
-
 		var options = {
 			el: '.permissions',
 
@@ -77,7 +94,7 @@ $.ajax({
 		
 		name:"permissions",	
 		schema:[
-			{name: 'api_user',label:'Auth User', type: 'select', options: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',format:{label:'{{app_name}}',value:function(item){return item.id;}}},
+			{name: 'api_user',label:'Auth User', type: 'select', options: '/api/proxy/'+slug+'/environments/'+api.environment_id+'/api_users',format:{label:'{{app_name}}',value:function(item){return item.id+"";}}},
 							{label:'Path', name: 'route', type:'select', options:routes_partials},
 							{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
 							{label:'Params',show:false,name:'params',template:'{{#attributes.params}}<b>{{name}}</b>:{{value}}<br>{{/attributes.params}}'}
@@ -161,7 +178,7 @@ $.ajax({
 		// 	})
 
 			$('body').on('click','#version', function(){
-				new gform({name:'versionForm',attributes:api,legend:'Select Version',fields:[
+				new gform({name:'versionForm',data:api,legend:'Select Version',fields:[
 						{label: 'Version', name:'api_version_id', required:true, options:versions,type:'select', format:{value:function(item){return item.id;},label:'{{label}}'}},
 				]}).on('save',function(e){
 					$.ajax({url: url, type: 'PUT', data: e.form.get(),
@@ -172,11 +189,15 @@ $.ajax({
 							toastr.error(e.statusText, 'ERROR');
 						}
 					});
+				}).on('cancel',function(e){
+					e.form.trigger('close');
 				}).modal()
 			})	
 
 		}});
-
+	}});
+}});
+}});
 
 
 
