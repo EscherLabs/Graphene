@@ -287,15 +287,17 @@ Cobler.types.input = function(container) {
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires",name:"format"}], fields:[
-			{name:"input",type:"smallcombo",columns:12,options:[
+			{name:"input",type:"smallcombo",options:[
 				{label:"Datetime",value:"MM/DD/YYYY h:mm A"},
 				{label:"Date",value:"MM/DD/YYYY"},				
 				{label:"Time",value:"h:mm A"},
 				{label:"Month",value:"MM"},
-				{label:"Year",value:"YYYYY"},
+				{label:"Year",value:"YYYY"},
+				{label:"Month/Year",value:"MM/YYYY"},
 				{label:"Day",value:"MM/DD"}
 
-			],label:"Date Format",strict:false,parse:[{type:"requires",name:"input"}]}
+			],label:"Date Format",parse:[{type:"requires",name:"input"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'}}
+
 		] }
 	])
 	return {
