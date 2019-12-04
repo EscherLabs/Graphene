@@ -259,6 +259,11 @@ Cobler.types.Workflow = function(container){
 			$.extend(item, newItem);
 		},
 		initialize: function(el) {
+
+      this.methods = [];
+      _.each(this.get().workflow.workflow.code.methods,function(item){
+        eval('this.methods["'+item.name+'"] = function(e,more){'+item.content+'}');
+      }.bind(this))
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -296,7 +301,8 @@ Cobler.types.Workflow = function(container){
         action.type = 'button';
         formSetup.actions.push(action);
       });
-
+      formSetup.methods = this.methods;
+debugger;
       this.form = new gform(formSetup, '.g_'+get().guid);
       if(this.get().current != null){
         this.initialstate = this.get().current.data;

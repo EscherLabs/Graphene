@@ -419,7 +419,7 @@ function load(workflow_version) {
 
 
 
-  loaded.code = $.extend(true, {templates:[{name:'Preview',content:'', disabled: true}]},workflow_version)
+  loaded.code = $.extend(true, {templates:[{name:'Preview',content:'', disabled: true}],methods:[{name:'Action',content:'', disabled: false}]},workflow_version)
   
   attributes= $.extend(true,{},{code:{}}, loaded);
   $('.navbar-header .nav a h4').html('Workflow - '+attributes.workflow.name);
@@ -455,6 +455,7 @@ function load(workflow_version) {
   setSize();
 
   templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  methodPage = new paged('.methods',{name:'methods', items:attributes.code.methods, label:'Method',mode:'ace/mode/javascript'});
   // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
@@ -921,6 +922,7 @@ $('#save').on('click',function() {
     data.code.map = map.toJSON().map;
     template_errors = templatePage.errors();
     data.code.templates = templatePage.toJSON();
+    data.code.methods = methodPage.toJSON();
     data.code.resources = _.map(bt.models,'attributes');
     $.ajax({
       url: root+attributes.workflow_id+'/code',
