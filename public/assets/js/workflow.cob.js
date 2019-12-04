@@ -41,7 +41,7 @@ baseFields = _.map([
 	{type: 'textarea',columns:12, label: 'Instructions', name: 'help',parse:[{type:"requires"}],show:[{name:"type",value:['output'],type:"not_matches"}]},
 	{type: 'checkbox', label: 'Multiple Selections', name: 'multiple',min:1,show:[{name:"type",value:['select','radio'],type:"matches"}]},
 	{type: 'number', label: 'Limit Selections',parse:[{type:"requires"}],placeholder:"No Limit", name: 'limit',min:1,show:[{name:"type",value:['select','radio'],type:"matches"},{name:"multiple",value:true,type:"matches"}]},
-	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{name:"type",value:['select','radio'],type:"not_matches"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]}
+	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{name:"type",value:['select','radio'],type:"not_matches"},{type:"requires"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]}
 ],function(item){
 	item.target = "#collapseBasic .panel-body";
 	return item;
@@ -67,7 +67,9 @@ baseFields = _.map([
 
 
 )
-baseCond = _.map([
+debugger;
+
+baseCond =[
 	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value:true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]
 	},
@@ -83,17 +85,22 @@ baseCond = _.map([
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:{min:1,max:1},show:[{name:"parse",value:['other'],type:"matches"}]},
 	
-	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"report",value:"show"}],options:		
-		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
-	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:{min:1,max:1},show:[{name:"report",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:"Required", value:false, name:"required",parse:[{type:"not_matches",name:"required",value:false}],options:		
 		[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Parse"',value:'show'}, {label:"Conditionally",value:"other"}]
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:{min:1,max:1}, show:[{name:"required",value:['other'], type:"matches"}]}
 	
-],function(item){
+]
+if(typeof workflow !== 'undefined'){
+	baseCond.splice(6,0,	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"report",value:"show"}],options:		
+			[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]
+		},
+		{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:{min:1,max:1},show:[{name:"report",value:['other'],type:"matches"}]},
+	)
+}
+
+baseCond = _.map(baseCond,function(item){
 	item.target = "#collapseConditions .panel-body";
 	return item;
 })
@@ -122,8 +129,6 @@ baseConditions = baseCond.concat(_.map([
 }))
 gformEditor = function(container){
 	return function(){
-
-
 		var fieldConfig = this.get();
 		_.each(['show','edit','parse','report','required'],function(index){
 			if(_.isArray(fieldConfig[index]) && typeof fieldConfig[index][0].conditions == 'undefined'){
@@ -137,8 +142,6 @@ gformEditor = function(container){
 				}
 			})
 		}
-
-
 		var formConfig = {
 			// sections: 'tab'
 			name:"editor",

@@ -228,7 +228,6 @@ $('#save').on('click',function() {
   //   console.log(result);
   // });
 
-
   data.code.resources = _.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
 
@@ -414,7 +413,7 @@ renderBuilder = function(){
   
   if(typeof cb === 'undefined'){
 
-    cb = new Cobler({formTarget:$('#form') ,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
+    cb = new Cobler({formTarget:$('#form'),sortSelected:true ,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
     list = document.getElementById('sortableList');
     cb.addSource(list);
     cb.on('activate', function(e){
@@ -432,7 +431,6 @@ renderBuilder = function(){
       mainForm();
     })
     document.getElementById('sortableList').addEventListener('click', function(e) {
-      // debugger;
       cb.deactivate();
       cb.collections[0].addItem(e.target.dataset.type || e.target.parentElement.dataset.type);
     })
@@ -442,6 +440,7 @@ renderBuilder = function(){
         workingForm = _.find(workingForm.fields,{name:p})
       })
       workingForm.fields = cb.toJSON()[0];
+      working_forms[formIndex].content = workingForm;
       
     })
     cb.on('remove', function(e){

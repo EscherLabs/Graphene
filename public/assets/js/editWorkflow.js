@@ -1,4 +1,4 @@
-
+workflow = true;
 renderBuilder = function(){
 
   var target = document.querySelector('.target');
@@ -17,8 +17,8 @@ renderBuilder = function(){
 
   
   if(typeof cb === 'undefined'){
-
-    cb = new Cobler({formTarget:$('#form') ,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
+    debugger;
+    cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
     list = document.getElementById('sortableList');
     cb.addSource(list);
     cb.on('activate', function(e){
