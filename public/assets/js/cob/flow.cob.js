@@ -261,8 +261,8 @@ Cobler.types.Workflow = function(container){
 		initialize: function(el) {
 
       this.methods = [];
-      _.each(this.get().workflow.workflow.code.methods,function(item){
-        eval('this.methods["'+item.name+'"] = function(e,more){'+item.content+'}');
+      _.each(this.get().workflow.workflow.code.methods,function(item,index){
+        eval('this.methods["method_'+(index+6)+'"] = function(e,more){'+item.content+'}');
       }.bind(this))
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
@@ -302,7 +302,6 @@ Cobler.types.Workflow = function(container){
         formSetup.actions.push(action);
       });
       formSetup.methods = this.methods;
-debugger;
       this.form = new gform(formSetup, '.g_'+get().guid);
       if(this.get().current != null){
         this.initialstate = this.get().current.data;

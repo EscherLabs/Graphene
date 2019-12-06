@@ -17,7 +17,6 @@ renderBuilder = function(){
 
   
   if(typeof cb === 'undefined'){
-    debugger;
     cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
     list = document.getElementById('sortableList');
     cb.addSource(list);
@@ -455,7 +454,8 @@ function load(workflow_version) {
   setSize();
 
   templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
-  methodPage = new paged('.methods',{name:'methods', items:attributes.code.methods, label:'Method',mode:'ace/mode/javascript'});
+  methodPage = new fileManager('.methods',{name:'methods', items:attributes.code.methods, label:'Method',mode:'ace/mode/javascript'});
+
   // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
 
@@ -873,6 +873,7 @@ gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"}));
 gform.collections.add('form_groups', temp.filter({type:"group"}));
+gform.collections.add('methods', _.pluck(attributes.code.methods,'name'));
 
 
 var taskForm = [

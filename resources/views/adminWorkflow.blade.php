@@ -31,7 +31,7 @@
     <!-- <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li> -->
     <li role="presentation"><a href="#options" aria-controls="options" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
-    <li role="presentation"><a href="#methods" aria-controls="methods" role="tab" data-toggle="tab"><i class="fa fa-bolt"></i> <span class="hidden-xs hidden-sm">Actions<span></a></li>
+    <li role="presentation"><a href="#methods" aria-controls="methods" role="tab" data-toggle="tab"><i class="fa fa-bolt"></i> <span class="hidden-xs hidden-sm">Methods<span></a></li>
 
     <li role="presentation"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
     <li role="presentation"><a href="#map" aria-controls="map" role="tab" data-toggle="tab"><i class="fa fa-table"></i> <span class="hidden-xs hidden-sm">Data Map<span></a></li>
@@ -62,7 +62,7 @@
 
             <div class="panel panel-primary">
        
-              <div class="panel-body" style="position:relative">
+              <div class="panel-body" style="min-height:80px;position:relative">
                 <form>
                 <div id="editor" style="position:relative;z-index:1" class="form-horizontal widget_container cobler_select"></div>
                 <div><i class="fa fa-arrow-circle-o-up fa-2x pull-left text-muted"></i>Click or Drag Form Elements HERE</div>
@@ -251,6 +251,8 @@
       language: 'javascript'
     });
   </script>-->
+  <script src='/assets/js/fileManager.js'></script> 
+
   <script>var loaded = {!! $workflow !!};</script>
   <script src='/assets/js/vendor/moment.js'></script>
   <script src='/assets/js/vendor/moment_datepicker.js'></script>
