@@ -4,37 +4,72 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Group;
+use App\User;
 use App\AppInstance;
 use Illuminate\Http\Request;
 use App\Libraries\CustomAuth;
 use Illuminate\Support\Facades\Log;
+use App\Libraries\HTTPHelper;
 
 class EllucianMobileController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('config');
         $this->customAuth = new CustomAuth();
-        config(['ellucianmobile.loginType'=>
-            env(config('app.site')->name.'_EM_LOGIN_TYPE','browser')]);
+        config(['ellucianmobile.authType'=>
+            env(config('app.site')->name.'_EM_AUTH_TYPE','browser')]);
+        config(['ellucianmobile.authCheckURL'=>
+            env(config('app.site')->name.'_EM_AUTH_CHECK_URL',null)]);
+        config(['ellucianmobile.authUniqueID'=>
+            env(config('app.site')->name.'_EM_AUTH_UNIQUE_ID','')]);
         config(['ellucianmobile.homeIcons'=>
             explode(',',env(config('app.site')->name.'_EM_HOME_ICONS',''))]);
     }
-    
-    public function login(Request $request) {
-        if (config('ellucianmobile.loginType') === 'browser') {
+
+    private function do_login(Request $request) {
+        if (config('ellucianmobile.authType') === 'browser') {
             if(!Auth::user()){ 
                 $return = $this->customAuth->authenticate($request);
                 if(isset($return)){
                     return $return;
                 }
             }
-        } else if (config('ellucianmobile.loginType') === 'native') {
-            if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
+        } else if (config('ellucianmobile.authType') === 'native') {
+            if (!is_null(config('ellucianmobile.authCheckURL'))) {
+                if (!is_null($request->header('php-auth-user'))) {
+                    $httpHelper = new HTTPHelper();
+                    $response = $httpHelper->http_fetch(config('ellucianmobile.authCheckURL'),'GET',[
+                        'username'=>$request->header('php-auth-user'),
+                        'password' => $request->header('php-auth-pw')
+                    ]);
+                    if ($response['code'] === '200') {
+                        $m = new \Mustache_Engine;    
+                        $user = User::where('unique_id', '=', 
+                            $m->render(config('ellucianmobile.authUniqueID'), $response['content']))->first();
+                        if (!is_null($user)) {
+                            Auth::login($user,true);
+                        }
+                    } else {
+                        $headers = ['WWW-Authenticate' => 'Basic'];
+                        return response()->make('Access Deined!', 401, $headers);
+                    }
+                } else {
+                    $headers = ['WWW-Authenticate' => 'Basic'];
+                    return response()->make('Access Deined!', 401, $headers);
+                }
+            } else if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
                 // continue
             } else {
                 $headers = ['WWW-Authenticate' => 'Basic'];
                 return response()->make('Access Deined!', 401, $headers);
             }
+        }
+    }
+
+    public function login(Request $request) {
+        $return = $this->do_login($request);
+        if (isset($return)) {
+            return $return;
         }
         return '
 <!-- Copyright 2014 Ellucian Company L.P. and its affiliates. -->
@@ -72,22 +107,10 @@ class EllucianMobileController extends Controller
     }
 
     public function userinfo(Request $request) {
-        if (config('ellucianmobile.loginType') === 'browser') {
-            if(!Auth::user()){ 
-                $return = $this->customAuth->authenticate($request);
-                if(isset($return)){
-                    return $return;
-                }
-            }
-        } else if (config('ellucianmobile.loginType') === 'native') {
-            if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
-                // continue
-            } else {
-                $headers = ['WWW-Authenticate' => 'Basic'];
-                return response()->make('Access Deined!', 401, $headers);
-            }
+        $return = $this->do_login($request);
+        if (isset($return)) {
+            return $return;
         }
-
         $groups = Auth::user()->group_members()->pluck('group_id');
         foreach($groups as $index => $group) {
             $groups[$index] = (string)$group;
@@ -215,7 +238,7 @@ class EllucianMobileController extends Controller
                 "url"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/userinfo',
                 "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout',
                 "cas"=> [
-                    "loginType"=> config('ellucianmobile.loginType'),
+                    "authType"=> config('ellucianmobile.authType'),
                     "loginUrl"=> $http_protocol.request()->getHttpHost().'/ellucianmobile/login',
                     "logoutUrl"=> $http_protocol.request()->getHttpHost().'/logout'
                 ]
