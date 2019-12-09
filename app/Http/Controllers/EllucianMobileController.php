@@ -21,10 +21,19 @@ class EllucianMobileController extends Controller
     }
     
     public function login(Request $request) {
-        if(!Auth::user()){ 
-            $return = $this->customAuth->authenticate($request);
-            if(isset($return)){
-                return $return;
+        if (config('ellucianmobile.loginType') === 'browser') {
+            if(!Auth::user()){ 
+                $return = $this->customAuth->authenticate($request);
+                if(isset($return)){
+                    return $return;
+                }
+            }
+        } else if (config('ellucianmobile.loginType') === 'native') {
+            if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
+                // continue
+            } else {
+                $headers = ['WWW-Authenticate' => 'Basic'];
+                return response()->make('Access Deined!', 401, $headers);
             }
         }
         return '
@@ -74,7 +83,8 @@ class EllucianMobileController extends Controller
             if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
                 // continue
             } else {
-                return response('Access Denied!', 401);
+                $headers = ['WWW-Authenticate' => 'Basic'];
+                return response()->make('Access Deined!', 401, $headers);
             }
         }
 
