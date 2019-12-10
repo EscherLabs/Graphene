@@ -521,6 +521,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           $('.report').on('click','[data-event]',function(e){
             var formStructure = {
               "legend":this.get().options.workflow_instance.name,
+              "events":this.get().options.workflow_version.code.form.events||{},
               "actions": [
                 {
                   "type": "cancel",
@@ -555,6 +556,12 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             }
 
           
+      this.methods = [];
+      _.each(this.get().options.workflow_version.code.methods,function(item,index){
+        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}');
+      }.bind(this))
+      formStructure.methods = this.methods;
+      
             if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
               formStructure.data = {_state:this.get().options.data},
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})

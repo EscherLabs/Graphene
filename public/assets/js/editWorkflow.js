@@ -113,6 +113,14 @@ mainForm = function(){
         ]},
         {name:"files",label:"Allow File uploads",type:"checkbox"},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
+        {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
+        {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
+          {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
+      
+          {type: 'select', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
+            "None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
+            ,parse:[{name:"event",value:"",type:"not_matches"}]}
+        ]}
         // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
         // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
           
@@ -402,6 +410,9 @@ function load(workflow_version) {
     gform.collections.update('form_users', temp.filter({type:"user"}));
     gform.collections.update('form_groups', temp.filter({type:"group"}));
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
+    gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
+      return {value:"method_"+i,label:item}
+    }));
     bt.fixStyle()
   })
   // wf_form = "{}";
@@ -873,9 +884,13 @@ gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"}));
 gform.collections.add('form_groups', temp.filter({type:"group"}));
-gform.collections.add('methods', _.pluck(attributes.code.methods,'name'));
+debugger;
 
+gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
+  debugger;
+  return {value:"method_"+i,label:item}
 
+}));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
@@ -888,7 +903,6 @@ var taskForm = [
   // {name:"data",}
 ]
 var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
-
 
 
 $('#flow-preview').on('click','.nodes .node',function(e){

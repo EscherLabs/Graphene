@@ -31,8 +31,8 @@ baseFields = _.map([
 	// {type: 'switch', label: 'Validate', name: 'validate',format:{label:''},parse:[{type:"not_matches",name:"validate",value:false}]},
 
 
-	{type: 'select', label: 'Value Calculation', name: 'method',columns:12,parse:[{type:"requires"},{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],options:[
-		"None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',options:'methods',format:{value:"method_{{index}}",cleanlabel:"Method: {{label}}"}}]
+	{type: 'smallcombo', label: 'Value Calculation', name: 'method',columns:12,parse:[{type:"requires"},{name:"type",value:['color','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color',,'checkbox','switch','textarea'],type:"not_matches"}],options:[
+		"None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
 	},
 	{type: 'text', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}]},
 	{type: 'textarea', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:'textarea',type:"matches"}],show:[{name:"type",value:'textarea',type:"matches"}]},
@@ -73,33 +73,59 @@ baseFields = _.map([
 
 
 )
-
 baseCond =[
 	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
-		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:method_{{index}}",label:"Method: {{label}}"}}]
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
-		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:method_{{index}}",label:"Method: {{label}}"}}]
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
 
 	{type: 'select',other:true, columns:12, label:'Include value in data <span class="pull-right text-muted">"parse"</span>', value:'show',name:"parse",parse:[{type:"not_matches",name:"parse",value:"show"}],options:		
-		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:method_{{index}}",label:"Method: {{label}}"}}]
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:{min:1,max:1},show:[{name:"parse",value:['other'],type:"matches"}]},
 	
 
 	{type: 'select',other:true, columns:12, label:"Required", value:false, name:"required",parse:[{type:"not_matches",name:"required",value:false}],options:		
-		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Parse"',value:'parse'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:method_{{index}}",label:"Method: {{label}}"}}]	
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Parse"',value:'parse'}, {label:"Conditionally",value:"other"}]} ]	
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:{min:1,max:1}, show:[{name:"required",value:['other'], type:"matches"}]}
 	
 ]
+
 if(typeof workflow !== 'undefined'){
+
+baseCond =[
+	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:{{value}}",label:"Method: {{label}}"}}]
+	},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
+
+	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:{{value}}",label:"Method: {{label}}"}}]
+	},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+
+	{type: 'select',other:true, columns:12, label:'Include value in data <span class="pull-right text-muted">"parse"</span>', value:'show',name:"parse",parse:[{type:"not_matches",name:"parse",value:"show"}],options:		
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:{{value}}",label:"Method: {{label}}"}}]
+	},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"parse",fields:myconditions,array:{min:1,max:1},show:[{name:"parse",value:['other'],type:"matches"}]},
+	
+
+	{type: 'select',other:true, columns:12, label:"Required", value:false, name:"required",parse:[{type:"not_matches",name:"required",value:false}],options:		
+		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Parse"',value:'parse'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:{{value}}",label:"Method: {{label}}"}} ]	
+	},
+	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:{min:1,max:1}, show:[{name:"required",value:['other'], type:"matches"}]}
+	
+]
+
+
 	baseCond.splice(6,0,	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"report",value:"show"}],options:		
-			[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Parse"',value:'parse'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:method_{{index}}",label:"Method: {{label}}"}}]
+			[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Parse"',value:'parse'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:{{value}}",label:"Method: {{label}}"}}]
 		},
 		{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:{min:1,max:1},show:[{name:"report",value:['other'],type:"matches"}]},
 	)
@@ -118,9 +144,17 @@ baseConditions = baseCond.concat(_.map([
 		{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:"test",name:"op",test:function(field,args){
 			return !!field.parent.index;
 		}}]},
-		{name:'type',label:'Type',type:'select',options:['none','matches','date','valid_url','valid_email','length','numeric','pattern']},
-		{name:'regex',label:"Regex",show:[{name:"type",value:['pattern'],type:"matches"}]},
-		{name:'name',label:"Name",show:[{name:"type",value:['matches'],type:"matches"}]},
+		{name:'type',label:'Type',type:'select',options:[
+		
+			{type:'optgroup',options:['none','matches','date','valid_url','valid_email','length','numeric','pattern','custom']}
+	
+		]
+	},
+
+
+	{name:'test',label:"Method",show:[{name:"type",value:['custom'],type:"matches"}],type:'smallcombo',options:	[{type:'optgroup',label:"Methods",options:'methods',format:{value:"{{value}}",label:"Method: {{label}}"}}]},
+	{name:'regex',label:"Regex",show:[{name:"type",value:['pattern'],type:"matches"}]},
+	{name:'name',label:"Name",show:[{name:"type",value:['matches'],type:"matches"}]},
 		{type: 'number', label: 'Minimum', name: 'min',value:1,columns:3,show:[{name:"type",value:['numeric','length'],type:"matches"}]},
 		{type: 'number', label: 'Maximum', name: 'max',columns:3,show:[{name:"type",value:['numeric','length'],type:"matches"}]},
 		{type: 'select',other:true,value:true,columns:12, label:"Apply",name:"conditions", show:[{name:"type",value:['none'],type:"not_matches"}], options:		
@@ -192,6 +226,7 @@ gformEditor = function(container){
 		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
 		$('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
 		$('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+		$('.panelEvents').toggle(!!_.find(formConfig.fields,{target:"#collapseEvents .panel-body"}));
 
 		// $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"options"}));
 		var temp = _.find(formConfig.fields,{name:"name"});
@@ -636,6 +671,19 @@ Options
   </div>
 </div>
 
+<div class="panel panel-default panelEvents">
+  <div class="panel-heading" role="tab" id="headingEvents">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEvents" aria-expanded="false" aria-controls="collapseEvents">
+Events
+      </a>
+    </h4>
+  </div>
+  <div id="collapseEvents" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEvents">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
 </div>
 </form>
 `

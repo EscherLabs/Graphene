@@ -525,6 +525,15 @@ mainForm = function(){
             {label:"Info",value:"btn btn-info"}]}
 
         ]},
+        {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
+
+        {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
+          {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
+      
+          {type: 'text', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
+            "None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
+            ,parse:[{name:"event",value:"",type:"not_matches"}]}
+        ]},
         {target: "#display",columns:9, type:"button",modifiers:"btn btn-danger pull-right margin-bottom",label:'<i class="fa fa-times"></i> Delete Form',action:"delete",name:"delete",show:[{type:"matches",name:"disabled",value:false}]},
 
         // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},

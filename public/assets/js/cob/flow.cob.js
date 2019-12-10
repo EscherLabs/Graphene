@@ -262,7 +262,7 @@ Cobler.types.Workflow = function(container){
 
       this.methods = [];
       _.each(this.get().workflow.workflow.code.methods,function(item,index){
-        eval('this.methods["method_'+(index+6)+'"] = function(e,more){'+item.content+'}');
+        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}');
       }.bind(this))
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
@@ -276,6 +276,7 @@ Cobler.types.Workflow = function(container){
       this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="label label-default pull-right status"></span>';
       var formSetup = {
         "data":{_state:(this.get().current||this.get()).data},
+        "events":instance.version.code.form.events||{},
         "actions": [
           {
             "type": "cancel",
@@ -417,6 +418,7 @@ Cobler.types.Workflow = function(container){
         }
       }.bind(this))
       this.form.on('save',function(e){
+        debugger;
         if(!e.form.validate(true))return;
         gform.types.fieldset.edit.call(e.form.find('_state'),false)
         e.form.find('_state').el.style.opacity = .7
@@ -650,6 +652,7 @@ Cobler.types.WorkflowStatus = function(container){
                           {
                             "legend":e.model.attributes.workflow.name,
                             "data":e.model.attributes.data,
+                            "events":e.model.attributes.workflow_version.code.form.events||{},
                             "actions": [
                               {
                                 "type": "cancel",
@@ -705,6 +708,7 @@ Cobler.types.WorkflowStatus = function(container){
                           {
                             "legend":e.model.attributes.workflow.name,
                             "data":e.model.attributes.data,
+                            "events":e.model.attributes.workflow_version.code.form.events||{},
                             "actions": [
                               {
                                 "type": "cancel",

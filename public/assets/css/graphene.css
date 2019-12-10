@@ -377,6 +377,7 @@ display:none;
 }
 #editor .slice{
   overflow: hidden;
+  min-height: 34px;
 }
 
 li.widget_active{cursor:default}
