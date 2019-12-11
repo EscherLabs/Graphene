@@ -431,8 +431,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               states.push(mappedData.workflow.instance.configuration.initial)
               form.fields[2].value = _.uniq(_.compact(states));
 
+              gform.collections.update('files',_.where(mappedData.history,{file:true}));
               previewForm = new gform(form);
-              previewForm.collections.update('files',_.where(mappedData.history,{file:true}));
               // file = _.find(mappedData.history,{file:true});
               // debugger;
 
@@ -576,8 +576,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             formStructure.actions[3].value = _.uniq(_.compact(states));
 
 
-
-          
             formStructure.methods = [];
             _.each(this.get().options.workflow_version.code.methods,function(item,index){
               eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(formStructure.data)');
