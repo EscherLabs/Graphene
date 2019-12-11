@@ -434,10 +434,10 @@ Cobler.types.collection = function(container) {
 				{label: 'Section Label (optional)', name:"label"},
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"Resource",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
 					var result = "object";
-					if(typeof e.field.parent.value['max'] !== 'undefined'){
+					if(typeof e.initial.parent.value['max'] !== 'undefined'){
 						result = "int";
 					}
-					if(typeof e.field.parent.value['path'] !== 'undefined'){
+					if(typeof e.initial.parent.value['path'] !== 'undefined'){
 						result = "string";
 					}
 					return result;
