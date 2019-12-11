@@ -528,7 +528,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             var formStructure = {
               "legend":this.get().options.workflow_instance.name,
               "events":this.get().options.workflow_version.code.form.events||{},
-              "data":{user:this.get().user,data:mappedData},
+              "data":{user:this.get().user,data:mappedData,_flowstate:this.get().options.state,_flowaction:e.currentTarget.dataset.event,_id:this.get().options.id},
               "actions": [
                 {
                   "type": "cancel",
@@ -541,20 +541,17 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   "label": "<i class='fa fa-check'></i> Submit"
                 },{
                   "type": "hidden",
-                  "name": "_flowstate",
-                  "value":this.get().options.state
+                  "name": "_flowstate"
                 },{
                   "type": "hidden",
                   "name": "_flowstate_history",
                   "value": ''
                 },{
                   "type": "hidden",
-                  "name": "_flowaction",
-                  "value": e.currentTarget.dataset.event
+                  "name": "_flowaction"
                 },{
                   "type": "hidden",
-                  "name": "_id",
-                  "value": this.get().options.id
+                  "name": "_id"
                 }
               ],
               "fields":[
