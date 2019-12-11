@@ -260,10 +260,7 @@ Cobler.types.Workflow = function(container){
 		},
 		initialize: function(el) {
 
-      this.methods = [];
-      _.each(this.get().workflow.workflow.code.methods,function(item,index){
-        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}');
-      }.bind(this))
+  
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -271,11 +268,21 @@ Cobler.types.Workflow = function(container){
         this.set({collapsed:collapsed});
         $(el).find('.widget').toggleClass('cob-collapsed', collapsed)
       }
-      
       var instance = this.get().workflow;
       this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="label label-default pull-right status"></span>';
+      mappedData = {actor:this.get().user,form:{},owner:null,state:instance.configuration.initial,history:[]};
+      var data = {
+        _flowstate:instance.configuration.initial,
+        _state:(this.get().current||this.get()).data,
+        user:this.get().user,
+        data:mappedData
+      }
+      this.methods = [];
+      _.each(this.get().workflow.workflow.code.methods,function(item,index){
+        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(data)');
+      }.bind(this))
       var formSetup = {
-        "data":{_state:(this.get().current||this.get()).data},
+        "data":data,
         "events":instance.version.code.form.events||{},
         "actions": [
           {
@@ -285,8 +292,7 @@ Cobler.types.Workflow = function(container){
             "label": "<i class='fa fa-times'></i> Clear"
           },{
             "type": "hidden",
-            "name": "_flowstate",
-            "value":instance.configuration.initial
+            "name": "_flowstate"
           }
         ],
         "fields":[

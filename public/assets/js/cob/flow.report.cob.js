@@ -404,7 +404,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               name:"display",
               actions:[],
               data:{
-                _state:log.data
+                _state:log.data,
+                data:mappedData,
+                user:this.get().user,
               },
               "fields":[
                 {"name":"_state",edit:false,"label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields},
@@ -420,6 +422,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               ]
             }
             
+            form.methods = [];
+            _.each(this.get().options.workflow_version.code.methods,function(item,index){
+              eval('form.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(form.data)');
+            }.bind(this))
             if(e.currentTarget.dataset.current){
               var states =  _.map(mappedData.history,function(item){return item.state;})
               states.push(mappedData.workflow.instance.configuration.initial)
@@ -522,6 +528,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             var formStructure = {
               "legend":this.get().options.workflow_instance.name,
               "events":this.get().options.workflow_version.code.form.events||{},
+              "data":{user:this.get().user,data:mappedData},
               "actions": [
                 {
                   "type": "cancel",
@@ -555,13 +562,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               ]
             }
 
-          
-      this.methods = [];
-      _.each(this.get().options.workflow_version.code.methods,function(item,index){
-        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}');
-      }.bind(this))
-      formStructure.methods = this.methods;
-      
+
+            
             if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
               formStructure.data = {_state:this.get().options.data},
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
@@ -575,6 +577,13 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
 
 
+          
+            formStructure.methods = [];
+            _.each(this.get().options.workflow_version.code.methods,function(item,index){
+              eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(formStructure.data)');
+            }.bind(this))
+
+            // formStructure.methods = this.methods;
 
             new gform(formStructure).on('save',function(e){
               document.querySelector('.report').innerHTML = '<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>';
