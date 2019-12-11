@@ -309,7 +309,6 @@ Cobler.types.Workflow = function(container){
         formSetup.actions.push(action);
       });
       formSetup.methods = this.methods;
-      this.form = new gform(formSetup, '.g_'+get().guid);
       if(this.get().current != null){
         this.initialstate = this.get().current.data;
         this.id = this.get().current.id;
@@ -318,6 +317,7 @@ Cobler.types.Workflow = function(container){
         this.initialstate = gform.instances.f0.get();
         gform.collections.add('files', [])
       }
+      this.form = new gform(formSetup, '.g_'+get().guid);
 
       update = function(file,response){
         if(typeof response !== 'undefined'){
