@@ -1,4 +1,5 @@
 workflow = true;
+gform.collections.add('files',[])
 renderBuilder = function(){
 
   var target = document.querySelector('.target');
@@ -193,8 +194,9 @@ mainForm = function(){
 
 
 $('.target').on('click','[data-map]', function(e) {
-path = _.compact(e.currentTarget.dataset.map.split(','));
 cb.deactivate();
+path = _.compact(e.currentTarget.dataset.map.split(','));
+
 renderBuilder()
 });
 
@@ -884,12 +886,9 @@ gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"}));
 gform.collections.add('form_groups', temp.filter({type:"group"}));
-debugger;
 
 gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
-  debugger;
   return {value:"method_"+i,label:item}
-
 }));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"}]},

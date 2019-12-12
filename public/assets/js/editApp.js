@@ -645,8 +645,9 @@ mainForm = function(){
 
 
 $('.target').on('click','[data-map]', function(e) {
-path = _.compact(e.currentTarget.dataset.map.split(','));
 cb.deactivate();
+path = _.compact(e.currentTarget.dataset.map.split(','));
+
 renderBuilder()
 });
 

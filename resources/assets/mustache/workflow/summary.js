@@ -3,6 +3,6 @@ workflow_report.summary = `<dl class="dl-horizontal">
 <dt>State</dt><dd>{{state}}</dd>
 <dt>Original Submission</dt> <dd>{{original.created_at.date}} @ {{original.created_at.time}}</dd>
 <dt>Last Action</dt> <dd>{{latest.updated_at.date}} @ {{latest.updated_at.time}}</dd>
-<dt>Assignee</dt><dd>{{assignment.group.name}}{{^assignment.group.name}}{{assignment.user.first_name}} {{assignment.userlast_name}}{{/assignment.group.name}} ({{assignment.type}})</dd>
+<dt>Assignee</dt><dd>{{assignment.group.name}}{{^assignment.group.name}}{{assignment.user.first_name}} {{assignment.user.last_name}}{{/assignment.group.name}} ({{assignment.type}})</dd>
 <dt>Submission ID</dt> <dd>{{original.workflow_submission_id}}</dd>
 </dl>`;

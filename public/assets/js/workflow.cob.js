@@ -256,8 +256,9 @@ gformEditor = function(container){
 				}
 			}
 			container.update(mygform.toJSON(), this);
-			path.push(e.form.get('name'));
+
 			cb.deactivate();
+			path.push(e.form.get('name'));
 			renderBuilder()
 		}.bind(this))
 
