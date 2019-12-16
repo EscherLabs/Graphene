@@ -505,7 +505,9 @@ mainForm = function(){
 
         {name:"legend",label:"Label",columns:6},
         {name:"name",label:"Name",columns:6,edit:[{type:"matches",name:"disabled",value:false}]},
-        {name:"default",label:false,type:'fieldset',fields:[
+        {name:"autoFocus",columns:6,label:"Auto Focus",value:true,type:"checkbox"},
+
+        {name:"default",label:false,columns:6,type:'fieldset',fields:[
           {name:"horizontal",label:"Horizontal",type:"checkbox"}
         ]},
         {name:"disabled",show:false,label:false,type:"checkbox",value:_.find(working_forms,{name:form.name}).disabled},

@@ -434,20 +434,25 @@ Cobler.types.collection = function(container) {
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"Resource",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
-					var result = "object";
-					if(typeof e.initial.parent.value['max'] !== 'undefined'){
-						result = "int";
+					if(e.event == 'initialized'){
+						var result = "object";
+						if(typeof e.initial.parent.value['max'] !== 'undefined'){
+							result = "int";
+						}
+						if(typeof e.initial.parent.value['path'] !== 'undefined'){
+							result = "string";
+						}
+						
+						return result;
+					}else{
+						return e.initial.value
 					}
-					if(typeof e.initial.parent.value['path'] !== 'undefined'){
-						result = "string";
-					}
-					return result;
 				}},
 				{name:"type",type:"hidden",value:"optgroup"},
 				{type: 'fieldset', label: false, array: {min:1,max:100},columns:12, name: 'options', fields:[
 					{name:"label",label:"Label",parse:[{type:"requires"}]},
 					{name:"value",label:"Value",parse:[{type:"requires"}]}
-				],parse:[{type:"requires"}],show:[{type:"matches",name:"options_type",value:"object"}]},
+				],parse:[{type:"requires"},{type:"matches",name:"options_type",value:"object"}],show:[{type:"matches",name:"options_type",value:"object"}]},
 
 				{type: 'text', label: "Resource Name", name: 'path',show:[{type:"matches",name:"options_type",value:"string"}]},
 				{type: 'number', label: "Min", name: 'min',placeholder:"0",show:[{type:"matches",name:"options_type",value:"int"}]},
