@@ -510,7 +510,7 @@ mainForm = function(){
         {name:"default",label:false,columns:6,type:'fieldset',fields:[
           {name:"horizontal",label:"Horizontal",type:"checkbox"}
         ]},
-        {name:"disabled",show:false,label:false,type:"checkbox",value:_.find(working_forms,{name:form.name}).disabled},
+        {name:"disabled",show:false,label:false,type:"checkbox",value:(_.find(working_forms,{name:form.name})||{disabled:false}).disabled},
 
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
 
