@@ -154,6 +154,7 @@ baseConditions = baseCond.concat(_.map([
 
 	{name:'test',label:"Method",show:[{name:"type",value:['custom'],type:"matches"}],type:'smallcombo',options:	[{type:'optgroup',label:"Methods",options:'methods',format:{value:"{{value}}",label:"Method: {{label}}"}}]},
 	{name:'regex',label:"Regex",show:[{name:"type",value:['pattern'],type:"matches"}]},
+	{name:'message',columns:12,label:"Message",show:[{name:"type",value:['pattern'],type:"matches"}]},
 	{name:'name',label:"Name",show:[{name:"type",value:['matches'],type:"matches"}]},
 		{type: 'number', label: 'Minimum', name: 'min',value:1,columns:3,show:[{name:"type",value:['numeric','length'],type:"matches"}]},
 		{type: 'number', label: 'Maximum', name: 'max',columns:3,show:[{name:"type",value:['numeric','length'],type:"matches"}]},

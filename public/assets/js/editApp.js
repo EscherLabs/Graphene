@@ -517,7 +517,7 @@ mainForm = function(){
         {type: 'switch',format:{label:""}, label: 'Custom Actions', name: 'actions', show:[{name:"type",value:['output'],type:"not_matches"}],parse:[{type:"not_matches",name:"actions",value:false}]},
         {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
           
-          {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
+          {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save","button"]},
           // {name:"name",columns:6,label:"Name"},
           {name:"action",columns:6,label:"Action",parse:[{type:"requires"}]},
           {name:"label",columns:6,label:"Label",parse:[{type:"requires"}]},
