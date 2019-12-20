@@ -440,7 +440,7 @@ renderBuilder = function(){
         workingForm = _.find(workingForm.fields,{name:p})
       })
       workingForm.fields = cb.toJSON()[0];
-      working_forms[formIndex].content = workingForm;
+      working_forms[formIndex].content = myform;
       
     })
     cb.on('remove', function(e){
