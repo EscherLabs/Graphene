@@ -28,6 +28,45 @@ class EllucianMobileController extends Controller
             ], 'plugins' => []
         ];
     }
+    private function do_login(Request $request) {
+        $headers = ['WWW-Authenticate' => 'Basic'];
+        if (config('ellucianmobile.authType') === 'browser') {
+            if(!Auth::user()){ 
+                $return = $this->customAuth->authenticate($request);
+                if(isset($return)){
+                    return $return;
+                }
+            }
+        } else if (config('ellucianmobile.authType') === 'native') {
+            if (!is_null(config('ellucianmobile.authCheckURL'))) {
+                if (!is_null($request->header('php-auth-user'))) {
+                    $httpHelper = new HTTPHelper();
+                    $response = $httpHelper->http_fetch(config('ellucianmobile.authCheckURL'),'GET',[
+                        'username'=>$request->header('php-auth-user'),
+                        'password' => $request->header('php-auth-pw')
+                    ]);
+                    if ($response['code'] === '200') {
+                        $m = new \Mustache_Engine;    
+                        $user = User::where('unique_id', '=', 
+                            $m->render(config('ellucianmobile.authUniqueID'), $response['content']))->first();
+                        if (!is_null($user)) {
+                            Auth::login($user,true);
+                        } else {
+                            return response()->make('Access Deined!', 401, $headers);
+                        }
+                    } else {
+                        return response()->make('Access Deined!', 401, $headers);
+                    }
+                } else {
+                    return response()->make('Access Deined!', 401, $headers);
+                }
+            } else if (Auth::attempt(['email' => $request->header('php-auth-user'), 'password' => $request->header('php-auth-pw')])) {
+                // continue
+            } else {
+                return response()->make('Access Deined!', 401, $headers);
+            }
+        }
+    }
     
     public function login(Request $request) {
         if(!Auth::user()){ 
