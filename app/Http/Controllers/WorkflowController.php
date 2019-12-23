@@ -9,7 +9,6 @@ use App\User;
 use App\WorkflowVersion;
 use App\WorkflowDevelopers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use \Carbon\Carbon;
 use App\Libraries\Templater;
 
@@ -54,7 +53,7 @@ class WorkflowController extends Controller
 
     public function code(Request $request, Workflow $workflow) { 
         $workflow_version = WorkflowVersion::where('workflow_id','=',$workflow->id)->orderBy('created_at', 'desc')->first();
-        $post_data = Input::all();
+        $post_data = $request->all();
         if(!isset($post_data['updated_at']) && !isset($post_data['force']) ){
             abort(403, $workflow_version);
         }

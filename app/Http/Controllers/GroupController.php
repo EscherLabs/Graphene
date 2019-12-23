@@ -10,7 +10,6 @@ use App\GroupAdmins;
 use App\GroupMembers;
 use App\AppInstance;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 
 class GroupController extends Controller
 {
@@ -289,7 +288,7 @@ class GroupController extends Controller
     }
     public function order()
 	{
-        $order = Input::get('order');
+        $order = Request::get('order');
         foreach($order as $item){
             $group = Group::find($item['id']);
             $group->order = (int) $item['index'];
@@ -299,7 +298,7 @@ class GroupController extends Controller
 
     public function pages_order(Group $group)
 	{
-        $order = Input::get('order');
+        $order = Request::get('order');
         foreach($order as $item){
             $page = Page::find($item['id']);
             $page->order = (int) $item['index'];
@@ -309,7 +308,7 @@ class GroupController extends Controller
 
     public function appinstances_order(Group $group)
 	{
-        $order = Input::get('order');
+        $order = Request::get('order');
         foreach($order as $item){
             $ai = AppInstance::find($item['id']);
             $ai->order = (int) $item['index'];

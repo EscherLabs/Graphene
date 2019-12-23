@@ -9,7 +9,6 @@ use App\User;
 use App\AppVersion;
 use App\AppDevelopers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use \Carbon\Carbon;
 
 class AppController extends Controller
@@ -55,7 +54,7 @@ class AppController extends Controller
 
     public function code(Request $request, App $app) { 
         $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
-        $post_data = Input::all();
+        $post_data = $request->all();
         if(!isset($post_data['updated_at']) && !isset($post_data['force']) ){
             abort(403, $app_version);
         }
