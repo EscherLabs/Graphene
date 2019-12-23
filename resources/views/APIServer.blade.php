@@ -15,7 +15,7 @@
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
     var slug = '{{ $slug }}';
-    var group = {!! $group or "{}" !!};
+    var group = {!! $group ?? "{}" !!};
     var user = {!! Auth::user() !!};
 
     var server = "{{ $config->server }}";

@@ -14,7 +14,7 @@
   <script>
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
-    var group = {!! $group or "{}" !!};
+    var group = {!! $group ?? "{}" !!};
     var user = {!! Auth::user() !!};
     var url = '/api/'+route;
     if(resource_id !== ''){

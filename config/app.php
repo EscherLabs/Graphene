@@ -170,7 +170,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         PulkitJalan\Google\GoogleServiceProvider::class,
-        GoogleSheets\Providers\SheetsServiceProvider::class,
+        // GoogleSheets\Providers\SheetsServiceProvider::class,
         /* CAS Authentication TJC 9/19/17 */
         Subfission\Cas\CasServiceProvider::class,
     ],
