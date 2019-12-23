@@ -18,10 +18,19 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
   
 Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {
     /***** WORKFLOWS *****/
+    // Workflow Submission (Files)
+    Route::post('/workflowsubmissions/{workflow_submission}/files','WorkflowSubmissionFileController@create')->middleware('can:take_action,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/files','WorkflowSubmissionFileController@list_all_files')->middleware('can:view,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@get')->middleware('can:view,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/files/{file}/download','WorkflowSubmissionFileController@download')->middleware('can:view,workflow_submission');
+    Route::put('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@update')->middleware('can:take_action,workflow_submission');
+    Route::delete('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@destroy')->middleware('can:take_action,workflow_submission');
+
+    // Workflow Submission (General)
     Route::post('/workflowsubmissions/{workflow_instance}/{save_or_submit?}','WorkflowSubmissionController@create')->middleware('can:create_submission,workflow_instance');
     Route::get('/workflowsubmissions/user','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflowsubmissions/user/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
-    Route::get('/workflowsubmissions/{workflow_submission}/log','WorkflowSubmissionController@workflow_submission_log')->middleware('can:view,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/history','WorkflowSubmissionController@workflow_submission_history')->middleware('can:view,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@status')->middleware('can:view,workflow_submission');
     Route::put('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@action')->middleware('can:take_action,workflow_submission');
     Route::delete('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@destroy')->middleware('can:delete,workflow_submission');

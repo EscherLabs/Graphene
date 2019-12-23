@@ -1,3 +1,234 @@
+workflow = true;
+gform.collections.add('files',[])
+renderBuilder = function(){
+
+  var target = document.querySelector('.target');
+  $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>')
+  var form = myform;
+  var map = "";
+  _.each(path,function(p){
+    form = _.find(form.fields,{name:p})
+    map += form.name+',';
+    $(target).append('<div style="text-align:center;padding:5px;color: #555;"><i class="fa fa-long-arrow-down fa-2x"> </i></div><div style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" data-map="'+map+'" class="btn btn-default">'+(form.label||form.name)+'</div>')
+  })
+  target.querySelectorAll('.btn-default')[target.querySelectorAll('.btn-default').length-1].style.border = "solid 2px #d85e16";
+
+  
+  $(target).append('<hr>')
+
+  
+  if(typeof cb === 'undefined'){
+    cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
+    list = document.getElementById('sortableList');
+    cb.addSource(list);
+    cb.on('activate', function(e){
+      // if(list.className.indexOf('hidden') == -1){
+      //   list.className += ' hidden';
+      // }
+      $('#form').removeClass('hidden');
+    })
+    cb.on('deactivate', function(){
+      if(typeof gform.instances.editor !== 'undefined'){
+          gform.instances.editor.destroy();
+      }
+      // list.className = list.className.replace('hidden', '');
+      $('#form').addClass('hidden');
+      mainForm();
+    })
+    document.getElementById('sortableList').addEventListener('click', function(e) {
+      // debugger;
+      cb.deactivate();
+      cb.collections[0].addItem(e.target.dataset.type || e.target.parentElement.dataset.type);
+    })
+    cb.on("change", function(){
+      var workingForm = myform;
+      _.each(path,function(p){
+        workingForm = _.find(workingForm.fields,{name:p})
+      })
+      workingForm.fields = cb.toJSON()[0];
+      
+    })
+    cb.on('remove', function(e){
+      if(typeof gform.instances.editor !== 'undefined' && gform.instances.editor.options.cobler == e[0]){
+        cb.deactivate();
+      }
+    });
+  }
+
+  if(typeof form !== 'undefined'){
+    var temp = $.extend(true, {}, form);
+    for(var i in temp.fields){
+      // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
+      // temp.fields[i].options = mapOptions.getobject()
+      switch(temp.fields[i].type) {
+        case "select":
+        case "radio":
+        case "scale":
+        case "range":
+        case "grid":
+        case "user":
+        case "groups":
+        case "files":
+        case "smallcombo":
+          temp.fields[i].widgetType = 'collection';
+          break;
+        case "checkbox":
+        case "switch":
+          temp.fields[i].widgetType = 'bool';
+          break;
+        case "fieldset":
+        case "grid":
+          temp.fields[i].widgetType = 'section';
+          break;
+        default:
+          temp.fields[i].widgetType = 'input';
+      }
+    }
+    
+    list.className = list.className.replace('hidden', '');
+    cb.collections[0].load(temp.fields);
+  }
+  // mainForm(form,map);
+
+  if(typeof gform.instances.editor !== 'undefined'){
+    gform.instances.editor.destroy();
+  }
+
+  mainForm();
+} 
+mainForm = function(){
+  var form = myform;
+  _.each(path,function(p){
+    form = _.find(form.fields,{name:p})
+  })
+  if(!path.length){
+    new gform({
+      name:"editor",
+      data: form,
+      actions:[],
+      fields: [
+        // {name:"legend",label:"Label"},
+        // {name:"name",label:"Name"},
+        {name:"default",label:false,type:'fieldset',fields:[
+          {name:"horizontal",label:"Horizontal",type:"checkbox"}
+        ]},
+        {name:"files",label:"Allow File uploads",type:"checkbox"},
+        {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
+        {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
+        {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
+          {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
+      
+          {type: 'select', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
+            "None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
+            ,parse:[{name:"event",value:"",type:"not_matches"}]}
+        ]}
+        // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
+        // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
+          
+        //   {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
+        //   // {name:"name",columns:6,label:"Name"},
+        //   {name:"action",columns:6,label:"Action"},
+        //   {name:"label",columns:6,label:"Label"},
+        //   {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
+        //     {label:"Danger",value:"btn btn-danger"},
+        //     {label:"Success",value:"btn btn-success"},
+        //     {label:"Info",value:"btn btn-info"}]}
+
+        // ]},
+
+      ],
+      legend: false,
+    }, '#mainform').on('input:type',function(e){
+      if(e.field.value == 'cancel'){
+        e.field.parent.set({
+          "label":"<i class=\"fa fa-times\"></i> Cancel",
+          "action":"cancel",
+          "modifiers": "btn btn-danger"})
+      }
+    }).on('input', _.throttle(function(e){
+      form = _.extend(form,e.form.get());
+      // if(typeof e.form.get().actions == 'undefined'){
+      //   delete form.actions;
+      // }
+      // if(typeof e.field !== 'undefined' && e.field.name == 'horizontal'){
+      //   renderBuilder()
+      // }
+
+    }) ).on('input:horizontal',function(){
+      renderBuilder();
+    })
+  }else{
+    var temp = new Cobler.types[gform.types[form.type].base]();
+    $("#mainform").html(gform.renderString(accordion))
+
+    $('.panelOptions').toggle(false);
+    
+    new gform({
+      name:"editor",
+      nomanage:true,
+      data: form,
+      actions:[],
+      clear:false,
+      fields: temp.fields,
+      legend: 'Edit Fieldset',
+    }, '#mainform').on('change', function(e){
+      // form = _.extend(form,e.form.get())
+      var workingForm = myform;
+        _.each(path,function(p){
+          workingForm = _.find(workingForm.fields,{name:p})
+        })
+        
+      // workingForm = 
+      _.extend(workingForm,e.form.get())
+      
+
+    })
+
+  }
+}
+
+
+// $('#cobler').on('click', function(e) {
+
+// });
+
+
+$('.target').on('click','[data-map]', function(e) {
+cb.deactivate();
+path = _.compact(e.currentTarget.dataset.map.split(','));
+
+renderBuilder()
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function(){
+  // myform = JSON.parse(($.jStorage.get('form') || "{}"));
+  myform = loaded.code.form || {};
+  // $('#cobler').click();
+  path = [];
+  // $(e.target).siblings().removeClass('active');
+  // $(e.target).addClass('active');
+  // $('#form').addClass('hidden');
+  // $('.view_source').removeClass('hidden');
+  renderBuilder();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 gform.stencils.ace = `
 <div class="row clearfix form-group" name="{{name}}">
@@ -12,6 +243,7 @@ gform.stencils.ace = `
 		<div class="formcontrol"><div placeholder="{{placeholder}}" style="min-height: 250px;outline:none;border:solid 1px #cbd5dd;{{^unstyled}}background:#fff;padding:10px{{/unstyled}}" id="{{id}}container"></div></div>
 	</div>
 </div>`;
+
 gform.types['ace'] = _.extend({}, gform.types['input'], {
   create: function(){
     var tempEl = document.createElement("span");
@@ -176,30 +408,32 @@ window.onresize = setSize;
 function load(workflow_version) {
 	$('.nav-tabs').stickyTabs();
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var temp = new gform(JSON.parse(formPage.toJSON()[0].content));
+    var temp = new gform(myform);
     gform.collections.update('form_users', temp.filter({type:"user"}));
     gform.collections.update('form_groups', temp.filter({type:"group"}));
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
+    gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
+      return {value:"method_"+i,label:item}
+    }));
     bt.fixStyle()
   })
+  // wf_form = "{}";
+  // if(typeof workflow_version.form !== 'undefined'){
+  //   wf_form = workflow_version.form
+  //   if(typeof wf_form !== 'string'){
+  //     wf_form = JSON.stringify(wf_form,null,2);
+  //   }
+  //   workflow_version.forms =[];
+  // }else{
+  //   // wf_form = workflow_version.code.forms[0].content
 
-  wf_form = "{}";
-  if(typeof workflow_version.form !== 'undefined'){
-    wf_form = workflow_version.form
-    if(typeof wf_form !== 'string'){
-      wf_form = JSON.stringify(wf_form,null,2);
-    }
-    workflow_version.forms =[];
-  }else{
-    // wf_form = workflow_version.code.forms[0].content
-
-  }
-
+  // }
 
 
-  loaded.code = $.extend(true, {forms:[{name:'Initial Form',content:wf_form, disabled: true}],templates:[{name:'Preview',content:'', disabled: true}]},workflow_version)
+
+  loaded.code = $.extend(true, {templates:[{name:'Preview',content:'', disabled: true}],methods:[{name:'Action',content:'', disabled: false}]},workflow_version)
   
-  attributes= $.extend(true,{},{code:{form:JSON.parse(loaded.code.forms[0].content)}}, loaded);
+  attributes= $.extend(true,{},{code:{}}, loaded);
   $('.navbar-header .nav a h4').html('Workflow - '+attributes.workflow.name);
 
   $('#version').html((attributes.summary || 'Working Version'));
@@ -233,19 +467,21 @@ function load(workflow_version) {
   setSize();
 
   templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
-  // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
-  formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
+  methodPage = new fileManager('.methods',{name:'methods', items:attributes.code.methods, label:'Method',mode:'ace/mode/javascript'});
 
-    item.content = this.berry.fields[this.active].toJSON();
-    if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
-      modalForm(item.content, item.name, function() {
-        var old = formPage.getCurrent();
-        formPage.update(old.key, JSON.stringify($.extend(false, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
-      });
-    }else{
-      toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
-    }
-  }});
+  // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
+  // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
+
+  //   item.content = this.berry.fields[this.active].toJSON();
+  //   if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
+  //     modalForm(item.content, item.name, function() {
+  //       var old = formPage.getCurrent();
+  //       formPage.update(old.key, JSON.stringify($.extend(false, {}, JSON.parse(old.content||'{}'),{"fields":cb.toJSON({editor:false})[0]}), null, 2 ))
+  //     });
+  //   }else{
+  //     toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
+  //   }
+  // }});
 
   r_options = {data:loaded.code, actions:[],fields:[
 
@@ -296,79 +532,79 @@ $(document).keydown(function(e) {
   return true;
 });
 
-function modalForm(form, name, onSave) {
-  if(typeof cb === 'undefined'){
-    if(typeof form === 'string'){
-      form = JSON.parse(form || '{}');
-    }
-    form = form || {};
-    $('#myModal').remove();
-    this.onSave = onSave;
-    this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-    $(this.ref).appendTo('body');
-    this.ref.find('.modal-body').html(templates.formEditor.render());
-    this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-    this.ref.on('hide.bs.modal', function(){
-      cb.destroy();
-      delete cb;
-    });
-    this.ref.find('#saveForm').on('click', function(){
-      this.onSave.call(this)
-      this.ref.modal('hide');
+// function modalForm(form, name, onSave) {
+//   if(typeof cb === 'undefined'){
+//     if(typeof form === 'string'){
+//       form = JSON.parse(form || '{}');
+//     }
+//     form = form || {};
+//     $('#myModal').remove();
+//     this.onSave = onSave;
+//     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+//     $(this.ref).appendTo('body');
+//     this.ref.find('.modal-body').html(templates.formEditor.render());
+//     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
+//     this.ref.on('hide.bs.modal', function(){
+//       cb.destroy();
+//       delete cb;
+//     });
+//     this.ref.find('#saveForm').on('click', function(){
+//       this.onSave.call(this)
+//       this.ref.modal('hide');
       
-    }.bind(this))
-    this.ref.modal({backdrop: 'static'});
+//     }.bind(this))
+//     this.ref.modal({backdrop: 'static'});
 
-    cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-    $('.modal #form').keydown(function(event) {
-      switch(event.keyCode) {
-        case 27://escape
-            event.stopPropagation();
-            cb.deactivate();
-            return false;
-          break;
-      }
-    });
-    list = document.getElementById('sortableList');
-    cb.addSource(list);
-    cb.on('activate', function(){
-      if(list.className.indexOf('hidden') == -1){
-        list.className += ' hidden';
-      }
-      $('#form').removeClass('hidden');
-    })
-    cb.on('deactivate', function(){
-      list.className = list.className.replace('hidden', '');
-      $('#form').addClass('hidden');
-    })
-    document.getElementById('sortableList').addEventListener('click', function(e) {
-      cb.collections[0].addItem(e.target.dataset.type);
-    })
-  }
+//     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
+//     $('.modal #form').keydown(function(event) {
+//       switch(event.keyCode) {
+//         case 27://escape
+//             event.stopPropagation();
+//             cb.deactivate();
+//             return false;
+//           break;
+//       }
+//     });
+//     list = document.getElementById('sortableList');
+//     cb.addSource(list);
+//     cb.on('activate', function(){
+//       if(list.className.indexOf('hidden') == -1){
+//         list.className += ' hidden';
+//       }
+//       $('#form').removeClass('hidden');
+//     })
+//     cb.on('deactivate', function(){
+//       list.className = list.className.replace('hidden', '');
+//       $('#form').addClass('hidden');
+//     })
+//     document.getElementById('sortableList').addEventListener('click', function(e) {
+//       cb.collections[0].addItem(e.target.dataset.type);
+//     })
+//   }
 
-  if(typeof form !== 'undefined'){
-    var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
+//   if(typeof form !== 'undefined'){
+//     var temp = $.extend(true, {}, form);
+//     for(var i in temp.fields){
 
-      temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-          temp.fields[i].widgetType = 'select';
-          break;
-        case "checkbox":
-          temp.fields[i].widgetType = 'checkbox';
-          break;
-        default:
-          temp.fields[i].widgetType = 'textbox';
-      }
+//       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
+//       switch(temp.fields[i].type) {
+//         case "select":
+//         case "radio":
+//           temp.fields[i].widgetType = 'select';
+//           break;
+//         case "checkbox":
+//           temp.fields[i].widgetType = 'checkbox';
+//           break;
+//         default:
+//           temp.fields[i].widgetType = 'textbox';
+//       }
 
-    }
+//     }
 
-    list.className = list.className.replace('hidden', '');
-    cb.collections[0].load(temp.fields);
-  }
-}
+//     list.className = list.className.replace('hidden', '');
+//     cb.collections[0].load(temp.fields);
+//   }
+// }
 
 
 function createFlow() {
@@ -445,39 +681,58 @@ function drawForm(name){
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
-  flowForm = new gform({
-    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{type:"button",modifiers:"btn btn-default",label:"Done",action:"done"}],
+
+
+  formConfig = {
+    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
     // legend:"State",
     // sections:"tab",
-    // clear:true,
+    clear:false,
     data: _.find(flow_states,{name:name}),
-    
-    fields:[
-      // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
-      {name: "name",inline:false, label: "Name"},
-      {name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
-      {label:"<legend>Assignment</legend>",type:"output",name:"assignment_label", parse: false},
+  }
 
-      {type: "fieldset", name: "assignment", label: false, fields: [
-        {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
-          {value: "user", label: "User"},
-          {value: "group", label: "Group"}
-        ]},
+  formConfig.fields=_.map(
+  _.map([
+    {type: "fieldset", name: "assignment", label: false, fields: [
+      {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
+        {value: "user", label: "User"},
+        {value: "group", label: "Group"}
+      ]},
 
-        // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
-        //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
-        // })
+      // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+      //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
+      // })
 
-        {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {
+        "type": "optgroup",
+        "options": "map_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+          return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+      },       
+      {
+        "type": "optgroup",
+        "options": "form_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+          var path = option.data.name
+          var search = option.data;
+          while(search.ischild){
+            path = search.parent.name+'.'+path;
+            search = search.parent;
+          }
+          return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+      }
+      ]},
+      {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
         {
           "type": "optgroup",
-          "options": "map_users",
+          "options": "map_groups",
           "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
             return "{{datamap."+option.name+"}}"},label:"{{name}}"}
         },       
         {
           "type": "optgroup",
-          "options": "form_users",
+          "options": "form_groups",
           "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
             var path = option.data.name
             var search = option.data;
@@ -486,70 +741,67 @@ function drawForm(name){
               search = search.parent;
             }
             return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+        },
+        {
+          "type":"optgroup",
+          "options":'/api/groups?members=20',
+          "format":{label:"{{name}}",value:"{{id}}"}
         }
-        ]},
-        {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
-          {
-            "type": "optgroup",
-            "options": "map_groups",
-            "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
-              return "{{datamap."+option.name+"}}"},label:"{{name}}"}
-          },       
-          {
-            "type": "optgroup",
-            "options": "form_groups",
-            "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
-              var path = option.data.name
-              var search = option.data;
-              while(search.ischild){
-                path = search.parent.name+'.'+path;
-                search = search.parent;
-              }
-              return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
-          },
-          {
-            "type":"optgroup",
-            "options":'/api/groups?members=20',
-            "format":{label:"{{name}}",value:"{{id}}"}
-          }
-        ]},
-        // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
-        // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
-
-        {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
-        {name: "resource", type: "select", label:"Resource", placeholder: "None", options:"resources"},
-
-        // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
-        // {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
       ]},
-      // {name: "hasOnEnter", label: "Include Tasks On Entering State", type: "switch"},
-      {label:"<legend>onEnter</legend>",type:"output",name:"enter_label", parse: false},
+      // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
+      // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
-      {name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
-      // {name: "hasOnLeave", label: "Include Tasks On Leaving State", type: "switch"},
-      {label:"<legend>onLeave</legend>",type:"output",name:"leave_label", parse: false},
-      {name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
-      {label:"<legend>Actions</legend>",type:"output",name:"actions_label", parse: false},
-      {
-        name: "actions", label: false, type: "fieldset", fields: [
-          {name: "label", label: "Label", columns: 6},
-          {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
-          {name: "form", label: "Show Form",type:"switch", columns: 12},
-          {name: "type", label: "Type", type: "select", columns: 6, options:[
-            {value: "success", label: "Success"},
-            {value: "danger", label: "Danger"},
-            {value: "info", label: "Info"},
-            {value: "warning", label: "Warning"},
-            {value: "default", label: "Default"},
-            {value: "primary", label: "Primary"},
-            {value: "link", label: "Simple"}
-          ], show: [{type: "not_matches", name: "label", value: ""}]},
-          {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates', show: [{type: "not_matches", name: "label", value: ""}]},
-          {name: "tasks", label: "Action Tasks", type: "fieldset", fields: taskForm, array: true}
-        ], array: true
-      }
-    ]
-  },'#flow-form').on('input', function(e){
+      {name: "id",inline:false, label: 'ID (template)', type: "text", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+      {name: "resource", type: "select", label:"Resource", placeholder: "None", options:"resources"},
+
+      // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+      // {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
+    ]}
+      ],function(item){
+    item.target = "#collapseAssignment .panel-body";
+    return item;
+  }).concat([
+   // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
+    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
+    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
+    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state"},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+    {target:"#collapseActions .panel-body", 
+      name: "actions", label: false, type: "fieldset", fields: [
+        {name: "label", label: "Label", columns: 6},
+        {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
+        {name: "type", label: "Type", type: "select", columns: 6, options:[
+          {value: "success", label: "Success"},
+          {value: "danger", label: "Danger"},
+          {value: "info", label: "Info"},
+          {value: "warning", label: "Warning"},
+          {value: "default", label: "Default"},
+          {value: "primary", label: "Primary"},
+          {value: "link", label: "Simple"}
+        ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+      {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+        {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+
+        {name: "tasks", label: "Tasks", type: "fieldset", fields: taskForm, array: true}
+      ], array: true
+    }
+
+  ])
+  
+  )
+  $('#flow-form').html(gform.renderString(flowAccordion))
+
+
+  $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+  $('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+  $('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
+  $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+  $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+
+
+
+  flowForm = new gform(formConfig,'#flow-form').on('input', function(e){
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
     temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
@@ -635,7 +887,9 @@ var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"}));
 gform.collections.add('form_groups', temp.filter({type:"group"}));
 
-
+gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
+  return {value:"method_"+i,label:item}
+}));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
@@ -648,7 +902,6 @@ var taskForm = [
   // {name:"data",}
 ]
 var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
-
 
 
 $('#flow-preview').on('click','.nodes .node',function(e){
@@ -674,15 +927,16 @@ $('#add-state').on('click',function() {
   createFlow();
 })
 
-
 $('#save').on('click',function() {
   var data = {code:{flow:flow_states}};
   if(true || !errorCount){
-    data.code.form = JSON.parse(formPage.toJSON()[0].content);
+    // data.code.form = JSON.parse(formPage.toJSON()[0].content);
+    data.code.form = myform;
     data.updated_at = attributes.updated_at;
     data.code.map = map.toJSON().map;
     template_errors = templatePage.errors();
     data.code.templates = templatePage.toJSON();
+    data.code.methods = methodPage.toJSON();
     data.code.resources = _.map(bt.models,'attributes');
     $.ajax({
       url: root+attributes.workflow_id+'/code',
@@ -762,7 +1016,7 @@ $('#publish').on('click', function() {
 });
 
 $('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
+  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
   $.get('/api/workflowinstances?workflow_id=' + loaded.workflow_id, function(data) {
     if(data.length > 0){
       modal({title: 'This Workflow has the following instances', content: viewTemplate.render({items: data})});
@@ -813,3 +1067,90 @@ $('#versions').on('click', function() {
   })
 })
 
+flowAccordion = `
+
+
+
+<form>
+<div id="display" style="padding-bottom:15px"></div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+<div class="panel panel-default panelBasic">
+  <div class="panel-heading" role="tab" id="headingBasic">
+    <h4 class="panel-title">
+      <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseBasic" aria-expanded="true" aria-controls="collapseBasic">
+Basic
+      </a>
+    </h4>
+  </div>
+  <div id="collapseBasic" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingBasic">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+<div class="panel panel-default panelAssignment">
+  <div class="panel-heading" role="tab" id="headingAssignment">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseAssignment" aria-expanded="false" aria-controls="collapseAssignment">
+      Assignment
+      </a>
+    </h4>
+  </div>
+  <div id="collapseAssignment" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAssignment">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-default panelOnenter">
+  <div class="panel-heading" role="tab" id="headingOnenter">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOnenter" aria-expanded="false" aria-controls="collapseOnenter">
+On Enter
+      </a>
+    </h4>
+  </div>
+  <div id="collapseOnenter" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOnenter">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+<div class="panel panel-default panelOnleave">
+  <div class="panel-heading" role="tab" id="headingOnleave">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOnleave" aria-expanded="false" aria-controls="collapseOnleave">
+On Leave
+      </a>
+    </h4>
+  </div>
+  <div id="collapseOnleave" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOnleave">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-default panelActions">
+  <div class="panel-heading" role="tab" id="headingActions">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions">
+Actions
+      </a>
+    </h4>
+  </div>
+  <div id="collapseActions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingActions">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+</div>
+</form>
+`

@@ -1,0 +1,26 @@
+  workflow_report.report = `<div>
+    <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
+    Submitted {{workflow.created_at.fromNow}} by <h4>{{owner.first_name}} {{owner.last_name}}</h4><hr>
+    <div class="row">
+      <div class="col-md-6">
+      {{>summary}}
+      </div>
+      <div class="col-md-6">
+      {{>actions}}
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-body">
+      {{>preview}}
+    </div>
+  </div>
+      {{#workflow.instance.version.code.form.files}}
+      <div>
+      <h3>Attachments</h3><hr/>
+      {{>files}}
+      </div>
+      {{#current_state.uploads}}
+      <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
+      {{/current_state.uploads}}
+      {{/workflow.instance.version.code.form.files}}`;

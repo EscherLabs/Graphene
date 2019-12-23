@@ -62,11 +62,11 @@ $.ajax({
 				],attributes:data, actions:false, name:'main'})
 				$('#save').on('click',function(){
 					var item = Berries.main.toJSON();
-					if(typeof Berries.options !== 'undefined') {
-						item.options = Berries.options.toJSON();
+					if(typeof gform.instances.options !== 'undefined') {
+						item.options = gform.instances.options.toJSON();
 					}			
-					if(typeof Berries.user_options_default !== 'undefined') {
-						item.user_options_default = Berries.user_options_default.toJSON();
+					if(typeof gform.instances.user_options_default !== 'undefined') {
+						item.user_options_default = gform.instances.user_options_default.toJSON();
 					}
 					if(typeof Berries.resources !== 'undefined') {
 						item.resources = Berries.resources.toJSON().resources;
@@ -82,20 +82,24 @@ $.ajax({
 				})
 				if(typeof data.app.code.forms !== 'undefined' && _.findWhere(data.app.code.forms,{name:"Options"}).content){
 					$('#optionstab').show();
-					var options = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.app.code.forms,{name:"Options"}).content)) 
+					var options = $.extend(true,{actions:[]}, JSON.parse(_.findWhere(data.app.code.forms,{name:"Options"}).content)) 
 					$('#optionstab').toggle(!!options.fields.length);
-					options.attributes = data.options || {};
-					options.attributes.id = data.id;
+					options.data = data.options || {};
+					options.data.id = data.id;
 					options.name = 'options';
-					$('#options .col-sm-9').berry(options);
+					// $('#options .col-sm-9').berry(options);
+					new gform(options,'#options .col-sm-9')
+
 				}
 				if(typeof data.app.code.forms !== 'undefined' && _.findWhere(data.app.code.forms,{name:"User Options"}).content){
-					var user_options_default = $.extend(true,{actions:false}, JSON.parse(_.findWhere(data.app.code.forms,{name:"User Options"}).content)) 
+					var user_options_default = $.extend(true,{actions:[]}, JSON.parse(_.findWhere(data.app.code.forms,{name:"User Options"}).content)) 
 					$('#useroptionstab').toggle(!!user_options_default.fields.length);
-					user_options_default.attributes = data.user_options_default || {};
-					user_options_default.attributes.id = data.id;
+					user_options_default.data = data.user_options_default || {};
+					user_options_default.data.id = data.id;
 					user_options_default.name = 'user_options_default';
-					$('#user_options_default .col-sm-9').berry(user_options_default);
+					// $('#user_options_default .col-sm-9').berry(user_options_default);
+					new gform(user_options_default,'#user_options_default .col-sm-9')
+
 				}
 				if(typeof data.app.code.resources !== 'undefined' && data.app.code.resources[0].name !== '') {	
 					$('#resourcestab').show();

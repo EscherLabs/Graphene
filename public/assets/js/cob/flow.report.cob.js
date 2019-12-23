@@ -1,83 +1,127 @@
-workflow_report = {
-history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
-<div class="filterable list-group-item" target="_blank" data-current=true data-id="{{data.0.id}}">
-<div>{{workflow.user.first_name}} {{workflow.user.last_name}} (Originator)
-<span class="label pull-right label-success{{#data.0.closed}} label-danger{{/data.0.closed}}">{{data.0.end_state}}</span>
+// workflow_report = {
+// file:` <a {{^deleted_at}}href="{{path}}/download"{{/deleted_at}} style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file">
+// <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}{{^deleted_at}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/deleted_at}}{{/icon}}position:absolute;top:5px;left:5px">
+// {{{icon}}}
+// </div>{{name}}
+// <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
+// {{^deleted_at}}
+// {{#current_state.uploads}}
+// <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
+//   <span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>
+//   <span data-id="{{id}}" data-action="delete" class="remove-item btn btn-danger fa fa-trash-o" data-title="Delete"></span>
+// </div>
+// {{/current_state.uploads}}
+// {{/deleted_at}}
+// </a>
+// `,
+// files:`
+// <ul class="list-group workflow-files" style="margin:10px 0 0">
+// {{#history}}
+//   {{#file}}
+//   {{^deleted_at}}{{>file}}{{/deleted_at}}
+//   {{/file}}
+// {{/history}}
+// </ul>
+// `,
+// history:`<ul class="list-group workflow-history" style="margin:10px 0 0">
+// <div class="filterable submission list-group-item" target="_blank" data-current=true data-id="{{latest.id}}">
+// <div>{{owner.first_name}} {{owner.last_name}} (Originator)
+// <span class="label pull-right label-success{{#latest.closed}} label-danger{{/latest.closed}}">{{latest.end_state}}</span>
+// </div>
+// <hr>
+// <div><h5 style="text-align:right"><span data-toggle="tooltip" title="{{latest.updated_at.date}} @ {{latest.updated_at.time}}" data-placement="top">({{latest.updated_at.fromNow}})</span></h5></div>
+// </div>
+// <div class="list-group-item bg-info" style="color: white;background: #aaa;"><h4>History</h4></div>
+// {{#history}}
+//   {{#log}}
+//     <div class="filterable list-group-item submission" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>
+//     <span class="label label-default">{{previous.state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{state}}</span>
+//     <span style="display:none" class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>
+//     {{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>
+//   {{/log}}
+//   {{#file}}
+//     <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file {{#deleted_at}}list-group-item-danger{{/deleted_at}}">
+//     <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}{{^deleted_at}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/deleted_at}}{{/icon}}position:absolute;top:5px;left:5px">
+//     {{{icon}}}
+//     </div>
+//     <div><h5><div style="position: relative;top: -5px;">{{name}}</div> <span class="text-muted">{{^deleted_at}}Attached{{/deleted_at}}{{#deleted_at}}Deleted {{/deleted_at}} by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>    </div>
+//   {{/file}}
+// {{/history}}
+// </ul>`,
+// container:`<div class="row">
+// <div class="list col-md-4 hidden-xs hidden-sm " style="">
+// <center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+// </div>
+// <div class="col-md-8 col-md-offset-4 report" style="top:-20px">
 
-</div>
-<hr>
-<div><h5 style="text-align:right"><span data-toggle="tooltip" title="{{data.0.updated_at.date}} @ {{data.0.updated_at.time}}" data-placement="top">({{data.0.updated_at.fromNow}})</span></h5></div>
-</div>
-<div class="list-group-item bg-info" style="color: white;background: #aaa;" ><h4>History</h4></div>
-{{#data}}<div class="filterable list-group-item" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{user.first_name}} {{user.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>
-<span class="label label-default">{{start_state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{end_state}}</span>
-<span style="display:none" class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>
-{{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>{{/data}}
-</ul>`,
-container:`<div class="row">
-<div class="list col-md-4 hidden-xs hidden-sm " style="">
-<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
-</div>
-<div class="col-md-8 col-md-offset-4 report" style="top:-20px">
+// </div>
+// </div>
+// <style>
+// .list-group-item.active{
+// background-color:#606971;
+//     border-color: #606971 !important;
+// }
+// .list-group-item.active .text-muted{
+//   color:#a5a5a5
+// }
+// .list-group-item.filterable:hover{
+// background-color:#f0f0f0;
+// cursor:pointer
+// }
+// .list-group-item.active:hover{
+// background-color:#606971
+// }
+// hr{
+// margin:10px 0
+// }
+// </style>`,
+// actions:`{{#is.actionable}}<div class="hidden-print"><legend>Available Actions</legend><div>{{#actions}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions}}</div><br></div>{{/is.actionable}}`,
+// summary:`<dl class="dl-horizontal">
+// <dt>Status</dt><dd style="text-transform: capitalize;">{{status}}</dd>
+// <dt>State</dt><dd>{{state}}</dd>
+// <dt>Original Submission</dt> <dd>{{original.created_at.date}} @ {{original.created_at.time}}</dd>
+// <dt>Last Action</dt> <dd>{{latest.updated_at.date}} @ {{latest.updated_at.time}}</dd>
+// <dt>Assignee</dt><dd>{{assignment.group.name}}{{^assignment.group.name}}{{assignment.user.first_name}} {{assignment.userlast_name}}{{/assignment.group.name}} ({{assignment.type}})</dd>
+// <dt>Submission ID</dt> <dd>{{original.workflow_submission_id}}</dd>
 
-</div>
-</div>
-<style>
-.list-group-item.active{
-background-color:#606971;
-    border-color: #606971 !important;
-}
-.list-group-item.active .text-muted{
-  color:#a5a5a5
-}
-.list-group-item.filterable:hover{
-background-color:#f0f0f0;
-cursor:pointer
-}
-.list-group-item.active:hover{
-background-color:#606971
-}
-hr{
-margin:10px 0
-}
-</style>`,
-actions:`{{#actions_data.0}}<div class="hidden-print"><legend>Available Actions</legend><div>{{#actions_data}}<span class="btn btn-{{type}}{{^type}}default{{/type}}" style="margin:2px 5px 2px 0" data-id="{{id}}" data-event="{{name}}">{{label}}</span>{{/actions_data}}</div><br></div>{{/actions_data.0}}`,
-report:`
-    <div>
-    <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
-    Submitted {{workflow.created_at.fromNow}} by <h4>{{workflow.user.first_name}} {{workflow.user.last_name}}</h4><hr>
-    <div class="row">
-      <div class="col-md-6">
-        <dl class="dl-horizontal">
-        <dt>Status</dt><dd style="text-transform: capitalize;">{{workflow.status}}</dd>
-        <dt>State</dt><dd style="text-transform: capitalize;">{{workflow.state}}</dd>
-        <dt>Original Submission</dt> <dd>{{workflow.created_at.date}} @ {{workflow.created_at.time}}</dd>
-        <dt>Last Action</dt> <dd>{{workflow.updated_at.date}} @ {{workflow.updated_at.time}}</dd>
-        <dt>Assignee</dt><dd>{{assignment.name}}{{^assignment.name}}{{assignment.first_name}} {{assignment.last_name}}{{/assignment.name}} ({{workflow.assignment_type}})</dd>
-
-        </dl>
-      </div>
-      <div class="col-md-6">
-      {{>actions}}
-      </div>
-    </div>
-
-    </div>
-<div class="panel">
-  <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
-
-    {{>preview}}
-  </div>
-</div>`,
-form:`<div class="panel panel-default">
-<div class="panel-heading" style="position:relative">
-    <h3 class="panel-title">{{options.workflow_instance.name}}</h3>
-  </div>
-  <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
-    <div class="form" style="padding-right: 50px;padding-left: 35px;"></div>
-  </div>
-</div>`
-}
+// </dl>`,
+// report:`
+//   <div>
+//     <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
+//     Submitted {{workflow.created_at.fromNow}} by <h4>{{owner.first_name}} {{owner.last_name}}</h4><hr>
+//     <div class="row">
+//       <div class="col-md-6">
+//       {{>summary}}
+//       </div>
+//       <div class="col-md-6">
+//       {{>actions}}
+//       </div>
+//     </div>
+//   </div>
+//   <div class="panel">
+//     <div class="panel-body">
+//       {{>preview}}
+//     </div>
+//   </div>
+//       {{#workflow.instance.version.code.form.files}}
+//       <div>
+//       <h3>Attachments</h3><hr/>
+//       {{>files}}
+//       </div>
+//       {{#current_state.uploads}}
+//       <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
+//       {{/current_state.uploads}}
+//       {{/workflow.instance.version.code.form.files}}
+// `,
+// view:`<div class="panel panel-default">
+// <div class="panel-heading" style="position:relative">
+//     <h3 class="panel-title">{{options.workflow_instance.name}}</h3>
+//   </div>
+//   <div class="panel-body" style="padding-right: 50px;padding-left: 35px;">
+//     <div class="view_container" style="padding-right: 50px;padding-left: 35px;"></div>
+//   </div>
+// </div>`
+// }
 
 Cobler.types.WorkflowSubmissionReport = function(container){
 	function get() {return item;}
@@ -106,87 +150,386 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         date:uat.format('MM/DD/YY'),
         fromNow:uat.fromNow()
       }
+      // if(typeof log.deleted_at !== 'undefined'){
+      //   log.deleted_at = {
+      //     original:log.deleted_at,
+      //     time:uat.format('h:mma'),
+      //     date:uat.format('MM/DD/YY'),
+      //     fromNow:uat.fromNow()
+      //   }
+      // }
+      log.date = log.created_at.original;
       log.closed = log.status == 'closed';
       log.open = log.status == 'open';
       return log;
     },
 		initialize: function(el){
+      $('body').append('<style>.modal.gform .modal-dialog{width:1000px}</style>')
       if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
       $.ajax({
-        url:'/api/workflowsubmissions/'+this.get().options.id+'/log',
+        url:'/api/workflowsubmissions/'+this.get().options.id+'/history',
         dataType : 'json',
         type: 'GET',
-        success  : function(data){
+        success  : function(response){
           this.get().options = this.processDates(this.get().options)
-        
-          data = _.map(data, this.processDates )
+          processFile = function(file){
+            file = this.processDates(file);
+            file.file = true;
+            switch(file.mime_type){
+              case "image/jpeg":
+              case "image/png":
+              case "image/jpg":
+              case "image/gif":
+                  if(file.deleted_at){
+                    file.icon = '<i class="fa fa-image fa-3x" style="padding-top: 4px;"></i>';
+                  }
+                  file.preview = '<div style="text-align:center;padding:10px;"><img style="max-width:100%" src="'+file.path+'"/></div>';
 
+                break;
+              // case "application/pdf":
+              //   file.icon = '<i class="fa fa-file-pdf-o fa-3x" style="padding-top: 4px;"></i>';
+              //   break;
+              // case "application/zip":
+              //   file.icon = '<i class="fa fa-file-zip-o fa-3x" style="padding-top: 4px;"></i>';
+              //   break;
+              default:
+                var icons = {
+                  // Media
+                  image: "fa-file-image-o",
+                  audio: "fa-file-audio-o",
+                  video: "fa-file-video-o",
+                  // Documents
+                  "application/pdf": "fa-file-pdf-o",
+                  "application/msword": "fa-file-word-o",
+                  "application/vnd.ms-word": "fa-file-word-o",
+                  "application/vnd.oasis.opendocument.text": "fa-file-word-o",
+                  "application/vnd.openxmlformats-officedocument.wordprocessingml":
+                    "fa-file-word-o",
+                  "application/vnd.ms-excel": "fa-file-excel-o",
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml":
+                    "fa-file-excel-o",
+                  "application/vnd.oasis.opendocument.spreadsheet": "fa-file-excel-o",
+                  "application/vnd.ms-powerpoint": "fa-file-powerpoint-o",
+                  "application/vnd.openxmlformats-officedocument.presentationml":
+                    "fa-file-powerpoint-o",
+                  "application/vnd.oasis.opendocument.presentation": "fa-file-powerpoint-o",
+                  "text/plain": "fa-file-text-o",
+                  "text/html": "fa-file-code-o",
+                  "application/json": "fa-file-code-o",
+                  // Archives
+                  "application/gzip": "fa-file-archive-o",
+                  "application/zip": "fa-file-archive-o"
+                }
+                var icon = icons[file.mime_type] || icons[file.mime_type.split('/')[0]] || icons[file.ext] || "fa-file-o";
+                file.icon = '<i class="fa '+icon+' fa-3x" style="padding-top: 4px;"></i>';
+              }
+
+
+              if(file.ext == "pdf"){
+                file.preview = '<iframe width="100%" height="'+($( document ).height()-$('.report').position().top-100)+'px" src="'+file.path+'"></iframe>';
+              }
+
+            return file;
+          }.bind(this)
+
+          data = _.orderBy(_.map(response.logs, function(log){
+            log = this.processDates(log);
+            log.log = true;
+            return log;
+          }.bind(this)).concat(_.map(response.files, processFile)),'date','desc')
           
 
-          this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
-  $('[data-toggle="tooltip"]').tooltip()
+          templates = _.merge({},workflow_report, _.mapValues(_.keyBy(_.filter(this.get().options.workflow_version.code.templates,function(e){
+            return e.content.length;
+          }),function(e){return e.name.toLowerCase();}),'content'))
 
-          $('.filterable').on('click',function(data,e){
+ 
+ 
+ 
+ 
+ 
+          mappedData = _.pick(this.get().options,'status','state')
+          if(this.get().is_assigned){
+            mappedData.actions = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
+          }
+
+          mappedData.report_url = this.get().report_url;
+          mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
+          mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params')
+          mappedData.owner.is = {actor:mappedData.owner.unique_id == mappedData.actor.unique_id}
+          mappedData.actor.is = {owner:mappedData.owner.unique_id == mappedData.actor.unique_id}
+          mappedData.assignment = {type:this.get().options.assignment_type,id:this.get().options.assignment_id};
+          if(mappedData.assignment.type == "user"){
+            mappedData.assignment.user = _.pick(this.get().assignment,'first_name','last_name','email','unique_id','id','params')
+          }else{
+            mappedData.assignment.group = this.get().assignment;
+          }
+          mappedData.workflow = {name:this.get().options.workflow.name,description:this.get().options.workflow.description ,instance:this.get().options.workflow_instance};
+          mappedData.current_state = _.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state})||mappedData.workflow.instance.version.code.flow[0];
+
+
+          mappedData.is ={
+            open:(mappedData.status == 'open'),
+            closed:(mappedData.status == 'closed'),
+            initial:(mappedData.state == mappedData.workflow.instance.configuration.initial),
+            actionable:(this.get().is_assigned && mappedData.actions.length)
+          }
+
+          if(data.length>1){
+            mappedData.previous = _.pick(data[1],'state','status')
+            mappedData.previous.state = mappedData.previous.end_state||mappedData.workflow.instance.configuration.initial;
+            mappedData.was ={
+              open:(mappedData.previous.status == 'open'),
+              closed:(mappedData.previous.status == 'closed'),
+              initial:(mappedData.previous.state == mappedData.workflow.instance.configuration.initial)
+            }
+          }
+          mappedData.history = _.map(data, function(event){
+            var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+
+            newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
+            newEvent.state = event.end_state;
+            newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
+            newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
+            newEvent.previous ={state:event.start_state}
+            newEvent.is ={
+              open:(newEvent.status == 'open'),
+              closed:(newEvent.status == 'closed'),
+              initial:(newEvent.state == mappedData.workflow.instance.configuration.initial)
+            }
+            return newEvent
+          })
+
+          mappedData.original = data[data.length-1];
+          mappedData.latest = _.find(data, {log:true});
+
+          if(typeof this.history !== 'undefined'){
+            this.history.teardown();
+          }
+ 
+          this.history = new Ractive({el: this.container.elementOf(this).querySelector('.row .list'), template: templates.history, data: mappedData, partials: templates});
+
+          // this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
+          $('[data-toggle="tooltip"]').tooltip()
+
+          $('.filterable.file').on('click',function(e){
             $('.active').removeClass('active')
             $(e.currentTarget).addClass('active')
             if(typeof previewForm !== 'undefined'){previewForm.destroy();}
 
-            var log = _.find(data,{id:parseInt(e.currentTarget.dataset.id)});
+            document.querySelector('.report').innerHTML = gform.renderString(workflow_report.view, this.get());
+            // $('.report .view_container').append(gform.renderString(workflow_report.file, file))
+            var file = _.find(mappedData.history,{selected:true});
+            if(typeof file !== 'undefined'){
+              file.selected = false;
+            }
+            file = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),file:true});
+            if(typeof file !== 'undefined'){
+              file.selected = true;
+            }
+
+            // var temp = `
+            // {{#history}}
+            // {{#selected}}
+            //   {{>file}}
+            //   <div><h5> <span class="text-muted">Attached by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{created_at.date}} @ {{created_at.time}}" data-placement="top">({{created_at.fromNow}})</span></h5></div>
+              
+            //   {{#deleted_at}}<div><h5><span class="text-muted">Deleted by {{deleted_by.first_name}} {{deleted_by.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>{{/deleted_at}}
+            //   {{^deleted_at}}{{{preview}}}{{/deleted_at}}
+            // {{/selected}}{{/history}}`
+            // $('.report .view_container').append(gform.renderString(temp,file))
+
+            if(typeof this.ractive !== 'undefined'){
+              this.ractive.teardown();
+            }
+            this.ractive = new Ractive({el: document.querySelector('.report .view_container'), template: workflow_report.file_summary, data: mappedData, partials: templates});
+            $('[data-toggle="tooltip"]').tooltip()
+
+          }.bind(this))
+          
+          update = function (dummy, response){
+            if(typeof response !== 'undefined'){
+       
+              var event = processFile(response);
+              if(typeof event.user == 'undefined' && event.user_id_created == this.get().user.id){
+                event.user = this.get().user;
+              }
+              if(event.deleted_at && typeof event.deleted_by == 'undefined' && event.user_id_deleted == this.get().user.id){
+                event.deleted_by = this.get().user;
+              }
+              var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+
+              newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
+              newEvent.state = event.end_state;
+
+       
+              
+              newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
+              newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
+              newEvent.previous ={state:event.start_state}
+              newEvent.is ={
+                open:(newEvent.status == 'open'),
+                closed:(newEvent.status == 'closed'),
+                initial:(newEvent.state == mappedData.workflow.instance.configuration.initial)
+              }
+              var exists = _.find(mappedData.history,{id:response.id});
+
+              if(typeof exists !== 'undefined'){
+                _.merge(exists,newEvent);
+              }else{
+                mappedData.history.unshift(newEvent)
+
+              }
+          
+              this.history.update(mappedData)
+              this.ractive.update(mappedData)
+            }
+          }.bind(this)
+
+
+          $('.row .list').on('click','.filterable.submission', function(e){
+            $('.active').removeClass('active')
+            $(e.currentTarget).addClass('active')
+            if(typeof previewForm !== 'undefined'){previewForm.destroy();}
+
+            var log = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),log:true});
+
+
+
 
             form = {
+              name:"display",
               actions:[],
               data:{
-                _state:log.data
+                _state:log.data,
+                data:mappedData,
+                user:this.get().user,
               },
               "fields":[
                 {"name":"_state",edit:false,"label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields},
                 {
                   "type": "hidden",
                   "name": "_flowstate",
-                  "value": log.start_state
+                  "value": log.start_state||mappedData.workflow.instance.configuration.initial
+                },{
+                  "type": "hidden",
+                  "name": "_flowstate_history",
+                  "value": ''
                 }
               ]
             }
-
+            
+            form.methods = [];
+            _.each(this.get().options.workflow_version.code.methods,function(item,index){
+              eval('form.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(form.data)');
+            }.bind(this))
             if(e.currentTarget.dataset.current){
+              var states =  _.map(mappedData.history,function(item){return item.state;})
+              states.push(mappedData.workflow.instance.configuration.initial)
+              form.fields[2].value = _.uniq(_.compact(states));
 
-              this.preview = (_.find(this.get().options.workflow_version.code.templates,{name:"Preview"})||{content:''});
-              if(this.preview.content.length){
-                this.preview = this.preview.content;
-              }else{
-                previewForm = new gform(form).on('change',function(e){
+              gform.collections.update('files',_.where(mappedData.history,{file:true}));
+              previewForm = new gform(form);
+              // file = _.find(mappedData.history,{file:true});
+              // debugger;
+
+              if(typeof templates.preview == 'undefined'){
+                previewForm.on('change',function(e){
                   $('#previewForm').html(e.form.toString('_state'))
                 })
-                this.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
+                templates.preview = '<h4>Current Data</h4><div id="previewForm">'+previewForm.toString('_state')+'</div>';
               }
-              workflow_report.preview = this.preview;
+
+              if(typeof this.ractive !== 'undefined'){
+                this.ractive.teardown();
+              }
+              mappedData.form = previewForm.toString('_state',true);
+              // mappedData.form = log.data;
+              this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
+              previewForm.on('change',function(e){
+                this.ractive.set({form:e.form.toString('_state',true)}) 
+              }.bind(this))
+
+              if(mappedData.workflow.instance.version.code.form.files && mappedData.current_state.uploads){
+                $('#myId').html('');
+                this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+mappedData.original.workflow_submission_id+"/files", init: function() {
+                  this.on("success", update);
+                }});
+                
+                update();
+              }
               
-              reportData =  {
-                workflow:this.get().options,
-                assignment:this.get().assignment,
-                data:data[0]
-              }
-              if(this.get().is_assigned){
-                reportData.actions_data = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
-              }
-              document.querySelector('.report').innerHTML =  gform.renderString(workflow_report.report, _.extend({}, workflow_report,reportData));
+              $('.workflow-files, .report').on('click','[data-id]',function(e){
+   
+                if(e.currentTarget.dataset.action == 'delete'){
+                  e.stopPropagation();
+                  e.preventDefault();
+                  $.ajax({
+                    url:'/api/workflowsubmissions/'+mappedData.original.workflow_submission_id+'/files/'+e.currentTarget.dataset.id,
+                    type: 'delete',
+                    success  : update.bind(null,{}),
+                    error:function(){
+        
+                    }
+                  })
+        
+                }else if(e.currentTarget.dataset.action == 'edit'){
+                  e.stopPropagation();
+                  e.preventDefault();
+                  myModal = new gform({legend:"Edit file name",data:_.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id)}),fields:[
+                    {name:"name",label:false},
+                    {name:"id", type:"hidden"}
+                  ]}).on('cancel',function(e){
+                    e.form.trigger('close');
+                  }).on('save',function(e){
+                    $.ajax({
+                      url:'/api/workflowsubmissions/'+mappedData.original.workflow_submission_id+'/files/'+e.form.get('id'),
+                      type: 'put',
+                      dataType : 'json',
+                      contentType: 'application/json',
+                      data: JSON.stringify(e.form.get()),
+                      success  : update.bind(null,{}),
+                      error:function(){
+          
+                      }
+                    })
+                    e.form.trigger('close');
+                  }.bind(this)).modal();
+                }
+              }.bind(this))
+
 
             }else{
-              document.querySelector('.report').innerHTML = gform.renderString(workflow_report.form, this.get());
-              
-              previewForm = new gform(form, document.querySelector('.form'))
+              document.querySelector('.report').innerHTML = gform.renderString(workflow_report.view, this.get());
+              form.fields.push({
+                "type": "hidden",
+                "name": "_flowaction",
+                "value": log.action
+              })
+
+              var states =  _.map(mappedData.history,function(compareDate,item){
+                if(compareDate.isAfter(moment(item.created_at.original))){
+                  return item.state;
+                }
+              }.bind(null,moment(log.created_at.original)))
+              states.push(mappedData.workflow.instance.configuration.initial)
+              form.fields[2].value = _.uniq(_.compact(states));
+
+              previewForm = new gform(form, document.querySelector('.view_container'))
             }
-          }.bind(this,data))
+          }.bind(this))
 
           $('.filterable').first().click();
 
           $('.report').on('click','[data-event]',function(e){
             var formStructure = {
               "legend":this.get().options.workflow_instance.name,
+              "events":this.get().options.workflow_version.code.form.events||{},
+              "data":{user:this.get().user,data:mappedData,_flowstate:this.get().options.state,_flowaction:e.currentTarget.dataset.event,_id:this.get().options.id},
               "actions": [
                 {
                   "type": "cancel",
@@ -199,26 +542,44 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   "label": "<i class='fa fa-check'></i> Submit"
                 },{
                   "type": "hidden",
-                  "name": "_flowstate",
-                  "value":this.get().options.state
+                  "name": "_flowstate"
                 },{
                   "type": "hidden",
-                  "name": "_flowaction",
-                  "value": e.currentTarget.dataset.event
+                  "name": "_flowstate_history",
+                  "value": ''
                 },{
                   "type": "hidden",
-                  "name": "_id",
-                  "value": this.get().options.id
+                  "name": "_flowaction"
+                },{
+                  "type": "hidden",
+                  "name": "_id"
                 }
               ],
               "fields":[
                 {"name":"comment","type":"textarea","length":255}
               ]
             }
+
+
+            
             if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
-              formStructure.data = {_state:this.get().options.data},
+              formStructure.data._state = this.get().options.data,
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
             }
+
+            var states =  _.map(mappedData.history,function(item){
+              return item.state;
+            })
+            states.push(mappedData.workflow.instance.configuration.initial)
+            formStructure.actions[3].value = _.uniq(_.compact(states));
+
+
+            formStructure.methods = [];
+            _.each(this.get().options.workflow_version.code.methods,function(item,index){
+              eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(formStructure.data)');
+            }.bind(this))
+
+            // formStructure.methods = this.methods;
 
             new gform(formStructure).on('save',function(e){
               document.querySelector('.report').innerHTML = '<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>';
@@ -237,12 +598,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 type: 'PUT',
-                success  : function(data){
-                  document.location.reload();
-                  // data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
-                  // data.updated_at = moment(data.updated_at).fromNow()
-                  // e.model.set(data)
-                  }
+                success  : function(data){ document.location.reload(); }
               })
             }.bind(this)).on('canceled',function(e){
               e.form.trigger('close')
@@ -251,6 +607,85 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
         }.bind(this)
       })
+
 		}
 	}
 }
+
+debug = {};
+Object.defineProperty(debug,'about',{
+  get: function(){
+    console.log('%c Workflow:\t%c'+mappedData.workflow.name+' %c(ID: '+mappedData.workflow.instance.workflow_id+')','color: #d85e16','color: #aaa','color: #aaa')
+    console.log('%c Instance:\t%c'+mappedData.workflow.instance.name+' %c(ID: '+mappedData.workflow.instance.id+')','color: #d85e16','color: #aaa','color: #aaa')
+    console.log('%c Version:\t%c'+(mappedData.workflow.instance.version_id||'Latest')+' %c(Using ID: '+mappedData.workflow.instance.version.id+')  %cUpdated  %c'+mappedData.workflow.instance.updated_at,'color: #d85e16','color: #aaa','color: #aaa','color: #d85e16','color: #aaa')
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'summary',{
+  get: function(){
+    console.log('%c Status:\t\t%c'+mappedData.status,'color: #d85e16','color: #aaa')
+    console.log('%c State:\t\t\t%c'+mappedData.state,'color: #d85e16','color: #aaa')
+
+    if(typeof gform.instances.display !== 'undefined'){
+      console.log('%c _flowstate:\t%c'+gform.instances.display.get('_flowstate'),'color: #d85e16','color: #aaa')
+      console.log('%c Current Form Data:','color: #0088FF',)
+      console.log(gform.instances.display.get('_state'))
+    }
+    console.log('%c Template Data:','color: #0088FF',)
+    console.log(mappedData)
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'form',{
+  get: function(){
+    if(typeof gform.instances.display !== 'undefined'){
+      return gform.instances.display;
+    }
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'data',{
+  get: function(){
+    return mappedData;
+  },
+  configurable: false,
+});
+
+Object.defineProperty(debug,'history',{
+  get: function(){
+    console.table(_.map(mappedData.history,function(item){
+      // item = _.omit(item,'is','log','file','data','date');
+      item.owner = item.user.first_name+' '+item.user.last_name;
+      item.created_at = item.created_at.date+' '+item.created_at.time;
+      item.updated_at = item.updated_at.date+' '+item.updated_at.time;
+      if(item.assignemnt.type == "group"){
+        item.assignemnt = "Group:"+item.assignemnt.id
+      }else{
+        item.assignemnt = "User:"+item.assignemnt.id
+      }
+      item.actor = item.actor.first_name+' '+item.actor.last_name;
+      item.previous = item.state+'('+item.status+')';
+
+      // item.user = item.user.first_name+' '+item.user.last_name;
+      return _.omit(item,'is','log','file','data','date','user');
+    }))
+  },
+  configurable: false,
+});
+Object.defineProperty(window,'help',{
+  get: function(){
+    console.log('%c debug.about\t%c - info about the workflow configuration','color: #0088FF','color: #aaa')
+    console.log('%c debug.summary\t%c - summary','color: #0088FF','color: #aaa')
+    console.log('%c debug.form\t\t%c - reference to the displayed form','color: #0088FF','color: #aaa')
+    console.log('%c debug.data\t\t%c - template data','color: #0088FF','color: #aaa')
+    console.log('%c debug.history\t%c - template data','color: #0088FF','color: #aaa')
+  },
+  configurable: false,
+});
+
+Object.defineProperty(debug,'app',{
+  get: function(){
+    return cb.collections[0].getItems()[0]
+  },
+  configurable: false,
+});

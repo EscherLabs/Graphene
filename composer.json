@@ -13,7 +13,8 @@
         "mustache/mustache": "~2.5",
         "pulkitjalan/google-apiclient": "^3.1",
         "revolution/laravel-google-sheets": "^2.1",
-        "subfission/cas": "dev-master"
+        "subfission/cas": "dev-master",
+        "gumlet/php-image-resize": "1.9.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -96,11 +96,56 @@ $('body').on('keyup','[name=filter]', function(event){
 
 templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
 gform.types['user']= _.extend({}, gform.types['smallcombo'], {
-  defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{unique_id}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
+  toString: function(name,display){
+		if(!display){
+			if(typeof this.combo !== 'undefined'){
+				return '<dt>'+this.label+'</dt> <dd>'+(this.combo.innerText||'(empty)')+'</dd><hr>'
+			}else{
+				return '<dt>'+this.label+'</dt> <dd>'+(this.get()||'(empty)')+'</dd><hr>'
+			}
+    }else{
+      if(typeof this.options !== 'undefined' && this.options.length){
+        return _.find(this.options,{unique_id:this.value})||this.value;
+      }else{
+        return this.value;
+      }
+		}
+	},
+  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{unique_id}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
 })
 gform.types['user_email']= _.extend({}, gform.types['user'], {
-  defaults:{value:"{{email}}"}
+  defaults:{value:"{{email}}",}
 })
 gform.types['group']= _.extend({}, gform.types['smallcombo'], {
+  toString: function(name,display){
+		if(!display){
+			if(typeof this.combo !== 'undefined'){
+				return '<dt>'+this.label+'</dt> <dd>'+(this.combo.innerText||'(empty)')+'</dd><hr>'
+			}else{
+				return '<dt>'+this.label+'</dt> <dd>'+(this.get()||'(empty)')+'</dd><hr>'
+			}
+    }else{
+      if(typeof this.options !== 'undefined' && this.options.length){
+        return _.find(this.options,{id:parseInt(this.value)})||this.value;
+      }else{
+        return this.value;
+      }
+		}
+	},
   defaults:{options: '/api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
+})
+gform.types['files']= _.extend({}, gform.types['smallcombo'], {
+  toString: function(name,display){
+		if(!display){
+			if(typeof this.combo !== 'undefined'){
+				return '<dt>'+this.label+'</dt> <dd>'+(this.combo.innerText||'(empty)')+'</dd><hr>'
+			}else{
+				return '<dt>'+this.label+'</dt> <dd>'+(this.get()||'(empty)')+'</dd><hr>'
+			}
+    }else{
+      return _.find(this.options,{id:parseInt(this.value)})||{}
+
+		}
+	},
+  defaults:{options: 'files',format:{title:'<i class="fa fa-paperclip"></i> {{{label}}}{{^label}}Attachement{{/label}}',label:"{{name}}",value:"{{id}}",display:'<div style="height:50px;padding-left:60px;position:relative" href="{{path}}" target="_blank"><div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url({{path}});background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:0px;left:5px">{{{icon}}}</div> {{name}} <span class="pull-right">{{date}}</span></div>'}}
 })

@@ -45,7 +45,7 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => env('FILE_STORAGE_PATH', isset($_SERVER['FILE_STORAGE_PATH'])?$_SERVER['FILE_STORAGE_PATH']:storage_path('app')),
+            'root' => env('FILE_STORAGE_PATH',storage_path('app')),
         ],
 
         'public' => [

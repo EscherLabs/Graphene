@@ -36,33 +36,35 @@ class WorkflowSubmissionController extends Controller
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
         $myWorkflowInstance = WorkflowInstance::with('workflow')
             ->where('id', '=', $workflow_instance->id)->with('workflow')->first();
-
+        if(is_null($myWorkflowInstance)) {
+            abort(404,'Workflow not found');
+        }
+        $myWorkflowInstance->findVersion();
         $current_user = Auth::check()?Auth::user():(new User);
 
-        if($myWorkflowInstance != null) {
-            $myWorkflowInstance->findVersion();
-
-            // Get any existing workflow submissions with a 'new' status
-            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)->where('status','new')->first();
-            if (is_null($workflow_submission)) {
-                $workflow_submission = new WorkflowSubmission();
-            }
-            $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
-            $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
-            $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
-            $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
-            $workflow_submission->data = $request->has('_state')?$request->get('_state'):(Object)[];
-            $workflow_submission->state = $myWorkflowInstance->configuration->initial;
-            $workflow_submission->status = 'new';
-            $workflow_submission->user_id = $current_user->id;
-            $workflow_submission->save();
-            if ($save_or_submit === 'save') {
-                return $workflow_submission;
-            } else if ($save_or_submit === 'submit'){
-                return $this->action($workflow_submission, $request);
-            }
+        // Get any existing workflow submissions with a 'new' status
+        $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
+            ->where('workflow_instance_id',$workflow_instance->id)
+            ->where('status','new')->first();
+        if (is_null($workflow_submission)) {
+            $workflow_submission = new WorkflowSubmission();
         }
-        abort(404,'Workflow not found');
+        $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
+        $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
+        $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
+        $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
+        $workflow_submission->data = $request->has('_state')?$request->get('_state'):(Object)[];
+        $workflow_submission->state = $myWorkflowInstance->configuration->initial;
+        $workflow_submission->status = 'new';
+        $workflow_submission->user_id = $current_user->id;
+        $workflow_submission->assignment_type = 'user';
+        $workflow_submission->assignment_id = Auth::user()->id;
+        $workflow_submission->save();
+        if ($save_or_submit === 'save') {
+            return $workflow_submission;
+        } else if ($save_or_submit === 'submit'){
+            return $this->action($workflow_submission, $request);
+        }
     }
 
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
@@ -93,7 +95,7 @@ class WorkflowSubmissionController extends Controller
         $owner = User::find($workflow_submission->user_id);
 
         $state_data = [];
-        $state_data['is'] = $state_data['was'] = [];
+        $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
         $state_data['form'] = $workflow_submission->data;
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
         $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
@@ -105,18 +107,17 @@ class WorkflowSubmissionController extends Controller
         $state_data['workflow']['instance'] = $myWorkflowInstance->only('group_id','slug','name','icon','public','configuration');
         $state_data['workflow']['version'] = $myWorkflowInstance->version->only('id','summary','description','stable');
         $state_data['comment'] = ($request->has('comment'))?$request->get('comment'):null;
-        $state_data['previous_status'] = $workflow_submission->status;
-        $state_data['previous_state'] = $oldstate->name;
-        $state_data['was']['open'] = ($state_data['previous_status']=='open')?true:false;
-        $state_data['was']['closed'] = ($state_data['previous_status']=='closed')?true:false;
-        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous_state']);
-        // $state_data['datamap'] = [];
+        $state_data['previous']['status'] = $workflow_submission->status;
+        $state_data['previous']['state'] = $oldstate->name;
+        $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
+        $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
+        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
+        $state_data['datamap'] = [];
         $state_data['assignment'] = [];
 
-        // foreach($myWorkflowInstance->configuration->resources as $resource){
-        //     // switch($resource->type)
-        //     $state_data['datamap']{$resource->name} = $resource->value;
-        // }
+        foreach($myWorkflowInstance->configuration->map as $resource){
+            $state_data['datamap'][$resource->name] = $resource->value;
+        }
 
         $state = null;
 
@@ -316,9 +317,9 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        $submissions = WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('user_id','=',Auth::user()->id)->with(array('logs'=>function($q){
-            $q->orderBy('created_at','desc');
-        }))->get();
+        $submissions = WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('user_id','=',Auth::user()->id)->where('status',"!=",'new')->with(array('logs'=>function($q){
+            $q->orderBy('updated_at','desc');
+        }))->orderBy('updated_at','asc')->get();
         foreach ($submissions as $submission) {
             echo $submission->Assignment();
         }
@@ -328,14 +329,12 @@ class WorkflowSubmissionController extends Controller
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        $submissions = array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'user')->where('assignment_id','=',Auth::user()->id)->with(array('logs'=>function($q){
-            $q->orderBy('created_at','desc');
-        }))->get(),
-        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'group')->whereIn('assignment_id',Auth::user()->groups)->with(array('logs'=>function($q){
-            $q->orderBy('created_at','desc');
-        }))->get());
-
-
+        $submissions = array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'user')->where('status',"=",'open')->where('assignment_id','=',Auth::user()->id)->with(array('logs'=>function($q){
+            $q->orderBy('updated_at','desc');
+        }))->orderBy('updated_at','asc')->get(),
+        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'group')->where('status',"=",'open')->whereIn('assignment_id',Auth::user()->groups)->with(array('logs'=>function($q){
+            $q->orderBy('updated_at','desc');
+        }))->orderBy('updated_at','asc')->get());
 
         foreach ($submissions['direct'] as $submission) {
             echo $submission->Assignment();
@@ -354,11 +353,18 @@ class WorkflowSubmissionController extends Controller
         return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_instance_id','=',$workflow_instance->id)->orderBy('created_at')->get();
     }   
     
-    public function workflow_submission_log(WorkflowSubmission $workflow_submission, Request $request) {
+    public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }
-        return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
+        return WorkflowSubmission::where('id','=',$workflow_submission->id)->with(array('user'=>function($query){
+        },'logs'=>function($query){
+            $query->with('user')->orderBy('updated_at','DESC')->get();
+        },'files'=>function($query){
+            // ->with('user')
+            $query->withTrashed()->orderBy('updated_at','DESC')->with('user')->with('deleted_by')->get();
+        }) )->first();
+        // return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
     }
 
     // public function view(WorkflowSubmission $workflow_submission, Request $request) {
@@ -436,7 +442,7 @@ class WorkflowSubmissionController extends Controller
     }
 
     public function report(WorkflowSubmission $workflow_submission,Request $request) {
-        $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission->id)->with('user')->with('workflowVersion')->first();
+        $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission->id)->with('user')->with('workflowVersion')->with('workflow')->first();
         // if (Auth::user()->site_developer || Auth::user()->site_admin) {
         //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
         // } else {
@@ -454,7 +460,9 @@ class WorkflowSubmissionController extends Controller
             }
         }
         $workflow_submission->load('workflowInstance');
-
+        if(is_null($workflow_submission->workflowInstance)){
+            abort(404,'Workflow Instance no longer exists');
+        }
         $is_assigned = false;//(Auth::user()->site_developer || Auth::user()->site_admin);
 
         if($workflow_submission->assignment_type == "user"){
@@ -474,7 +482,7 @@ class WorkflowSubmissionController extends Controller
                 'id'=>0,
                 'data'=>[],
                 // 'config'=>json_decode('{"sections":[[{"title":"'.$workflow_instance->name.' ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
-                'config'=>json_decode('{"sections":[[{"title":"TItle here ","widgetType":"WorkflowSubmissionReport","is_assigned":'.json_encode($is_assigned).', "assignment":'.json_encode($assignment).', "options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
+                'config'=>json_decode('{"sections":[[{"title":"Title here ","widgetType":"WorkflowSubmissionReport","report_url":"'.URL::to('/workflows/report/'.$workflow_submission->id).'", "user":'.json_encode($current_user).' ,"is_assigned":'.json_encode($is_assigned).', "assignment":'.json_encode($assignment).', "options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
                 // 'group'=>(Object)array("id"=>"0"),
                 'scripts'=>[],
                 'styles'=>[],
