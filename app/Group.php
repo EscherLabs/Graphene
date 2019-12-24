@@ -219,6 +219,9 @@ class Group extends Model
           $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
           $q->where('unlisted','=',false);
           $q->orderBy('order');
+        },'links'=>function($q){
+            $q->select('group_id','id','link','title','icon','image','color');
+            $q->orderBy('order');
         }])->whereIn('id', Auth::user()->groups);
     }
     public function scopeMenuData($query) {

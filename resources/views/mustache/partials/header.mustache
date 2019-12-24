@@ -10,11 +10,6 @@
       <a class="navbar-brand" href="/">
         <img style="height:25px" src="/assets/img/graphene_white.png">
       </a>
-
-
-
-
-
       <ul class="nav navbar-nav navbar-right hidden-xs ">
         {{>menu}}
       </ul>
@@ -78,28 +73,16 @@
         <!--<li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>-->
     {{#mygroups}}
       {{#.}}
-        {{^unlisted}}
           {{#hascontent}}
-            <li><a data-toggle="collapse" href="#hgroup{{ id }}">{{ name }}</a></li>
+            <li><a data-toggle="collapse" href="#hgroup{{ id }}">{{ name }} <span class="caret"></span></a></li>
             <ul class="collapse"  id="hgroup{{ id }}">
-            {{#pages}}
-              {{^unlisted}}
-                <li class="page{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/page/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}file{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-              {{/unlisted}}
-            {{/pages}}
-            {{#app_instances}}
-              {{^unlisted}}
-                <li class="app{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/app/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cube{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-              {{/unlisted}}
-            {{/app_instances}}
-            {{#workflow_instances}}
-              {{^unlisted}}
-                <li class="app{{id}} {{#hidden_xs}}hidden-xs{{/hidden_xs}} {{#hidden_sm}}hidden-sm{{/hidden_sm}} {{#hidden_md}}hidden-md{{/hidden_md}} {{#hidden_lg}}hidden-lg{{/hidden_lg}}"><a href="/workflow/{{group_slug}}/{{ slug }}"><i class="fa fa-{{#icon}}{{icon}}{{/icon}}{{^icon}}cog{{/icon}} fa-fw"></i>&nbsp; {{ name }}</a></li>
-              {{/unlisted}}
-            {{/workflow_instances}}
+            {{#content}}
+                <li class="{{#visibility.hidden_xs}}hidden-xs{{/visibility.hidden_xs}} {{#visibility.hidden_sm}}hidden-sm{{/visibility.hidden_sm}} {{#visibility.hidden_md}}hidden-md{{/visibility.hidden_md}} {{#visibility.hidden_lg}}hidden-lg{{/visibility.hidden_lg}} {{type}}_{{id}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{.}},{{/groups}}">
+                    <a href="{{url}}" data-{{type}}="{{id}}">{{#composite_limit}}<span class="fa fa-lock"></span> {{/composite_limit}}{{name}}</a>	
+                </li>
+            {{/content}}
             </ul>
           {{/hascontent}}
-        {{/unlisted}}
       {{/.}}
     {{/mygroups}}
       </ul>

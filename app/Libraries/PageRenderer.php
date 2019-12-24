@@ -64,10 +64,16 @@ class PageRenderer {
             foreach($content_types as $content_type => $content_type_metadata) {
                 foreach($group[$content_type] as $ctype_index => $content) {
                     if ($content->public || (Auth::check() && Auth::user()->can('get', $content))) {
-                        $mycontent = $content->only('id','name','icon','slug','groups','composite_limit');
-                        $mycontent['type'] = $content_type_metadata['slug'];
-                        $mycontent['url'] = url('/'.$content_type_metadata['slug'].'/'.$group->slug.'/'.$content->slug);
-                        $mycontent['visibility'] = $content->only('hidden_xs','hidden_sm','hidden_md','hidden_lg');
+                        if (in_array($content_type,['pages','app_instances','workflow_instances'])) {
+                            $mycontent = $content->only('id','name','icon','slug','groups','composite_limit');
+                            $mycontent['type'] = $content_type_metadata['slug'];
+                            $mycontent['url'] = url('/'.$content_type_metadata['slug'].'/'.$group->slug.'/'.$content->slug);
+                            $mycontent['visibility'] = $content->only('hidden_xs','hidden_sm','hidden_md','hidden_lg');
+                        } else if ($content_type === 'links') {
+                            $mycontent = $content->only('id','title','link','icon');
+                            $mycontent['url'] = $mycontent['link'];
+                            $mycontent['name'] = $mycontent['title'];
+                        } 
                         $mygroup['content'][] = $mycontent;
                         $mygroup['hascontent'] = true;
                     }
