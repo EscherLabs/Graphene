@@ -176,6 +176,12 @@ class WorkflowController extends Controller
             ],
             'resource'=>'workflow',
             'name'=>'Workflow Dashboard',
+            'menu' => [
+                "name"=> "Workflow Dashboard",
+                "slug"=> "workflow_dashboard",
+                "type"=> "workflow",
+                "url"=> "/workflows",
+            ]
         ]);        
     }
 }

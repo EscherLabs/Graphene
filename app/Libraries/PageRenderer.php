@@ -74,7 +74,7 @@ class PageRenderer {
                 }
             }
             $all_group_content[] = $mygroup;
-            if (!is_null($current_group) && $current_group->id == $group->id) {
+            if (!is_null($current_group) && $current_group->id == $group->id && isset($mygroup['content'])) {
                 $current_group_content = $mygroup['content'];
             }
         }
@@ -100,10 +100,10 @@ class PageRenderer {
         }
         $render_data['scripts'] = isset($data['scripts'])?$data['scripts']:[];
         $render_data['styles'] = isset($data['styles'])?$data['styles']:[];
-        $render_data['id'] = isset($data['id'])?$data['id']:null;
+        $render_data['id'] = isset($data['id'])?$data['id']:0;
         $render_data['resource'] = isset($data['resource'])?$data['resource']:'app';
         $render_data['name'] = isset($data['name'])?$data['name']:null;
-        $render_data['group'] = $group;
+        $render_data['group'] = !is_null($group)?$group->toArray():['id'=>0];
         if (isset($data['data'])) {
             $render_data['data'] = json_encode($data['data']);
         }else{
@@ -124,6 +124,12 @@ class PageRenderer {
         }
         $render_data['apps_json'] = json_encode($render_data['apps']);
         $render_data['config_json'] = json_encode($data['config']);
+
+        /* Determine is Authenticated User Is Group Admin */
+        if(isset($render_data['user']) && isset($render_data['user']['content_admin_groups']) && isset($render_data['user']['apps_admin_groups'])){
+            $render_data['group']['admin'] = in_array($render_data['group']['id'], $render_data['user']['content_admin_groups']) || in_array($render_data['group']['id'], $render_data['user']['apps_admin_groups']);   
+        }
+        
         return $this->build_response($render_data);
     }
 }

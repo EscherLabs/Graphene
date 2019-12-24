@@ -1096,3 +1096,9 @@ fieldset:disabled .actions{
   92% { transform: rotate(1deg); }
   100% { transform: rotate(0); }
 }
+
+/* Allow Dropdown Menu to Scroll Past Page Bottom */
+.dropdown-menu {
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+}
