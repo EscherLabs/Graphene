@@ -61,6 +61,7 @@ class PageRenderer {
         foreach($groups_content as $groups_index => $group) {
             $mygroup = $group->only('id','name','slug');
             $mygroup['url'] = url('/page/'.$group->slug);
+            $mygroup['hascontent'] = false;
             foreach($content_types as $content_type => $content_type_metadata) {
                 foreach($group[$content_type] as $ctype_index => $content) {
                     if ($content->public || (Auth::check() && Auth::user()->can('get', $content))) {

@@ -3,7 +3,7 @@
     	<ul class="nav nav-pills nav-justified">
     	{{#menu}}
 			<li class="{{#visibility.hidden_xs}}hidden-xs{{/visibility.hidden_xs}} {{#visibility.hidden_sm}}hidden-sm{{/visibility.hidden_sm}} {{#visibility.hidden_md}}hidden-md{{/visibility.hidden_md}} {{#visibility.hidden_lg}}hidden-lg{{/visibility.hidden_lg}} {{type}}_{{id}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{.}},{{/groups}}">
-				<a href="{{url}}" data-{{type}}="{{id}}">{{#composite_limit}}<span class="fa fa-lock"></span>&nbsp;{{/composite_limit}}{{#icon}}<span class="fa fa-{{icon}}"></span>&nbsp;{{/icon}}{{name}}</a>	
+				<a href="{{url}}" data-{{type}}="{{id}}">{{#icon}}<span class="fa {{icon}}"></span>&nbsp;{{/icon}}{{name}}{{#composite_limit}}&nbsp;<span class="fa fa-lock"></span>{{/composite_limit}}</a>	
 			</li>
     	{{/menu}}
     	</ul>
