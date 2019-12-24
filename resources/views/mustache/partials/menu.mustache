@@ -1,9 +1,7 @@
 {{#mygroups.0}}
-	{{#hascontent}}
-		{{^unlisted}}
-			<li class="community_{{id}}"><a href="/page/{{slug}}"> <span data-i18n="{{name}}">{{name}}</span> </a></li>
-		{{/unlisted}}
-	{{/hascontent}}
+    {{#hascontent}}
+        <li class="community_{{id}}"><a href="{{url}}"> <span data-i18n="{{name}}">{{name}}</span> </a></li>
+    {{/hascontent}}
 {{/mygroups.0}}
 {{!other groups}}
 {{#mygroups.1.0}}
@@ -11,12 +9,10 @@
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Other <span class="caret"></span></a>
         <ul class="dropdown-menu" role="menu">
 	    {{#mygroups.1}}
-			{{#hascontent}}
-				{{^unlisted}}
-					<li class="community_{{id}}"><a href="/page/{{slug}}"></i> <span data-i18n="{{name}}">{{name}}</span> </a></li>
-				{{/unlisted}}
-			{{/hascontent}}
-		{{/mygroups.1}}
+            {{#hascontent}}
+                <li class="community_{{id}}"><a href="{{url}}"></i> <span data-i18n="{{name}}">{{name}}</span> </a></li>
+            {{/hascontent}}
+        {{/mygroups.1}}
         </ul>
     </li>
 {{/mygroups.1.0}}

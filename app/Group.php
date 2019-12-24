@@ -184,21 +184,21 @@ class Group extends Model
     {
         return $query->with(['app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
-            $q->where('public','=','1');
-            $q->where('unlisted','=',0);
+            $q->where('public','=',true);
+            $q->where('unlisted','=',false);
             $q->orderBy('order');
         },'pages'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
-            $q->where('public','=','1');
-            $q->where('unlisted','=',0);
+            $q->where('public','=',true);
+            $q->where('unlisted','=',false);
             $q->orderBy('order');
         }])
         ->whereHas('app_instances', function($q) {
-            $q->where('public','=','1');
+            $q->where('public','=',true);
             $q->where('site_id','=',config('app.site')->id);
          })
         ->orWhereHas('pages', function($q) {
-            $q->where('public','=','1');
+            $q->where('public','=',true);
             $q->where('site_id','=',config('app.site')->id);
         })->orWhereHas('workflow_instances', function($q) {
             $q->where('public','=','1');
@@ -208,16 +208,16 @@ class Group extends Model
     public function scopeAppsPages($query)
     {
         return $query->with(['app_instances'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
-            $q->where('unlisted','=',0);
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
+            $q->where('unlisted','=',false);
             $q->orderBy('order');
         },'pages'=>function($q){
-            $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
-            $q->where('unlisted','=',0);
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
+            $q->where('unlisted','=',false);
             $q->orderBy('order');
         },'workflow_instances'=>function($q){
-          $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
-          $q->where('unlisted','=',0);
+          $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
+          $q->where('unlisted','=',false);
           $q->orderBy('order');
         }])->whereIn('id', Auth::user()->groups);
     }

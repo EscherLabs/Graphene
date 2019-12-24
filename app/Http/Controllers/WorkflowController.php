@@ -11,6 +11,7 @@ use App\WorkflowDevelopers;
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
 use App\Libraries\Templater;
+use App\Libraries\PageRenderer;
 
 class WorkflowController extends Controller
 {
@@ -154,18 +155,11 @@ class WorkflowController extends Controller
     }
 
     public function summary(Request $request) {
-        if (Auth::check()) { /* User is Authenticated */
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        } else{
+        if (!Auth::check()) { /* User is not Authenticated */
             abort(403);
         }
-        $template = new Templater();
-        return $template->render([
-            'mygroups'=>$links,
-            'name'=>'workflow',
-            'slug'=>'workflow',
-            'id'=>0,
-            'data'=>[],
+        $renderer = new PageRenderer();
+        return $renderer->render([
             'config'=>[
                 "sections"=>[
                     [[
@@ -180,11 +174,7 @@ class WorkflowController extends Controller
                     ]]],
                 "layout"=>'<div class="col-sm-9 cobler_container"></div><div class="col-sm-3 cobler_container"></div>'
             ],
-            'scripts'=>[],
-            'styles'=>[],
-            'template'=>"main",
-            'apps'=>collect([1, 2, 3]),
-            'resource'=>'flow'
-        ]);
+            'resource'=>'workflow',
+        ]);        
     }
 }

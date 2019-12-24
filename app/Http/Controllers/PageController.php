@@ -11,6 +11,7 @@ use App\AppInstance;
 use App\WorkflowInstance;
 use Illuminate\Http\Request;
 use App\Libraries\Templater;
+use App\Libraries\PageRenderer;
 use App\Libraries\CustomAuth;
 
 class PageController extends Controller
@@ -161,13 +162,10 @@ class PageController extends Controller
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $apps = AppInstance::whereIn('id', $uapp_instances)->with('app')->get();
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
             $apps = AppInstance::whereIn('id', $uapp_instances)->where('public', '=', 1)->with('app')->get();
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
-
 
         $scripts = [];
         $styles = [];
@@ -193,22 +191,16 @@ class PageController extends Controller
             if(!isset($myPage->mobile_order)){
                 $myPage->mobile_order = [];
             }
-            $template = new Templater();
-            return $template->render([
-                'mygroups'=>$links, 
-                'apps'=>$apps,
-                'name'=>$myPage->name, 
-                'slug'=>$myPage->slug, 
-                'config'=>$config, 
-                'data'=>$myPage->mobile_order, 
-                'id'=>$myPage->id,
+            $renderer = new PageRenderer();
+            return $renderer->render([
                 'group'=>$groupObj,
+                'config'=>$config,
+                'apps'=>$apps,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
-                'template'=>$renderer,
-                'resource'=>'page'
-            ]);
-            
+                'id'=>$myPage->id,
+                'resource'=>'page',
+            ]);            
         }
         abort(404,'Page not found');
     }

@@ -21,6 +21,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
+use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use \Ds\Vector;
@@ -147,7 +148,7 @@ class WorkflowSubmissionController extends Controller
         $state_data['state'] = $state->name;
         if (!isset($state->actions)) { $state->actions = []; }
         $state_data['actions'] = array_map(function ($ar) {
-            return array_only((array)$ar,['label','name','type']);
+            return Arr::only((array)$ar,['label','name','type']);
         }, $state->actions);
         $state_data['is']['actionable'] = (count($state_data['actions'])>0);
         $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
@@ -443,15 +444,9 @@ class WorkflowSubmissionController extends Controller
 
     public function report(WorkflowSubmission $workflow_submission,Request $request) {
         $workflow_submission = WorkflowSubmission::where('id','=',$workflow_submission->id)->with('user')->with('workflowVersion')->with('workflow')->first();
-        // if (Auth::user()->site_developer || Auth::user()->site_admin) {
-        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        // } else {
-        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        // }
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $links = Group::AppsPages()->where('unlisted','=',0)->where('site_id',config('app.site')->id)->orderBy('order')->get();
         } 
         else { /* User is not Authenticated */
             $return = $this->customAuth->authenticate($request);
@@ -473,24 +468,24 @@ class WorkflowSubmissionController extends Controller
             $is_assigned = ($is_assigned || in_array($workflow_submission->assignment_id, Auth::user()->groups) );
         }
 
-        // if($myWorkflowInstance != null) {
-            $template = new Templater();
-            return $template->render([
-                'mygroups'=>$links,
-                'name'=>'workflow',
-                'slug'=>'workflow',
-                'id'=>0,
-                'data'=>[],
-                // 'config'=>json_decode('{"sections":[[{"title":"'.$workflow_instance->name.' ","widgetType":"WorkflowSubmissionReport","options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
-                'config'=>json_decode('{"sections":[[{"title":"Title here ","widgetType":"WorkflowSubmissionReport","report_url":"'.URL::to('/workflows/report/'.$workflow_submission->id).'", "user":'.json_encode($current_user).' ,"is_assigned":'.json_encode($is_assigned).', "assignment":'.json_encode($assignment).', "options":'.json_encode($workflow_submission).',"titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-12 cobler_container\"></div>"}'),
-                // 'group'=>(Object)array("id"=>"0"),
-                'scripts'=>[],
-                'styles'=>[],
-                'template'=>"main",
-                'apps'=>(Object)[],
-                'resource'=>'flow'
-            ]);
-        // }
+        $renderer = new PageRenderer();
+        return $renderer->render([
+            'config'=>[
+                "sections"=>[[[
+                    "title"=>"Title here ",
+                    "widgetType"=>"WorkflowSubmissionReport",
+                    "report_url"=>URL::to('/workflows/report/'.$workflow_submission->id),
+                    "user"=>$current_user,
+                    "is_assigned"=>$is_assigned,
+                    "assignment"=>$assignment,
+                    "options"=>$workflow_submission,
+                    "titlebar"=>true,
+                    "container"=>true,
+                ]]],
+                "layout"=>'<div class="col-sm-12 cobler_container"></div>'
+                ],
+            'resource'=>'workflow',
+        ]);
         return $workflows;
     }
 

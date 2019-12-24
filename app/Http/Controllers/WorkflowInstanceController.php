@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
+use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 
@@ -152,7 +153,6 @@ class WorkflowInstanceController extends Controller
             if($myWorkflow->public == 0) {
                 $this->authorize('fetch' ,$myWorkflow);
             }
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
             $myWorkflow = WorkflowInstance::with('workflow')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
@@ -162,32 +162,33 @@ class WorkflowInstanceController extends Controller
                     return $return;
                 }
             }
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
 
         $myWorkflow->findVersion();
 
 
         $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
-        $scripts = [];
-        $styles = [];
         if($myWorkflow != null) {
-            $template = new Templater();
-            return $template->render([
-                'mygroups'=>$links,
-                'name'=>$myWorkflow->name,
-                'slug'=>$myWorkflow->slug,
-                'id'=>$myWorkflow->id,
-                'data'=>[],
-                'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflow->name.'","user":'.Auth::user().',"current":'.json_encode($current).',"workflow":'.json_encode($myWorkflow).',"workflow_id":'.$myWorkflow->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
+            $renderer = new PageRenderer();
+            return $renderer->render([
                 'group'=>$groupObj,
-                'scripts'=>$scripts,
-                'styles'=>$styles,
-                'template'=>$renderer,
-                'apps'=>(Object)[],
-                'resource'=>'flow'
+                'config'=>[
+                    "sections"=>[[],
+                        [[
+                            "title"=>$myWorkflow->name,
+                            "user"=>Auth::user(),
+                            "current"=>$current,
+                            "workflow"=>$myWorkflow,
+                            "workflow_id"=>$myWorkflow->id,
+                            "widgetType"=>"Workflow",
+                            "container"=>true
+                        ]],
+                    []],
+                    "layout"=>'<div class="col-lg-offset-2 col-md-offset-1 col-lg-8 col-md-10 col-sm-12 cobler_container"></div></div>'
+                ],
+                'id'=>$myWorkflow->id,
+                'resource'=>'workflow',
             ]);
-
         }
         abort(404,'Workflow not found');
     }

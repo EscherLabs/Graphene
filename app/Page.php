@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Page extends Model
 {
     protected $fillable = ['group_id', 'name', 'slug', 'content', 'mobile_order','unlisted','public','icon','device','groups'];
-    protected $casts = ['content' => 'object', 'mobile_order' => 'array','groups'=>'array','public' => 'boolean'];
+    protected $casts = ['content' => 'object', 'mobile_order' => 'array','groups'=>'array','public' => 'boolean','unlisted'=>'boolean'];
     protected $appends = ['hidden_xs', 'hidden_sm', 'hidden_md', 'hidden_lg', 'composite_limit'];
     // protected $hidden = ['groups'];
 

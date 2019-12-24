@@ -155,19 +155,15 @@ class AppInstanceController extends Controller
             if($myApp->public == 0) {
                 $this->authorize('fetch' ,$myApp);
             }
-            $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         } else { /* User is not Authenticated */
             $current_user = new User;
-
             $myApp = AppInstance::with('app')->where('group_id','=', $group)->where('slug', '=', $slug)->where('public','=',true)->first();
             if (is_null($myApp)) { 
-                //abort(403); // TJC -- Changed to Force Login, not 403
                 $return = $this->customAuth->authenticate($request);
                 if(isset($return)){
                     return $return;
                 }
             }
-            $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         }
 
         $myApp->findVersion();
@@ -185,23 +181,15 @@ class AppInstanceController extends Controller
         }
         if($myApp != null) {
             $renderer = new PageRenderer();
-            return $renderer->render([]);
-            $template = new Templater();
-            return $template->render([
-                'mygroups'=>$links,
-                'name'=>$myApp->name,
-                'slug'=>$myApp->slug,
-                'id'=>$myApp->id,
-                'uapp'=>$myApp,
-                'data'=>array(),
-                'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
+            return $renderer->render([
                 'group'=>$groupObj,
+                'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
+                'uapp'=>$myApp,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
-                'template'=>$renderer,
-                'resource'=>'app'
+                'id'=>$myApp->id,
+                'resource'=>'app',
             ]);
-
         }
         abort(404,'App not found');
     }
