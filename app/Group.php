@@ -207,7 +207,7 @@ class Group extends Model
     }
     public function scopeAppsPages($query)
     {
-        return $query->with(array('app_instances'=>function($q){
+        return $query->with(['app_instances'=>function($q){
             $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
             $q->where('unlisted','=',0);
             $q->orderBy('order');
@@ -219,6 +219,12 @@ class Group extends Model
           $q->select('group_id','id', 'name', 'slug', 'icon', 'unlisted','device','groups');
           $q->where('unlisted','=',0);
           $q->orderBy('order');
-        }))->whereIn('id', Auth::user()->groups);
+        }])->whereIn('id', Auth::user()->groups);
+    }
+    public function scopeMenuData($query) {
+        return $this->scopeAppsPages($query);
+    }
+    public function scopePublicMenuData($query) {
+        return $this->scopePublicAppsPages($query);
     }
 }

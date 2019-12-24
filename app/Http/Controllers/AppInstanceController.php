@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
+use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 
@@ -183,6 +184,8 @@ class AppInstanceController extends Controller
             }
         }
         if($myApp != null) {
+            $renderer = new PageRenderer();
+            return $renderer->render([]);
             $template = new Templater();
             return $template->render([
                 'mygroups'=>$links,
