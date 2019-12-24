@@ -2,7 +2,7 @@
     <div class="col-md-12">
     	<ul class="nav nav-pills nav-justified">
     	{{#menu}}
-			<li class="{{#visibility.hidden_xs}}hidden-xs{{/visibility.hidden_xs}} {{#visibility.hidden_sm}}hidden-sm{{/visibility.hidden_sm}} {{#visibility.hidden_md}}hidden-md{{/visibility.hidden_md}} {{#visibility.hidden_lg}}hidden-lg{{/visibility.hidden_lg}} {{type}}_{{id}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{groups}}{{/groups}}">
+			<li class="{{#visibility.hidden_xs}}hidden-xs{{/visibility.hidden_xs}} {{#visibility.hidden_sm}}hidden-sm{{/visibility.hidden_sm}} {{#visibility.hidden_md}}hidden-md{{/visibility.hidden_md}} {{#visibility.hidden_lg}}hidden-lg{{/visibility.hidden_lg}} {{type}}_{{id}} {{^groups}}group_all{{/groups}}" data-groups="{{#groups}}{{.}},{{/groups}}">
 				<a href="{{url}}" data-{{type}}="{{id}}">{{#composite_limit}}<span class="fa fa-lock"></span> {{/composite_limit}}{{name}}</a>	
 			</li>
     	{{/menu}}

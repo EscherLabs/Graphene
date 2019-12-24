@@ -102,6 +102,7 @@ class PageRenderer {
         $render_data['styles'] = isset($data['styles'])?$data['styles']:[];
         $render_data['id'] = isset($data['id'])?$data['id']:null;
         $render_data['resource'] = isset($data['resource'])?$data['resource']:'app';
+        $render_data['name'] = isset($data['name'])?$data['name']:null;
         $render_data['group'] = $group;
         if (isset($data['data'])) {
             $render_data['data'] = json_encode($data['data']);

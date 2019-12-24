@@ -472,7 +472,7 @@ class WorkflowSubmissionController extends Controller
         return $renderer->render([
             'config'=>[
                 "sections"=>[[[
-                    "title"=>"Title here ",
+                    "title"=>"Workflow Submission",
                     "widgetType"=>"WorkflowSubmissionReport",
                     "report_url"=>URL::to('/workflows/report/'.$workflow_submission->id),
                     "user"=>$current_user,
@@ -485,6 +485,7 @@ class WorkflowSubmissionController extends Controller
                 "layout"=>'<div class="col-sm-12 cobler_container"></div>'
                 ],
             'resource'=>'workflow',
+            'name'=>'Workflow Submission',
         ]);
         return $workflows;
     }

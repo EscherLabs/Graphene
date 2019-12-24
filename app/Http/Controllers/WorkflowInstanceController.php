@@ -188,6 +188,7 @@ class WorkflowInstanceController extends Controller
                 ],
                 'id'=>$myWorkflow->id,
                 'resource'=>'workflow',
+                'name'=>$myWorkflow->name,
             ]);
         }
         abort(404,'Workflow not found');

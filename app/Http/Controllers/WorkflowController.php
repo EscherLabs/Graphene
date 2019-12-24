@@ -175,6 +175,7 @@ class WorkflowController extends Controller
                 "layout"=>'<div class="col-sm-9 cobler_container"></div><div class="col-sm-3 cobler_container"></div>'
             ],
             'resource'=>'workflow',
+            'name'=>'Workflow Dashboard',
         ]);        
     }
 }

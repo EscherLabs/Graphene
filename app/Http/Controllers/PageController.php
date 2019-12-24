@@ -200,6 +200,7 @@ class PageController extends Controller
                 'styles'=>$styles,
                 'id'=>$myPage->id,
                 'resource'=>'page',
+                'name'=>$myPage->name,
             ]);            
         }
         abort(404,'Page not found');

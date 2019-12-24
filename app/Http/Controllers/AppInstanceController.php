@@ -189,6 +189,7 @@ class AppInstanceController extends Controller
                 'styles'=>$styles,
                 'id'=>$myApp->id,
                 'resource'=>'app',
+                'name'=>$myApp->name,
             ]);
         }
         abort(404,'App not found');
