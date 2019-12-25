@@ -56,8 +56,12 @@ class PageRenderer {
             $groups_content = Group::publicMenuData()->where('unlisted','=',0)->orderBy('order')->get();
         }
         $all_group_content = $current_group_content = null;
-        // return $groups_content;
-        $content_types = ['pages'=>['slug'=>'page'],'app_instances'=>['slug'=>'app'],'workflow_instances'=>['slug'=>'workflow'],'links'=>['slug'=>'link']];
+        $content_types = [
+            'pages'=>['slug'=>'page'],
+            'app_instances'=>['slug'=>'app'],
+            'workflow_instances'=>['slug'=>'workflow'],
+            // 'links'=>['slug'=>'link']
+        ];
         foreach($groups_content as $groups_index => $group) {
             $mygroup = $group->only('id','name','slug');
             $mygroup['url'] = url('/page/'.$group->slug);
