@@ -183,7 +183,15 @@ class AppInstanceController extends Controller
             $renderer = new PageRenderer();
             return $renderer->render([
                 'group'=>$groupObj,
-                'config'=>json_decode('{"sections":[[{"title":"'.$myApp->name.'","app_id":'.$myApp->id.',"widgetType":"uApp","container":true}]],"layout":4}'),
+                'config'=>[
+                    "sections"=>[[[
+                        "title"=>$myApp->name,
+                        "app_id"=>$myApp->id,
+                        "widgetType"=>"uApp",
+                        "container"=>true
+                    ]]],
+                    "layout"=>4,
+                ],
                 'uapp'=>$myApp,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
