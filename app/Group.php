@@ -216,11 +216,12 @@ class Group extends Model
             $q->where('unlisted','=',false);
             $q->orderBy('order');
         },'workflow_instances'=>function($q){
-          $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
-          $q->where('unlisted','=',false);
-          $q->orderBy('order');
+            $q->select('group_id','id', 'name', 'slug', 'icon', 'public', 'unlisted','device','groups');
+            $q->where('unlisted','=',false);
+            $q->orderBy('order');
         },'links'=>function($q){
-            $q->select('group_id','id','link','title','icon','image','color');
+            $q->select('group_id','id','link','title','icon','image','color','unlisted','device');
+            $q->where('unlisted','=',false);
             $q->orderBy('order');
         }])->whereIn('id', Auth::user()->groups);
     }

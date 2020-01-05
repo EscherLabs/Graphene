@@ -60,7 +60,7 @@ class PageRenderer {
             'pages'=>['slug'=>'page'],
             'app_instances'=>['slug'=>'app'],
             'workflow_instances'=>['slug'=>'workflow'],
-            // 'links'=>['slug'=>'link']
+            'links'=>['slug'=>'link']
         ];
         foreach($groups_content as $groups_index => $group) {
             $mygroup = $group->only('id','name','slug');
@@ -76,7 +76,7 @@ class PageRenderer {
                             $mycontent['visibility'] = $content->only('hidden_xs','hidden_sm','hidden_md','hidden_lg');
                         } else if ($content_type === 'links') {
                             $mycontent = $content->only('id','title','link','icon');
-                            $mycontent['url'] = $mycontent['link'];
+                            $mycontent['url'] = url('/link/'.$mycontent['id']);
                             $mycontent['name'] = $mycontent['title'];
                         } 
                         $mygroup['content'][] = $mycontent;

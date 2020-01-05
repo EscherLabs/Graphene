@@ -9,6 +9,7 @@ use App\Link;
 use App\User;
 use App\Group;
 use App\GroupComposite;
+use App\Visit;
 
 class LinkController extends Controller
 {
@@ -73,5 +74,19 @@ class LinkController extends Controller
         if ($link->delete()) {
             return 1;
         }
+    }
+
+    public function redirect(Request $request, Link $link) {
+        $visit = new Visit([
+            'resource_id'=>$link->id,
+            'resource_type'=>'link',
+        ]);
+        if (Auth::check()) {
+            $visit->user_id = Auth::user()->id;
+        } else {
+            $visit->user_id = 0;
+        }
+        $visit->save();
+        return redirect($link->link);
     }
 }

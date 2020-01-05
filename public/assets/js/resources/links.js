@@ -14,7 +14,9 @@ $.ajax({
 			type:'select', choices:'/assets/data/icons.json',
 			required: false,template:'{{#attributes.image}}<img src="{{attributes.image}}" style="height:18px;">{{/attributes.image}}{{^attributes.image}}<i class="{{value}}" style="color:{{attributes.color}}"></i>{{/attributes.image}}'},
 			{label: 'Color', name:'color', required: false,template:'<div style="background-color:{{value}};width:30px;height:18px;"></div>',showColumn: false},
-			{name: 'id', type:'hidden'}
+            {label: 'Unlisted (In Menu)', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0,value:1 },
+			{label: 'Limit Device (In Menu)', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},			
+            {name: 'id', type:'hidden'}
 		];
 		if(resource_id !== ''){
 			tableConfig.schema[0].enabled = false;

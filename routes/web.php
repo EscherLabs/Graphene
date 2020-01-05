@@ -22,7 +22,7 @@ Route::get('/','UserDashboardController@index');
 Route::get('/css','UserDashboardController@css')->middleware('no.save.session');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
-
+Route::get('/link/{link}','LinkController@redirect')->middleware('no.save.session');
 
 Route::get('/setup',function(){
   return redirect('/');
