@@ -1,6 +1,6 @@
 {{#links}}
 {{#favorite}}
-  <a href="{{link}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="icon" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
+  <a href="/link/{{id}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="icon" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
 {{/favorite}}
 {{/links}}
 {{! <hr style="margin: 16px;border: solid 1px #ffd700;"> }}
@@ -19,8 +19,7 @@
       	<div class="list-group" style="margin-bottom:0;min-height:30px" data-title="links" id="links" data-label="Useful Links">
         {{#links}}
         {{^favorite}}
-          <a href="{{link}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="{{title}}" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
-
+          <a href="/link/{{id}}" data-guid="{{id}}" data-image="{{image}}" data-icon="{{icon}}" data-color="{{color}}" data-link="{{link}}" data-title="{{title}}" target="_blank" class="filterable list-group-item">{{#icon}}<i style="color:{{color}}"  class="{{icon}}"></i>{{/icon}} {{#image}}<img height="16px" alt="{{title}}" src="{{image}}"/>{{/image}} {{title}}<i style="font-size:21px;position: absolute;top: 10px;right: 10px;{{#favorite}}color:gold{{/favorite}}" class="favorites parent-hover fa fa-star{{^favorite}}-o{{/favorite}}"></i></a>
         {{/favorite}}
         {{/links}}
       </div>
