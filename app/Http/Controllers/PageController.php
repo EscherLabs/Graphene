@@ -27,11 +27,11 @@ class PageController extends Controller
         if (Auth::user()->site_admin) {
             $pages = Page::select('id','group_id','name','slug','icon','order','unlisted','device','public')->whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id);
-            })->orderBy('group_id','order')->get();
+            })->orderBy('group_id','desc')->orderBy('order','desc')->get();
         } else {
             $pages = Page::select('id','group_id','name','slug','icon','order','unlisted','device','public')->whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->content_admin_groups);
-            })->orderBy('group_id','order')->get();
+            })->orderBy('group_id','desc')->orderBy('order','desc')->get();
         }
         return $pages;
     }

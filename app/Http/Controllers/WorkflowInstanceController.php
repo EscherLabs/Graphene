@@ -37,14 +37,14 @@ class WorkflowInstanceController extends Controller
                 ->with('workflow')
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id);
-                })->orderBy('group_id','order');
+                })->orderBy('group_id','desc')->orderBy('order','desc');
         } else {
             $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public')
                 ->with('workflow')
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
-                })->orderBy('group_id','order');
-        }
+                })->orderBy('group_id','desc')->orderBy('order','desc');
+            }
         if($request->has('workflow_id')){
             $workflow_instances->where('workflow_id','=',$request->get('workflow_id'));
         }

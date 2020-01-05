@@ -360,10 +360,10 @@ class WorkflowSubmissionController extends Controller
         }
         return WorkflowSubmission::where('id','=',$workflow_submission->id)->with(array('user'=>function($query){
         },'logs'=>function($query){
-            $query->with('user')->orderBy('updated_at','DESC')->get();
+            $query->with('user')->orderBy('updated_at','desc')->get();
         },'files'=>function($query){
             // ->with('user')
-            $query->withTrashed()->orderBy('updated_at','DESC')->with('user')->with('deleted_by')->get();
+            $query->withTrashed()->orderBy('updated_at','desc')->with('user')->with('deleted_by')->get();
         }) )->first();
         // return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
     }
