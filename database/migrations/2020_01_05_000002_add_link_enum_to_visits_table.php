@@ -13,7 +13,7 @@ class AddLinkEnumToVisitsTable extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE visits MODIFY resource_type ENUM('page','app','flow','link') NOT NULL DEFAULT 'page';");
+        DB::statement("ALTER TABLE visits MODIFY resource_type ENUM('page','app','workflow','link') NOT NULL DEFAULT 'page';");
     }
 
     /**
