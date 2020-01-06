@@ -68,7 +68,8 @@ class PageRenderer {
             $mygroup['hascontent'] = false;
             foreach($content_types as $content_type => $content_type_metadata) {
                 foreach($group[$content_type] as $ctype_index => $content) {
-                    if ($content->public || (Auth::check() && Auth::user()->can('get', $content))) {
+                    // If content is public or user can 'get' content or user is admin of the group
+                    if ($content->public || (Auth::check() && (Auth::user()->can('get', $content) || Auth::user()->group_admin($group->id)))) {
                         if (in_array($content_type,['pages','app_instances','workflow_instances'])) {
                             $mycontent = $content->only('id','name','icon','slug','groups','composite_limit');
                             $mycontent['type'] = $content_type_metadata['slug'];
