@@ -77,6 +77,7 @@ class PageRenderer {
                             $mycontent['visibility'] = $content->only('hidden_xs','hidden_sm','hidden_md','hidden_lg');
                         } else if ($content_type === 'links') {
                             $mycontent = $content->only('id','title','link','icon');
+                            $mycontent['icon'] = ' '.$mycontent['icon'];
                             $mycontent['url'] = url('/link/'.$mycontent['id']);
                             $mycontent['name'] = $mycontent['title'];
                         } 
