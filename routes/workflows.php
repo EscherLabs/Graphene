@@ -6,7 +6,7 @@ Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
 
 Route::get('/workflows','WorkflowController@summary');
-Route::get('/workflows/report/{workflow_submission}', 'WorkflowSubmissionController@report')->middleware('can:view,workflow_submission');
+Route::get('/workflows/report/{workflow_submission}', 'WorkflowSubmissionController@report')->middleware('custom.auth')->middleware('can:view,workflow_submission');
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
     Route::get('/workflows/{workflow}', 'WorkflowController@admin')->middleware('can:get,workflow');
