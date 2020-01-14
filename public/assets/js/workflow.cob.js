@@ -56,7 +56,12 @@ baseFields = _.map([
 	{type: 'number', label: 'Size', name: 'size',min:1,parse:[{type:"requires",name:"size"}],show:[{name:"type",value:['textarea','select','radio'],type:"matches"}]},
 	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
 
-	{type: 'select', label: 'Width',forceRow:true, value:"12", name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] },
+	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
+		return parseInt(e.value);
+	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
+			return parseInt(e.initial.value||12)
+		
+	} },
 	{type: 'select', label: 'Offset', value:"0", name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
@@ -73,7 +78,7 @@ baseFields = _.map([
 
 
 )
-baseCond =[
+minCond = [
 	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
 	},
@@ -83,6 +88,9 @@ baseCond =[
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+
+]
+baseCond =minCond.concat([
 
 	{type: 'select',other:true, columns:12, label:'Include value in data <span class="pull-right text-muted">"parse"</span>', value:'show',name:"parse",parse:[{type:"not_matches",name:"parse",value:"show"}],options:		
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
@@ -95,7 +103,7 @@ baseCond =[
 	},
 	{type: 'fieldset',columns:11,offset:'1', label:false, name:"required", fields:myconditions, array:{min:1,max:1}, show:[{name:"required",value:['other'], type:"matches"}]}
 	
-]
+])
 
 if(typeof workflow !== 'undefined'){
 
@@ -123,13 +131,14 @@ baseCond =[
 	
 ]
 
-
 	baseCond.splice(6,0,	{type: 'select',other:true, columns:12, label:'Include value in report <span class="pull-right text-muted">"report"</span>', value:'show',name:"report",parse:[{type:"not_matches",name:"report",value:"show"}],options:		
 			[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'},{label:'Use same settings as "Show"',value:'show'},{label:'Use same settings as "Parse"',value:'parse'}, {label:"Conditionally",value:"other"}]},{type:'optgroup',label:"Methods",options:'methods',format:{value:"method:{{value}}",label:"Method: {{label}}"}}]
 		},
 		{type: 'fieldset',columns:11,offset:'1', label:false,name:"report",fields:myconditions,array:{min:1,max:1},show:[{name:"report",value:['other'],type:"matches"}]},
 	)
 }
+
+
 
 baseCond = _.map(baseCond,function(item){
 	item.target = "#collapseConditions .panel-body";
@@ -153,7 +162,8 @@ baseConditions = baseCond.concat(_.map([
 
 
 	{name:'test',label:"Method",show:[{name:"type",value:['custom'],type:"matches"}],type:'smallcombo',options:	[{type:'optgroup',label:"Methods",options:'methods',format:{value:"{{value}}",label:"Method: {{label}}"}}]},
-	{name:'regex',label:"Regex",show:[{name:"type",value:['pattern'],type:"matches"}]},
+	{name:'regex',forceRow:true,label:"Regex",show:[{name:"type",value:['pattern'],type:"matches"}]},
+	{name:'flags',label:"Flags",show:[{name:"type",value:['pattern'],type:"matches"}]},
 	{name:'message',columns:12,label:"Message",show:[{name:"type",value:['pattern'],type:"matches"}]},
 	{name:'name',label:"Name",show:[{name:"type",value:['matches'],type:"matches"}]},
 		{type: 'number', label: 'Minimum', name: 'min',value:1,columns:3,show:[{name:"type",value:['numeric','length'],type:"matches"}]},
@@ -167,6 +177,30 @@ baseConditions = baseCond.concat(_.map([
 	item.target = "#collapseValidation .panel-body";
 	return item;
 }))
+
+
+if(typeof workflow == 'undefined'){
+	baseConditions = baseCond.concat(_.map([
+		{type: 'textarea', label: 'Template', name: 'template',columns:12,parse:[{type:"requires"}]},
+
+		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
+		fields: [
+			{label: 'Key', name:"key"},
+			{label: 'Value', name:"value"}
+		]
+	}
+	],function(item){
+		item.target = "#collapseGrid .panel-body";
+		return item;
+	}))
+	// baseConditions = baseCond.concat(_.map([
+	// 	{type: 'text', label: 'Template', name: 'template',parse:[{type:"requires"}]}
+	// ],function(item){
+	// 	item.target = "#collapseGrid .panel-body";
+	// 	return item;
+	// }))
+
+}
 gformEditor = function(container){
 	return function(){
 		var fieldConfig = this.get();
@@ -228,6 +262,7 @@ gformEditor = function(container){
 		$('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
 		$('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
 		$('.panelEvents').toggle(!!_.find(formConfig.fields,{target:"#collapseEvents .panel-body"}));
+		$('.panelGrid').toggle(!!_.find(formConfig.fields,{target:"#collapseGrid .panel-body"}));
 
 		// $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"options"}));
 		var temp = _.find(formConfig.fields,{name:"name"});
@@ -461,9 +496,19 @@ Cobler.types.collection = function(container) {
 				{type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires"}], fields:[
 					{name:"label",label:"Label",parse:[{type:"requires"}]},
 					{name:"value",label:"Value",parse:[{type:"requires"}]},
-					{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
+					{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"/type"}]}
 					// {name:"Title",label:"title"}
-				] }
+				] },
+				{type: 'select',other:true, columns:12, label:'Show the Options <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
+					[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
+				},
+				{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
+			
+				{type: 'select',other:true, columns:12, label:'Allow the options to be Chosen <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
+					[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
+				},
+				{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+			
 				// {label: 'Option Type',name:"options"}
 			]
 		}
@@ -691,6 +736,21 @@ Events
     </div>
   </div>
 </div>
+
+<div class="panel panel-default panelGrid">
+  <div class="panel-heading" role="tab" id="headingGrid">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseGrid" aria-expanded="false" aria-controls="collapseGrid">
+Grid
+      </a>
+    </h4>
+  </div>
+  <div id="collapseGrid" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingGrid">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
 </div>
 </form>
 `

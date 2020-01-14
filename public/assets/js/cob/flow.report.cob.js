@@ -164,7 +164,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
       return log;
     },
 		initialize: function(el){
-      $('body').append('<style>.modal.gform .modal-dialog{width:1000px}</style>')
+      $('body').append('<style>@media (min-width: 992px) {.modal.gform .modal-dialog{width:992px}}</style>')
       if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
           this.set({collapsed:collapsed});
