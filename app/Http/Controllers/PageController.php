@@ -77,7 +77,7 @@ class PageController extends Controller
         return $this->render("main", $group, $slug, $request);
     }
 
-    public function render($renderer = "main", $group, $slug = null, Request $request) {
+    public function render($template = "main", $group, $slug = null, Request $request) {
         if(!is_numeric($group)) {
             $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
             if (is_null($groupObj)) { abort(404);}
@@ -198,6 +198,7 @@ class PageController extends Controller
                 'apps'=>$apps,
                 'scripts'=>$scripts,
                 'styles'=>$styles,
+                'template'=>$template,
                 'id'=>$myPage->id,
                 'resource'=>'page',
                 'name'=>$myPage->name,

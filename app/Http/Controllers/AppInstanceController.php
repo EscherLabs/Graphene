@@ -134,7 +134,7 @@ class AppInstanceController extends Controller
         return $this->render("main", $group, $slug, $request);
     }
 
-    public function render($renderer = "main", $group, $slug, Request $request) {
+    public function render($template = "main", $group, $slug, Request $request) {
         if(!is_numeric($group)) {
             $groupObj = Group::with('composites')->where('slug','=',$group)->first();
 			$group = $groupObj->id;
@@ -194,6 +194,7 @@ class AppInstanceController extends Controller
                 ],
                 'uapp'=>$myApp,
                 'scripts'=>$scripts,
+                'template'=>$template,
                 'styles'=>$styles,
                 'id'=>$myApp->id,
                 'resource'=>'app',
