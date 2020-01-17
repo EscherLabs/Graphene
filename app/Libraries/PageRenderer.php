@@ -38,9 +38,7 @@ class PageRenderer {
             'partials_loader' => $partials_loader,
             'cache' => storage_path('cache/mustache'),
         ]);
-        if (!isset($data['template'])) {
-            $data['template'] = 'main';
-        }   
+
         $tpl = $m->loadTemplate($data['template']);
         return response($tpl->render($data))
             ->header('Content-Type', 'text/html')
@@ -100,6 +98,11 @@ class PageRenderer {
 
         // Build Data Object
         $render_data = [];
+        if (!isset($data['template'])) {
+            $render_data['template'] = 'main';
+        } else{
+            $render_data['template'] = $data['template'];
+        }
         $this->set_defaults($render_data);
         $slice_size = 5;
         $render_data['mygroups'] = [
@@ -144,5 +147,6 @@ class PageRenderer {
         }
         
         return $this->build_response($render_data);
+        
     }
 }
