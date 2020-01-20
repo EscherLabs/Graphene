@@ -9,21 +9,15 @@ use App\WorkflowActivityLog;
 use App\Group;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class WorkflowSubmissionPolicy
 {
     use HandlesAuthorization;
 
-    public function take_action(User $user, WorkflowSubmission $workflow_submission)
-    {
-        // User is Assigned to Submission (User Assignment Type)
-        if ($workflow_submission->assignment_type === 'user' && $workflow_submission->assignment_id === $user->id) {
-            return true;
-        }
-        // User is Assigned to Submission (Group Assignment Type)
-        if ($workflow_submission->assignment_type === 'group' && $user->group_member($workflow_submission->assignment_id)) {
-            return true;
-        }
+    public function take_action(User $user, WorkflowSubmission $workflow_submission) {  
+        // Handle Actual Permissions in Controller
+        return $this->view($user, $workflow_submission);      
     }
 
     public function view(User $user, WorkflowSubmission $workflow_submission)

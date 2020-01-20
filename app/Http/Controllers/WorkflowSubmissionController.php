@@ -26,11 +26,9 @@ use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use \Ds\Vector;
 
-class WorkflowSubmissionController extends Controller
-{
+class WorkflowSubmissionController extends Controller {
     public function __construct() {
         // $this->middleware('auth')->except('run','fetch', 'get_data');
-
         $this->customAuth = new CustomAuth();
     }
 
@@ -70,34 +68,40 @@ class WorkflowSubmissionController extends Controller
 
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
         $m = new \Mustache_Engine;
-
         $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
         $myWorkflowInstance->findVersion();
-
+        $owner = User::find($workflow_submission->user_id);
         $start_state = $workflow_submission->state;
         $start_assignment = $workflow_submission->only('assignment_type','assignment_id');
         $flow = $myWorkflowInstance->version->code->flow;
         if(is_string($flow)){
             $flow = json_decode($flow);
         }
-        $oldstate = null;
-        foreach($flow  as $struct) {
-            if ($workflow_submission->state == $struct->name) {
-                $oldstate = $struct;
-                break;
-            }
-        }
-        if(isset($oldstate->onExit)){
-            $this->executeTasks($oldstate->onExit, $workflow_submission->data);
-        }
-
-        $workflow_submission->data = (object) array_merge((array) $workflow_submission->data, (array) $request->get('_state'));
-        
-        $owner = User::find($workflow_submission->user_id);
+        // Determine Previous State (Object) -- State we are leaving
+        $previous_state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
+            return $value->name === $workflow_submission->state;
+        });
+        $previous_status = $workflow_submission->status;
+        // Get Action (Object)
+        $action = Arr::first($previous_state->actions, function ($value, $key) {
+            return $value->name === request()->get('action');
+        });  
+        // Set New State (String)
+        $workflow_submission->state = $action->to;   
+        // Determine New State (Object) -- State we are entering
+        $state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
+            return $value->name === $workflow_submission->state;
+        });     
+        // Set New Status (String)
+        if(isset($state->status)){
+            $workflow_submission->status = $state->status;
+        }else{
+            $workflow_submission->status = 'open';
+        }             
 
         $state_data = [];
         $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
-        $state_data['form'] = $workflow_submission->data;
+        $state_data['form'] = $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
         $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
@@ -108,42 +112,15 @@ class WorkflowSubmissionController extends Controller
         $state_data['workflow']['instance'] = $myWorkflowInstance->only('group_id','slug','name','icon','public','configuration');
         $state_data['workflow']['version'] = $myWorkflowInstance->version->only('id','summary','description','stable');
         $state_data['comment'] = ($request->has('comment'))?$request->get('comment'):null;
-        $state_data['previous']['status'] = $workflow_submission->status;
-        $state_data['previous']['state'] = $oldstate->name;
+        $state_data['previous']['status'] = $previous_status;
+        $state_data['previous']['state'] = $previous_state->name;
         $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
         $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
         $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
-        $state_data['datamap'] = [];
-        $state_data['assignment'] = [];
-
+        $state_data['datamap'] = $state_data['assignment'] = [];
         foreach($myWorkflowInstance->configuration->map as $resource){
             $state_data['datamap'][$resource->name] = $resource->value;
         }
-
-        $state = null;
-
-        foreach($oldstate->actions as $action){
-            if($action->name == $request->get('action')){
-                $workflow_submission->state = $action->to;
-                if(isset($action->tasks)){
-                    $this->executeTasks($action->tasks, $state_data);
-                }
-                
-                foreach($flow  as $struct) {
-                    if ($workflow_submission->state == $struct->name) {
-                        $state = $struct;
-                        break;
-                    }
-                }
-    
-                if(isset($state->status)){
-                    $workflow_submission->status = $state->status;
-                }else{
-                    $workflow_submission->status = 'open';
-                }
-            }
-        }
-
         $state_data['status'] = $workflow_submission->status;
         $state_data['state'] = $state->name;
         if (!isset($state->actions)) { $state->actions = []; }
@@ -154,6 +131,25 @@ class WorkflowSubmissionController extends Controller
         $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
         $state_data['is']['closed'] = ($state_data['status']=='closed')?true:false;
         $state_data['is']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
+        $state_data['assignment']['type'] = $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
+        $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
+
+        // Check Permissions
+        if (isset($action->assignment)) { 
+            $action_assignment_type = $m->render($action->assignment->type, $state_data);
+            $action_assignment_id = $m->render($state->assignment->id, $state_data);
+            if ($action_assignment_type === 'user' && $action_assignment_id !== Auth::user()->id && $action_assignment_id !== Auth::user()->unique_id) {
+                return response('Permission Denied', 403);
+            } else if ($action_assignment_type === 'group' && !$user->group_member($action_assignment_id)) { // Note: Should check group slugs too!!
+                return response('Permission Denied', 403);
+            }
+        } else { // This action can only be performed by state asignee
+            if ($workflow_submission->assignment_type === 'user' && $workflow_submission->assignment_id !== Auth::user()->id) {
+                return response('Permission Denied', 403);
+            } else if ($workflow_submission->assignment_type === 'group' && !$user->group_member($workflow_submission->assignment_id)) {
+                return response('Permission Denied', 403);
+            }
+        }
 
         // if url is defined on assignment get data and add it to the $state_data['assignment']
         // if(isset($workflow_submission->assignment->url)){
@@ -180,48 +176,44 @@ class WorkflowSubmissionController extends Controller
         //         $state_data['assignment']['data'] = $httpHelper->http_fetch($m->render($workflow_submission->assignment->url, $state_data),"GET", $assignment_data);
         //     }
         // }
-
-        $state_data['assignment']['type'] = $workflow_submission->assignment_type = $m->render($state->assignment->type, $state_data);
-        $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
+        // This action can only be performed by action asignee
 
         if($state->assignment->type == "user"){
-            $user = User::where("unique_id", '=', $state_data['assignment']['id'])->first();
-            if($user !== null) {
-                $workflow_submission->assignment_id = $user->id;
-            }else{
-                $user = User::where("id",'=',$state_data['assignment']['id'])->first();
-                $workflow_submission->assignment_id = $user->id;
-                if($user === null) {
-                    throw new \Exception('Assigned User Does Not Exist');
-                }
-            }
+            $user = User::where("unique_id", '=', $state_data['assignment']['id'])
+                ->orWhere("id",'=',$state_data['assignment']['id'])
+                ->first();
+            if(is_null($user)) { throw new \Exception('Assigned User Does Not Exist'); }
+            $workflow_submission->assignment_id = $user->id;
             $state_data['assignment']['user'] = $user->only('first_name','last_name','email','unique_id','params');
-        }elseif($state->assignment->type == "group"){
-            $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
-            if($group !== null) {
-                $workflow_submission->assignment_id = $group->id;
-            }else{
-                $group = Group::where("slug",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
-                $workflow_submission->assignment_id = $group->id;
-                if($group === null) {
-                    throw new \Exception('Assigned Group Does Not Exist');
-                }
-            }
+        } else if ($state->assignment->type == "group"){
+            $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)
+                ->orWhere("slug",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)
+                ->first();
+            $workflow_submission->assignment_id = $group->id;
+            if(is_null($group)) { throw new \Exception('Assigned Group Does Not Exist'); }
             $state_data['assignment']['group'] = $group->only('name','slug','id');
             $state_data['assignment']['group']['members'] = $group->members()->with('bulkuser')->get()->pluck('bulkuser')->toArray();
-        }else{
-            $workflow_submission->assignment_type = NULL;
+        } else {
+            $workflow_submission->assignment_type = null;
         }
         
-        // dd($workflow_submission);
+        // Execute Any Relevant Previous State Exit Tasks
+        if(isset($previous_state->onExit)){
+            $this->executeTasks($previous_state->onExit, $state_data);
+        }
+        // Execute Any Relevant Action Tasks
+        if(isset($action->tasks)){
+            $this->executeTasks($action->tasks, $state_data);
+        }        
+        // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
-            $this->executeTasks($state->onEnter, $workflow_submission->data);
+            $this->executeTasks($state->onEnter, $state_data);
         }
 
+        // Update Submission Object In DB
         $workflow_submission->update();
         
         $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action'],$request->get('comment'));
-        
         if(!isset($myWorkflowInstance->configuration->suppress_emails) || !$myWorkflowInstance->configuration->suppress_emails){
             $this->send_default_emails($state_data);
         }
@@ -244,8 +236,6 @@ class WorkflowSubmissionController extends Controller
         $activity->action = $action;
         $activity->save();
     }
-
-
 
     private function executeTasks($tasks, $data){
         $m = new \Mustache_Engine;
@@ -356,16 +346,16 @@ class WorkflowSubmissionController extends Controller
     
     public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
+            abort(403);
         }
-        return WorkflowSubmission::where('id','=',$workflow_submission->id)->with(array('user'=>function($query){
-        },'logs'=>function($query){
-            $query->with('user')->orderBy('updated_at','desc')->get();
-        },'files'=>function($query){
-            // ->with('user')
-            $query->withTrashed()->orderBy('updated_at','desc')->with('user')->with('deleted_by')->get();
-        }) )->first();
-        // return WorkflowActivityLog::where('workflow_submission_id','=',$workflow_submission->id)->with('user')->orderBy('updated_at','DESC')->get();
+        return WorkflowSubmission::where('id','=',$workflow_submission->id)
+            ->with('user')
+            ->with(['logs'=>function($query){
+                $query->with('user')->orderBy('updated_at','desc')->get();
+            }])
+            ->with(['files'=>function($query){
+                $query->withTrashed()->orderBy('updated_at','desc')->with('user')->with('deleted_by')->get();
+            }])->first();
     }
 
     // public function view(WorkflowSubmission $workflow_submission, Request $request) {
