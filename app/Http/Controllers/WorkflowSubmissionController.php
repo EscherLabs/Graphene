@@ -24,6 +24,7 @@ use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
+use App\Libraries\JSExecHelper;
 use \Ds\Vector;
 
 class WorkflowSubmissionController extends Controller {
@@ -74,9 +75,7 @@ class WorkflowSubmissionController extends Controller {
         $start_state = $workflow_submission->state;
         $start_assignment = $workflow_submission->only('assignment_type','assignment_id');
         $flow = $myWorkflowInstance->version->code->flow;
-        if(is_string($flow)){
-            $flow = json_decode($flow);
-        }
+        $methods = $myWorkflowInstance->version->code->methods;
         // Determine Previous State (Object) -- State we are leaving
         $previous_state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
             return $value->name === $workflow_submission->state;
@@ -214,12 +213,47 @@ class WorkflowSubmissionController extends Controller {
         $workflow_submission->update();
         
         $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action'],$request->get('comment'));
-        if(!isset($myWorkflowInstance->configuration->suppress_emails) || !$myWorkflowInstance->configuration->suppress_emails){
+        
+        // Check if this state has attached logic
+        if (isset($state->logic)) {
+            if (is_string($state->logic)) {
+                $method_name = $state->logic;
+                // Lookup Logic Method
+                $method = Arr::first($methods, function ($value, $key) use ($method_name) {
+                    return $value->name === $method_name;
+                }); // Needs error handling if this is null!
+                $method_code = $method->content;
+            } else {
+                $method_code = 'return true;';
+            }
+            $jsexec = new JSExecHelper();
+            $logic_result = $jsexec->run($method_code,$state_data);
+
+            usleep(500000); // sleep for 1/10th of second
+            if ($logic_result['success']===false) {
+                $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
+                self::action($workflow_submission, $request); // action = error
+            } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
+                $request->merge(['action'=>'true','comment'=>json_encode($logic_result['console'])]);
+                self::action($workflow_submission, $request); //action = true
+            } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
+                $request->merge(['action'=>'false','comment'=>json_encode($logic_result['console'])]);
+                self::action($workflow_submission, $request); // action = false
+            }
+        }
+        else if(!isset($myWorkflowInstance->configuration->suppress_emails) || !$myWorkflowInstance->configuration->suppress_emails){
             $this->send_default_emails($state_data);
         }
-
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
+
+    // private function compute_logic($method_code,$state_data,$stdout) {
+    //     $jsexec = new JSExecHelper();
+    //     $logic_result = $jsexec->run($method_code,$state_data);
+    //     if ($logic_result['success']===true) {
+    //         return 
+    //     }
+    // }
 
     private function logAction($workflow_submission, $start_state, $start_assignment, $action, $comment){
         $activity = new WorkflowActivityLog();
