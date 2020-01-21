@@ -273,7 +273,6 @@ class WorkflowSubmissionController extends Controller {
 
     private function executeTasks($tasks, $data){
         $m = new \Mustache_Engine;
-
         foreach($tasks as $task){
             if(!isset($task->data)){
                 $task->data = array();
@@ -339,49 +338,82 @@ class WorkflowSubmissionController extends Controller {
     }
 
     public function list_user_workflow_submissions(Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        $submissions = WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('user_id','=',Auth::user()->id)->where('status',"!=",'new')->with(array('logs'=>function($q){
-            $q->orderBy('updated_at','desc');
-        }))->orderBy('updated_at','asc')->get();
+        if (!Auth::check()) { abort(403); }
+        $submissions = WorkflowSubmission::with('workflowVersion')
+            ->with('workflow')
+            ->with('user')
+            ->with(['logs'=>function($q){
+                $q->orderBy('updated_at','desc');
+            }])
+            ->where('user_id','=',Auth::user()->id)
+            ->where('status',"!=",'new')
+            ->orderBy('updated_at','asc')
+            ->get();
         foreach ($submissions as $submission) {
-            echo $submission->Assignment();
+            $submission->getAssignment();
+            $submission->getSubmittedAt();
         }
         return $submissions;
     }
     public function list_workflow_submission_assignments(Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        $submissions = array('direct'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'user')->where('status',"=",'open')->where('assignment_id','=',Auth::user()->id)->with(array('logs'=>function($q){
-            $q->orderBy('updated_at','desc');
-        }))->orderBy('updated_at','asc')->get(),
-        'group'=>WorkflowSubmission::with('workflowVersion')->with('workflow')->with('user')->where('assignment_type',"=",'group')->where('status',"=",'open')->whereIn('assignment_id',Auth::user()->groups)->with(array('logs'=>function($q){
-            $q->orderBy('updated_at','desc');
-        }))->orderBy('updated_at','asc')->get());
-
+        if (!Auth::check()) { abort(403); }
+        $submissions = [
+            'direct'=> WorkflowSubmission::with('workflowVersion')
+                ->with('workflow')
+                ->with('user')
+                ->with(['logs'=>function($q){
+                    $q->orderBy('updated_at','desc');
+                }])
+                ->where('assignment_type',"=",'user')
+                ->where('status',"=",'open')
+                ->where('assignment_id','=',Auth::user()->id)
+                ->orderBy('updated_at','asc')->get(),
+            'group'=> WorkflowSubmission::with('workflowVersion')
+                ->with('workflow')
+                ->with('user')
+                ->with(['logs'=>function($q){
+                    $q->orderBy('updated_at','desc');
+                }])
+                ->where('assignment_type',"=",'group')
+                ->where('status',"=",'open')
+                ->whereIn('assignment_id',Auth::user()->groups)
+                ->orderBy('updated_at','asc')
+                ->get()
+            ];
         foreach ($submissions['direct'] as $submission) {
-            echo $submission->Assignment();
+            $submission->getAssignment();
+            $submission->getSubmittedAt();
         }
         foreach ($submissions['group'] as $submission) {
-            echo $submission->Assignment();
+            $submission->getAssignment();
+            $submission->getSubmittedAt();
         }
         return $submissions;
-
-
     }
+    public function my_assignment_count(Request $request) {
+        if (!Auth::check()) { abort(403); }
+        $submissions = WorkflowSubmission::where('status',"=",'open')
+            ->where(function($query) {
+                $query->where('assignment_type',"=",'user');
+                $query->where('assignment_id','=',Auth::user()->id);
+            })
+            ->orWhere(function($query){
+                $query->where('assignment_type',"=",'group');
+                $query->whereIn('assignment_id',Auth::user()->groups);
+            })->count();
+        return ['count'=>$submissions];
+    }
+
     public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
-        if (!Auth::check()) {
-            abort(403); // You must be authenticated to fetch links
-        }
-        return WorkflowSubmission::with('workflowVersion')->with('user')->where('workflow_instance_id','=',$workflow_instance->id)->orderBy('created_at')->get();
+        if (!Auth::check()) { abort(403); }
+        return WorkflowSubmission::with('workflowVersion')
+            ->with('user')
+            ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->orderBy('created_at')->get();
     }   
     
     public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
-        if (!Auth::check()) {
-            abort(403);
-        }
+        if (!Auth::check()) { abort(403); }
         return WorkflowSubmission::where('id','=',$workflow_submission->id)
             ->with('user')
             ->with(['logs'=>function($query){
@@ -393,22 +425,18 @@ class WorkflowSubmissionController extends Controller {
     }
 
     // public function view(WorkflowSubmission $workflow_submission, Request $request) {
-        
     //     if (Auth::user()->site_developer || Auth::user()->site_admin) {
     //         $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
     //     } else {
     //         $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
     //     }
-
     //     if (Auth::check()) { /* User is Authenticated */
     //         $current_user = Auth::user();
     //         $myWorkflowInstance = WorkflowInstance::with('workflow')
     //             ->where('id','=', $workflow_submission->workflow_id)->with('workflow')->first();
-
     //         if (is_null($myWorkflowInstance)) { 
     //             abort(404); 
     //         }
-            
     //         if($myWorkflowInstance->public == 0) {
     //             $this->authorize('fetch' ,$myWorkflowInstance);
     //         }
@@ -426,14 +454,12 @@ class WorkflowSubmissionController extends Controller {
     //         }
     //         $links = Group::publicAppsPages()->where('unlisted','=',0)->orderBy('order')->get();
     //     }
-
     //     if (Auth::check()) { /* User is Authenticated */
     //         $current_user = Auth::user();
     //         $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
     //     } else{
     //         abort(404); 
     //     }
-
     //     $myWorkflowInstance->findVersion();
     //     // if($myWorkflowInstance != null) {
     //         $template = new Templater();
@@ -444,8 +470,7 @@ class WorkflowSubmissionController extends Controller {
     //             'id'=>0,
     //             'data'=>[],
     //             // 'config'=>json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
-    //             'config'=>array("sections"=>[[array("title"=>$myWorkflowInstance->name,"data"=>$workflow_submission->data,"workflow_id"=>$myWorkflowInstance->id,"widgetType"=>"Workflow","container"=>true)]],"layout"=>"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div>"),
-                
+    //             'config'=>array("sections"=>[[array("title"=>$myWorkflowInstance->name,"data"=>$workflow_submission->data,"workflow_id"=>$myWorkflowInstance->id,"widgetType"=>"Workflow","container"=>true)]],"layout"=>"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div>"), 
     //             // json_decode('{"sections":[[],[{"title":"'.$myWorkflowInstance->name.'","workflow_id":'.$myWorkflowInstance->id.',"widgetType":"Workflow","container":true}],[]],"layout":"<div class=\"col-lg-offset-2 col-md-offset-1  col-lg-8 col-md-10 col-sm-12 cobler_container\"></div></div>"}'),
     //             // 'group'=>(Object)array("id"=>"0"),
     //             'scripts'=>[],

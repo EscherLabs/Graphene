@@ -302,12 +302,11 @@
 		}
 
 		$.ajax({
-				url:'/api/workflowsubmissions/user/assignments',
+				url:'/api/workflowsubmissions/user/assignments/count',
 				dataType : 'json',
 				type: 'GET',
-		//     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
 				success  : function(assignments){
-					var total = _.where(assignments.direct,{status:"open"}).length+_.where(assignments.group,{status:"open"}).length;
+					var total = assignments.count;
 					$('.notificationCount').toggle(!!total).html(total)
 					if(total>0){
 						$('.notificationCount').next().addClass('shake')

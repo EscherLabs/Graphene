@@ -31,12 +31,21 @@ class WorkflowSubmission extends Model
         return $this->hasMany(WorkflowSubmissionFile::class);
     }
 
-    public function Assignment() {
-
+    public function getAssignment() {
         if($this->assignment_type == "user"){
             $this->assignee = User::where("id", '=', $this->assignment_id)->first()->only('first_name','last_name','email','unique_id','params');
         }else{
             $this->assignee = Group::where("id",'=',$this->assignment_id)->where('site_id',config('app.site')->id)->select('name','slug','id')->first();
+        }
+    }
+    public function getSubmittedAt() {
+        $activity = WorkflowActivityLog::select('created_at')
+            ->where('workflow_submission_id',$this->id)
+            ->orderBy('id','asc')->first();
+        if (!is_null($activity)) {
+            $this->submitted_at=$activity->created_at->format('Y-m-d H:i:s');
+        } else {
+            $this->submitted_at = null;
         }
     }
 }

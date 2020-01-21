@@ -640,7 +640,7 @@ Cobler.types.WorkflowStatus = function(container){
                         {label:"Workflow Name",name:"name",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.workflow.name}))
                         }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
-                        {label:"Initiated",name:"created_at",template:"<div>{{attributes.created_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                        {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
                         {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div> '},
                         {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
                         {label:"State",name:"state",type:"select",options:function(data){
@@ -775,10 +775,9 @@ Cobler.types.WorkflowStatus = function(container){
                         {label:"Workflow Name",name:"name",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.workflow.name}))
                         }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
-                        {label:"Initiated",name:"created_at",template:"<div>{{attributes.created_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                        {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
                         {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
                         {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
-                        
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"State",name:"state",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.state}))
