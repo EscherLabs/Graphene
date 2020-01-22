@@ -205,7 +205,7 @@ class WorkflowSubmissionActionController extends Controller {
             $jsexec = new JSExecHelper();
             $logic_result = $jsexec->run($method_code,$state_data);
 
-            usleep(500000); // sleep for 1/10th of second
+            // usleep(500000); // sleep for 1/10th of second
             if ($logic_result['success']===false) {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
                 $this->action($workflow_submission, $request); // action = error

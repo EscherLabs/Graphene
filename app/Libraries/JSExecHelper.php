@@ -55,7 +55,11 @@ process.exit(9);
             fclose($pipes[2]);
             $exit_code = proc_close($process);
             if ($exit_code == 9) {
-                return json_decode($stdout,true);
+                $response_data = json_decode($stdout,true);
+                if (!isset($response_data['return'])) {
+                    $response_data['return'] = null;
+                } 
+                return $response_data;
             } else {
                 return ['success'=>false,'error'=>explode("\n",$stderr)];
             }

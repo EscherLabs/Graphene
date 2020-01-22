@@ -112,7 +112,8 @@ class WorkflowSubmissionController extends Controller {
         return WorkflowSubmission::where('id','=',$workflow_submission->id)
             ->with('user')
             ->with(['logs'=>function($query){
-                $query->with('user')->orderBy('updated_at','desc')->get();
+                $query->with('user');
+                $query->orderBy('id','desc')->get();
             }])
             ->with(['files'=>function($query){
                 $query->withTrashed()->orderBy('updated_at','desc')->with('user')->with('deleted_by')->get();
