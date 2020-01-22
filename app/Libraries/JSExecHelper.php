@@ -7,9 +7,21 @@ use Illuminate\Support\Facades\Log;
 class JSExecHelper {
 
     private $node_path = null;
+    private $require = [];
 
-    public function __construct() {
+    public function __construct($require=[]) {
         $this->node_path = config('app.node_path');
+        $this->require = $require;
+    }
+
+    private function fetch_require() {
+        $require_commands = '';
+        foreach($this->require as $name => $file) {
+            if (file_exists(public_path('assets/js/vendor/'.$file))) {
+                $require_commands.= 'global["'.$name.'"]=require ("'.public_path('assets/js/vendor/'.$file).'");'."\n";
+            }
+        }
+        return $require_commands;
     }
 
     function run($code,$obj=null) {
@@ -17,9 +29,11 @@ class JSExecHelper {
         if (is_resource($process)) {
             $stdout = '';
             $js_code = "
+// Fetch Includes
+".$this->fetch_require()."
+// Define Global Wrapper
 global.wrapper = {}
 global.wrapper.console = {};
-
 // define a new console
 var console=(function(oldCons){
     return {
@@ -50,6 +64,7 @@ global.wrapper.success = true;
 console.log_default(JSON.stringify(global.wrapper));
 process.exit(9);
             ";
+
             fwrite($pipes[0], $js_code);
             fclose($pipes[0]);
             $stdout = stream_get_contents($pipes[1]);

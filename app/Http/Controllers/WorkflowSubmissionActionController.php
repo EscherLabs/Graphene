@@ -236,7 +236,7 @@ class WorkflowSubmissionActionController extends Controller {
             } else {
                 $method_code = 'return true;';
             }
-            $jsexec = new JSExecHelper();
+            $jsexec = new JSExecHelper(['_'=>'lodash.min.js','moment'=>'moment.js']);
             $logic_result = $jsexec->run($method_code,$state_data);
 
             if ($logic_result['success']===false) {
