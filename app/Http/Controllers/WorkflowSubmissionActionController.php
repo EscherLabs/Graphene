@@ -101,10 +101,15 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
         $state_data['form'] = $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
-        $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
         $state_data['owner']['is'] = [];
-        $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
+        if (isset($previous_state->logic)) {
+            $state_data['actor'] = null;
+            $state_data['owner']['is']['actor'] = false;
+        } else {
+            $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
+            $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
+        }
         $state_data['action'] = $request->get('action');
         $state_data['workflow'] = $myWorkflowInstance->workflow->only('name','description');
         $state_data['workflow']['instance'] = $myWorkflowInstance->only('group_id','slug','name','icon','public','configuration');
@@ -129,49 +134,63 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
         $state_data['is']['closed'] = ($state_data['status']=='closed')?true:false;
         $state_data['is']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
-        $state_data['assignment']['type'] = $workflow_submission->assignment_type = $state->assignment->type;
-        $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
-
-        // Check Permissions
-        if (isset($action->assignment)) {  // This action can be performed by action asignee
-            $action_assignment_type = $m->render($action->assignment->type, $state_data);
-            $action_assignment_id = $m->render($state->assignment->id, $state_data);
-            if (($action_assignment_type === 'user' && $action_assignment_id === Auth::user()->unique_id) || 
-                ($action_assignment_type === 'group' && $user->group_member($action_assignment_id))) {
-                // Continue!
-            } else {
-                return response('Permission Denied', 403);
-            }
-        } else { // This action can be performed by the state asignee
-            if (($workflow_submission->assignment_type === 'user' && $state_data['assignment']['id'] === Auth::user()->unique_id) || 
-                ($workflow_submission->assignment_type === 'group' && $user->group_member($state_data['assignment']['id']))) {
-                // Continue!
-            } else {
-                return response('Permission Denied', 403);
-            }
-        }
-
-        // Perform Dynamic Assignment
-        if (isset($state->assignment->resource)) {
-            // This is commented out -- needs some love
-            //$this->determineAssignment();
+        if (isset($state->assignment) && !isset($state->logic)) {
+            $state_data['assignment']['type'] = $workflow_submission->assignment_type = $state->assignment->type;
+            $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
         } else {
-            if($state->assignment->type == "user"){
-                $user = User::where("unique_id", '=', $state_data['assignment']['id'])->first();
-                if(is_null($user)) { throw new \Exception('Assigned User Does Not Exist'); }
-                $workflow_submission->assignment_id = $user->id;
-                $state_data['assignment']['user'] = $user->only('first_name','last_name','email','unique_id','params');
-            } else if ($state->assignment->type == "group"){
-                $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
-                if(is_null($group)) { throw new \Exception('Assigned Group Does Not Exist'); }
-                $workflow_submission->assignment_id = $group->id;
-                $state_data['assignment']['group'] = $group->only('name','slug','id');
-                $state_data['assignment']['group']['members'] = $group->members()->with('bulkuser')->get()->pluck('bulkuser')->toArray();
-            } else {
-                throw new \Exception('Invalid Assignment (User or Group Does Not Exist!)');
+            $workflow_submission->assignment_type = 'internal';
+            $state_data['assignment'] = null;
+        }
+
+        // Check Permissions 
+        if (isset($state->logic)) {
+            // No Permission Check for Logic Block
+        } else {
+            if (isset($action->assignment)) {  // This action can be performed by action asignee
+                $action_assignment_type = $m->render($action->assignment->type, $state_data);
+                $action_assignment_id = $m->render($state->assignment->id, $state_data);
+                if (($action_assignment_type === 'user' && $action_assignment_id === Auth::user()->unique_id) || 
+                    ($action_assignment_type === 'group' && $user->group_member($action_assignment_id))) {
+                    // Continue!
+                } else {
+                    return response('Permission Denied', 403);
+                }
+            } else { // This action can be performed by the state asignee
+                if (($workflow_submission->assignment_type === 'user' && $state_data['assignment']['id'] === Auth::user()->unique_id) || 
+                    ($workflow_submission->assignment_type === 'group' && $user->group_member($state_data['assignment']['id']))) {
+                    // Continue!
+                } else {
+                    return response('Permission Denied', 403);
+                }
             }
         }
-        
+
+        // Determine Assignment
+        if (isset($state->logic)) {
+            // Logic States have no assignments
+            $workflow_submission->assignment_id = null;
+        } else {
+            if (isset($state->assignment->resource) && $state->assignment->resource != '') {
+                // Perform Dynamic Assignment
+                $this->determineAssignment();
+            } else {
+                if($state->assignment->type == "user"){
+                    $user = User::where("unique_id", '=', $state_data['assignment']['id'])->first();
+                    if(is_null($user)) { throw new \Exception('Assigned User Does Not Exist'); }
+                    $workflow_submission->assignment_id = $user->id;
+                    $state_data['assignment']['user'] = $user->only('first_name','last_name','email','unique_id','params');
+                } else if ($state->assignment->type == "group"){
+                    $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
+                    if(is_null($group)) { throw new \Exception('Assigned Group Does Not Exist'); }
+                    $workflow_submission->assignment_id = $group->id;
+                    $state_data['assignment']['group'] = $group->only('name','slug','id');
+                    $state_data['assignment']['group']['members'] = $group->members()->with('bulkuser')->get()->pluck('bulkuser')->toArray();
+                } else {
+                    throw new \Exception('Invalid Assignment (User or Group Does Not Exist!)');
+                }
+            }
+        }
+
         // Execute Any Relevant Previous State Exit Tasks
         if(isset($previous_state->onExit)){
             $this->executeTasks($previous_state->onExit, $state_data);
@@ -205,7 +224,6 @@ class WorkflowSubmissionActionController extends Controller {
             $jsexec = new JSExecHelper();
             $logic_result = $jsexec->run($method_code,$state_data);
 
-            // usleep(500000); // sleep for 1/10th of second
             if ($logic_result['success']===false) {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
                 $this->action($workflow_submission, $request); // action = error
@@ -217,7 +235,8 @@ class WorkflowSubmissionActionController extends Controller {
                 $this->action($workflow_submission, $request); // action = false
             }
         }
-        else if(!isset($myWorkflowInstance->configuration->suppress_emails) || !$myWorkflowInstance->configuration->suppress_emails){
+        else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
+                !$myWorkflowInstance->configuration->suppress_emails){
             $this->send_default_emails($state_data);
         }
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
@@ -260,7 +279,7 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->data =  $workflow_submission->data;
         $activity->end_state = $workflow_submission->state;
         $activity->status = $workflow_submission->status;
-        $activity->user_id = Auth::user()->id;
+        $activity->user_id = ($start_assignment['assignment_type']==='internal')?null:Auth::user()->id;
         $activity->assignment_type = $start_assignment['assignment_type'];
         $activity->assignment_id = $start_assignment['assignment_id'];
         $activity->comment = $comment;
