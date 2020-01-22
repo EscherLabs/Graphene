@@ -66,7 +66,22 @@ class WorkflowSubmissionActionController extends Controller {
         }
     }
 
+    private function detect_infinite_loop() {
+        if (!isset($GLOBALS['action_stack_depth'])) {
+            $GLOBALS['action_stack_depth']=0;
+        } else {
+            $GLOBALS['action_stack_depth']++;
+            if ($GLOBALS['action_stack_depth'] > config('app.workflow_max_loop')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
+        if ($this->detect_infinite_loop()) {
+            return response('Infinite Loop Detected! Quitting!', 508);
+        }
         $m = new \Mustache_Engine;
         $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
         $myWorkflowInstance->findVersion();
@@ -226,13 +241,13 @@ class WorkflowSubmissionActionController extends Controller {
 
             if ($logic_result['success']===false) {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
-                $this->action($workflow_submission, $request); // action = error
+                return $this->action($workflow_submission, $request); // action = error
             } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
                 $request->merge(['action'=>'true','comment'=>json_encode($logic_result['console'])]);
-                $this->action($workflow_submission, $request); //action = true
+                return $this->action($workflow_submission, $request); //action = true
             } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
                 $request->merge(['action'=>'false','comment'=>json_encode($logic_result['console'])]);
-                $this->action($workflow_submission, $request); // action = false
+                return $this->action($workflow_submission, $request); // action = false
             }
         }
         else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 

@@ -16,6 +16,8 @@ return [
     */
 
     'name' => 'Graphene',
+    'workflow_max_loop' => env('WORKFLOW_MAX_LOOP',10),
+    'node_path' => env('NODE_PATH','node'),
     'cache_bust_id' => isset($_SERVER['CACHE_BUST_ID'])?$_SERVER['CACHE_BUST_ID']:1,
 
     /*

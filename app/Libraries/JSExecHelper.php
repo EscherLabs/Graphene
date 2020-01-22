@@ -6,11 +6,14 @@ use Illuminate\Support\Facades\Log;
 
 class JSExecHelper {
 
+    private $node_path = null;
+
     public function __construct() {
+        $this->node_path = config('app.node_path');
     }
 
     function run($code,$obj=null) {
-        $process = proc_open('node',[["pipe", "r"],["pipe", "w"],["pipe", "w"]], $pipes);
+        $process = proc_open($this->node_path,[["pipe", "r"],["pipe", "w"],["pipe", "w"]], $pipes);
         if (is_resource($process)) {
             $stdout = '';
             $js_code = "
