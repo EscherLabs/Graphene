@@ -110,9 +110,9 @@ mainForm = function(){
         // {name:"legend",label:"Label"},
         // {name:"name",label:"Name"},
         {name:"default",label:false,type:'fieldset',fields:[
-          {name:"horizontal",label:"Horizontal",type:"checkbox"}
+          {name:"horizontal",horizontal:true,label:"Horizontal",type:"switch",format:{label:""}}
         ]},
-        {name:"files",label:"Allow File uploads",type:"checkbox"},
+        {name:"files",label:"Allow File uploads",type:"switch",horizontal:true,format:{label:""}},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
         {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
         {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
@@ -801,26 +801,35 @@ debugger;
     {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
     {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
     {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
-    {target:"#collapseActions .panel-body", 
-      name: "actions", label: false, type: "fieldset", fields: [
-        {name: "label", label: "Label", columns: 6},
-        {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
-        {name: "type", label: "Type", type: "select", columns: 6, options:[
-          {value: "success", label: "Success"},
-          {value: "danger", label: "Danger"},
-          {value: "info", label: "Info"},
-          {value: "warning", label: "Warning"},
-          {value: "default", label: "Default"},
-          {value: "primary", label: "Primary"},
-          {value: "link", label: "Simple"}
-        ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-      {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-        {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
-        {name: "task_label", label: "<h4>Tasks</h4>", type: "output"},
+    (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
+    name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
+      {name: "label", label: "Label", columns: 6},
+      {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
+      {name: "type", label: "Type", type: "select", columns: 6, options:[
+        {value: "success", label: "Success"},
+        {value: "danger", label: "Danger"},
+        {value: "info", label: "Info"},
+        {value: "warning", label: "Warning"},
+        {value: "default", label: "Default"},
+        {value: "primary", label: "Primary"},
+        {value: "link", label: "Simple"}
+      ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+    {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+      {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+      {name: "task_label", label: "<h4>Tasks</h4>", type: "output"},
 
-        {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
-      ], array: true
-    }
+      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
+    ], array: true
+  } : {target:"#collapseLogic .panel-body", 
+  name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
+    {name: "name", label: false, type: 'output',format:{value:"<b>Logic Result: <i>{{value}}</i></b>"}},
+    {name: "label", label: "Label", columns: 6},
+  {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+    {name: "task_label", label: "<h4>Tasks</h4>", type: "output"},
+
+    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
+  ], array: {min:3,max:3}
+})
 
   ])
   
@@ -832,7 +841,7 @@ debugger;
   $('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
   $('.panelLogic').toggle(!!_.find(formConfig.fields,{target:"#collapseLogic .panel-body"}) && !!formConfig.data.logic);
   $('.panelOnleave').toggle(!!_.find(formConfig.fields,{target:"#collapseOnleave .panel-body"}) && !formConfig.data.logic);
-  // $('.panelActions').toggle(!!_.find(formConfig.fields,{target:"#collapseActions .panel-body"}) && !formConfig.data.logic);
+  $('.panelActions').toggle(!!_.find(formConfig.fields,{target:"#collapseActions .panel-body"}) && !formConfig.data.logic);
 
   // $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
   // $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
@@ -969,7 +978,7 @@ $('#add-logic').on('click',function() {
   while(typeof _.find(flow_states,{name:gform.renderString("newLogic{{i}}",{i:i})}) !== 'undefined'){
     i++;
   }
-  flow_states.push({name:gform.renderString("newLogic{{i}}",{i:i}),logic:{},actions:[{label:"True",name:"true"},{label:"False",name:"false"}]});
+  flow_states.push({name:gform.renderString("newLogic{{i}}",{i:i}),logic:{},actions:[{label:"True",name:"true"},{label:"False",name:"false"},{label:"Error",name:"error"}]});
   drawForm(gform.renderString("newLogic{{i}}",{i:i}));
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -1152,19 +1161,6 @@ Basic
   </div>
 </div>
 
-<div class="panel panel-default panelLogic">
-  <div class="panel-heading" role="tab" id="headingLogic">
-    <h4 class="panel-title">
-      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseLogic" aria-expanded="false" aria-controls="collapseLogic">
-      Logic
-      </a>
-    </h4>
-  </div>
-  <div id="collapseLogic" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLogic">
-    <div class="panel-body">
-    </div>
-  </div>
-</div>
 
 
 
@@ -1208,6 +1204,20 @@ Actions
     </h4>
   </div>
   <div id="collapseActions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingActions">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default panelLogic">
+  <div class="panel-heading" role="tab" id="headingLogic">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseLogic" aria-expanded="false" aria-controls="collapseLogic">
+      Logic
+      </a>
+    </h4>
+  </div>
+  <div id="collapseLogic" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLogic">
     <div class="panel-body">
     </div>
   </div>

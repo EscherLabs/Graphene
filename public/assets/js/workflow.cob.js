@@ -59,6 +59,7 @@ baseFields = _.map([
 	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
 		return parseInt(e.value);
 	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
+		debugger;
 			return parseInt(e.initial.value||12)
 		
 	} },

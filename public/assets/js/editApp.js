@@ -505,16 +505,16 @@ mainForm = function(){
 
         {name:"legend",label:"Label",columns:6},
         {name:"name",label:"Name",columns:6,edit:[{type:"matches",name:"disabled",value:false}]},
-        {name:"autoFocus",columns:6,label:"Auto Focus",value:true,type:"checkbox"},
+        {name:"autoFocus",horizontal:true,columns:12,label:"Auto Focus",value:true,type:"switch",format:{label:""}},
 
-        {name:"default",label:false,columns:6,type:'fieldset',fields:[
-          {name:"horizontal",label:"Horizontal",type:"checkbox"}
+        {name:"default",label:false,columns:12,type:'fieldset',fields:[
+          {name:"horizontal",horizontal:true,label:"Horizontal",type:"switch",format:{label:""}}
         ]},
         {name:"disabled",show:false,label:false,type:"checkbox",value:(_.find(working_forms,{name:form.name})||{disabled:false}).disabled},
 
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
 
-        {type: 'switch',format:{label:""}, label: 'Custom Actions', name: 'actions', show:[{name:"type",value:['output'],type:"not_matches"}],parse:[{type:"not_matches",name:"actions",value:false}]},
+        {type: 'switch',format:{label:""},horizontal:true, label: 'Custom Actions', name: 'actions', show:[{name:"type",value:['output'],type:"not_matches"}],parse:[{type:"not_matches",name:"actions",value:false}]},
         {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
           
           {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save","button"]},
@@ -527,9 +527,11 @@ mainForm = function(){
             {label:"Info",value:"btn btn-info"}]}
 
         ]},
-        {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
+        {type: 'switch',format:{label:""},parse:[{value:true,type:"matches"}],horizontal:true, label: 'Events', name: 'events'},
 
-        {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
+        {parse:false,type:"output",label:false,value:"<h3>Events</h3>", show:[{name:"actions",value:true,type:"matches"}]},
+
+        {type: 'fieldset', show:[{name:"events",value:true,type:"matches"}],parse:[{name:"events",value:true,type:"matches"}],label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
       
           {type: 'text', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
