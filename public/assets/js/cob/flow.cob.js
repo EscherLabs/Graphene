@@ -622,16 +622,13 @@ Cobler.types.WorkflowStatus = function(container){
                     item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
                   }
 
-                  assignments.direct = _.each(assignments.direct, getActions)
-                  assignments.group = _.each(assignments.group, getActions)
-
+                  assignments = _.each(assignments, getActions)
                   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(workflow_report.assignments,{data:data,open:newdata,assignments:assignments});
-                  assignmentData = assignments.direct.concat(assignments.group);
 
                   assignmentGrid = new GrapheneDataGrid({
                     el: "#assignmentgrid",
                     autoSize: 50, 
-                    data: assignmentData,
+                    data: assignments,
                     actions:[],upload:false,download:false,columns:false,
                     sortBy:"updated_at",
                     reverse:true,
