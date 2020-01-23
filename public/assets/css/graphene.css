@@ -1015,7 +1015,7 @@ fieldset fieldset {
 .nodes .node:hover{
   cursor: pointer;
 }
-.node rect{
+.node rect,.node polygon{
   fill: #f9f9f9 !important;
   stroke: #888 !important;
 }
@@ -1029,7 +1029,8 @@ fieldset fieldset {
   /* stroke:#FF0000 !important; */
   /*stroke-width:4px !important;;*/
 }
-.selectedClass > rect{
+.selectedClass > rect,
+.selectedClass > polygon{
   stroke:#68b767 !important;
 }
 .selectedClass > *{

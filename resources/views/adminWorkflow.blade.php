@@ -182,7 +182,7 @@
       </div>
       <div class="col-sm-4" style="margin-top:5px">
 
-        <div style="height:40px">          <div class="btn btn-info" id="add-state" >New State</div></div>
+        <div style="height:40px">          <div class="btn btn-info" id="add-state" >New State</div> <div class="btn btn-default" id="add-logic" >New Logic Block</div></div>
 
         <div class="panel panel-default">
           <div class="panel-body">

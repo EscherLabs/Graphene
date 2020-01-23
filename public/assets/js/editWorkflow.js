@@ -629,7 +629,11 @@ function createFlow() {
 
         var graph = '\n'+state.name.split(' ').join('_')+'';
         if(i){
-          graph+='["'+state.name+'"]';
+          if(state.logic){
+            graph+='{"'+state.name+'"}';
+          }else{
+            graph+='["'+state.name+'"]';
+          }
         }else{
           graph+='(("'+state.name+'"))';
         }
@@ -645,8 +649,13 @@ function createFlow() {
           }else if( state.status == "closed"){
             graph+='("'+state.name+'")';
           }else{
-            graph+='["'+state.name+'"]';
+            if(state.logic){
+              graph+='{"'+state.name+'"}';
+            }else{
+              graph+='["'+state.name+'"]';
+            }
           }
+
           return graph+'-->|'+action.label+'|'+' '+action.to.split(' ').join('_')+'';
         })
         return graph+stuff.join('')
@@ -677,7 +686,7 @@ createFlow();
 
 function drawForm(name){
 
-
+debugger;
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -687,12 +696,37 @@ function drawForm(name){
     actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
     // legend:"State",
     // sections:"tab",
-    clear:false,
-    data: _.find(flow_states,{name:name}),
+    clear: false,
+    data: _.find(flow_states,{name:name})
   }
+  myconditions = [
+    {label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires','conditions']},
+    {label: 'Name',name:"name",show:[{type:'matches',name:"type",value:["matches","not_matches","contains","requires"]}]},
+    {label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1},show:[{type:'matches',name:"type",value:["matches","not_matches","contains"]}]},
+    {label: false, columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:'matches',name:"type",value:"conditions"}]},
+    {name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
+      {label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires']},
+      {label: 'Name',name:"name"},
+      { label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1}}
+    ]}
+  ]
 
   formConfig.fields=_.map(
-  _.map([
+    _.map([        
+      {type: 'switch', label: 'Logic', name: 'hasLogic',format:{label:''},parse:false,show:false,value:function(e){
+        return (typeof e.initial.owner.options.data.logic !== 'undefined');
+      }},
+      {type: 'select', label: false,other:true, name: 'logic',target:"#collapseEvents .panel-body",options:[
+          {label:"Conditions",value:'other'},
+          {type:'optgroup',min:0,max:4,show:false},
+          {type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}
+        ]
+        ,show:[{name:"hasLogic",value:true,type:"matches"}]}
+      ,{type: "fieldset", name: "logic", label: false, fields: myconditions,show:[{name:"hasLogic",value:true,type:"matches"},{name:"logic",value:['other'],type:"matches"}]}
+    ],function(item){
+      item.target = "#collapseLogic .panel-body";
+      return item;
+    }).concat(_.map([
     {type: "fieldset", name: "assignment", label: false, fields: [
       {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
         {value: "user", label: "User"},
@@ -760,11 +794,11 @@ function drawForm(name){
       ],function(item){
     item.target = "#collapseAssignment .panel-body";
     return item;
-  }).concat([
+  })).concat([
    // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
     {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
     {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
-    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state"},
+    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
     {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
     {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
     {target:"#collapseActions .panel-body", 
@@ -782,8 +816,9 @@ function drawForm(name){
         ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
       {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
         {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+        {name: "task_label", label: "<h4>Tasks</h4>", type: "output"},
 
-        {name: "tasks", label: "Tasks", type: "fieldset", fields: taskForm, array: true}
+        {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
       ], array: true
     }
 
@@ -792,12 +827,15 @@ function drawForm(name){
   )
   $('#flow-form').html(gform.renderString(flowAccordion))
 
-
-  $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
-  $('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+  // $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+  $('.panelAssignment').toggle(!!_.find(formConfig.fields,{target:"#collapseAssignment .panel-body"}) && !formConfig.data.logic);
   $('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
-  $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
-  $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+  $('.panelLogic').toggle(!!_.find(formConfig.fields,{target:"#collapseLogic .panel-body"}) && !!formConfig.data.logic);
+  $('.panelOnleave').toggle(!!_.find(formConfig.fields,{target:"#collapseOnleave .panel-body"}) && !formConfig.data.logic);
+  // $('.panelActions').toggle(!!_.find(formConfig.fields,{target:"#collapseActions .panel-body"}) && !formConfig.data.logic);
+
+  // $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+  // $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
 
 
 
@@ -926,7 +964,17 @@ $('#add-state').on('click',function() {
 
   createFlow();
 })
+$('#add-logic').on('click',function() {
+  i=0;
+  while(typeof _.find(flow_states,{name:gform.renderString("newLogic{{i}}",{i:i})}) !== 'undefined'){
+    i++;
+  }
+  flow_states.push({name:gform.renderString("newLogic{{i}}",{i:i}),logic:{},actions:[{label:"True",name:"true"},{label:"False",name:"false"}]});
+  drawForm(gform.renderString("newLogic{{i}}",{i:i}));
+  gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
+  createFlow();
+})
 $('#save').on('click',function() {
   var data = {code:{flow:flow_states}};
   if(true || !errorCount){
@@ -1099,6 +1147,20 @@ Basic
     </h4>
   </div>
   <div id="collapseAssignment" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAssignment">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default panelLogic">
+  <div class="panel-heading" role="tab" id="headingLogic">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseLogic" aria-expanded="false" aria-controls="collapseLogic">
+      Logic
+      </a>
+    </h4>
+  </div>
+  <div id="collapseLogic" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLogic">
     <div class="panel-body">
     </div>
   </div>
