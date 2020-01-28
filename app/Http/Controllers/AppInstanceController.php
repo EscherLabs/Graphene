@@ -304,8 +304,12 @@ class AppInstanceController extends Controller
             $response['content'] = array_map("str_getcsv", explode("\n", $response['content']));
         } else if ($resource_info->modifier == 'xml') {
             // UTF-8 Encode Data to prevent any errors during XML Parsing
-            $utf8_encoded = utf8_encode($response['content']);
-            $response['content'] = json_decode(json_encode(simplexml_load_string($utf8_encoded,'SimpleXMLElement',LIBXML_NOCDATA)),true);
+            try {
+                $xml_data = simplexml_load_string($response['content'],'SimpleXMLElement',LIBXML_NOCDATA);
+            } catch (\Exception $e) {
+                $xml_data = simplexml_load_string(utf8_encode($response['content']),'SimpleXMLElement',LIBXML_NOCDATA);
+            }
+            $response['content'] = json_decode(json_encode($xml_data),true);
         } else {
             try{
                 if(is_string($response['content'])){
