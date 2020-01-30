@@ -68,8 +68,10 @@ class WorkflowController extends Controller
         }else if(!($first->gte($second) || isset($post_data['force']))){
             abort(409, $workflow_version);
         }
+        $code = $request->code;
+        $code['form'] = json_decode($code['form']);
+        $workflow_version->code = $code;
 
-        $workflow_version->code = $request->code;
         $workflow_version->user_id = Auth::user()->id;
         $workflow_version->save();
         return $workflow_version;

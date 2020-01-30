@@ -59,12 +59,19 @@ baseFields = _.map([
 	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
 		return parseInt(e.value);
 	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
-		debugger;
 			return parseInt(e.initial.value||12)
 		
 	} },
-	{type: 'select', label: 'Offset', value:"0", name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
-	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
+
+	{type: 'select', label: 'Offset',value:0, name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)",value:function(e){
+		return parseInt(e.value);
+	}},parse:[{type:"not_matches",name:"columns",value:12},{type:"not_matches",value:0}],show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],value:function(e){
+		return parseInt(e.initial.value||0)
+	}},	
+	
+	
+	
+	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],parse:[{type:"requires"},{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
 	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
 
@@ -367,7 +374,7 @@ Cobler.types.input = function(container) {
 		{label: 'Output', value: 'output'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
-		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires",name:"format"}], fields:[
+		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires",name:"/format.input"}], fields:[
 			{name:"input",type:"smallcombo",options:[
 				{label:"Datetime",value:"MM/DD/YYYY h:mm A"},
 				{label:"Date",value:"MM/DD/YYYY"},				

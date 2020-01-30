@@ -988,7 +988,7 @@ $('#save').on('click',function() {
   var data = {code:{flow:flow_states}};
   if(true || !errorCount){
     // data.code.form = JSON.parse(formPage.toJSON()[0].content);
-    data.code.form = myform;
+    data.code.form = JSON.stringify(myform);
     data.updated_at = attributes.updated_at;
     data.code.map = map.toJSON().map;
     template_errors = templatePage.errors();
