@@ -36,7 +36,6 @@ renderBuilder = function(){
       mainForm();
     })
     document.getElementById('sortableList').addEventListener('click', function(e) {
-      // debugger;
       cb.deactivate();
       cb.collections[0].addItem(e.target.dataset.type || e.target.parentElement.dataset.type);
     })
@@ -488,7 +487,7 @@ function load(workflow_version) {
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Key</h4>',columns:9,type:"output"},
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Type</h4>',columns:3,type:"output"},
 
-    {name:"map",label:false,array:true,type:"fieldset",fields:[
+    {name:"map",label:false,array:{max:100},type:"fieldset",fields:[
       {name:"name",label:false,columns:9,placeholder:"Key"},
       {name:"type",label:false,type:"select",columns:3,options:[
         {label:"String",value:"string"},
@@ -626,7 +625,7 @@ function createFlow() {
 //<span class="fa fa-plus"></span> 
     try{
       var graph = _.map(flow_states,function(state,i,j){
-
+        state.name = state.name||state.state_id;
         var graph = '\n'+state.name.split(' ').join('_')+'';
         if(i){
           if(state.logic){
@@ -670,15 +669,16 @@ function createFlow() {
 
 
 
-// var callback = function(e){
-// debugger;
-// }
-
-// debugger;
 flow_states = attributes.code.flow||'[{"name":"origin"}]';
 if(typeof flow_states == 'string'){
   flow_states = JSON.parse(flow_states);
 }
+flow_states = _.map(flow_states,function(state){
+  if(typeof state.state_id == 'undefined'){
+    state.state_id = gform.getUID();
+  }
+  return state;
+})
 createFlow();
 
 
@@ -704,7 +704,7 @@ debugger;
     {label: 'Name',name:"name",show:[{type:'matches',name:"type",value:["matches","not_matches","contains","requires"]}]},
     {label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1},show:[{type:'matches',name:"type",value:["matches","not_matches","contains"]}]},
     {label: false, columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:'matches',name:"type",value:"conditions"}]},
-    {name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
+    {label:'Condition',name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
       {label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires']},
       {label: 'Name',name:"name"},
       { label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1}}
@@ -796,8 +796,9 @@ debugger;
     return item;
   })).concat([
    // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
-    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
-    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
+   {target:"#collapseBasic .panel-body", name: "state_id",type:'hidden', label: false},
+   {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
+   {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
     {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
     {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
     {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
@@ -815,8 +816,80 @@ debugger;
         {value: "link", label: "Simple"}
       ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
     {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-      {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
-      {name: "task_label", label: "<h4>Tasks</h4>", type: "output"},
+    {name: "assignment",type:"fieldset",label:false,fields:[
+
+      {name: "type",inline:false, label: "Actor(s)", type: "smallcombo", options: [
+        {value: "", label: "Assignee"},
+        {value: "user", label: "User"},
+        {value: "group", label: "Group"}
+      ]},
+
+      // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+      //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
+      // })
+
+      {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {
+        "type": "optgroup",
+        "options": "map_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+          return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+      },       
+      {
+        "type": "optgroup",
+        "options": "form_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+          var path = option.data.name
+          var search = option.data;
+          while(search.ischild){
+            path = search.parent.name+'.'+path;
+            search = search.parent;
+          }
+          return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+      }
+      ]},
+      {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
+        {
+          "type": "optgroup",
+          "options": "map_groups",
+          "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+            return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+        },       
+        {
+          "type": "optgroup",
+          "options": "form_groups",
+          "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+            var path = option.data.name
+            var search = option.data;
+            while(search.ischild){
+              path = search.parent.name+'.'+path;
+              search = search.parent;
+            }
+            return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+        },
+        {
+          "type":"optgroup",
+          "options":'/api/groups?members=20',
+          "format":{label:"{{name}}",value:"{{id}}"}
+        }
+      ]},
+      
+
+
+
+    ]},
+    {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+    {type: 'select',other:true, columns:12, label:'Show Action', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
+    [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Enable"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
+  },
+  {type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
+
+  {type: 'select',other:true, columns:12, label:'Enable Action', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
+    [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
+  },
+  {type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+
+      {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
       {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
     ], array: true
@@ -824,8 +897,9 @@ debugger;
   name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
     {name: "name", label: false, type: 'output',format:{value:"<b>Logic Result: <i>{{value}}</i></b>"}},
     {name: "label", label: "Label", columns: 6},
+
   {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-    {name: "task_label", label: "<h4>Tasks</h4>", type: "output"},
+    {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
     {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
   ], array: {min:3,max:3}
@@ -858,7 +932,7 @@ debugger;
       action.tasks = _.compact(_.map(action.tasks,function(e){if(e.task){return e} }))
     })
 
-    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')})] = temp;
+    flow_states[_.findIndex(flow_states,{state_id:e.form.options.data.state_id||e.form.get('state_id')})] = temp;
 
     gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -899,7 +973,7 @@ debugger;
     
     createFlow();
   }).on('delete',function(e){
-        var removed = flow_states.splice(_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')}),1)
+        var removed = flow_states.splice(_.findIndex(flow_states,{state_id:e.form.options.data.state_id||e.form.get('state_id')}),1)
         _.each(flow_states,function(state){
           _.each(state.actions,function(action){
             if(action.from == removed[0].name){
@@ -967,7 +1041,7 @@ $('#add-state').on('click',function() {
   while(typeof _.find(flow_states,{name:gform.renderString("newState{{i}}",{i:i})}) !== 'undefined'){
     i++;
   }
-  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),actions:[]});
+  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),state_id:gform.getUID(),actions:[]});
   drawForm(gform.renderString("newState{{i}}",{i:i}));
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -978,7 +1052,7 @@ $('#add-logic').on('click',function() {
   while(typeof _.find(flow_states,{name:gform.renderString("newLogic{{i}}",{i:i})}) !== 'undefined'){
     i++;
   }
-  flow_states.push({name:gform.renderString("newLogic{{i}}",{i:i}),logic:{},actions:[{label:"True",name:"true"},{label:"False",name:"false"},{label:"Error",name:"error"}]});
+  flow_states.push({name:gform.renderString("newLogic{{i}}",{i:i}),state_id:gform.getUID(),logic:{},actions:[{label:"True",name:"true"},{label:"False",name:"false"},{label:"Error",name:"error"}]});
   drawForm(gform.renderString("newLogic{{i}}",{i:i}));
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -1072,16 +1146,293 @@ $('#publish').on('click', function() {
   });
 });
 
-$('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-  $.get('/api/workflowinstances?workflow_id=' + loaded.workflow_id, function(data) {
-    if(data.length > 0){
-      modal({title: 'This Workflow has the following instances', content: viewTemplate.render({items: data})});
+// $.get('/api/workflowinstances?workflow_id=' + loaded.app_id, function(data) {
+//   if(data.length > 0){
+//     // viewTemplate = Hogan.compile();
+
+//     // modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
+//     document.querySelector('.sidebar').appendChild(gform.create(gform.m('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>',{items: data})))
+//   }else{
+//   }
+// })
+
+loadInstances = function(){
+  $.get('/api/workflowinstances?workflow_id=' + loaded.workflow_id, function(workflow_instances) {
+    if(workflow_instances.length > 0){
+      // viewTemplate = Hogan.compile();
+
+      // modal({title: 'This workflow has the following instances', content: viewTemplate.render({items: data})});
+
+
+        workflow_instances = _.map(workflow_instances, function(instance){
+          if(instance.configuration !== null){
+            if(instance.version !== null) {
+              instance.configuration.resources = _.map(instance.configuration.resources, function(instance, resource, i){
+                // var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+                // if(typeof group !== 'undefined'){
+                  resource.endpoint = _.find(instance.group.endpoints,{id:parseInt(resource.endpoint)})
+                // }
+                
+                resource.resource = _.find(instance.version.code.resources,{name:resource.name})
+                return resource;
+              }.bind(null, instance))
+
+              instance.version_summary = instance.version.summary||'Working Version';
+              
+              instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
+
+              instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length
+            }
+
+            instance.configuration.map = _.map(instance.configuration.map, function(instance, map, i){
+              // var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+              map.display = map.value;
+
+              if(map.type == 'group'){
+                var finder = _.find(gform.collections.get('/api/groups?members=20')||[],{id:parseInt(map.value)});
+                if(finder != null){
+                  map.display = finder.name;
+                }
+              }
+              if(map.type == 'endpoint'){
+                var finder = _.find(instance.group.endpoints,{id:parseInt(map.value)})
+                debugger;
+                if(finder != null){
+                  map.display = finder.config.url+' ('+finder.name+')';
+                }
+              }
+              if(typeof map.display == 'undefined' || map.display == null || map.display == ''){
+                map.display = '<span class="text-danger"> - None - </span>';
+              }
+              return map;
+            }.bind(null, instance))
+          }
+
+          return instance;
+        })
+      // gform.addClass(document.querySelector('.nav-sidebar'),'hidden');
+      if(document.querySelector('.sidebar').querySelector('#instances') !== null){
+        document.querySelector('.sidebar').querySelector('#instances').remove();
+      }
+      document.querySelector('.sidebar').appendChild(gform.create(gform.m(`<div id="instances" style="margin: 0 -15px">
+      <hr><h5 style="color:#fefefe">Instances</h5>
+      <style>.workflowInstance{
+        color: #ddd;
+        text-decoration: none;
+        border:solid 1px #333;
+        border-width:1px 0;
+        cursor: pointer;
+        background: #666;
+        padding: 5px;
+        position:relative;
+      }
+      .workflowInstance  #dLabel{
+        color: #ddd;
+      }
+      .workflowInstance .fa-warning.text-danger{
+        position: absolute;
+        left: 70px;
+        top: 20px;
+        font-size: 50px;
+        text-shadow: 0px 0px 3px #fff;
+      }
+      .fa-lock-0:before{
+        content:"\f023";
+      }
+      .fa-lock-:before{
+        content:"\f09c";
+      }
+      
+    </style>
+      {{#workflow_instances}}
+      <div class="workflowInstance">
+        {{#error}}<a href="/admin/workflowinstances/{{id}}" target="_blank" class="fa fa-warning text-danger"></a>{{/error}}
+        <div class="btn-group parent-hover" style="position: absolute;right: 2px;top:2px">
+        <a class="btn btn-xs btn-default" target="_blank" href="/workflow/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i></a>
+        <a class="btn btn-xs btn-default" href="/admin/workflowinstances/{{id}}"><i class="fa fa-pencil"></i></a>
+      </div>
+        <div data-workflowID={{id}}>
+        
+        <div style="overflow:hidden">
+          {{group.name}}
+
+        </div> 
+        <div> <i class="pull-right fa {{#workflow_version_id}}fa-lock{{/workflow_version_id}} {{^workflow_version_id}}fa-lock-{{workflow_version_id}}{{/workflow_version_id}}" style="padding-top:3px"></i> {{name}}</div>
+          <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
+          {{#unlisted}}
+          <i class="fa fa-unlink"></i>
+          {{/unlisted}}
+          {{^unlisted}}
+          <i class="fa fa-link"></i>
+          {{/unlisted}}
+          {{#public}}
+          <i class=" fa fa-eye"></i>
+          {{/public}}
+          {{^public}}
+          <i class="fa fa-eye-slash"></i>
+          {{/public}}
+
+          {{#composite_limit}}
+          <i class="fa fa-user"></i>
+          {{/composite_limit}}
+          {{^composite_limit}}
+          <i class="fa fa-users"></i>
+          {{/composite_limit}}
+
+          {{^hidden_xs}}
+          <i class="pull-right fa fa-phone"></i>
+          {{/hidden_xs}}
+          {{^hidden_sm}}
+          <i class="pull-right fa fa-mobile"></i>
+          {{/hidden_sm}}
+          {{^hidden_md}}
+          <i class="pull-right fa fa-desktop"></i>
+          {{/hidden_md}}
+
+          <!--i class="pull-right device_{{device}}"></i-->
+
+          </div>
+        </a>
+        </div>
+      
+      </div>
+        
+      {{/workflow_instances}}</div>`,{workflow_instances: workflow_instances})))
+      $('#instances').on('click','[data-workflowID]',function(workflow_instances,e){
+        var temp = _.find(workflow_instances, {id:parseInt(e.currentTarget.dataset.workflowid)});
+        debugger;
+        modal({title: temp.name, content: gform.m(`
+
+        <div class="">
+          <div class="row">
+            <dl class="dl-horizontal col-md-6">
+              <dt>Group:</dt>
+              <dd>{{group.name}} <span class="text-muted">({{group.id}})</span></dd>
+              <dt>Name:</dt>
+              <dd>{{name}}</dd>
+              <dt>Slug:</dt>
+              <dd>{{slug}}</dd>
+              <dt>Icon:</dt>
+              <dd><i class="{{icon}}"></i> ({{^icon}} - None - {{/icon}}{{icon}})</dd>
+              
+              <dt>Version Selected:</dt>
+              <dd>{{version_id}}</dd>
+              <dt>Using Version:</dt>
+              <dd>{{version_summary}}<p class="text-muted">{{description}}</p></dd><dt></dt>
+              <dt>Initial State:</dt>
+              <dd>{{configuration.initial}}{{^configuration.initial}}<span class="text-danger"> - None - </span>{{/configuration.initial}}</dd>
+
+            </dl>
+            <dl class="dl-horizontal col-md-6">
+              <dt>Included in menu:</dt>
+              <dd>          
+              {{#unlisted}}
+              No <i class="text-warning pull-right fa fa-unlink"></i>
+              {{/unlisted}}
+              {{^unlisted}}
+              Yes <i class="pull-right fa fa-link"></i>
+              {{/unlisted}}
+              </dd>
+              <dt>Public:</dt>
+              <dd>          
+              {{#public}}
+              Yes <i class="pull-right text-success fa fa-eye"></i>
+              {{/public}}
+              {{^public}}
+              No <i class="pull-right text-danger fa fa-eye-slash"></i>
+              {{/public}}</dd>
+              <dt>Limit To Composites:</dt>
+              <dd>
+              {{#composite_limit}}
+              Yes <i class="fa fa-user"></i>
+              {{/composite_limit}}
+              {{^composite_limit}}
+              No, Open to all Group Members <i class="pull-right fa fa-users"></i>
+              {{/composite_limit}}
+              </dd>
+
+              <dt>Phone:</dt>
+              <dd>
+              {{^hidden_xs}}
+              Yes
+              {{/hidden_xs}}
+              {{#hidden_xs}}
+              No
+              {{/hidden_xs}}
+              </dd>
+              <dt>Tablet:</dt>
+              <dd>
+              {{^hidden_sm}}
+              Yes
+              {{/hidden_sm}}
+              {{#hidden_sm}}
+              No
+              {{/hidden_sm}}
+              </dd>
+              <dt>Desktop:</dt>
+              <dd>
+              {{^hidden_md}}
+              Yes
+              {{/hidden_md}}
+              {{#hidden_md}}
+              No
+              {{/hidden_md}}
+              </dd>
+
+              <dt>Emails:</dt>
+              <dd>
+              {{#configuration.suppress_emails}}
+              Do not send Emails will not be sent <i class="pull-right fa fa-envelope text-success"></i>
+              {{/configuration.suppress_emails}}
+              {{^configuration.suppress_emails}}
+              Send default Emails <i class="pull-right fa fa-envelope text-danger"></i>
+              {{/configuration.suppress_emails}}
+              </dd>
+            </dl>
+          </div>
+    
+          <div style="overflow:scroll">
+            <p class="text-muted">{{version.description}}</p>
+    
+              {{#configuration.resources.length}}
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+              <table>
+              <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+              {{#configuration.resources}}
+              <tr>
+              <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
+              </tr>
+              {{/configuration.resources}} 
+            </table>
+              {{/configuration.resources.length}}
+    
+              {{#configuration.map.length}}                      
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+    
+              <table style="min-width:100%">
+              <tr><th colspan="2" style="color:#666">Data Map</th><th>Type</th><tr>
+              {{#configuration.map}}
+              <tr>
+              <td valign="top" style="text-align:right;width:100px">{{name}}:&nbsp;</td><td class="text-muted">{{{display}}}</td><td class="text-muted;width:100px">({{type}})</td>
+              </tr>
+              {{/configuration.map}}                         
+              </table>                      
+    
+              {{/configuration.map.length}}
+          </div>
+        </div>`,temp)});
+      }.bind(null,workflow_instances))
     }else{
-      modal({title: 'No instances Found', content: 'This Workflow is not currently instantiated.'});
     }
   })
-});
+}
+$.get('/api/groups?members=20', function(groups) {
+gform.collections.add('/api/groups?members=20',groups)
+loadInstances();
+
+})
+
+
 
 $('#versions').on('click', function() {
   $.ajax({

@@ -8,7 +8,7 @@ myconditions=[
 		{label: 'Name',name:"name",show:[{type:'matches',name:"type",value:["matches","not_matches","contains","requires"]}]},
 		{ label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1},show:[{type:'matches',name:"type",value:["matches","not_matches","contains"]}]},
 		{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:'matches',name:"type",value:"conditions"}]},
-		{name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
+		{label:'Condition',name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
 			{label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires']},
 			{label: 'Name',name:"name"},
 			{ label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1}}
@@ -24,9 +24,9 @@ baseFields = _.map([
 	{type: 'text', label: 'Name', name: 'name'},
 	{type: 'text', label: 'Placeholder', name: 'placeholder',parse:[{type:"requires",name:"placeholder"}],show:[{name:"type",value:['radio','checkbox','switch'],type:"not_matches"}]},
 	{type: 'text', label: 'Display', name: 'display',columns:12,parse:[{type:"requires"}],show:[{name:"type",value:['checkbox'],type:"matches"}]},
+	{type: 'text', label: "&nbsp;", post:"Post", name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['select'],type:"matches"}]},
 	{type: 'text', label: false, forceRow:true, pre: "Pre", name: 'pre',parse:[{type:"requires"}],show:[{name:"type",value:['radio','checkbox','switch','color','select'],type:"not_matches"}]},
 	{type: 'text', label: false, post:"Post", name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['radio','checkbox','switch','color','select'],type:"not_matches"}]},
-	{type: 'text', label: false, post:"Post",offset:6, name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['select'],type:"matches"}]},
 
 	// {type: 'switch', label: 'Validate', name: 'validate',format:{label:''},parse:[{type:"not_matches",name:"validate",value:false}]},
 
@@ -42,11 +42,28 @@ baseFields = _.map([
 	{type: 'checkbox', label: 'Default value', name: 'value',parse:[{type:"not_matches",name:"value",value:false},{type:"matches",name:"type",value:["checkbox","switch"]}],show:[{type:"matches",name:"type",value:["checkbox","switch"]}]},
 
 
+	{type: 'number', label: "Min", name: 'min',placeholder:0,columns:4,show:[{type:"matches",name:"type",value:"number"}],parse:[{type:"matches",name:"type",value:"number"},{type:"requires"}]},
+	{type: 'number', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"number"}],parse:[{type:"matches",name:"type",value:"number"},{type:"requires"}]},
+	{type: 'number', label: "Step", name: 'step',columns:4,show:[{type:"matches",name:"type",value:"number"}],parse:[{type:"matches",name:"type",value:"number"},{type:"requires"}]},
+	
+	{type: 'date', label: "Min", name: 'min',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false},{type:"requires"}]},
+	{type: 'date', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false},{type:"requires"}]},
+	{type: 'select', label: "Min", name: 'min',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true},{type:"requires"}],options:function(e){
+		// debugger;
+		return [];//gform.instances.modal.filter({type:"date"});
+	},placeholder:"None",format:{value:'{{name}}'}},
+	{type: 'select', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true},{type:"requires"}],options:function(e){
+		// debugger;
+		return [];//gform.instances.modal.filter({type:"date"});
+
+	},placeholder:"None",format:{value:'{{name}}'}},
+	{type: 'switch', label: "",columns:4, name: 'minMaxType',show:[{type:"matches",name:"type",value:"date"}],parse:false,options:[{label:"Date",value:false},{label:"Field",value:true}]},
+	
 	{type: 'textarea',columns:12, label: 'Instructions', name: 'help',parse:[{type:"requires"}],show:[{name:"type",value:['output'],type:"not_matches"}]},
 	{type: 'checkbox', label: 'Multiple Selections', name: 'multiple',min:1,show:[{name:"type",value:['select','radio'],type:"matches"}]},
 	{type: 'number', label: 'Limit Selections',parse:[{type:"requires"}],placeholder:"No Limit", name: 'limit',min:1,show:[{name:"type",value:['select','radio'],type:"matches"},{name:"multiple",value:true,type:"matches"}]},
 	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{name:"type",value:['select','radio'],type:"not_matches"},{type:"requires"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]},
-	{type: 'checkbox', label: 'Fillable',value:true, name: 'fillable',parse:[{type:"not_matches",value:true}]}
+	{type: 'checkbox', label: 'Fillable',forceRow:true, value:true, name: 'fillable',parse:[{type:"not_matches",value:true}]}
 
 ],function(item){
 	item.target = "#collapseBasic .panel-body";
@@ -55,12 +72,12 @@ baseFields = _.map([
 
 	{type: 'number', label: 'Size', name: 'size',min:1,parse:[{type:"requires",name:"size"}],show:[{name:"type",value:['textarea','select','radio'],type:"matches"}]},
 	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
+	{type: 'switch', label: 'Force New Row {{#value}}- <span class="text-success">Yes</span>{{/value}}', name: 'forceRow',show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],parse:[{type:"requires"},{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],format:{label:''}},
 
 	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
 		return parseInt(e.value);
 	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
 			return parseInt(e.initial.value||12)
-		
 	} },
 
 	{type: 'select', label: 'Offset',value:0, name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)",value:function(e){
@@ -71,14 +88,14 @@ baseFields = _.map([
 	
 	
 	
-	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],parse:[{type:"requires"},{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
 	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
-	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
 
 	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
 		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 		{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
-	]}
+	]},
+	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]}
+
 ],function(item){
 	item.target = "#collapseDisplay .panel-body";
 	return item;

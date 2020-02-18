@@ -33,14 +33,18 @@ class WorkflowInstanceController extends Controller
 
     public function list_all_workflow_instances(Request $request) {
         if (Auth::user()->site_admin) {
-            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('workflow')
+            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public','configuration')
+                ->with(array('workflow','group'=>function($q){
+                    $q->with('endpoints');
+                }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id);
                 })->orderBy('group_id','desc')->orderBy('order','desc');
         } else {
-            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('workflow')
+            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public','configuration')
+                ->with(array('workflow','group'=>function($q){
+                    $q->with('endpoints');
+                }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
                 })->orderBy('group_id','desc')->orderBy('order','desc');

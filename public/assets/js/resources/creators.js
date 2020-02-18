@@ -61,11 +61,15 @@ if(typeof group !== 'undefined'){
 if(typeof loaded !== 'undefined' && typeof loaded.app !== 'undefined' ){
   instanceData.app_id = loaded.app.id;
 }
+if(typeof loaded !== 'undefined' && typeof loaded.workflow !== 'undefined' ){
+  instanceData.workflow_id = loaded.workflow.id;
+}
 var createEngine = function(e){
   // $('.btn-new').click();
   if(typeof Berries.modal !== 'undefined'){
       Berries.modal.destroy();
   }
+
 
   var options =  {
     init: 'start',
@@ -97,22 +101,38 @@ var createEngine = function(e){
       //app
       { name: 'createapp',     from: 'start',  to: 'appCreate' },
       { name: 'submit', from: 'appCreate', to: 'submit'  },
+      //app
+      { name: 'createworkflow',     from: 'start',  to: 'workflowCreate' },
+      { name: 'submit', from: 'workflowCreate', to: 'submit'  },
       //group
       { name: 'creategroup',     from: 'start',  to: 'groupCreate' },
       { name: 'submit', from: 'groupCreate', to: 'submit'  },
       //user
       { name: 'createuser',     from: 'start',  to: 'userCreate' },
       { name: 'submit', from: 'userCreate', to: 'submit'  },
-      //instance
-      { name: 'createinstance',     from: '*',  to: 'instancegroup' },
-      { name: 'next',     from: 'instancegroup',  to: 'app' },
+      //appinstance
+      { name: 'createappinstance',     from: '*',  to: 'appinstancegroup' },
+      { name: 'next',     from: 'appinstancegroup',  to: 'app' },
       
-      { name: 'next',     from: 'app',  to: 'instance' },
-      { name: 'next',     from: 'instance',  to: 'instancecomposite' },
-      { name: 'submit', from: 'instancecomposite', to: 'submit'  },
-      { name: 'previous', from: 'instance', to: 'app' },
-      { name: 'previous', from: 'app', to: 'instancegroup' },
-      { name: 'previous', from: 'instancecomposite', to: 'instance'    },
+      //workflowinstance
+      { name: 'createworkflowinstance',     from: '*',  to: 'workflowinstancegroup' },
+      { name: 'next',     from: 'workflowinstancegroup',  to: 'workflow' },
+      
+
+      { name: 'next',     from: 'workflow',  to: 'workflowinstance' },
+      { name: 'next',     from: 'workflowinstance',  to: 'workflowinstancecomposite' },
+      { name: 'submit', from: 'workflowinstancecomposite', to: 'submit'  },
+      { name: 'previous', from: 'workflowinstance', to: 'workflow' },
+      { name: 'previous', from: 'workflow', to: 'workflowinstancegroup' },
+      { name: 'previous', from: 'workflowinstancecomposite', to: 'workflowinstance'    },
+      
+      
+      { name: 'next',     from: 'app',  to: 'appinstance' },
+      { name: 'next',     from: 'appinstance',  to: 'appinstancecomposite' },
+      { name: 'submit', from: 'appinstancecomposite', to: 'submit'  },
+      { name: 'previous', from: 'appinstance', to: 'app' },
+      { name: 'previous', from: 'app', to: 'appinstancegroup' },
+      { name: 'previous', from: 'instancecomposite', to: 'appinstance'    },
       //all
       { name: 'cancel',     from: '*',  to: 'start' },
       { name: 'success',     from: '*',  to: 'success' },
@@ -143,7 +163,26 @@ var createEngine = function(e){
               ],actions:false
         })
         
-      },      
+      },    
+      onWorkflowCreate: function(){
+
+        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
+        //   {label: 'Name', name:'name', required: true},
+        //     {label: 'Description', name:'description', required: false, type:'textarea'},
+        //     {label: 'Tags', name:'tags', required: false},
+        //     {label: 'Lead Developer', name:'user_id', type:'select', options: '/api/apps/developers', required: false, format:{label:'{{first_name}} {{last_name}}',value:'{{id}}'}},
+        // ], actions: false},mymodal.ref.find('.modal-body')[0]);        options.url = '/api/workflows';
+        mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+          name:"modal", fields:[
+            {label: 'Name', name:'name', required: true},
+            {label: 'Description', name:'description', required: false, type:'textarea'},
+            {label: 'Tags', name:'tags', required: false},
+            {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
+              ],actions:false
+        })
+        
+      },  
       onGroupCreate: function(){
         options.url = '/api/groups';
         options.complete = "Successfully Created a Group!<br><br> Here are some next steps you may want to take:"
@@ -262,9 +301,9 @@ var createEngine = function(e){
         //   ]}
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
       },
-      onInstance: function(){
+      onAppinstance: function(){
         options.url = '/api/appinstances';
-        options.complete = "Successfully Created an Instance!<br><br> Here are some next steps you may want to take:"
+        options.complete = "Successfully Created an App Instance!<br><br> Here are some next steps you may want to take:"
 
         $.ajax({
               url: '/api/apps/'+instanceData.app_id+'/versions',
@@ -297,12 +336,39 @@ var createEngine = function(e){
       
               }
             })
+      },      
+      onWorkflowinstance: function(){
+        options.url = '/api/workflowinstances';
+        options.complete = "Successfully Created a workflow Instance!<br><br> Here are some next steps you may want to take:"
+
+        $.ajax({
+              url: '/api/workflows/'+instanceData.workflow_id+'/versions',
+              success: function(data) {
+                console.log(data);
+                data.unshift({id:0,label:'Latest Stable'})
+                data.unshift({id:-1,label:'Latest (working or stable)'})
+                mymodal.ref.find('.modal-body').berry({
+                    attributes:instanceData,
+                    name:"modal", fields:[
+                    {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
+                    {label: 'Name', name:'name', required: true},
+                    {label: 'Slug', name:'slug', required: true},
+                    {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+                    {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+                    {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
+                    {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
+                  ],actions:false
+                })
+              }
+            })
       },
+
       onPagegroup: selectGroup,
       onEndpointgroup: selectGroup,
       onLinkgroup: selectGroup,
       onImagegroup: selectGroup,
-      onInstancegroup: selectGroup,
+      onAppinstancegroup: selectGroup,
+      onWorkflowinstancegroup: selectGroup,
       
       onApp: function(){
         mymodal.ref.find('.modal-body').berry({
@@ -314,8 +380,18 @@ var createEngine = function(e){
             ],actions:false
           })
       },     
-
-      onInstancecomposite: selectComposite,
+      onWorkflow: function(){
+        mymodal.ref.find('.modal-body').berry({
+          attributes:instanceData,
+            name:"modal", fields:[
+              {label: 'Workflow', name:'workflow_id', type:'select',satisfied:function(value){
+                return (this.toJSON() !== "")
+              },required:true, choices:'/api/workflows', default:{"label":"Choose One","value":""}},
+            ],actions:false
+          })
+      },     
+      onAppinstancecomposite: selectComposite,
+      onWorkflowinstancecomposite: selectComposite,
       onPagecomposite: selectComposite,
       onLink:function(){
         options.url = '/api/links';    
@@ -387,8 +463,15 @@ var createEngine = function(e){
           case "appCreate":
           instanceData.app_id = item.id;
           options.complete = "Successfully Created an App!<br><br> Here are some next steps you may want to take<div>"+
-          "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> Instanciate App</a>"+
+          "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createappinstance'><i class='fa fa-cubes'></i> Instanciate App</a>"+
           "<a href='/admin/apps/"+item.id+"' class='list-group-action'><i class='fa fa-cube'></i> Edit App</a>"+
+          "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a></div>"
+          break;          
+          case "workflowCreate":
+          instanceData.workflow_id = item.id;
+          options.complete = "Successfully Created aa Workflow!<br><br> Here are some next steps you may want to take<div>"+
+          "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createworkflowinstance'><i class='fa fa-check'></i> Instanciate Workflow</a>"+
+          "<a href='/admin/workflows/"+item.id+"' class='list-group-action'><i class='fa fa-check-o'></i> Edit Workflow</a>"+
           "<a href='#' class='list-group-action' data-action='other'><i class='fa fa-gear'></i> Other</a></div>"
           break;
           case "groupCreate":

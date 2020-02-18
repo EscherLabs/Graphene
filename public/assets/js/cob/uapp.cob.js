@@ -76,10 +76,10 @@ Cobler.types.uApp = function(container){
             // opts.config = _.find(Berry.collection.get('/api/appinstances'), {id: parseInt(this.get().app_id,10)}).app.code;
             opts.config.app_instance_id = this.get().app_id;
             opts.config.title = this.get().title;
-            $('style[name="'+opts.config.app_instance_id+'"]').remove();
-            if(opts.config.css.length){
-              $('body').append('<style name="'+opts.config.app_instance_id+'">'+opts.config.css+'</style>');
-            }
+            // $('style[name="'+opts.config.app_instance_id+'"]').remove();
+            // if(opts.config.css.length){
+            //   $('body').append('<style name="'+opts.config.app_instance_id+'">'+opts.config.css+'</style>');
+            // }
             opts.onLoad = function(){
               this.bae.app.on('refetch', function(data){
                 var options;

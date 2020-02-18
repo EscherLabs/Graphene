@@ -30,14 +30,16 @@ class AppInstanceController extends Controller
 
     public function list_all_app_instances(Request $request) {
         if (Auth::user()->site_admin) {
-            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('app')
+            $app_instances = AppInstance::with(array('app','group'=>function($q){
+                $q->with('endpoints');
+            }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id);
                 })->orderBy('group_id','desc')->orderBy('order','desc');
         } else {
-            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('app')
+            $app_instances = AppInstance::with(array('app','group'=>function($q){
+                $q->with('endpoints');
+            }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
                 })->orderBy('group_id','desc')->orderBy('order','desc');

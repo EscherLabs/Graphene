@@ -138,9 +138,27 @@ class AdminController extends Controller
             }))->select('group_id','user_id');
         }));
 
-        $user->load(array('workflows'=>function($query){
-            $query->with(array("workflow_instances"=>function($query){},"user"));
+        // $user->load(array('workflows'=>function($query){
+        //     $query->with(array("workflow_instances"=>function($query){},"user"));
+        // }));
+        $user->load(array('workflow_developers'=>function($query){
+            //$query->where('site_id','=',config('app.site')->id)->with('app');;
+            $query->whereHas('workflow')->with(array('workflow'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->with(array('workflow_instances'=>function($q){
+                    // $q->with(array('appVersion'=>function($q){
+                    //     $q->select('id','code->resources as resources','code->forms as forms');
+                    // }));
+                    $q->with(array('group'=>function($q){
+                        $q->select('id','name');
+                    }))->orderBy('updated_at', 'desc');
+                },'user'=>function($q){
+                    // $q->with(array('appVersion'=>function($q){
+                    //     $q->select('id','code->resources as resources','code->forms as forms');
+                    // }));
+                }))->currentVersion();//->select('id','site_id','name','user_id');
+            }))->select('workflow_id','user_id') ;
         }));
+        // return $user;
         return view('adminDashboard', ['user'=>$user]);
         // return $user;
 

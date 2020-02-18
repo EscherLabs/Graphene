@@ -628,10 +628,10 @@ Object.defineProperty(debug,'summary',{
 
     if(typeof gform.instances.display !== 'undefined'){
       console.log('%c _flowstate:\t%c'+gform.instances.display.get('_flowstate'),'color: #d85e16','color: #aaa')
-      console.log('%c Current Form Data:','color: #0088FF',)
+      console.log('%c Current Form Data:','color: #0088FF')
       console.log(gform.instances.display.get('_state'))
     }
-    console.log('%c Template Data:','color: #0088FF',)
+    console.log('%c Template Data:','color: #0088FF')
     console.log(mappedData)
   },
   configurable: false,

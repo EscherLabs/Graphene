@@ -68,7 +68,7 @@ function App() {
 	this.eventBus = new gform.eventBus({owner:'instance',item:'resource', handlers:{}}, this);
 	this.collections =  new gform.collectionManager(this.data)
 
-	return {
+	var returnable = {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
 		put:_.partial(router, 'PUT').bind(this),
@@ -267,6 +267,12 @@ function App() {
 		//chart
 		//use promises and local fetch?
 	}
+	_.each(this.methods,function(method,key){
+		if(typeof returnable[key] == 'undefined'){
+			returnable[key] = method.bind(this);
+		}
+	})
+	return returnable;
 }
  
 grapheneAppEngine = 
@@ -330,7 +336,13 @@ function(options){
 
   this.draw = function() {
 		this.options.defaultHtml = this.$el.html();
-    this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
+		if(typeof this.component == 'undefined'){
+			this.component = Ractive.extend(
+				{data:this.methods,css:this.options.config.css, template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], partials: this.partials}
+			)
+		}
+		this.ractive = this.component({data: this.data,el: this.$el[0]});
+	    // this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
 
 		this.$el.find('[data-toggle="tooltip"]').tooltip();
 		this.$el.find('[data-toggle="popover"]').popover();
