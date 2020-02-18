@@ -14,10 +14,10 @@ Guest
           <li><a href="#">{{ $app->name }}</a></li>
           <ul>
           @foreach ($app->app_instances as $instance)
-                    <li><a href="/app/{{ $app->slug }}/{{ $instance->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
+                    <li><a href="/app/{{ $app->slug }}/{{ $instance->slug }}{{ (request()->input('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($instance->icon)&&$instance->icon!='')?$instance->icon:'cube' }} fa-fw"></i>&nbsp; {{ $instance->name }}</a></li>
           @endforeach
           @foreach ($app->pages as $page)
-                    <li><a href="/page/{{ $app->slug }}/{{ $page->slug }}{{ (Request::get('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($page->icon)&&$page->icon!='')?$page->icon:'cube' }} fa-fw"></i>&nbsp; {{ $page->name }}</a></li>
+                    <li><a href="/page/{{ $app->slug }}/{{ $page->slug }}{{ (request()->input('topbar') !== 'false') ? '' : '?topbar=false' }}"><i class="fa fa-{{ (!is_null($page->icon)&&$page->icon!='')?$page->icon:'cube' }} fa-fw"></i>&nbsp; {{ $page->name }}</a></li>
           @endforeach
           </ul>
 

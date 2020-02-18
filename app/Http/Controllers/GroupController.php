@@ -288,31 +288,34 @@ class GroupController extends Controller
     }
     public function order()
 	{
-        $order = Request::get('order');
+        $order = request()->input('order');
         foreach($order as $item){
             $group = Group::find($item['id']);
             $group->order = (int) $item['index'];
             $group->save();
         }
+        return $order;
 	}
 
     public function pages_order(Group $group)
 	{
-        $order = Request::get('order');
+        $order = request()->input('order');
         foreach($order as $item){
             $page = Page::find($item['id']);
             $page->order = (int) $item['index'];
             $page->save();
         }
+        return $order;
 	}
 
     public function appinstances_order(Group $group)
 	{
-        $order = Request::get('order');
+        $order = request()->input('order');
         foreach($order as $item){
             $ai = AppInstance::find($item['id']);
             $ai->order = (int) $item['index'];
             $ai->save();
         }
+        return $order;
 	}
 }
