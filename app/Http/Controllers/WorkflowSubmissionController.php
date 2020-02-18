@@ -95,6 +95,7 @@ class WorkflowSubmissionController extends Controller {
         return WorkflowSubmission::with('workflowVersion')
             ->with('user')
             ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->where('status',"!=",'new')
             ->orderBy('created_at')->get();
     }   
     public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
