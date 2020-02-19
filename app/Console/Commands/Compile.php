@@ -6,41 +6,21 @@ use Illuminate\Console\Command;
 
 class Compile extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'compile';
+    protected $admin_file_name = 'admin2.js';
+    protected $admin_obj_name = 'admin_templates';
+    protected $workflow_file_name = 'workflow2.js';
+    protected $workflow_obj_name = 'workflow_report';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    protected $signature = 'compile';
     protected $description = 'Runs all javascript minification and any other compiliation commands';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        echo "Building...\n";
-        $path = "resources/assets/mustache/admin";
-        $mustache = [];
-        $js = [];
+    private function build_string($path,$obj_name) {
+        $mustache = $js = [];
         $mustache_files = scandir($path);
         foreach($mustache_files as $index => $filename) {
             if ($filename[0]==='.') {
@@ -54,18 +34,38 @@ class Compile extends Command
                 $mustache[$fileinfo['filename']] = "'".$minified."'";
             } else if ($fileinfo['extension'] === 'js') {
                 $raw = file_get_contents($path."/".$filename);
-                $minified = preg_replace('!\s+!',' ', $raw);
+                $minified = preg_replace_callback ('/(`)(.*)(`)/s',function($matches) {
+                    return "'".str_replace("'","\'",$matches[2])."'";
+                }, $raw);
+                $minified = preg_replace('!\s+!',' ', $minified);
                 $js[$fileinfo['filename']] = $minified;
             }
         }
-
-        $minified_file = "var admin_templates = {}\n";
+        $minified_file = "var ".$obj_name." = {}\n";
+        $gform_stencils = "// Map to gform stencils\n";
         foreach($mustache as $filename => $template) {
-            $minified_file .= 'admin_templates["'.$filename.'"] = '.$template.";\n\n";
+            $minified_file .= $obj_name.'["'.$filename.'"] = '.$template.";\n";
+            $gform_stencils .= 'gform.stencils["'.$filename.'"] = '.$obj_name.'["'.$filename.'"];'."\n";
         }
         foreach($js as $filename => $template) {
-            $minified_file .= $template."\n\n";
+            $minified_file .= $template."\n";
         }
-        echo $minified_file;
+        return $minified_file."\n".$gform_stencils;
+    }
+
+    public function handle()
+    {
+
+
+        $this->line("<fg=green>Building...</>");
+        $src_path = base_path("resources/assets/mustache");
+        $target_path = base_path("public/assets/js/templates");
+        $adminjs = $this->build_string($src_path.'/admin',$this->admin_obj_name);
+        $workflowjs = $this->build_string($src_path.'/workflow',$this->workflow_obj_name);
+        $this->line("Writing: ".$target_path.'/'.$this->admin_file_name);
+        file_put_contents($target_path.'/'.$this->admin_file_name,$adminjs);
+        $this->line("Writing: ".$target_path.'/'.$this->workflow_file_name);
+        file_put_contents($target_path.'/'.$this->workflow_file_name,$workflowjs);
+        $this->line("<fg=green>Complete!</>");
     }
 }
