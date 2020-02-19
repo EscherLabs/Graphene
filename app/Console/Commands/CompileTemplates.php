@@ -10,8 +10,8 @@ class CompileTemplates extends Command
         'src' => "resources/assets/mustache",
         'target' => "public/assets/js/templates",
         'includes' => [
-            ['dir'=>'widget','name'=>'widget2.js','obj'=>'widget_templates'],
-            ['dir'=>'admin','name'=>'admin2.js','obj'=>'admin_templates'],
+            ['dir'=>'widget','name'=>'widget2.js','obj'=>'templates'],
+            ['dir'=>'admin','name'=>'admin2.js','obj'=>'templates'],
             ['dir'=>'workflow','name'=>'workflow2.js','obj'=>'workflow_report'],
         ]
     ];
@@ -38,23 +38,36 @@ class CompileTemplates extends Command
                 $mustache[$fileinfo['filename']] = "'".$minified."'";
             } else if ($fileinfo['extension'] === 'js') {
                 $raw = file_get_contents($path."/".$filename);
-                $minified = preg_replace_callback ('/(`)(.*)(`)/s',function($matches) {
+                $minified = preg_replace_callback ('/(`)(.*?)(`)/s',function($matches) {
                     return "'".str_replace("'","\'",$matches[2])."'";
                 }, $raw);
                 $minified = preg_replace('!\s+!',' ', $minified);
                 $js[$fileinfo['filename']] = $minified;
             }
         }
-        $minified_file = "var ".$obj_name." = {}\n";
-        $gform_stencils = "// Map to gform stencils\n";
+        // Build Partials Object
+        $partials_arr = [];
         foreach($mustache as $filename => $template) {
-            $minified_file .= $obj_name.'["'.$filename.'"] = '.$template.";\n";
-            $gform_stencils .= 'gform.stencils["'.$filename.'"] = '.$obj_name.'["'.$filename.'"];'."\n";
+            $partials_arr[] = '"'.$filename.'":'.$obj_name.'["'.$filename.'"].template';
         }
-        foreach($js as $filename => $template) {
-            $minified_file .= $template."\n";
+        // Build Minified File
+        $minified_file = '';
+        if (count($mustache)>0) {
+            $minified_file .= '// Compiled Mustache'."\n";
+            $minified_file .= "var ".$obj_name.'_render=function(data={},t=null){return gform.m(this.template,_.extend(data,'.$obj_name.'_partials))}'."\n";
+            $minified_file .= "if (!!!".$obj_name.") var ".$obj_name."={}\n";
+            foreach($mustache as $filename => $template) {
+                $minified_file .= $obj_name.'["'.$filename.'"]={render:'.$obj_name.'_render,template:'.$template."};\n";
+            }
+            $minified_file .= "var ".$obj_name."_partials={".implode(',',$partials_arr)."}\n";
         }
-        return $minified_file."\n".$gform_stencils;
+        if (count($js)>0) {
+            $minified_file .= '// Minified JS'."\n";
+            foreach($js as $filename => $template) {
+                $minified_file .= $template."\n";
+            }
+        }
+        return $minified_file;
     }
 
     public function handle()
