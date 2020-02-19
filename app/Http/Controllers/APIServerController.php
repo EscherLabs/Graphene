@@ -70,7 +70,9 @@ class APIServerController extends Controller
 
         $url = $api_config->server."/api/api_docs/".$api_instance_id;        
         $docs = $httpHelper->http_fetch($url,"GET", [], $api_config->username, $api_config->password);
-
+        if (isset($docs['content']['error'])) {
+            dd($docs['content']['error']);
+        }
         return response($docs['content']['docs'], 200);
     } 
 
