@@ -10,7 +10,7 @@ class CompileTemplates extends Command
         'src' => "resources/assets/mustache",
         'target' => "public/assets/js/templates",
         'includes' => [
-            ['dir'=>'widget','name'=>'widget.js','obj'=>'widget_templates'],
+            ['dir'=>'widget','name'=>'widget2.js','obj'=>'widget_templates'],
             ['dir'=>'admin','name'=>'admin2.js','obj'=>'admin_templates'],
             ['dir'=>'workflow','name'=>'workflow2.js','obj'=>'workflow_report'],
         ]
