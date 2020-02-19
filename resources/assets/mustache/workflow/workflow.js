@@ -9,7 +9,6 @@ workflow_report.workflow = `
         <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
           <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
         </div>
-        {{>widgets__header}}
         <div class="collapsible panel-body">
           <h3 class="flow-title"></h3>
           <div>
