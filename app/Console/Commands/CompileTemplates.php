@@ -4,15 +4,19 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class Compile extends Command
+class CompileTemplates extends Command
 {
-    protected $admin_file_name = 'admin2.js';
-    protected $admin_obj_name = 'admin_templates';
-    protected $workflow_file_name = 'workflow2.js';
-    protected $workflow_obj_name = 'workflow_report';
-
-    protected $signature = 'compile';
-    protected $description = 'Runs all javascript minification and any other compiliation commands';
+    protected $config = [
+        'src' => "resources/assets/mustache",
+        'target' => "public/assets/js/templates",
+        'includes' => [
+            ['dir'=>'widget','name'=>'widget.js','obj'=>'widget_templates'],
+            ['dir'=>'admin','name'=>'admin2.js','obj'=>'admin_templates'],
+            ['dir'=>'workflow','name'=>'workflow2.js','obj'=>'workflow_report'],
+        ]
+    ];
+    protected $signature = 'compile:templates';
+    protected $description = 'Runs all javascript minification of templates';
 
     public function __construct()
     {
@@ -55,17 +59,14 @@ class Compile extends Command
 
     public function handle()
     {
-
-
-        $this->line("<fg=green>Building...</>");
-        $src_path = base_path("resources/assets/mustache");
-        $target_path = base_path("public/assets/js/templates");
-        $adminjs = $this->build_string($src_path.'/admin',$this->admin_obj_name);
-        $workflowjs = $this->build_string($src_path.'/workflow',$this->workflow_obj_name);
-        $this->line("Writing: ".$target_path.'/'.$this->admin_file_name);
-        file_put_contents($target_path.'/'.$this->admin_file_name,$adminjs);
-        $this->line("Writing: ".$target_path.'/'.$this->workflow_file_name);
-        file_put_contents($target_path.'/'.$this->workflow_file_name,$workflowjs);
+        $src_path = base_path($this->config['src']);
+        $target_path = base_path($this->config['target']);
+        $this->line("<fg=green>Compiling Templates ...</>");
+        foreach($this->config['includes'] as $include) {
+            $output_js = $this->build_string($src_path.'/'.$include['dir'],$include['obj']);
+            $this->line("Writing: ".$target_path.'/'.$include['name']);
+            file_put_contents($target_path.'/'.$include['name'],$output_js);
+        }
         $this->line("<fg=green>Complete!</>");
     }
 }
