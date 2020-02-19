@@ -73,6 +73,9 @@ class APIServerController extends Controller
         if (isset($docs['content']['error'])) {
             dd($docs['content']['error']);
         }
+        if (!isset($docs['content']['docs'])) {
+            return response($docs['content'], 500);
+        }
         return response($docs['content']['docs'], 200);
     } 
 
