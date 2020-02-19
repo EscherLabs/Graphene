@@ -305,7 +305,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //       this.action = this.item.action;
   //   }
   //   // else if(typeof this.mapOptions !== 'undefined'){
-  //   //     debugger;
   //   // }
   //   if(typeof item === 'object') {
   //       _.extend(item,this);
@@ -313,7 +312,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //   this.label = gform.renderString((item||{}).label||this.item.label, this);
 
   //   // var oldDiv = document.getElementById(this.id);
-  //   // debugger;
   //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
   //   var oldDiv = this.el;
   //   this.destroy();
@@ -686,7 +684,6 @@ createFlow();
 
 function drawForm(name){
 
-debugger;
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -1028,7 +1025,6 @@ var valueField = {label:'Value <span class="text-success pull-right">{{value}}</
 $('#flow-preview').on('click','.nodes .node',function(e){
 
   // console.log(e.currentTarget.id);
-// debugger;
   // drawForm(e.currentTarget.id);
   drawForm(e.currentTarget.textContent);
   createFlow();
@@ -1196,7 +1192,6 @@ loadInstances = function(){
               }
               if(map.type == 'endpoint'){
                 var finder = _.find(instance.group.endpoints,{id:parseInt(map.value)})
-                debugger;
                 if(finder != null){
                   map.display = finder.config.url+' ('+finder.name+')';
                 }
@@ -1210,6 +1205,7 @@ loadInstances = function(){
 
           return instance;
         })
+      }
       // gform.addClass(document.querySelector('.nav-sidebar'),'hidden');
       if(document.querySelector('.sidebar').querySelector('#instances') !== null){
         document.querySelector('.sidebar').querySelector('#instances').remove();
@@ -1297,10 +1293,12 @@ loadInstances = function(){
       
       </div>
         
+      {{/workflow_instances}}
+      {{^workflow_instances}}
+      <div class="workflowInstance">No instances</div>
       {{/workflow_instances}}</div>`,{workflow_instances: workflow_instances})))
       $('#instances').on('click','[data-workflowID]',function(workflow_instances,e){
         var temp = _.find(workflow_instances, {id:parseInt(e.currentTarget.dataset.workflowid)});
-        debugger;
         modal({title: temp.name, content: gform.m(`
 
         <div class="">
@@ -1422,8 +1420,7 @@ loadInstances = function(){
           </div>
         </div>`,temp)});
       }.bind(null,workflow_instances))
-    }else{
-    }
+    
   })
 }
 $.get('/api/groups?members=20', function(groups) {

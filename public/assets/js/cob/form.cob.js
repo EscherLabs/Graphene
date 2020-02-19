@@ -304,7 +304,6 @@ berryFormEditor = function(container, renderer){
 		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)));
 		myBerry.on(events, function(){
 			if(myBerry.validate()){
-				// debugger;
 		 	container.update($.extend({},this.get(),myBerry.toJSON()), this);
 		 	// container.deactivate();
 		 	// myBerry.trigger('saved');

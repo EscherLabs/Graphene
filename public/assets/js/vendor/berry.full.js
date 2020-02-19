@@ -2840,7 +2840,6 @@ Berry.prototype.events.initialize.push({
 //					return temp;
 				});
 			//  fieldset: function(){
-			// 	// debugger;
 			// 		var temp = this.owner.$el.find('[data-inline='+this.item.name+']');
 			// 		if(temp){$.extend(this.item, temp.data());}
 			// 		return temp;

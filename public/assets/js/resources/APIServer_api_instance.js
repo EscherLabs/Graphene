@@ -128,7 +128,6 @@ $.ajax({
 					}
 				]
 				}).on('save',function(e){
-					debugger;
 					var temp = this.attributes;
 					temp.params = e.form.get().params
 					this.set(temp)

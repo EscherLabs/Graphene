@@ -370,6 +370,7 @@ loadInstances = function(){
           instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length
           return instance;
         })
+      }
       // gform.addClass(document.querySelector('.nav-sidebar'),'hidden');
       if(document.querySelector('.sidebar').querySelector('#instances') !== null){
         document.querySelector('.sidebar').querySelector('#instances').remove();
@@ -457,6 +458,9 @@ loadInstances = function(){
       
       </div>
         
+      {{/app_instances}}
+      {{^app_instances}}
+      <div class="appInstance">No instances</div>
       {{/app_instances}}</div>`,{app_instances: app_instances})))
       $('#instances').on('click','[data-appID]',function(app_instances,e){
         var temp = _.find(app_instances, {id:parseInt(e.currentTarget.dataset.appid)});
@@ -582,8 +586,7 @@ loadInstances = function(){
           </div>
         </div>`,temp)});
       }.bind(null,app_instances))
-    }else{
-    }
+    
   })
 
   // $('#instances').on('click', function() {

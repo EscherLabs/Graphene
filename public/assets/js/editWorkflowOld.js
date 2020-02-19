@@ -75,7 +75,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //       this.action = this.item.action;
   //   }
   //   // else if(typeof this.mapOptions !== 'undefined'){
-  //   //     debugger;
   //   // }
   //   if(typeof item === 'object') {
   //       _.extend(item,this);
@@ -83,7 +82,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //   this.label = gform.renderString((item||{}).label||this.item.label, this);
 
   //   // var oldDiv = document.getElementById(this.id);
-  //   // debugger;
   //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
   //   var oldDiv = this.el;
   //   this.destroy();
@@ -183,7 +181,6 @@ function load(workflow_version) {
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
     bt.fixStyle()
   })
-debugger;
   wf_form = "{}";
   if(typeof workflow_version.form !== 'undefined'){
     wf_form = workflow_version.form
@@ -427,10 +424,8 @@ function createFlow() {
 
 
 // var callback = function(e){
-// debugger;
 // }
 
-// debugger;
 flow_states = attributes.code.flow||'[{"name":"origin"}]';
 if(typeof flow_states == 'string'){
   flow_states = JSON.parse(flow_states);
@@ -655,7 +650,6 @@ var valueField = {label:'Value <span class="text-success pull-right">{{value}}</
 $('#flow-preview').on('click','.nodes .node',function(e){
 
   // console.log(e.currentTarget.id);
-// debugger;
   // drawForm(e.currentTarget.id);
   drawForm(e.currentTarget.textContent);
   createFlow();

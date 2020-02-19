@@ -435,7 +435,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               gform.collections.update('files',_.where(mappedData.history,{file:true}));
               previewForm = new gform(form);
               // file = _.find(mappedData.history,{file:true});
-              // debugger;
 
               if(typeof templates.preview == 'undefined'){
                 previewForm.on('change',function(e){

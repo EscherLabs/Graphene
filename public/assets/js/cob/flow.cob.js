@@ -425,7 +425,6 @@ Cobler.types.Workflow = function(container){
         }
       }.bind(this))
       this.form.on('save',function(e){
-        debugger;
         if(!e.form.validate(true))return;
         gform.types.fieldset.edit.call(e.form.find('_state'),false)
         e.form.find('_state').el.style.opacity = .7
@@ -476,7 +475,6 @@ Cobler.types.Workflow = function(container){
             type: 'POST',
             success  : function(data){
                $('.flow-title .status').html('All Changes Saved').addClass('label-success')
-              // debugger;
               this.id = data.id;
               if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
                 $('#myId').html('');
