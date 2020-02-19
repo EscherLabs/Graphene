@@ -54,7 +54,7 @@ class CompileTemplates extends Command
         $minified_file = '';
         if (count($mustache)>0) {
             $minified_file .= '// Compiled Mustache'."\n";
-            $minified_file .= "var ".$obj_name.'_render=function(data={},t=null){return gform.m(this.template,_.extend(data,'.$obj_name.'_partials))}'."\n";
+            $minified_file .= "var ".$obj_name.'_render=function(data){return gform.m(this.template,_.extend({},data||{},'.$obj_name.'_partials))}'."\n";
             $minified_file .= "if (!!!".$obj_name.") var ".$obj_name."={}\n";
             foreach($mustache as $filename => $template) {
                 $minified_file .= $obj_name.'["'.$filename.'"]={render:'.$obj_name.'_render,template:'.$template."};\n";

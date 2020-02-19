@@ -345,7 +345,6 @@ loadInstances = function(){
       // modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
 
 
-        debugger;
         app_instances = _.map(app_instances, function(instance){
           instance.options = _.each(instance.options, function(option, i){
             return {key: i, value: option};

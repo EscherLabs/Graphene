@@ -1,5 +1,5 @@
 // Compiled Mustache
-var templates_render=function(data={},t=null){return gform.m(this.template,_.extend(data,templates_partials))}
+var templates_render=function(data){return gform.m(this.template,_.extend({},data||{},templates_partials))}
 if (!!!templates) var templates={}
 templates["filter"]={render:templates_render,template:'<div class="input-group"> <span class="input-group-addon"><i class="fa fa-filter"></i></span> <label for="filter" class="sr-only">Filter</label> <input type="text" class="form-control filter" data-selector="{{filter.selector}}" data-score="{{filter.score}}" name="filter" placeholder="{{^filter.placeholder}}Filter...{{/filter.placeholder}}{{filter.placeholder}}"> </div> '};
 templates["spinner"]={render:templates_render,template:'<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>'};

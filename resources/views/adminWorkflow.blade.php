@@ -17,7 +17,7 @@
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
-    <li><a href="#" id="instances">Instances</a></li>
+    <!-- <li><a href="#" id="instances">Instances</a></li> -->
     <li role="separator" class="divider"></li>
     <li><a href="#" id="publish">Publish (new version)</a></li>
     <!-- <li><a href="#">Visit</a></li> -->

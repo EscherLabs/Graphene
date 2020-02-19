@@ -271,6 +271,7 @@ function Cobler(options) {
 			EL = document.createElement('LI');
 		}
 		EL.className = 'slice';
+		debugger;
 		EL.innerHTML = templates[item.template || this.options.itemContainer].render(item.get(), templates);
 		EL.getElementsByClassName(item.target || this.options.itemTarget)[0].innerHTML += item.render();
 		return EL;

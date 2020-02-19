@@ -606,10 +606,12 @@ Cobler.types.bool = function(container) {
 }
 
 Cobler.types.section = function(container) {
+	debugger;
 	function render() {
 		var temp = get();
 
 		var content = "";
+		debugger;
 		_.each(temp.fields,function(e){
 			var nTemp = new Cobler.types[gform.types[e.type||'text'].base]()
 			nTemp.set(e);
@@ -643,9 +645,9 @@ Cobler.types.section = function(container) {
 	var fields = [
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Group Label', name: 'label'},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
-		{target: "#collapseBasic .panel-body", type: 'switch',format:{label:''}, label: 'Allow duplication', name: 'array', show:[{name:"type",value:['output'],type:"not_matches"}]},
+		{target: "#collapseBasic .panel-body", type: 'checkbox',format:{label:''}, label: 'Allow duplication', name: 'array'},
 
-		{target: "#collapseBasic .panel-body", type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
+		{target: "#collapseBasic .panel-body", type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"}],fields:[
 			{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 			{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
 		]},
