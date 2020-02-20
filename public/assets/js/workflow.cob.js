@@ -49,11 +49,9 @@ baseFields = _.map([
 	{type: 'date', label: "Min", name: 'min',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false},{type:"requires"}]},
 	{type: 'date', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false},{type:"requires"}]},
 	{type: 'select', label: "Min", name: 'min',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true},{type:"requires"}],options:function(e){
-		// debugger;
 		return [];//gform.instances.modal.filter({type:"date"});
 	},placeholder:"None",format:{value:'{{name}}'}},
 	{type: 'select', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true},{type:"requires"}],options:function(e){
-		// debugger;
 		return [];//gform.instances.modal.filter({type:"date"});
 
 	},placeholder:"None",format:{value:'{{name}}'}},
@@ -606,12 +604,10 @@ Cobler.types.bool = function(container) {
 }
 
 Cobler.types.section = function(container) {
-	debugger;
 	function render() {
 		var temp = get();
 
 		var content = "";
-		debugger;
 		_.each(temp.fields,function(e){
 			var nTemp = new Cobler.types[gform.types[e.type||'text'].base]()
 			nTemp.set(e);

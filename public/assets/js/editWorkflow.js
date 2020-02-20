@@ -406,8 +406,8 @@ function load(workflow_version) {
 	$('.nav-tabs').stickyTabs();
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var temp = new gform(myform);
-    gform.collections.update('form_users', temp.filter({type:"user"}));
-    gform.collections.update('form_groups', temp.filter({type:"group"}));
+    gform.collections.update('form_users', temp.filter({type:"user"},20));
+    gform.collections.update('form_groups', temp.filter({type:"group"},20));
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
@@ -622,6 +622,10 @@ function createFlow() {
     // options.trigger('change')
 //<span class="fa fa-plus"></span> 
     try{
+      // flow_states = _.map(flow_states,function(state){
+      //   state.name = state.name||state.state_id;
+      //   return state;
+      // })
       var graph = _.map(flow_states,function(state,i,j){
         state.name = state.name||state.state_id;
         var graph = '\n'+state.name.split(' ').join('_')+'';
@@ -658,7 +662,7 @@ function createFlow() {
         return graph+stuff.join('')
       })
       if(typeof flowForm !== 'undefined' && flowForm.isActive){
-        graph.push('\nclass '+flowForm.get('name').split(' ').join('_')+' selectedClass');
+        graph.push('\nclass '+(flowForm.get('name')||flowForm.get('state_id')).split(' ').join('_')+' selectedClass');
       }  
       myfunc('graph TB'+''+graph.join(''))
     }catch(e){}
@@ -932,16 +936,18 @@ function drawForm(name){
     flow_states[_.findIndex(flow_states,{state_id:e.form.options.data.state_id||e.form.get('state_id')})] = temp;
 
     gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
+// debugger;
+    var tempName = e.form.get('name')||temp.state_id;
 
-    if(e.form.get('name') != e.form.options.data.name){
+    if(tempName != e.form.options.data.name){
       _.each(flow_states,function(state){
         _.each(state.actions,function(action,i){
           // if(action.from == e.form.options.data.name){
           //   action.from = e.form.toJSON().name
           // }
           if(action.to == e.form.options.data.name){
-            action.to = e.form.get('name');
-            if(e.form.get('name') == state.name){
+            action.to = tempName;
+            if(tempName == state.name){
               _.where(e.form.fields,{name:'actions'})[i].find('to').set(action.to)
             }
           }
@@ -950,23 +956,7 @@ function drawForm(name){
 
     }
 
-    e.form.options.data.name = e.form.get('name');
-
-    // if(e.form.get('name') !== e.form.options.data.name){
-    //   _.each(flow_states,function(state){
-    //     _.each(state.actions,function(action){
-    //       // if(action.from == e.form.options.data.name){
-    //       //   action.from = e.form.toJSON().name
-    //       // }
-    //       if(action.to == e.form.options.data.name){
-    //         action.to = e.form.get('name')
-    //       }
-          
-    //     })
-    //   })
-    //   e.form.options.data.name = e.form.get('name');
-
-    // }
+    e.form.options.data.name = tempName;
     
     createFlow();
   }).on('delete',function(e){
@@ -1002,8 +992,8 @@ gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 var temp = new gform(attributes.code.form);
-gform.collections.add('form_users', temp.filter({type:"user"}));
-gform.collections.add('form_groups', temp.filter({type:"group"}));
+gform.collections.add('form_users', temp.filter({type:"user"},20));
+gform.collections.add('form_groups', temp.filter({type:"group"},20));
 
 gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
   return {value:"method_"+i,label:item}
@@ -1103,10 +1093,13 @@ $('#save').on('click',function() {
 
 $('#import').on('click', function() {
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Workflow',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
+    var descriptor = JSON.parse(this.toJSON()['descriptor']);
+    descriptor.code.form = JSON.stringify(descriptor.code.form);
+
       $.ajax({
         url: root+attributes.workflow_id+'/code',
         contentType: 'application/json',
-        data: JSON.stringify($.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor))),
+        data: JSON.stringify($.extend({force: true, updated_at:''}, descriptor )),
         method: 'PUT',
         success: function(){
           Berries.update.trigger('close');

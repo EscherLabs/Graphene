@@ -358,7 +358,7 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
   </script>
   <script>
     $(document).ready(function() {
-  $('#content').html(gform.render('admin_dashboard',loaded));
+  $('#content').html(templates.admin_dashboard.render(loaded));
   $('.navbar-header .nav a h4').html('My Dashboard');
 
   $('#search').berry({
