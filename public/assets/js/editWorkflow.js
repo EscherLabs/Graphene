@@ -817,9 +817,9 @@ function drawForm(name){
         {value: "link", label: "Simple"}
       ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
     {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-    {name: "assignment",type:"fieldset",label:false,fields:[
+    {name: "assignment",type:"fieldset",parse:[{type:"requires"}],label:false,fields:[
 
-      {name: "type",inline:false, label: "Actor(s)", type: "smallcombo", options: [
+      {name: "type",inline:false, label: "Actor(s)",parse:[{type:"requires"}], type: "smallcombo", options: [
         {value: "", label: "Assignee"},
         {value: "user", label: "User"},
         {value: "group", label: "Group"}
@@ -936,7 +936,6 @@ function drawForm(name){
     flow_states[_.findIndex(flow_states,{state_id:e.form.options.data.state_id||e.form.get('state_id')})] = temp;
 
     gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
-// debugger;
     var tempName = e.form.get('name')||temp.state_id;
 
     if(tempName != e.form.options.data.name){

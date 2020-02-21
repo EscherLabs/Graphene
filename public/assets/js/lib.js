@@ -25,12 +25,16 @@ function generateUUID(){
     });
     return uuid;
 };
-// function render(template, data){
-//   if(typeof templates[template] === 'undefined'){
-//     templates[template] =  Hogan.compile($('#'+template).html());
-//   }
-// return templates[template].render(data, templates);
-// }
+function render(template, data){
+  if(typeof templates[template] === 'undefined' && $('#'+template).length){
+    templates[template]= {render:templates_render,template:$('#'+template).html()}
+  }
+  if(typeof templates[template] !== 'undefined'){
+    return templates[template].render(data, templates);
+  }else{
+    return gform.m(template,_.extend({},data||{},templates_partials))
+  }
+}
 function modal(options) {
   $('#myModal').remove();
   this.ref = $(render('modal', options));

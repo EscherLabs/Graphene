@@ -251,7 +251,6 @@ $('#save').on('click',function() {
 
   if(!errorCount){
     data.code.scripts = scriptPage.toJSON();
-    debugger;
     data.code.forms = _.map(working_forms,function(original_form){
       var form = JSON.parse(JSON.stringify(original_form));
       if(typeof form.content == 'object'){
@@ -974,7 +973,6 @@ document.addEventListener('DOMContentLoaded', function(){
   //   form.label = form.content.legend||form.content.name;
   // })
   $('#formlist').on('click','.form_edit',function(e){
-    debugger;
     setupform(parseInt(e.target.dataset.index))
   })  
   $('#formlist').on('click','.pages_new',function(e){
