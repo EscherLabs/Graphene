@@ -597,7 +597,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 type: 'PUT',
-                success  : function(data){ document.location.reload(); }
+                success  : function(data){ document.location.reload(); },
+                error:function(){
+                  toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+                }
               })
             }.bind(this)).on('canceled',function(e){
               e.form.trigger('close')
