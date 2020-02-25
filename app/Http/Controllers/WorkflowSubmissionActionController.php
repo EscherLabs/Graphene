@@ -169,10 +169,10 @@ class WorkflowSubmissionActionController extends Controller {
                     // Continue!
                 } else {
                     return response('Permission Denied', 403);
-                }
+                }        
             } else { // This action can be performed by the state asignee
-                if (($workflow_submission->assignment_type === 'user' && $state_data['assignment']['id'] === Auth::user()->unique_id) || 
-                    ($workflow_submission->assignment_type === 'group' && $user->group_member($state_data['assignment']['id']))) {
+                if (($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === Auth::user()->unique_id) || 
+                    ($start_assignment['assignment_type'] === 'group' && $user->group_member($start_assignment['assignment_id']))) {
                     // Continue!
                 } else {
                     return response('Permission Denied', 403);
