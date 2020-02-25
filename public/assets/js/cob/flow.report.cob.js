@@ -583,7 +583,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             }
 
 
-            debugger;
             if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
               formStructure.data._state = this.get().options.data,
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})

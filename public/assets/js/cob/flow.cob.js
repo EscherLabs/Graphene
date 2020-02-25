@@ -306,9 +306,10 @@ Cobler.types.Workflow = function(container){
           }
         ]
       }
-      var actions = _.filter((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(is_assigned,action){
+
+      var actions = _.filter((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(action){
         if(typeof action.assignment == 'undefined'){
-        if(is_assigned){return true;}
+          return true;
         }else{
           if(action.assignment.type == "user"){
             if(gform.m(action.assignment.id,mappedData) == mappedData.actor.id.toString()){
@@ -323,7 +324,7 @@ Cobler.types.Workflow = function(container){
         return false;
 
 
-      }.bind(null,this.get().is_assigned))
+      })
 
 
       //create actions buttons that are active in current(initial) state
