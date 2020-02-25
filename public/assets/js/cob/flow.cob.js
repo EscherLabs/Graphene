@@ -271,6 +271,12 @@ Cobler.types.Workflow = function(container){
       var instance = this.get().workflow;
       this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="label label-default pull-right status"></span>';
       mappedData = {actor:this.get().user,form:{},owner:null,state:instance.configuration.initial,history:[]};
+      // mappedData.workflow = this.get();
+      mappedData.datamap = {};
+      _.each(instance.configuration.map,function(item){
+        mappedData.datamap[item.name] = item.value;
+      })
+
       var data = {
         _flowstate:instance.configuration.initial,
         _state:(this.get().current||this.get()).data,
@@ -300,9 +306,28 @@ Cobler.types.Workflow = function(container){
           }
         ]
       }
+      var actions = _.filter((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(is_assigned,action){
+        if(typeof action.assignment == 'undefined'){
+        if(is_assigned){return true;}
+        }else{
+          if(action.assignment.type == "user"){
+            if(gform.m(action.assignment.id,mappedData) == mappedData.actor.id.toString()){
+              return true;
+            }
+          }else if(action.assignment.type == "group"){
+            if(mappedData.actor.groups.indexOf(parseInt(gform.m(action.assignment.id,mappedData))) >=0){
+              return true;
+            }
+          }
+        }
+        return false;
+
+
+      }.bind(null,this.get().is_assigned))
+
 
       //create actions buttons that are active in current(initial) state
-      _.each((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(action){
+      _.each(actions,function(action){
         action.modifiers = 'btn btn-'+action.type;
         action.action = 'save';
         action.type = 'button';
@@ -615,7 +640,6 @@ Cobler.types.WorkflowStatus = function(container){
   //usage
   // _.join(array_1,array_2,"id","thing_id","named_as")
 
-                  
                   var getActions = function(item){
                     item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
                   }

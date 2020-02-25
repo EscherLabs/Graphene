@@ -253,13 +253,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
  
  
           mappedData = _.pick(this.get().options,'status','state')
-          if(this.get().is_assigned){
-            mappedData.actions = (_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions
-          }
 
           mappedData.report_url = this.get().report_url;
           mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
-          mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params')
+          mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params','groups')
           mappedData.owner.is = {actor:mappedData.owner.unique_id == mappedData.actor.unique_id}
           mappedData.actor.is = {owner:mappedData.owner.unique_id == mappedData.actor.unique_id}
           mappedData.assignment = {type:this.get().options.assignment_type,id:this.get().options.assignment_id};
@@ -276,7 +273,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             open:(mappedData.status == 'open'),
             closed:(mappedData.status == 'closed'),
             initial:(mappedData.state == mappedData.workflow.instance.configuration.initial),
-            actionable:(this.get().is_assigned && mappedData.actions.length)
+            // actionable:(this.get().is_assigned && mappedData.actions.length)
           }
 
           if(data.length>1){
@@ -306,6 +303,32 @@ Cobler.types.WorkflowSubmissionReport = function(container){
 
           mappedData.original = data[data.length-1];
           mappedData.latest = _.find(data, {log:true});
+          mappedData.datamap = {};
+          _.each(mappedData.workflow.instance.configuration.map,function(item){
+            mappedData.datamap[item.name] = item.value;
+          })
+
+          // if(this.get().is_assigned){
+            mappedData.actions = _.filter((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,function(is_assigned,action){
+              if(typeof action.assignment == 'undefined'){
+               if(is_assigned){return true;}
+              }else{
+                if(action.assignment.type == "user"){
+                  if(gform.m(action.assignment.id,mappedData) == mappedData.actor.id.toString()){
+                    return true;
+                  }
+                }else if(action.assignment.type == "group"){
+                  if(mappedData.actor.groups.indexOf(parseInt(gform.m(action.assignment.id,mappedData))) >=0){
+                    return true;
+                  }
+                }
+              }
+              return false;
+
+
+            }.bind(null,this.get().is_assigned))
+          // }
+          mappedData.is.actionable = !!mappedData.actions.length
 
           if(typeof this.history !== 'undefined'){
             this.history.teardown();
@@ -560,7 +583,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
             }
 
 
-            
+            debugger;
             if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
               formStructure.data._state = this.get().options.data,
               formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
