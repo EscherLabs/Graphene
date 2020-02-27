@@ -17,6 +17,8 @@
         <link href="/assets/compiled/css/graphenecore.body.min.css?cb={{cache_bust_id}}" rel="stylesheet" type="text/css">
     {{/includes.css.src.body.0}}
 {{/debug}}
+{{! Include stuff here that doesn't minify particularly well (like ACE)}}
+<script src="/assets/js/vendor/ace/ace.js?cb={{cache_bust_id}}" charset="utf-8"></script>
 {{#is_admin}}
     <script src='/assets/js/vendor/state-machine.js?cb={{cache_bust_id}}'></script>
     <script>

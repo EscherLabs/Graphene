@@ -14,10 +14,9 @@ return [
                 ['file'=>'/assets/css/nivo-slider.min.css'],
                 ['file'=>'/assets/css/colorpicker.min.css'],
                 ['file'=>'/assets/css/summernote.min.css'],
-            ],
-            'body' => [
                 ['file'=>'/assets/js/vendor/dropzone/dropzone.min.css'],
             ],
+            'body' => [],
         ],
     ],
     'javascript' => [
@@ -48,7 +47,8 @@ return [
                 ['file'=>'/assets/js/vendor/ractive.min.js'],
                 ['file'=>'/assets/js/vendor/lockr.min.js'],
                 ['file'=>'/assets/js/vendor/toastr.min.js'],
-                ['file'=>'/assets/js/vendor/ace/ace.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
+                // Include ACE Manually (Doesn't Minify Well)
+                // ['file'=>'/assets/js/vendor/ace/ace.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
                 ['file'=>'/assets/js/vendor/jquery.nivo.slider.min.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
                 ['file'=>'/assets/js/vendor/sortable.js'],
                 ['file'=>'/assets/js/cob/cob.js'],
