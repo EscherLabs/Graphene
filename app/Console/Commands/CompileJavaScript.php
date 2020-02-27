@@ -32,6 +32,7 @@ class CompileJavaScript extends Command
             $minifier->add(public_path($js['file']));            
         }
         $minifier->minify(public_path($this->config['min']['body']));
+        $minifier->gzip(public_path($this->config['min']['body'].'.gz'));
         $this->line("<fg=green>Complete!</>");
 
         $this->line("<fg=yellow>Incrementing Cache Bust ID ...</>");
