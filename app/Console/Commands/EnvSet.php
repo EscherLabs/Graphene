@@ -18,7 +18,8 @@ class EnvSet extends Command
         $envKey = $this->argument('name');
         $envValue = $this->argument('value');
         $envFile = base_path('.env');
-        $str = file_get_contents($envFile);
+        $str = @file_get_contents($envFile);
+        if ($str === false) { $str = ''; }
         $str .= "\r\n";
         $keyPosition = strpos($str, "$envKey=");
         $endOfLinePosition = strpos($str, "\n", $keyPosition);
