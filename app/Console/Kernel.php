@@ -13,7 +13,11 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        \App\Console\Commands\Compile::class,
         \App\Console\Commands\CompileTemplates::class,
+        \App\Console\Commands\CompileJavaScript::class,
+        \App\Console\Commands\CompileCSS::class,
+        \App\Console\Commands\EnvSet::class,
     ];
 
     /**

@@ -1,27 +1,35 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    {{! The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags }}
     <meta name="description" content="">
     <meta name="author" content="Escher Labs, Inc.">
     <link rel="icon" href="/assets/favicon.png">
     <title>{{#name}}{{name}} | {{/name}}{{site.name}}</title>
     {{#site.theme.icon}}
       <link rel="icon" type="image/png" href="/assets/icons/fontawesome/gray/32/{{site.theme.icon}}.png" />
-    {{/site.theme.icon}}    
-    <!-- Bootstrap -->
-    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/assets/css/toastr.min.css" rel="stylesheet">
-    <link href="/assets/css/nivo-slider.min.css" rel="stylesheet">
-    <link rel='stylesheet' type='text/css' href='/assets/css/colorpicker.min.css'>
-
+    {{/site.theme.icon}}   
+    {{#debug}} 
+        {{! JavaScript Includes}}
+        {{#includes.javascript.src.head}}
+            <script type="text/javascript" src="{{file}}?cb={{cache_bust_id}}" {{#attributes}}{{name}}="{{value}}" {{/attributes}}></script>
+        {{/includes.javascript.src.head}}
+        {{! CSS Includes}}
+        {{#includes.css.src.head}}
+            <link href="{{file}}?cb={{cache_bust_id}}" rel="stylesheet" type="text/css" {{#attributes}}{{name}}="{{value}}" {{/attributes}}>
+        {{/includes.css.src.head}}
+    {{/debug}}
+    {{^debug}}
+        {{#includes.javascript.src.head.0}} {{! Check if any exists first}}
+            <script src="/assets/compiled/js/graphenecore.head.min.js?cb={{cache_bust_id}}"></script>
+        {{/includes.javascript.src.head.0}}
+        {{#includes.css.src.head.0}} {{! Check if any exists first}}
+            <link href="/assets/compiled/css/graphenecore.head.min.css?cb={{cache_bust_id}}" rel="stylesheet" type="text/css">
+        {{/includes.css.src.head.0}}
+    {{/debug}}
     {{#styles}}
         <link name="{{name}}" href="{{src}}" rel="stylesheet">
     {{/styles}}
-
-    <link href="/assets/css/summernote.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
     <!-- Custom styles for this template -->
@@ -30,6 +38,5 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-
-    <link rel='stylesheet' type='text/css' href='/assets/css/graphene.css'>
-    <link rel='stylesheet' type='text/css' href='/css?cb={{cache_bust_id}}'>
+    <link rel="stylesheet" type="text/css" href="/assets/css/graphene.css?cb={{cache_bust_id}}">
+    <link rel="stylesheet" type="text/css" href="/css?cb={{cache_bust_id}}">
