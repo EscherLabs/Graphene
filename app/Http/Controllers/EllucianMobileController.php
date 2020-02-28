@@ -73,6 +73,10 @@ class EllucianMobileController extends Controller
         }
     }
 
+    public function check_auth(Request $request) {
+        return response(['authenticated'=>Auth::check()]);
+    }
+
     public function login(Request $request) {
         $return = $this->do_login($request);
         if (isset($return)) {
