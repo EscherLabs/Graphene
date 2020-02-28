@@ -50,7 +50,7 @@ class EllucianMobileController extends Controller
                         'username'=>$request->header('php-auth-user'),
                         'password' => $request->header('php-auth-pw')
                     ]);
-                    if ($response['code'] === '200') {
+                    if ($response['code'] === '200' && $response['content']['success'] === true) {
                         $m = new \Mustache_Engine;    
                         $user = User::where('unique_id', '=', 
                             $m->render(config('ellucianmobile.authUniqueID'), $response['content']))->first();
