@@ -92,7 +92,7 @@ baseFields = _.map([
 		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 		{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
 	]},
-	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]}
+	// {type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]}
 
 ],function(item){
 	item.target = "#collapseDisplay .panel-body";
@@ -206,7 +206,7 @@ if(typeof workflow == 'undefined'){
 	baseConditions = baseCond.concat(_.map([
 		{type: 'textarea', label: 'Template', name: 'template',columns:12,parse:[{type:"requires"}]},
 
-		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
+		{type: 'fieldset', label: "Meta Data", array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
 		fields: [
 			{label: 'Key', name:"key"},
 			{label: 'Value', name:"value"}

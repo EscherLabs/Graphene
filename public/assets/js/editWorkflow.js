@@ -1062,6 +1062,7 @@ $('#save').on('click',function() {
       data: JSON.stringify(data),
       success:function(e) {
         attributes.updated_at = e.updated_at;
+        loadInstances();
         toastr.success('', 'Successfully Saved')
       },
       error:function(e) {
@@ -1168,8 +1169,17 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
-
-              instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length
+debugger;
+// instance.configuration.initial
+instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
+!!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||
+!!_.difference(_.pluck(instance.configuration.map ,'name'),_.pluck(instance.version.code.map,'name')).length ||
+_.reduce(instance.version.code.map,function(config,result,item){
+// debugger;
+  var configItem = _.find(config,{name:item.name})
+  return result || (typeof configItem.value == 'undefined' || configItem.value == null || configItem.value == "" || configItem.type !== item.type )
+}.bind(null,instance.configuration.map),false)
+              // instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length
             }
 
             instance.configuration.map = _.map(instance.configuration.map, function(instance, map, i){

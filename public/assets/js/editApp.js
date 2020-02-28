@@ -129,9 +129,21 @@ function load(app_version) {
   //     toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
   //   }
   // }});
+  formIndex = 0;
+  working_forms = _.each(loaded.code.forms,function(form,i){
+    if(typeof form.content == 'string'){
+      form.content = JSON.parse(form.content||'{"fields":[]}');
+      if(_.isArray(form.content) &&  form.content.length){
+        form.content = {fields:[]};
+      }
+    }
+    form.content.name = form.name || form.content.name;
+    form.i = i+'';
+    form.label = form.content.legend||form.content.name;
+  })
+  setupform();
 }
-load(loaded.code);
-orig = $.extend({},loaded);
+
 
 
 $(document).keydown(function(e) {
@@ -368,7 +380,7 @@ loadInstances = function(){
           
           instance.version_id =  (instance.app_version_id!==null ? (instance.app_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.app_version_id+')') : "Latest Saved");
 
-          instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length
+          instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length ||!!_.difference(_.pluck(instance.resources ,'name'),_.pluck(instance.version.resources,'name')).length
           return instance;
         })
       }
@@ -926,7 +938,7 @@ renderBuilder()
 
 
 setupform = function(index){
-  formIndex = index;
+  formIndex = index||formIndex;
   myform = working_forms[formIndex].content || {};
   $('#formlist').html(
     gform.renderString(
@@ -954,18 +966,7 @@ setupform = function(index){
 
 document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  formIndex = 0;
-  working_forms = _.each(loaded.code.forms,function(form,i){
-    if(typeof form.content == 'string'){
-      form.content = JSON.parse(form.content||'{"fields":[]}');
-      if(_.isArray(form.content) &&  form.content.length){
-        form.content = {fields:[]};
-      }
-    }
-    form.content.name = form.name || form.content.name;
-    form.i = i+'';
-    form.label = form.content.legend||form.content.name;
-  })
+
   // working_forms = _.each(working_forms,function(form,i){
   //   form.content = JSON.parse(form.content);
   //   form.content.name = form.name || form.content.name;
@@ -1003,7 +1004,9 @@ document.addEventListener('DOMContentLoaded', function(){
       renderBuilder(); 
     }).on('cancel',function(e){e.form.trigger('close')})
   })
-  setupform(formIndex);
+  // setupform(formIndex);
 
 
 });
+load(loaded.code);
+orig = $.extend({},loaded);
