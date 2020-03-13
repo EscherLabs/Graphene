@@ -19,4 +19,10 @@ class WorkflowActivityLog extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+    // public function getDataAttribute($value) {
+    //     return json_decode($value);
+    // }
+    // public function setDataAttribute($value) {
+    //     $this->attributes['data'] = json_encode($value);
+    // }
 }

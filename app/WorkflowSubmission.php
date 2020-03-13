@@ -48,4 +48,15 @@ class WorkflowSubmission extends Model
             $this->submitted_at = null;
         }
     }
+    // public function getDataAttribute($value) {
+    //     return json_decode($value);
+    // }
+    // public function setDataAttribute($value) {
+    //     if (isset($this->workflow_instance->configuration->encrypted) && ($this->workflow_instance->configuration->encrypted === true)) {
+    //         // encrypt the data first
+    //         $this->attributes['data'] = ['_encrypted'=>encrypt($value),'data'=>$value];
+    //     } else {
+    //         $this->attributes['data'] = json_encode($value);
+    //     }
+    // }
 }
