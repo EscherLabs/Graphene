@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89f906ec4278684da4b720658a8cf76e",
+    "content-hash": "31e98a12a64dbbd8a241829f7110e5b8",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -2615,6 +2615,69 @@
             "time": "2019-12-13T21:54:06+00:00"
         },
         {
+            "name": "soarecostin/file-vault",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/soarecostin/file-vault.git",
+                "reference": "f7ce2a4e820edab3bffbbd2dcf3632e5d1b222ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/soarecostin/file-vault/zipball/f7ce2a4e820edab3bffbbd2dcf3632e5d1b222ab",
+                "reference": "f7ce2a4e820edab3bffbbd2dcf3632e5d1b222ab",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "5.8.* || 6.*.* || ^7.0",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "orchestra/testbench": "3.8.*",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "SoareCostin\\FileVault\\FileVaultServiceProvider"
+                    ],
+                    "aliases": {
+                        "FileVault": "SoareCostin\\FileVault\\Facades\\FileVault"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SoareCostin\\FileVault\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Costin Soare",
+                    "email": "soarecostin@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "homepage": "https://github.com/soarecostin/file-vault",
+            "keywords": [
+                "CBC",
+                "decrypt",
+                "decryption",
+                "encrypt",
+                "encryption",
+                "file",
+                "file-vault",
+                "laravel",
+                "php"
+            ],
+            "time": "2020-03-07T17:23:40+00:00"
+        },
+        {
             "name": "subfission/cas",
             "version": "v3.0.0",
             "source": {
@@ -4414,6 +4477,7 @@
                 "scss",
                 "stylesheet"
             ],
+            "abandoned": "scssphp/scssphp",
             "time": "2018-05-24T02:18:53+00:00"
         },
         {
@@ -4567,18 +4631,18 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "arne@blankerts.de"
                 },
                 {
                     "name": "Sebastian Heuer",
-                    "email": "sebastian@phpeople.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "sebastian@phpeople.de"
                 },
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Component for reading phar.io manifest information from a PHP Archive (PHAR)",
@@ -5835,8 +5899,8 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "arne@blankerts.de"
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
