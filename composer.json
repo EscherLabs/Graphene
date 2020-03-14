@@ -15,7 +15,6 @@
         "mustache/mustache": "~2.5",
         "pulkitjalan/google-apiclient": "^4.0",
         "revolution/laravel-google-sheets": "^5.0",
-        "soarecostin/file-vault": "^1.0",
         "subfission/cas": ">=3.0"
     },
     "require-dev": {

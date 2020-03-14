@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Gumlet\ImageResize;
 use Storage;
-use FileVault;
 use App\WorkflowSubmissionFile;
 use App\WorkflowSubmission;
 use App\WorkflowInstance;
@@ -33,9 +32,7 @@ class WorkflowSubmissionFileController extends Controller
         if ($unencrypted_file_exists) {
             return response()->file($file_path, $headers);
         } else if ($encrypted_file_exists) {
-            return response()->stream(function () use ($file) {
-                FileVault::streamDecrypt($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted');
-            }, 200, $headers);
+            return response()->make(decrypt(Storage::get($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted')), 200, $headers);            
         } else {
             return response('File Not Found', 404);
         }
@@ -73,14 +70,12 @@ class WorkflowSubmissionFileController extends Controller
                 $file->file_dir(), $request->file('file'), $file->id.'.'.$file->ext
             );
         }
-        // Encrypt File As Required
+        // Encrypt File If Required
         $instance = WorkflowInstance::where('id',$workflow_submission->workflow_instance_id)->select('configuration')->first();
         if (isset($instance->configuration->encrypted) && ($instance->configuration->encrypted === true)) {
-            FileVault::encrypt(
-                $file->file_dir().'/'.$file->id.'.'.$file->ext,
-                $file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted',
-                true
-            );
+            $encrypted_file = encrypt(Storage::get($file->file_dir().'/'.$file->id.'.'.$file->ext));
+            Storage::put($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted', $encrypted_file);
+            Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext);
         }
         return $file;
     }
