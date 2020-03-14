@@ -34,4 +34,10 @@ class WorkflowSubmissionFile extends Model
     public function file_dir() {
         return 'sites/'.config('app.site')->id.'/workflow_submissions/files';
     }
+    public function get_file_path() {
+        return $this->file_dir().'/'.$this->id.'.'.$this->ext;
+    }
+    public function get_file_path_absolute() {
+        return $this->root_dir().'/'.$this->file_dir().'/'.$this->id.'.'.$this->ext;
+    }
 }

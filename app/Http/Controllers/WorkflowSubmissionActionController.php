@@ -341,8 +341,8 @@ class WorkflowSubmissionActionController extends Controller {
                 case "purge_files":
                     $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
                     foreach($files as $file) {
-                        Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext);
-                        Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted');
+                        Storage::delete($file->get_file_path());
+                        Storage::delete($file->get_file_path().'.encrypted');
                         $file->user_id_deleted = Auth::user()->id;
                         $file->save();
                         $file->delete();
