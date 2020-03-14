@@ -15,14 +15,6 @@ use App\Group;
 
 class WorkflowSubmissionFileController extends Controller
 {
-    private $root_dir = '';
-    private $file_dir = '';
-
-    public function __construct() {
-        $this->root_dir = config('filesystems.disks.local.root');
-        $this->file_dir = 'sites/'.config('app.site')->id.'/workflow_submissions/files';
-    }
-    
     public function get(WorkflowSubmission $workflow_submission, WorkflowSubmissionFile $file, $download=false) {
         if ($workflow_submission->id != $file->workflow_submission_id) {
             return response('File '.$file->id.' does not belong to workflow submission '.$workflow_submission->id, 400);
@@ -35,14 +27,14 @@ class WorkflowSubmissionFileController extends Controller
             "Content-Type" => $file->mime_type,
             "Content-Disposition"=>$attachment_or_inline.'; filename="'.$file->name.'.'.$file->ext.'"'
         ];
-        $file_path = $this->root_dir.'/'.$this->file_dir.'/'.$file->id.'.'.$file->ext;
+        $file_path = $file->root_dir().'/'.$file->file_dir().'/'.$file->id.'.'.$file->ext;
         $unencrypted_file_exists = file_exists($file_path) && is_file($file_path);
         $encrypted_file_exists = file_exists($file_path.'.encrypted') && is_file($file_path.'.encrypted');
         if ($unencrypted_file_exists) {
             return response()->file($file_path, $headers);
         } else if ($encrypted_file_exists) {
             return response()->stream(function () use ($file) {
-                FileVault::streamDecrypt($this->file_dir.'/'.$file->id.'.'.$file->ext.'.encrypted');
+                FileVault::streamDecrypt($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted');
             }, 200, $headers);
         } else {
             return response('File Not Found', 404);
@@ -74,19 +66,19 @@ class WorkflowSubmissionFileController extends Controller
         if (in_array($file->ext,['png','jpg','jpeg','gif','webp'])) {
             $image = new ImageResize($request->file('file')->getRealPath());
             $image->resizeToLongSide(1024);
-            if(!Storage::exists($this->file_dir)) { Storage::makeDirectory($this->file_dir);}
-            $image->save($this->root_dir.'/'.$this->file_dir.'/'.$file->id.'.'.$file->ext);
+            if(!Storage::exists($file->file_dir())) { Storage::makeDirectory($file->file_dir());}
+            $image->save($file->root_dir().'/'.$file->file_dir().'/'.$file->id.'.'.$file->ext);
         } else {
             $path = Storage::putFileAs(
-                $this->file_dir, $request->file('file'), $file->id.'.'.$file->ext
+                $file->file_dir(), $request->file('file'), $file->id.'.'.$file->ext
             );
         }
         // Encrypt File As Required
         $instance = WorkflowInstance::where('id',$workflow_submission->workflow_instance_id)->select('configuration')->first();
         if (isset($instance->configuration->encrypted) && ($instance->configuration->encrypted === true)) {
             FileVault::encrypt(
-                $this->file_dir.'/'.$file->id.'.'.$file->ext,
-                $this->file_dir.'/'.$file->id.'.'.$file->ext.'.encrypted',
+                $file->file_dir().'/'.$file->id.'.'.$file->ext,
+                $file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted',
                 true
             );
         }
@@ -108,8 +100,8 @@ class WorkflowSubmissionFileController extends Controller
         if ($workflow_submission->id != $file->workflow_submission_id) {
             return response('File '.$file->id.' does not belong to workflow submission '.$workflow_submission->id, 400);
         }
-        Storage::delete($this->file_dir.'/'.$file->id.'.'.$file->ext);
-        Storage::delete($this->file_dir.'/'.$file->id.'.'.$file->ext.'.encrypted');
+        Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext);
+        Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted');
         $file->user_id_deleted = Auth::user()->id;
         $file->save();
         if ($file->delete()) {

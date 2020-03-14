@@ -25,8 +25,13 @@ class WorkflowSubmissionFile extends Model
     public function deleted_by() {
       return $this->belongsTo(User::class,'user_id_deleted');
     }
-  
     public function getPathAttribute() {
         return url('/api/workflowsubmissions/'.$this->workflow_submission_id.'/files/'.$this->id);
+    }
+    public function root_dir() {
+        return config('filesystems.disks.local.root');
+    }
+    public function file_dir() {
+        return 'sites/'.config('app.site')->id.'/workflow_submissions/files';
     }
 }

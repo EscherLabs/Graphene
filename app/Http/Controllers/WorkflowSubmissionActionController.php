@@ -14,6 +14,7 @@ use App\User;
 use App\Page;
 use App\ResourceCache;
 use App\UserOption;
+use App\WorkflowSubmissionFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
@@ -26,6 +27,7 @@ use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use App\Libraries\JSExecHelper;
 use \Ds\Vector;
+use Storage;
 
 class WorkflowSubmissionActionController extends Controller {
     public function __construct() {
@@ -208,15 +210,15 @@ class WorkflowSubmissionActionController extends Controller {
 
         // Execute Any Relevant Previous State Exit Tasks
         if(isset($previous_state->onExit)){
-            $this->executeTasks($previous_state->onExit, $state_data);
+            $this->executeTasks($previous_state->onExit, $state_data,$workflow_submission);
         }
         // Execute Any Relevant Action Tasks
         if(isset($action->tasks)){
-            $this->executeTasks($action->tasks, $state_data);
+            $this->executeTasks($action->tasks, $state_data, $workflow_submission);
         }        
         // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
-            $this->executeTasks($state->onEnter, $state_data);
+            $this->executeTasks($state->onEnter, $state_data, $workflow_submission);
         }
 
         // Update Submission Object In DB
@@ -302,46 +304,48 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->save();
     }
 
-    private function executeTasks($tasks, $data){
+    private function executeTasks($tasks, $data, $workflow_submission){
         $m = new \Mustache_Engine;
         foreach($tasks as $task){
             if(!isset($task->data)){
-                $task->data = array();
-            }else{
+                $task->data = [];
+            } else {
                 foreach($task->data as $key=>$value){
                     $task->data->{$key} = $m->render($value, $data);
                 }
             }
             switch($task->task) {
                 case "email":
-                    $content = "Workflow task taken";
+                    $content = "Workflow Notification Email";
                     if($task->content){
                         $content = $m->render($task->content, $data);
                     }
-                    $subject = 'Workflows | You got a Workflow Email';
-
+                    $subject = 'Workflow Notification';
                     if($task->subject){
                         $subject = $m->render($task->subject, $data);
                     }
-                    $to = array();//'asmallco@binghamton.edu';
+                    $to = [];
                     foreach($task->to as $email){
-
-                    // dd($email);
                         $to[] = $m->render($email, $data);
                     }
-                    // More Info About the Mail API: https://laravel.com/docs/5.8/mail
-                    // Note that Mail::raw is undocumented, as default mail requires 
-                    // the use of blade views.
                     try {
                         Mail::raw( $content, function($message) use($to, $subject) { 
                             $m = new \Mustache_Engine;
                             $message->to($to);
-
                             $message->subject($subject); 
                         });
                     } catch (\Exception $e) {
-                        // Failed to Send Email... 
-                        // Continue Anyway.
+                        // Failed to Send Email... Continue Anyway.
+                    }
+                break;
+                case "purge_files":
+                    $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
+                    foreach($files as $file) {
+                        Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext);
+                        Storage::delete($file->file_dir().'/'.$file->id.'.'.$file->ext.'.encrypted');
+                        $file->user_id_deleted = Auth::user()->id;
+                        $file->save();
+                        $file->delete();
                     }
                 break;
                 case "api":

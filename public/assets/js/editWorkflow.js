@@ -998,7 +998,7 @@ gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),f
   return {value:"method_"+i,label:item}
 }));
 var taskForm = [
-  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"}]},
+  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"},{value: "purge_files", label: "Purge All Files"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
