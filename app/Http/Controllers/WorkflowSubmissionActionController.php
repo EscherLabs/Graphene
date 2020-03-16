@@ -207,8 +207,8 @@ class WorkflowSubmissionActionController extends Controller {
         }
 
         // Execute Any Relevant Previous State Exit Tasks
-        if(isset($previous_state->onExit)){
-            $this->executeTasks($previous_state->onExit, $state_data);
+        if(isset($previous_state->onLeave)){
+            $this->executeTasks($previous_state->onLeave, $state_data);
         }
         // Execute Any Relevant Action Tasks
         if(isset($action->tasks)){

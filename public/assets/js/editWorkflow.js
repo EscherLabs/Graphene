@@ -926,7 +926,7 @@ function drawForm(name){
   flowForm = new gform(formConfig,'#flow-form').on('input', function(e){
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
-    temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
+    temp.onLeave = _.compact(_.map(temp.onLeave,function(e){if(e.task){return e} }))
     temp.actions = _.compact(_.map(temp.actions,function(e){if(e.name && e.label){return e} }))
 
     _.each(temp.actions,function(action){

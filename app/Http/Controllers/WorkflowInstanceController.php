@@ -200,10 +200,7 @@ class WorkflowInstanceController extends Controller
 
     public function report(WorkflowInstance $workflow_instance,Request $request) {
 
-
         return view('admin', ['resource'=>'workflow_instance_report','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
-
-
 
         // if (Auth::user()->site_developer || Auth::user()->site_admin) {
         //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
@@ -215,7 +212,7 @@ class WorkflowInstanceController extends Controller
         //     $current_user = Auth::user();
         //     $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
         // } else{
-        //     abort(404); 
+        //     abort(404);
         // }
 
         // $template = new Templater();

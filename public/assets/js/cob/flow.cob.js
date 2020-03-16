@@ -352,6 +352,7 @@ Cobler.types.Workflow = function(container){
           if(typeof exists !== 'undefined'){
             _.merge(exists,response);
           }else{
+            this.get().current.files = this.get().current.files || [];
             this.get().current.files.push(response)
           }
         }
@@ -510,6 +511,7 @@ Cobler.types.Workflow = function(container){
                 }});
               }
               this.initialstate = data.data;
+              this.set({current:data});
             }.bind(this),
             error:function(){
           
