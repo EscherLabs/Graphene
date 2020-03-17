@@ -203,8 +203,8 @@ baseConditions = baseCond.concat(_.map([
 
 
 if(typeof workflow == 'undefined'){
-	baseConditions = baseCond.concat(_.map([
-		{type: 'textarea', label: 'Template', name: 'template',columns:12,parse:[{type:"requires"}]},
+	baseConditions = baseConditions.concat(_.map([
+		{type: 'textarea', label: 'Grid Template', name: 'template',columns:12,parse:[{type:"requires"}]},
 
 		{type: 'fieldset', label: "Meta Data", array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
 		fields: [
@@ -647,7 +647,7 @@ Cobler.types.section = function(container) {
 			{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
 			{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
 		]},
-		{target:"#collapseDisplay .panel-body", type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
+		// {target:"#collapseDisplay .panel-body", type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
 
 		{target: "#display",columns:9, type:"button",modifiers:"btn btn-default pull-left margin-bottom",label:"Manage Section",action:"manage",name:"manage",show:[{type:"test",name:"manage",test:function(e){
             return !e.owner.options.nomanage;
