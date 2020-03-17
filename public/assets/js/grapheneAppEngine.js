@@ -44,11 +44,21 @@ function App() {
 			this.load();
 		}
 	}
-	function update(newData) {
+	function update(newData,silent) {
 		_.merge(this.data, newData || {});
 		_.each(newData,function(i,name){
-			this.collections.update(name)
-			this.eventBus.dispatch(name,i);
+			this.collections.update(name,i);
+			switch(name){
+				case "user":
+					if(typeof this.inline !== 'undefined'){
+						this.inline.set(i.options);
+					}
+				case "options":
+					break;
+				default:
+				this.eventBus.dispatch(name,i);
+
+			}
 		}.bind(this))
 		if(typeof this.inline == 'object' && this.inline instanceof gform) {
 			this.inline.set(this.data.user.options)
@@ -88,25 +98,25 @@ function App() {
 		trigger: this.eventBus.dispatch,
 		options: function(newOptions){
 			this.app.update( { user: $.extend(true,{},this.data.user,{ options: newOptions }  )});
-				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
-				if(typeof this.data.user.id !== 'undefined') {
-					$.ajax({
-						type: 'POST',
-						dataType : 'json',
-						url:url,
-						data: {'options': newOptions},
-						success:function(data){
-							this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
-							this.app.trigger('options');
-						}.bind(this),
-						error:function(data) {
-							toastr.error(data.statusText, 'An error occured updating options')
-						}
-					})
-				}else{
-					Lockr.set(url, {'options': this.data.user.options})
-					this.app.trigger('options');
-				}
+			var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
+			if(typeof this.data.user.id !== 'undefined') {
+				$.ajax({
+					type: 'POST',
+					dataType : 'json',
+					url:url,
+					data: {'options': newOptions},
+					success:function(data){
+						this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
+						this.app.trigger('options');
+					}.bind(this),
+					error:function(data) {
+						toastr.error(data.statusText, 'An error occured updating options')
+					}
+				})
+			}else{
+				Lockr.set(url, {'options': this.data.user.options})
+				this.app.trigger('options');
+			}
 
 		}.bind(this),
 		$el:this.$el,
@@ -403,7 +413,6 @@ function(options){
 		// _.each(this.forms,function(form, name){
 		// }.bind(this))
 
-
 		if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
 	
       this.methods[this.options.initializer].call(this,this);
@@ -412,7 +421,7 @@ function(options){
       })
       this.app.on('apply', function(name, args) {
         if(typeof this.methods[name] !== 'undefined'){ this.methods[name].apply(this, args.args) }
-      }) 
+      })
     }
   }
   this.call = function(method, args) {
