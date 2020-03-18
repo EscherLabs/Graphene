@@ -194,7 +194,7 @@ baseConditions = baseCond.concat(_.map([
 		{type: 'select',other:true,value:true,columns:12, label:"Apply",name:"conditions", show:[{name:"type",value:['none'],type:"not_matches"}], options:		
 			[{label:'Always',value:true},{label:"Conditionally",value:"other"}]
 		},
-		{type: 'fieldset',columns:11,offset:1, label:"{{index}}{{^index}}Conditions{{/index}}",name:"conditions",fields:myconditions,array:{min:1,max:1},show:[{name:"conditions",value:['other'],type:"matches"}]}
+		{type: 'fieldset',columns:11,offset:1, label:"Conditions",name:"conditions",fields:myconditions,array:{min:1,max:1},show:[{name:"conditions",value:['other'],type:"matches"}]}
 	],array:true}
 ],function(item){
 	item.target = "#collapseValidation .panel-body";
@@ -204,12 +204,12 @@ baseConditions = baseCond.concat(_.map([
 
 if(typeof workflow == 'undefined'){
 	baseConditions = baseConditions.concat(_.map([
-		{type: 'textarea', label: 'Grid Template', name: 'template',columns:12,parse:[{type:"requires"}]},
+		{type: 'textarea', label: 'Template', name: 'template',columns:12,parse:[{type:"requires"}]},
 
-		{type: 'fieldset', label: "Meta Data", array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
+		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
 		fields: [
-			{label: 'Key', name:"key"},
-			{label: 'Value', name:"value"}
+			{label: 'Key', name:"key",parse:[{type:"requires"},{type:"requires",name:"value"}]},
+			{label: 'Value', name:"value",parse:[{type:"requires"},{type:"requires",name:"key"}]}
 		]
 	}
 	],function(item){
@@ -567,9 +567,12 @@ Cobler.types.bool = function(container) {
 		return _.extend({},item);
 	}
 	function toJSON() {
-
-		return _.omit(get(),'widgetType','editable')
-		// return  _.transform(get(),function(r,v) {_.extend(r,v)},{});//get();
+		var temp = _.omit(get(),'widgetType','editable')
+		temp.options = _.map(temp.options,function(i){return _.omit(i,'selected')});
+		if(_.isEmpty(temp.options[0]) && _.isEmpty(temp.options[1])){
+			temp = _.omit(temp,'options')
+		}
+		return temp;
 	}
 	function set(newItem) {
 		newItem.display = newItem.display||newItem.details;
@@ -587,8 +590,8 @@ Cobler.types.bool = function(container) {
 			{label: 'Switch', value: 'switch'}
 		]}
 	].concat(baseFields,baseConditions,_.map([{type: 'fieldset', label: false, array: {min:2,max:2},columns:12, name: 'options', fields: [
-		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Label','name':'label'},
-		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Value','name':'value'},
+		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Label','name':'label',parse:[{type:"requires"}]},
+		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Value','name':'value',parse:[{type:"requires"}]},
 	]}],function(item){
 		item.target = "#collapseOptions .panel-body";
 		return item;
@@ -613,6 +616,7 @@ Cobler.types.section = function(container) {
 			nTemp.set(e);
 			content += nTemp.render()
 		})
+		debugger;
 		var html = $(gform.render('_fieldset', _.extend({},myform.default,temp)));
 		html.find('fieldset').append(content)
     	return html.html();
@@ -620,7 +624,7 @@ Cobler.types.section = function(container) {
 	function get() {
 		item.widgetType = 'section';
 		item.editable = true;
-		item.type = 'fieldset';
+		// item.type = 'fieldset';
 
 		item.fields = item.fields ||[];
 		return item;
@@ -639,6 +643,14 @@ Cobler.types.section = function(container) {
 		label: 'Label'
 	}
 	var fields = [
+
+		{target:"#display",type: 'smallcombo',columns:9, label: false, name: 'type', value: 'text', 'options': [
+			{label: 'Fieldset', value: 'fieldset'},
+			{label: 'Template', value: 'template'},
+			{label: 'Table', value: 'table'},
+			// {label: 'Scale', value: 'scale'},
+			{label: 'Grid', value: 'grid'},
+		]},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Group Label', name: 'label'},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
 		{target: "#collapseBasic .panel-body", type: 'checkbox',format:{label:''}, label: 'Allow duplication', name: 'array'},
