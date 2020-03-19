@@ -211,8 +211,11 @@ class GroupController extends Controller
             return 1;
         }
     }
-    public function list_members(Group $group)
+    public function list_members(Group $group, Request $request)
     {
+        if($request->has('all')){
+            return $group->members()->with('bulkuser')->get()->pluck('bulkUser');
+        }
         if (isset($group->membersCount) && $group->membersCount->aggregate > 1000) {
             return $group->members()->where('status','=','internal')->with('user')->get();
         } else {

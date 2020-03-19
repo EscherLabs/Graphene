@@ -60,6 +60,19 @@ $.ajax({
 					})
 				})
 			}}
+			,
+			{'name': 'export', 'label': '<i class="fa fa-file"></i> Export', 
+				callback: function(collection){
+					$.get('/api/groups/'+resource_id+'/members?all',function(data){
+						_.csvify(data,[
+							{label:"ID",name:"unique_id"},
+							{label:"First Name",name:"first_name"},
+							{label:"Last Name",name:"last_name"},
+							{label:"Email",name:"email"}
+						],group.name)
+					})
+				}, global: true
+			}
 		]
 
 		$('body').on('click','.list-group-item.user', function(e){
