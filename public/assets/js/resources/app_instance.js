@@ -65,14 +65,20 @@ $.ajax({
 					var item = Berries.main.toJSON();
 					if(typeof gform.instances.options !== 'undefined') {
 						item.options = gform.instances.options.toJSON();
-					}			
+					}else{
+						item.options = {};
+					}
 					if(typeof gform.instances.user_options_default !== 'undefined') {
 						item.user_options_default = gform.instances.user_options_default.toJSON();
+					}else{
+						item.user_options_default = {};
 					}
 					if(typeof Berries.resources !== 'undefined') {
 						item.resources = Berries.resources.toJSON().resources;
+					}else{
+						item.resources = [];
 					}
-					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', dataType : 'json', data: item, success:function(){
+					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', dataType : 'json',contentType: 'application/json', data: JSON.stringify(item), success:function(){
 							toastr.success('', 'Successfully updated App Instance')
 						}.bind(this),
 						error:function(e) {
