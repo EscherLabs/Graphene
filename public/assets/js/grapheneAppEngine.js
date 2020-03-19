@@ -103,8 +103,9 @@ function App() {
 				$.ajax({
 					type: 'POST',
 					dataType : 'json',
+					contentType: 'application/json',
 					url:url,
-					data: {'options': newOptions},
+					data: JSON.stringify({'options': newOptions}),
 					success:function(data){
 						this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
 						this.app.trigger('options');

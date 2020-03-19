@@ -326,7 +326,8 @@ function editMobileOrder(){
 						type: 'POST',
 						dataType : 'json',
 						url:url,
-						data: {'options': e.form.get()},
+						contentType: 'application/json',
+						data: JSON.stringify({'options': e.form.get()}),
 						success:function(app,data){
 							app.update({user:{options:data.options}});
 							this.trigger('close');
