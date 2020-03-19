@@ -6,6 +6,8 @@ Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
 
 Route::get('/workflows','WorkflowController@summary');
+Route::get('/workflows/assignments','WorkflowController@assignments');
+Route::get('/workflows/history','WorkflowController@history');
 Route::get('/workflows/report/{workflow_submission}', 'WorkflowSubmissionController@report')->middleware('custom.auth')->middleware('can:view,workflow_submission');
 
 Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () {
@@ -31,6 +33,8 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/workflowsubmissions/user','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflowsubmissions/user/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
     Route::get('/workflowsubmissions/user/assignments/count','WorkflowSubmissionController@my_assignment_count');
+    Route::get('/workflowsubmissions/user/history','WorkflowSubmissionController@list_user_workflow_submission_history');
+
     Route::get('/workflowsubmissions/{workflow_submission}/history','WorkflowSubmissionController@workflow_submission_history')->middleware('can:view,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@status')->middleware('can:view,workflow_submission');
     Route::put('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionActionController@action')->middleware('can:take_action,workflow_submission');

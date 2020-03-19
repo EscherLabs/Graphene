@@ -93,7 +93,7 @@ class WorkflowSubmissionController extends Controller {
     public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
         if (!Auth::check()) { abort(403); }
         $submissions = WorkflowSubmission::with('workflowVersion')
-        ->with('user')
+        // ->with('user')
         ->with('user')
             ->where('workflow_instance_id','=',$workflow_instance->id)
             ->where('status',"!=",'new')
@@ -106,6 +106,20 @@ class WorkflowSubmissionController extends Controller {
         return $submissions;
 
     }   
+
+    public function list_user_workflow_submission_history(Request $request) {
+        if (!Auth::check()) { abort(403); }
+        $submissions = WorkflowSubmission::with('workflowVersion')
+            ->with('user')
+            ->with('workflow')
+            ->where('status',"!=",'new')
+            ->orderBy('created_at')->get();
+        foreach ($submissions as $submission) {
+            $submission->getAssignment();
+            $submission->getSubmittedAt();
+        }
+        return $submissions; 
+    }
     public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) { abort(403); }
         return WorkflowSubmission::where('id','=',$workflow_submission->id)
