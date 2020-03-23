@@ -314,7 +314,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                if(is_assigned){return true;}
               }else{
                 if(action.assignment.type == "user"){
-                  if(gform.m(action.assignment.id,mappedData) == mappedData.actor.id.toString()){
+                  if(gform.m(action.assignment.id,mappedData) == mappedData.actor.unique_id.toString()){
                     return true;
                   }
                 }else if(action.assignment.type == "group"){
