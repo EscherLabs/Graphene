@@ -246,11 +246,11 @@ class WorkflowSubmissionActionController extends Controller {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
                 return $this->action($workflow_submission, $request); // action = error
             } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
-                $comment = isset($logic_result['console']['comment'])?$logic_result['console']['comment']:json_encode($logic_result['console']);
+                $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
                 $request->merge(['action'=>'true','comment'=>$comment]);
                 return $this->action($workflow_submission, $request); //action = true
             } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
-                $comment = isset($logic_result['console']['comment'])?$logic_result['console']['comment']:json_encode($logic_result['console']);
+                $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
                 $request->merge(['action'=>'false','comment'=>$comment]);
                 return $this->action($workflow_submission, $request); // action = false
             }
