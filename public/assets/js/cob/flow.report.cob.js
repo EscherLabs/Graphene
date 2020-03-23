@@ -486,7 +486,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               }
               
               $('.workflow-files, .report').on('click','[data-id]',function(e){
-   
                 if(e.currentTarget.dataset.action == 'delete'){
                   e.stopPropagation();
                   e.preventDefault();
@@ -541,6 +540,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               states.push(mappedData.workflow.instance.configuration.initial)
               form.fields[2].value = _.uniq(_.compact(states));
 
+              form.fields[1].value = log.previous.state;
               previewForm = new gform(form, document.querySelector('.view_container'))
             }
           }.bind(this))

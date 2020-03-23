@@ -474,6 +474,7 @@ Cobler.types.collection = function(container) {
 			{label: 'List', value: 'radio'},
 			{label: 'Combobox', value: 'smallcombo'},
 			{label: 'User', value: 'user'},
+			{label: 'User Email', value: 'user_email'},
 			{label: 'Groups', value: 'Groups'},
 
 			{label: 'File', value: 'files'},

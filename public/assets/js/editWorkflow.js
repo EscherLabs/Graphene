@@ -66,6 +66,7 @@ renderBuilder = function(){
         case "range":
         case "grid":
         case "user":
+        case "user_email":
         case "groups":
         case "files":
         case "smallcombo":
