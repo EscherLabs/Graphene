@@ -246,10 +246,12 @@ class WorkflowSubmissionActionController extends Controller {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
                 return $this->action($workflow_submission, $request); // action = error
             } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
-                $request->merge(['action'=>'true','comment'=>json_encode($logic_result['console'])]);
+                $comment = isset($logic_result['console']['comment'])?$logic_result['console']['comment']:json_encode($logic_result['console']);
+                $request->merge(['action'=>'true','comment'=>$comment]);
                 return $this->action($workflow_submission, $request); //action = true
             } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
-                $request->merge(['action'=>'false','comment'=>json_encode($logic_result['console'])]);
+                $comment = isset($logic_result['console']['comment'])?$logic_result['console']['comment']:json_encode($logic_result['console']);
+                $request->merge(['action'=>'false','comment'=>$comment]);
                 return $this->action($workflow_submission, $request); // action = false
             }
         }
@@ -387,7 +389,7 @@ class WorkflowSubmissionActionController extends Controller {
     {{/assignment.group}}
 {{/is.open}}
 {{#is.closed}}This workflow is now CLOSED and in the "{{state}}" state.<br>{{/is.closed}}
-{{#comment}}The following comment was provided: "{{comment}}"<br>{{/comment}}
+{{#comment}}The following comment was provided: "{{{comment}}}"<br>{{/comment}}
 <br>You may view the current status as well as the complete history of this workflow here: {{report_url}}
 ';
         $subject = 'Update '.$state_data['workflow']['instance']['name'];
@@ -445,7 +447,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br>
 {{^was.initial}}
     This workflow was last updated by {{actor.first_name}} {{actor.last_name}} who performed
     the "{{action}}" action, and moved it into the current "{{state}}" state.  {{#comment}}They also
-    provided the following comment: "{{comment}}"{{/comment}}<br>
+    provided the following comment: "{{{comment}}}"{{/comment}}<br>
 {{/was.initial}}
 {{#is.actionable}}
     <br>To take actions, or view the history / current status, visit the following: {{report_url}}
