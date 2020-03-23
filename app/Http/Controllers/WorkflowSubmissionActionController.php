@@ -173,7 +173,7 @@ class WorkflowSubmissionActionController extends Controller {
                     return response('Permission Denied', 403);
                 }        
             } else { // This action can be performed by the state asignee
-                if (($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === Auth::user()->id) || 
+                if ($start_assignment['assignment_type']== "internal" || ($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === $activity->user_id) || 
                     ($start_assignment['assignment_type'] === 'group' && Auth::user()->group_member($start_assignment['assignment_id']))) {
                     // Continue!
                 } else {
@@ -232,7 +232,8 @@ class WorkflowSubmissionActionController extends Controller {
                 $method_name = $state->logic;
                 // Lookup Logic Method
                 $method = Arr::first($methods, function ($value, $key) use ($method_name) {
-                    return $value->name === $method_name;
+                    // return $value->name === $method_name;
+                    return "method_".$key === $method_name;
                 }); // Needs error handling if this is null!
                 $method_code = $method->content;
             } else {
