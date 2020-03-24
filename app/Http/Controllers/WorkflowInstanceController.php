@@ -236,11 +236,15 @@ class WorkflowInstanceController extends Controller
         // return $workflows;
     }
 
+    private function is_assoc_arr($arr) {
+        return (is_array($arr) && count(array_filter(array_keys($arr), 'is_string')) > 0);
+    }
+
     private function flatten($arr,&$flat,$parent='') {
         if (is_string($arr) || is_bool($arr) || is_numeric($arr)) {
             return $arr;
         }
-        if (is_array($arr)) {
+        if (is_array($arr) && !$this->is_assoc_arr($arr)) {
             $cat = [];
             foreach($arr as $elem) {
                 if (is_string($elem) || is_bool($elem) || is_numeric($elem)) {
@@ -251,7 +255,7 @@ class WorkflowInstanceController extends Controller
             }
             return '"'.implode('", "',$cat).'"';
         }
-        if (is_object($arr)) {
+        if (is_object($arr) || $this->is_assoc_arr($arr)) {
             foreach($arr as $key => $ar) {
                 $children = $this->flatten($ar,$flat,$parent.$key.'.');
                 if (!is_null($children)) {
@@ -260,10 +264,13 @@ class WorkflowInstanceController extends Controller
             }
             return null;
         }
-    }    
-
+    }
     public function getcsv(WorkflowInstance $workflow_instance, Request $request) {
-        $submissions = $workflow_instance->submissions()->with('user')->get();
+        $submissions = WorkflowSubmission::with('workflowVersion')
+            ->with('user')
+            ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->where('status',"!=",'new')
+            ->orderBy('created_at')->get();
         $all_submissions = [];
         $all_keys = [];
         $csv = '';
