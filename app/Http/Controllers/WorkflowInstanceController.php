@@ -280,6 +280,10 @@ class WorkflowInstanceController extends Controller
             $data = array_merge($flat, [
                 'status' => $submission->status,
                 'state' => $submission->state,
+                'unique_id' => $submission->user->unique_id,
+                'first_name' => $submission->user->first_name,
+                'last_name' => $submission->user->last_name,
+                'email' => $submission->user->email,
                 'created_at' => $submission->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
                 'report_url' => '=HYPERLINK("'.URL::to('/workflows/report/'.$submission->id).'","Open Report")'
