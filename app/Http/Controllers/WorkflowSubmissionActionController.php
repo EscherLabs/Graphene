@@ -14,6 +14,7 @@ use App\User;
 use App\Page;
 use App\ResourceCache;
 use App\UserOption;
+use App\WorkflowSubmissionFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
@@ -26,6 +27,7 @@ use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use App\Libraries\JSExecHelper;
 use \Ds\Vector;
+use Storage;
 
 class WorkflowSubmissionActionController extends Controller {
     public function __construct() {
@@ -171,7 +173,7 @@ class WorkflowSubmissionActionController extends Controller {
                     return response('Permission Denied', 403);
                 }        
             } else { // This action can be performed by the state asignee
-                if (($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === Auth::user()->id) || 
+                if ($start_assignment['assignment_type']== "internal" || ($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === Auth::user()->id) || 
                     ($start_assignment['assignment_type'] === 'group' && Auth::user()->group_member($start_assignment['assignment_id']))) {
                     // Continue!
                 } else {
@@ -208,15 +210,15 @@ class WorkflowSubmissionActionController extends Controller {
 
         // Execute Any Relevant Previous State Exit Tasks
         if(isset($previous_state->onLeave)){
-            $this->executeTasks($previous_state->onLeave, $state_data);
+            $this->executeTasks($previous_state->onLeave, $state_data,$workflow_submission);
         }
         // Execute Any Relevant Action Tasks
         if(isset($action->tasks)){
-            $this->executeTasks($action->tasks, $state_data);
+            $this->executeTasks($action->tasks, $state_data, $workflow_submission);
         }        
         // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
-            $this->executeTasks($state->onEnter, $state_data);
+            $this->executeTasks($state->onEnter, $state_data, $workflow_submission);
         }
 
         // Update Submission Object In DB
@@ -230,7 +232,8 @@ class WorkflowSubmissionActionController extends Controller {
                 $method_name = $state->logic;
                 // Lookup Logic Method
                 $method = Arr::first($methods, function ($value, $key) use ($method_name) {
-                    return $value->name === $method_name;
+                    // return $value->name === $method_name;
+                    return "method_".$key === $method_name;
                 }); // Needs error handling if this is null!
                 $method_code = $method->content;
             } else {
@@ -243,10 +246,12 @@ class WorkflowSubmissionActionController extends Controller {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
                 return $this->action($workflow_submission, $request); // action = error
             } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
-                $request->merge(['action'=>'true','comment'=>json_encode($logic_result['console'])]);
+                $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
+                $request->merge(['action'=>'true','comment'=>$comment]);
                 return $this->action($workflow_submission, $request); //action = true
             } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
-                $request->merge(['action'=>'false','comment'=>json_encode($logic_result['console'])]);
+                $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
+                $request->merge(['action'=>'false','comment'=>$comment]);
                 return $this->action($workflow_submission, $request); // action = false
             }
         }
@@ -302,46 +307,48 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->save();
     }
 
-    private function executeTasks($tasks, $data){
+    private function executeTasks($tasks, $data, $workflow_submission){
         $m = new \Mustache_Engine;
         foreach($tasks as $task){
             if(!isset($task->data)){
-                $task->data = array();
-            }else{
+                $task->data = [];
+            } else {
                 foreach($task->data as $key=>$value){
                     $task->data->{$key} = $m->render($value, $data);
                 }
             }
             switch($task->task) {
                 case "email":
-                    $content = "Workflow task taken";
+                    $content = "Workflow Notification Email";
                     if($task->content){
                         $content = $m->render($task->content, $data);
                     }
-                    $subject = 'Workflows | You got a Workflow Email';
-
+                    $subject = 'Workflow Notification';
                     if($task->subject){
                         $subject = $m->render($task->subject, $data);
                     }
-                    $to = array();//'asmallco@binghamton.edu';
+                    $to = [];
                     foreach($task->to as $email){
-
-                    // dd($email);
                         $to[] = $m->render($email, $data);
                     }
-                    // More Info About the Mail API: https://laravel.com/docs/5.8/mail
-                    // Note that Mail::raw is undocumented, as default mail requires 
-                    // the use of blade views.
                     try {
                         Mail::raw( $content, function($message) use($to, $subject) { 
                             $m = new \Mustache_Engine;
                             $message->to($to);
-
                             $message->subject($subject); 
                         });
                     } catch (\Exception $e) {
-                        // Failed to Send Email... 
-                        // Continue Anyway.
+                        // Failed to Send Email... Continue Anyway.
+                    }
+                break;
+                case "purge_files":
+                    $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
+                    foreach($files as $file) {
+                        Storage::delete($file->get_file_path());
+                        Storage::delete($file->get_file_path().'.encrypted');
+                        $file->user_id_deleted = Auth::user()->id;
+                        $file->save();
+                        $file->delete();
                     }
                 break;
                 case "api":
@@ -382,7 +389,7 @@ class WorkflowSubmissionActionController extends Controller {
     {{/assignment.group}}
 {{/is.open}}
 {{#is.closed}}This workflow is now CLOSED and in the "{{state}}" state.<br>{{/is.closed}}
-{{#comment}}The following comment was provided: "{{comment}}"<br>{{/comment}}
+{{#comment}}The following comment was provided: "{{{comment}}}"<br>{{/comment}}
 <br>You may view the current status as well as the complete history of this workflow here: {{report_url}}
 ';
         $subject = 'Update '.$state_data['workflow']['instance']['name'];
@@ -440,7 +447,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br>
 {{^was.initial}}
     This workflow was last updated by {{actor.first_name}} {{actor.last_name}} who performed
     the "{{action}}" action, and moved it into the current "{{state}}" state.  {{#comment}}They also
-    provided the following comment: "{{comment}}"{{/comment}}<br>
+    provided the following comment: "{{{comment}}}"{{/comment}}<br>
 {{/was.initial}}
 {{#is.actionable}}
     <br>To take actions, or view the history / current status, visit the following: {{report_url}}

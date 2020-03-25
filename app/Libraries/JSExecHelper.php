@@ -37,7 +37,10 @@ global.wrapper.console = {};
 // define a new console
 var console=(function(oldCons){
     return {
-        log: function(text){
+        comment: function(text){
+            if (typeof global.wrapper.console.comment === 'undefined') {global.wrapper.console.comment=[];}
+            global.wrapper.console.comment.push(text)
+        },log: function(text){
             if (typeof global.wrapper.console.log === 'undefined') {global.wrapper.console.log=[];}
             global.wrapper.console.log.push(text)
         },info: function (text) {

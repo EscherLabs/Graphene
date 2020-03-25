@@ -9,7 +9,7 @@ class WorkflowSubmission extends Model
 {
     use SoftDeletes;
     protected $fillable = ['workflow_id','workflow_version_id','workflow_instance_id','workflow_instance_configuration','user_id','assignment_type','assignment_id','state','data','status'];
-    protected $casts = ['data' => 'object','workflow_instance_configuration'=>'object'];
+    protected $casts = ['workflow_instance_configuration'=>'object'];
 
     public function workflow() {
         return $this->belongsTo(Workflow::class);
@@ -48,15 +48,20 @@ class WorkflowSubmission extends Model
             $this->submitted_at = null;
         }
     }
-    // public function getDataAttribute($value) {
-    //     return json_decode($value);
-    // }
-    // public function setDataAttribute($value) {
-    //     if (isset($this->workflow_instance->configuration->encrypted) && ($this->workflow_instance->configuration->encrypted === true)) {
-    //         // encrypt the data first
-    //         $this->attributes['data'] = ['_encrypted'=>encrypt($value),'data'=>$value];
-    //     } else {
-    //         $this->attributes['data'] = json_encode($value);
-    //     }
-    // }
+    public function getDataAttribute($value) {
+        $payload = json_decode($value,true);
+        if (isset($payload['_encrypted']) && $payload['_encrypted']===true && isset($payload['data'])) {
+            return json_decode(decrypt($payload['data']),true);
+        } else {
+            return $payload;
+        }
+    }
+    public function setDataAttribute($value) {
+        $instance = WorkflowInstance::where('id',$this->workflow_instance_id)->select('configuration')->first();
+        if (isset($instance->configuration->encrypted) && ($instance->configuration->encrypted === true)) {
+            $this->attributes['data'] = json_encode(['_encrypted'=>true,'data'=>encrypt(json_encode($value))]);
+        } else {
+            $this->attributes['data'] = json_encode($value);
+        }
+    }
 }

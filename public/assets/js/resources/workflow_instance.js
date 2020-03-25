@@ -63,7 +63,7 @@ $.ajax({
 
 				var valueField = {columns:8,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
 				data.configuration = data.configuration||{}
-				r_options = {data:{suppress_emails:data.configuration.suppress_emails,initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
+				r_options = {data:{suppress_emails:data.configuration.suppress_emails,encrypted:data.configuration.encrypted,initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
 					var r = _.find(data.configuration.map,{name:resource.name});
 					if(typeof r !== 'undefined' && r.type == resource.type){
 						resource.value = r.value;
@@ -72,7 +72,8 @@ $.ajax({
 					return resource;
 				})}, actions:[],fields:[
 					{name:"initial",label:"Initial State", options:_.pluck(data.version.code.flow,'name'), type:"smallcombo"},
-					{name:"suppress_emails",title:'Suppress Default Emails{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}',type:"switch",inline:false},
+                    {name:"suppress_emails",title:'Suppress Default Emails{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}',type:"switch",inline:false},
+                    {name:"encrypted",title:'Encrypt Data at Rest{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}',type:"switch",inline:false},
 					// {name:"emails",label:false, type:"fieldset",show:[{type:"matches",name:"suppress_emails",value:true}],fields:[
 					// 	{name:"actor",label:"Actor",type:"checkbox",value:true,columns:3},
 					// 	{name:"owner",label:"Owner",type:"checkbox",value:true,columns:3},

@@ -287,10 +287,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           }
           mappedData.history = _.map(data, function(event){
             var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
-
             newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
             newEvent.state = event.end_state;
             newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
+            newEvent.created_by = _.pick(event.user,'first_name','last_name','email','unique_id','id','params')
             newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
             newEvent.previous ={state:event.start_state}
             newEvent.is ={
@@ -314,7 +314,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                if(is_assigned){return true;}
               }else{
                 if(action.assignment.type == "user"){
-                  if(gform.m(action.assignment.id,mappedData) == mappedData.actor.id.toString()){
+                  if(gform.m(action.assignment.id,mappedData) == mappedData.actor.unique_id.toString()){
                     return true;
                   }
                 }else if(action.assignment.type == "group"){
@@ -376,7 +376,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           
           update = function (dummy, response){
             if(typeof response !== 'undefined'){
-       
               var event = processFile(response);
               if(typeof event.user == 'undefined' && event.user_id_created == this.get().user.id){
                 event.user = this.get().user;
@@ -392,6 +391,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
        
               
               newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
+              newEvent.created_by = _.pick(event.user,'first_name','last_name','email','unique_id','id','params')
               newEvent.actor.is = {owner:mappedData.owner.unique_id == newEvent.actor.unique_id}
               newEvent.previous ={state:event.start_state}
               newEvent.is ={
@@ -486,7 +486,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               }
               
               $('.workflow-files, .report').on('click','[data-id]',function(e){
-   
                 if(e.currentTarget.dataset.action == 'delete'){
                   e.stopPropagation();
                   e.preventDefault();
@@ -541,6 +540,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               states.push(mappedData.workflow.instance.configuration.initial)
               form.fields[2].value = _.uniq(_.compact(states));
 
+              form.fields[1].value = log.previous.state;
               previewForm = new gform(form, document.querySelector('.view_container'))
             }
           }.bind(this))
