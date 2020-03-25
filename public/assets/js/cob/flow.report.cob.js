@@ -287,6 +287,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
           }
           mappedData.history = _.map(data, function(event){
             var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+debugger;
             newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
             newEvent.state = event.end_state;
             newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
