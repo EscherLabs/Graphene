@@ -19,7 +19,7 @@ If you are interested in piloting Graphene at your campus, please contact [graph
 The Graphene Framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
 ## Developers
-Graphene is developed by Adam Smallcomb and [Tim Cortesi](mailto:tcortesi@gmail.com) in collaboration with [Binghamton University](http://www.binghamton.edu) and [Escher Labs, Inc.](https://www.escherlabs.com)</sub>
+Graphene is developed by [Adam Smallcomb](https://github.com/cloverstone) and [Tim Cortesi](https://github.com/timcortesi) in collaboration with [Binghamton University](http://www.binghamton.edu) and [Escher Labs, Inc.](https://www.escherlabs.com)</sub>
 
 ## About
 For more information about Graphene and what sets it apart from other "portal" platforms, check out the following presentation given at the 2019 SUNY Technology Conference.
