@@ -22,7 +22,6 @@ class ReportController extends Controller
             ifnull(ifnull(ifnull(ifnull(null,links.name),apps.name),workflows.name),pages.name) as name, 
             ifnull(ifnull(ifnull(ifnull(null,links.group_name),apps.group_name),workflows.group_name),pages.group_name) as `group`,
             LOWER(ifnull(ifnull(ifnull(ifnull(null,links.url),apps.url),workflows.url),pages.url)) as url,
-            count(visits.created_at) as count,
             max(visits.created_at) as last_access 
             from users
             left join group_members on users.id = group_members.user_id
