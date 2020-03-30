@@ -17,11 +17,11 @@ class ReportController extends Controller
             $months_ago = $request->get('months_ago');
         }
         $results = DB::select("
-            select users.first_name, users.last_name, users.unique_id, users.email, ".
-            // ifnull(ifnull(ifnull(ifnull(null,links.resource_id),apps.resource_id),workflows.resource_id),pages.resource_id) as resource_id, 
-            "ifnull(ifnull(ifnull(ifnull(null,links.name),apps.name),workflows.name),pages.name) as name, 
+            select users.first_name, users.last_name, users.unique_id, users.email, visits.resource_type as `type`,  
+            ifnull(ifnull(ifnull(ifnull(null,links.resource_id),apps.resource_id),workflows.resource_id),pages.resource_id) as id, 
+            ifnull(ifnull(ifnull(ifnull(null,links.name),apps.name),workflows.name),pages.name) as name, 
             ifnull(ifnull(ifnull(ifnull(null,links.group_name),apps.group_name),workflows.group_name),pages.group_name) as `group`,
-            ifnull(ifnull(ifnull(ifnull(null,links.url),apps.url),workflows.url),pages.url) as url,
+            LOWER(ifnull(ifnull(ifnull(ifnull(null,links.url),apps.url),workflows.url),pages.url)) as url,
             count(visits.created_at) as count,
             max(visits.created_at) as last_access 
             from users
@@ -45,7 +45,9 @@ class ReportController extends Controller
                 from links left join groups on links.group_id = groups.id
             ) as links on visits.resource_id = links.resource_id and visits.resource_type = 'link'
             where visits.created_at > DATE_SUB(NOW(), INTERVAL ".$months_ago." MONTH)
+            and users.unique_id is not null
             group by users.unique_id, users.first_name, users.last_name, users.email, visits.resource_type, visits.resource_id
+            order by users.unique_id, visits.resource_type, visits.resource_id
         ");
         return $results;
     }
@@ -62,6 +64,7 @@ class ReportController extends Controller
             ->leftJoin('visits', 'visits.user_id', '=', 'users.id')
             ->where('groups.slug','=',$group_slug)
             ->where('visits.created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL '.$months_ago.' MONTH)'))
+            ->whereNotNull('users.unique_id')
             ->groupBy('users.unique_id','users.first_name','users.last_name','users.email')
             ->get();
         return $results;
@@ -87,7 +90,7 @@ class ReportController extends Controller
             $filename = $name.'_'.$param1.'_'.date('Y-m-d');
             $data = $this->last_access($request, $param1);
         } else if ($name === 'activity') {
-            $filename = $name.'_activity_'.date('Y-m-d');
+            $filename = $name.'_'.date('Y-m-d');
             $data = $this->activity($request);    
         } else {
             return response('Report "'.$name.'" does not exists.',404);
