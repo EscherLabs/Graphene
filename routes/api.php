@@ -16,4 +16,5 @@ Route::group(['middleware' => ['public.api.auth', 'no.save.session'], 'prefix' =
 
     Route::match(['get','post'],'/apps/search/{type?}','AppController@search');
 
+    Route::get('/reports/{name}/{param1?}','ReportController@run');
 });
