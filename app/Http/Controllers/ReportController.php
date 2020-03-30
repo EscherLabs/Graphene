@@ -46,6 +46,7 @@ class ReportController extends Controller
             ) as links on visits.resource_id = links.resource_id and visits.resource_type = 'link'
             where visits.created_at > DATE_SUB(NOW(), INTERVAL ".$months_ago." MONTH)
             and users.unique_id is not null
+            and users.unique_id != ''
             group by users.unique_id, users.first_name, users.last_name, users.email, visits.resource_type, visits.resource_id
             order by users.unique_id, visits.resource_type, visits.resource_id
         ");
@@ -65,6 +66,7 @@ class ReportController extends Controller
             ->where('groups.slug','=',$group_slug)
             ->where('visits.created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL '.$months_ago.' MONTH)'))
             ->whereNotNull('users.unique_id')
+            ->where('users.unique_id','!=','')
             ->groupBy('users.unique_id','users.first_name','users.last_name','users.email')
             ->get();
         return $results;
