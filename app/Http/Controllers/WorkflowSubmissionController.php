@@ -96,7 +96,8 @@ class WorkflowSubmissionController extends Controller {
         ->with('user')
             ->where('workflow_instance_id','=',$workflow_instance->id)
             ->where('status',"!=",'new')
-            ->orderBy('created_at')->get();
+            ->orderBy('updated_at','asc')
+            ->get();
         // $submission->getAssignment();
         foreach ($submissions as $submission) {
             $submission->getAssignment();
