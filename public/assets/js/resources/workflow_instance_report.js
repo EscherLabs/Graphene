@@ -29,7 +29,7 @@ $.ajax({
 				new GrapheneDataGrid({
 					
 					actions:[{type:"info",name:"d_csv",label:'<i class="fa fa-download"></i> Download'}],
-					autoSize:10,name:"workflow_submissions",schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"},{label:"State",name:"state"},{label:"Status",name:'status'},{label:"Assigned",template:"{{attributes.assignee.first_name}} {{attributes.assignee.last_name}}"}],data:data,download:false,upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
+					autoSize:10,name:"workflow_submissions",schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"},{label:"State",name:"state"},{label:"Status",name:'status'},{label:"Assigned",template:"{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}}"}],data:data,download:false,upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
 					document.location = "/workflows/report/"+e.model.attributes.id;
 				}.bind(this)).on('d_csv',function(e){
 					document.location = "/api/workflowinstances/"+resource_id+"/csv"
