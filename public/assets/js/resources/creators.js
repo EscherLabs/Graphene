@@ -1,4 +1,3 @@
-
 var reset = function(){
   if(typeof Berries.modal !== 'undefined'){
     Berries.modal.destroy();
@@ -279,7 +278,7 @@ var createEngine = function(e){
               {label:'HTTP Basic Auth', value:'http_basic_auth'}, 
             ], required: true},
             {label: 'Configuration', name:'config', showColumn:false, fields:[
-              {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
+              {label:'Url', required: false,parsable:'show', validate: {is_https:true}, show:{matches:{name:'type',value:'http_basic_auth'}}},
               {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
               {label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
               {label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},

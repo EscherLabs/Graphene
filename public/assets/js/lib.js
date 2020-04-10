@@ -178,3 +178,9 @@ graphene = {
   grid:GrapheneDataGrid,
   apps:{}
 }
+Berry.validations.is_https = {
+    method: function(value) {
+        return value.startsWith("https://");
+    },
+    message: 'Basic Auth Routes must start with "https://"'
+}

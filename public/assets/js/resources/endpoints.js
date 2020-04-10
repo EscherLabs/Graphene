@@ -14,7 +14,7 @@ $.ajax({
 				// {label:'Google Sheets', value:'google_sheets'},
 			], required: true},
 			{label: 'Configuration', name:'config', showColumn:false, fields:[
-				{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
+				{label:'Url', required: false,parsable:'show', validate: {is_https:true}, show:{matches:{name:'type',value:'http_basic_auth'}}},
 				{label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
 				// {label:'Sheet ID', name:'sheet_id', type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
 				// {label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
