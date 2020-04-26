@@ -8,6 +8,7 @@ class WorkflowActivityLog extends Model
 {
     protected $table = 'workflow_activity_log';
     protected $fillable = ['workflow_instance_id','workflow_submission_id','user_id','start_state','action','end_state','data','status'];
+    protected $casts = ['data'=>'array'];
 
     public function workflowInstance() {
         return $this->belongsTo(WorkflowInstance::class);
