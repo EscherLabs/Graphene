@@ -352,7 +352,7 @@ class WorkflowSubmissionActionController extends Controller {
                         $file->delete();
                     }
                 break;
-                case "purge_data":
+                case "purge_fields_by_name":
                     // this is a "poor man" implementation of "Purge Protected" that clears all 
                     // form values of a given name throughout the workflow history 
                     // It isn't particularly smart, and doesn't look at the form definition at all.
