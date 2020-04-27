@@ -26,12 +26,14 @@ use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use App\Libraries\JSExecHelper;
+use App\Libraries\ResourceService;
 use \Ds\Vector;
 use Storage;
 
 class WorkflowSubmissionActionController extends Controller {
     public function __construct() {
         $this->customAuth = new CustomAuth();
+        $this->resourceService = new ResourceService($this->customAuth);
     }
 
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
@@ -310,12 +312,12 @@ class WorkflowSubmissionActionController extends Controller {
 
     private function executeTasks($tasks, $data, $workflow_submission){
         $m = new \Mustache_Engine;
+
         foreach($tasks as $task){
-            if(!isset($task->data)){
-                $task->data = [];
-            } else {
-                foreach($task->data as $key=>$value){
-                    $task->data->{$key} = $m->render($value, $data);
+            $task->data = [];
+            if(isset($task->dataset)){
+                foreach($task->dataset as $datum){
+                    $task->data[$datum->key] = $m->render($datum->value, $data);
                 }
             }
             switch($task->task) {
@@ -352,21 +354,23 @@ class WorkflowSubmissionActionController extends Controller {
                         $file->delete();
                     }
                 break;
-                case "api":
-                    // $httpHelper = new HTTPHelper();
-                    // if(isset($task->endpoint)){
-                    //     $endpoint = Endpoint::find((int)$task->endpoint);
-                    //     $url = $m->render($endpoint->config->url . $task->url, $data);
-                    //     if ($endpoint->type == 'http_no_auth') {
-                    //         $response = $httpHelper->http_fetch( $url,"POST",$task->data);
-                    //     } else if ($endpoint->type == 'http_basic_auth') {
-                    //         $response = $httpHelper->http_fetch($url,"POST",$task->data,$endpoint->config->username, $endpoint->getSecret());
-                    //     } else {
-                    //         abort(505,'Authentication Type Not Supported');
-                    //     }
-                    // }else{
-                    //     $response = $httpHelper->http_fetch(  $m->render($task->url, $data),"POST",$task->data);
-                    // }
+                case "resource":
+
+                    $workflow_instance = WorkflowInstance::where('id', '=',$workflow_submission->workflow_instance_id)->first();
+                    if(!is_null($workflow_instance)) {
+                          
+                        if(isset($task->verb)){
+                            $data['verb'] = $task->verb;
+                        }                    
+                        if(isset($task->data)){
+                            $data['request'] = $task->data;
+
+                        }
+
+                        $data = $this->resourceService->get_data_int($workflow_instance, $task->resource, $data);
+                        // dd($data);
+                    }
+
                 break;
                 // case "data":
                 // break;

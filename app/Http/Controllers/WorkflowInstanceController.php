@@ -22,13 +22,14 @@ use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
+use App\Libraries\ResourceService;
 
 class WorkflowInstanceController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('run','fetch', 'get_data');
-
         $this->customAuth = new CustomAuth();
+        $this->resourceService = new ResourceService($this->customAuth);
     }
 
     public function list_all_workflow_instances(Request $request) {
@@ -185,6 +186,7 @@ class WorkflowInstanceController extends Controller
                             "workflow"=>$myWorkflow,
                             "workflow_id"=>$myWorkflow->id,
                             "widgetType"=>"Workflow",
+                            "resources"=>$this->fetch($myWorkflow,$request),
                             "container"=>true
                         ]],
                     []],
@@ -313,5 +315,52 @@ class WorkflowInstanceController extends Controller
         }
         return $submissions;
     }
+
+
+
+    /* ----- section Borrowed from AppInstance  - refactor to use common code ----- */
+
+
+    public function fetch(WorkflowInstance $workflow_instance, Request $request) {
+        if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+            $this->authorize('fetch' ,$workflow_instance);
+        } else { /* User is not Authenticated */
+            $current_user = new User;
+            if (is_null($workflow_instance)) { abort(403); }
+        }
+
+        if (!$workflow_instance->public) {
+            $this->authorize('get_data', $workflow_instance);
+        }
+
+        return $this->resourceService->fetch($workflow_instance, $request->all());
+    }
+
+    public function get_data(WorkflowInstance $workflow_instance, $endpoint_name, Request $request) {
+
+        if (!$workflow_instance->public) {
+            $this->authorize('get_data', $workflow_instance);
+        }
+        $data = $this->resourceService->get_data_int($workflow_instance,$endpoint_name, $request->all());
+
+        // $data = self::get_data_int($workflow_instance, $endpoint_name, $request);
+
+        if (is_array($data['content']) || is_object($data['content'])) {
+            $content_type = 'application/json';
+            $data['content'] = json_encode($data['content']);
+        } else if (is_bool($data['content']) || is_numeric($data['content'])) {
+            $content_type = 'application/json';
+            $data['content'] = (string)$data['content'];
+        } else {
+            $content_type = 'text/plain';
+        }
+        return response($data['content'], $data['code'])->header('Content-Type', $content_type);
+    }
+
+    /* ----- End section from AppInstance ----- */
+
+
+
 
 }

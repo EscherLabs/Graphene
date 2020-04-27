@@ -26,14 +26,22 @@ $.ajax({
 						fromNow:moment(item.updated_at).fromNow()
 					}
 				})
-				new GrapheneDataGrid({
+				mygrid = new GrapheneDataGrid({
 					
 					actions:[{type:"info",name:"d_csv",label:'<i class="fa fa-download"></i> Download'}],
-					autoSize:10,name:"workflow_submissions",schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"},{label:"State",name:"state"},{label:"Status",name:'status'},{label:"Assigned",template:"{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}}"}],data:data,download:false,upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
+					autoSize:10,name:"workflow_submissions",schema:[{label:"Name",template:"{{attributes.user.first_name}} {{attributes.user.last_name}}"},{name:"created_at",label:"Created",template:"{{attributes.created_at.fromNow}}"},{name:"updated_at",label:"Last Action",template:"{{attributes.updated_at.fromNow}}"},{label:"State",name:"state"},{label:"Status",name:'status',type:"select",options:[{label:"Closed",value:"closed"},{label:"Open",value:"open"}]},{label:"Assigned",template:"{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}}"}],data:data,download:false,upload:false,el:document.body.querySelector('#table')}).on('click',function(e){
 					document.location = "/workflows/report/"+e.model.attributes.id;
 				}.bind(this)).on('d_csv',function(e){
 					document.location = "/api/workflowinstances/"+resource_id+"/csv"
 				})
+				mygrid.state.set(_.extend({},mygrid.state.get(),{filters:{status:'open'}}))
+				customFilter = function(status){
+					$('[data-status]').removeClass('panel-primary');
+					mygrid.state.set(_.extend({},mygrid.state.get(),{filters:{status:status}}))
+					$('[data-status="'+status+'"]').addClass('panel-primary');
+				}
+				document.body.querySelector('#table').parentNode.insertBefore(gform.create('<div style="    margin-top: 40px;margin-bottom: -20px;" class="row"><div class="col-sm-2 hidden-xs"><div class="panel panel-default panel-primary" data-status="open" onClick="customFilter(\'open\')"> <div class="panel-heading"> <h3 class="panel-title">Open</h3> </div> <div class="panel-body"><center>'+mygrid.find({status:'open'}).length+'</center></div></div> </div><div class="col-sm-2 hidden-xs"><div class="panel panel-default" data-status="closed" onClick="customFilter(\'closed\')"> <div class="panel-heading"> <h3 class="panel-title">Closed</h3> </div> <div class="panel-body"><center>'+mygrid.find({status:'closed'}).length+'</center></div> </div></div></div>'),document.body.querySelector('#table'))
+				mygrid.fixStyle();
 			}.bind(this)
 		})
 }})

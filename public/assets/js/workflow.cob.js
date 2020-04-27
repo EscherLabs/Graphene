@@ -18,7 +18,52 @@ myconditions=[
 
 	
 ]
+displayFields = _.map([
 
+	{type: 'number', label: 'Size', name: 'size',min:1,parse:[{type:"requires",name:"size"}],show:[{name:"type",value:['textarea','select','radio'],type:"matches"}]},
+	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
+	{type: 'switch', label: 'Force New Row {{#value}}- <span class="text-success">Yes</span>{{/value}}', name: 'forceRow',show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],parse:[{type:"requires"},{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],format:{label:''}},
+
+	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
+		return parseInt(e.value);
+	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
+			return parseInt(e.initial.value||12)
+	} },
+
+	{type: 'select', label: 'Offset',value:0, name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)",value:function(e){
+		return parseInt(e.value);
+	}},parse:[{type:"not_matches",name:"columns",value:12},{type:"not_matches",value:0}],show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],value:function(e){
+		return parseInt(e.initial.value||0)
+	}},	
+	
+	
+	
+	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
+
+	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
+		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
+		{type: 'number', label: 'Maximum', name: 'max',placeholder:5},
+
+
+		// {type: 'fieldset',columns:12, label: 'Append', name: 'append',fields:[
+		// 	{type: 'radio',size:0, label: 'Enable', name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
+		// 	{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
+		// ]},		
+		{ type: 'fieldset',columns:12, label: 'Duplicate', name: 'duplicate',fields:[
+			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
+			{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
+		]},	
+		{ type: 'fieldset',columns:12, label: 'Remove', name: 'remove',fields:[
+			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
+			{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
+		]},
+	]},
+	// {type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]}
+
+],function(item){
+	item.target = "#collapseDisplay .panel-body";
+	return item;
+})
 baseFields = _.map([
 	{type: 'text', required: true, title: 'Field Label', name: 'label'},
 	{type: 'text', label: 'Name', name: 'name'},
@@ -58,6 +103,7 @@ baseFields = _.map([
 	{type: 'switch', label: "",columns:4, name: 'minMaxType',show:[{type:"matches",name:"type",value:"date"}],parse:false,options:[{label:"Date",value:false},{label:"Field",value:true}]},
 	
 	{type: 'textarea',columns:12, label: 'Instructions', name: 'help',parse:[{type:"requires"}],show:[{name:"type",value:['output'],type:"not_matches"}]},
+	{type: 'textarea',columns:12, label: 'More Information', name: 'info',parse:[{type:"requires"}]},
 	{type: 'checkbox', label: 'Multiple Selections', name: 'multiple',min:1,show:[{name:"type",value:['select','radio'],type:"matches"}]},
 	{type: 'number', label: 'Limit Selections',parse:[{type:"requires"}],placeholder:"No Limit", name: 'limit',min:1,show:[{name:"type",value:['select','radio'],type:"matches"},{name:"multiple",value:true,type:"matches"}]},
 	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{name:"type",value:['select','radio'],type:"not_matches"},{type:"requires"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]},
@@ -66,51 +112,17 @@ baseFields = _.map([
 ],function(item){
 	item.target = "#collapseBasic .panel-body";
 	return item;
-}).concat(_.map([
-
-	{type: 'number', label: 'Size', name: 'size',min:1,parse:[{type:"requires",name:"size"}],show:[{name:"type",value:['textarea','select','radio'],type:"matches"}]},
-	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
-	{type: 'switch', label: 'Force New Row {{#value}}- <span class="text-success">Yes</span>{{/value}}', name: 'forceRow',show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],parse:[{type:"requires"},{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],format:{label:''}},
-
-	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
-		return parseInt(e.value);
-	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
-			return parseInt(e.initial.value||12)
-	} },
-
-	{type: 'select', label: 'Offset',value:0, name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)",value:function(e){
-		return parseInt(e.value);
-	}},parse:[{type:"not_matches",name:"columns",value:12},{type:"not_matches",value:0}],show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],value:function(e){
-		return parseInt(e.initial.value||0)
-	}},	
-	
-	
-	
-	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
-
-	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
-		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
-		{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
-	]},
-	// {type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]}
-
-],function(item){
-	item.target = "#collapseDisplay .panel-body";
-	return item;
-})
-
-
-)
+}).concat(displayFields)
 minCond = [
-	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
+	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"/show",value:true}],options:		
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"/show",value:['other'],type:"matches"}]},
 
-	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
+	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"/edit",value:true}],options:		
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"/edit",value:['other'],type:"matches"}]},
 
 ]
 baseCond =minCond.concat([
@@ -177,9 +189,7 @@ baseConditions = baseCond.concat(_.map([
 			return !!field.parent.index;
 		}}]},
 		{name:'type',label:'Type',type:'select',options:[
-		
 			{type:'optgroup',options:['none','matches','date','valid_url','valid_email','length','numeric','pattern','custom']}
-	
 		]
 	},
 
@@ -204,9 +214,9 @@ baseConditions = baseCond.concat(_.map([
 
 if(typeof workflow == 'undefined'){
 	baseConditions = baseConditions.concat(_.map([
-		{type: 'textarea', label: 'Template', name: 'template',columns:12,parse:[{type:"requires"}]},
+		{type: 'textarea', label: 'DataGrid Template', name: 'template',columns:12,parse:[{type:"requires"}]},
 
-		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
+		{type: 'table', label: 'Meta Data', array: {min:1,max:100},columns:12,parse:[{type:"requires"}],format:{template:"{{value.key}}:{{value.value}}"}, name: 'data', 
 		fields: [
 			{label: 'Key', name:"key",parse:[{type:"requires"},{type:"requires",name:"value"}]},
 			{label: 'Value', name:"value",parse:[{type:"requires"},{type:"requires",name:"key"}]}
@@ -278,7 +288,6 @@ gformEditor = function(container){
 			gform.instances.editor.destroy();
 		}
 		$(opts.formTarget).html(gform.renderString(accordion))
-
 		$('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
 		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
 		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
@@ -293,6 +302,9 @@ gformEditor = function(container){
 
 
 		var mygform = new gform(formConfig,$(opts.formTarget)[0] ||  $(container.elementOf(this))[0]);
+		mygform.onGet = function(data){
+			return data;
+		}
 		mygform.on('change:label',function(e){
 			if(e.field.name == 'label' && e.form.get('name') == ""){
 				e.form.find('name').update({placeholder:e.form.get('label').toLowerCase().split(' ').join('_')})
@@ -389,7 +401,7 @@ Cobler.types.input = function(container) {
 		{label: 'Output', value: 'output'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
-		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires",name:"/format.input"}], fields:[
+		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires"}], fields:[
 			{name:"input",type:"smallcombo",options:[
 				{label:"Datetime",value:"MM/DD/YYYY h:mm A"},
 				{label:"Date",value:"MM/DD/YYYY"},				
@@ -399,7 +411,8 @@ Cobler.types.input = function(container) {
 				{label:"Month/Year",value:"MM/YYYY"},
 				{label:"Day",value:"MM/DD"}
 
-			],label:"Date Format",parse:[{type:"requires",name:"input"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'}}
+			],label:"Date Format",parse:[{type:"requires"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'}}
+			,{name:"display",label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}
 
 		] }
 	])
@@ -421,6 +434,7 @@ Cobler.types.collection = function(container) {
 		// if(typeof temp !== 'undefined') {
 		// 	temp.selected = true;
 		// }
+		debugger;
 		return gform.render(item.type, _.extend({},myform.default,options));
 	}
 	function get() {		
@@ -473,13 +487,15 @@ Cobler.types.collection = function(container) {
 			{label: 'Dropdown', value: 'select'},
 			{label: 'List', value: 'radio'},
 			{label: 'Combobox', value: 'smallcombo'},
+			
+			// {label: 'Scale', value: 'scale'},
+			{label: 'Range', value: 'range'},
+
 			{label: 'User', value: 'user'},
 			{label: 'User Email', value: 'user_email'},
 			{label: 'Groups', value: 'Groups'},
 
 			{label: 'File', value: 'files'},
-			// {label: 'Scale', value: 'scale'},
-			{label: 'Range', value: 'range'},
 			// {label: 'Grid', value: 'grid'},
 		]}
 
@@ -496,10 +512,10 @@ Cobler.types.collection = function(container) {
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"Resource",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
 					if(e.event == 'initialized'){
 						var result = "object";
-						if(typeof e.initial.parent.value['max'] !== 'undefined'){
+						if(typeof e.initial.parent.initialValue['max'] !== 'undefined' && !isNaN(e.initial.parent.initialValue['max'])){
 							result = "int";
 						}
-						if(typeof e.initial.parent.value['path'] !== 'undefined'){
+						if(typeof e.initial.parent.initialValue['path'] !== 'undefined' &&  e.initial.parent.initialValue['path'].length){
 							result = "string";
 						}
 						
@@ -520,7 +536,7 @@ Cobler.types.collection = function(container) {
 				{type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires"}], fields:[
 					{name:"label",label:"Label",parse:[{type:"requires"}]},
 					{name:"value",label:"Value",parse:[{type:"requires"}]},
-					{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"/type"}]}
+					{name:"display",label:"Display",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
 					// {name:"Title",label:"title"}
 				] },
 				{type: 'select',other:true, columns:12, label:'Show the Options <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
@@ -606,18 +622,26 @@ Cobler.types.bool = function(container) {
 		set: set,
 	}
 }
-
+function clean(field){
+	var temp = _.omit(field,'widgetType','editable');
+	if(typeof temp.fields !== 'undefined'){
+		temp.fields = _.map(temp.fields,function(field){
+			return clean(field);
+		})
+	}
+	return temp;
+}
 Cobler.types.section = function(container) {
 	function render() {
 		var temp = get();
 
 		var content = "";
 		_.each(temp.fields,function(e){
+			
 			var nTemp = new Cobler.types[gform.types[e.type||'text'].base]()
 			nTemp.set(e);
 			content += nTemp.render()
 		})
-		debugger;
 		var html = $(gform.render('_fieldset', _.extend({},myform.default,temp)));
 		html.find('fieldset').append(content)
     	return html.html();
@@ -631,7 +655,15 @@ Cobler.types.section = function(container) {
 		return item;
 	}
 	function toJSON() {
-		return _.omit(get(),'widgetType','editable')
+		
+		// var temp = _.omit(get(),'widgetType','editable');
+		// if(0 in temp.fields){
+		// 	temp.fields = _.map(temp.fields,function(field){
+		// 		return _.omit(field,'widgetType','editable');
+		// 	})
+		// }
+
+		return clean(get());
 	}
 	function set(newItem) {
 		var fields = item.fields||newItem.fields;
@@ -650,22 +682,20 @@ Cobler.types.section = function(container) {
 			{label: 'Template', value: 'template'},
 			{label: 'Table', value: 'table'},
 			// {label: 'Scale', value: 'scale'},
-			{label: 'Grid', value: 'grid'},
+			// {label: 'Grid', value: 'grid'},
 		]},
-		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Group Label', name: 'label'},
+		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Section Label', name: 'label'},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
-		{target: "#collapseBasic .panel-body", type: 'checkbox',format:{label:''}, label: 'Allow duplication', name: 'array'},
+		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'/type',value:"template"}],parse:[{type:"requires"}], fields:[
+			{name:"display",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}
 
-		{target: "#collapseBasic .panel-body", type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"}],fields:[
-			{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
-			{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
-		]},
+		] },
 		// {target:"#collapseDisplay .panel-body", type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
 
 		{target: "#display",columns:9, type:"button",modifiers:"btn btn-default pull-left margin-bottom",label:"Manage Section",action:"manage",name:"manage",show:[{type:"test",name:"manage",test:function(e){
             return !e.owner.options.nomanage;
 		}}]}
-	].concat(baseCond)
+	].concat(baseCond).concat(displayFields)
 	return {
 		fields: fields,
 		render: render,
@@ -777,7 +807,7 @@ Events
   <div class="panel-heading" role="tab" id="headingGrid">
     <h4 class="panel-title">
       <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseGrid" aria-expanded="false" aria-controls="collapseGrid">
-Grid
+Other
       </a>
     </h4>
   </div>

@@ -64,11 +64,9 @@ renderBuilder = function(){
         case "radio":
         case "scale":
         case "range":
-        case "grid":
+        // case "grid":
         case "user":
-        case "user_email":
         case "groups":
-        case "files":
         case "smallcombo":
           temp.fields[i].widgetType = 'collection';
           break;
@@ -77,6 +75,8 @@ renderBuilder = function(){
           temp.fields[i].widgetType = 'bool';
           break;
         case "fieldset":
+        case "table":
+        case "template":
         case "grid":
           temp.fields[i].widgetType = 'section';
           break;
@@ -493,7 +493,7 @@ function load(workflow_version) {
         {label:"Group",value:"group"},
         {label:"User",value:"user"},
         {label:"Email",value:"email"},
-        {label:"Endpoint",value:"endpoint"}
+        // {label:"Endpoint",value:"endpoint"}
       ]}
     ]}
   ]}
@@ -999,15 +999,19 @@ gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),f
   return {value:"method_"+i,label:item}
 }));
 var taskForm = [
-  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"},{value: "purge_files", label: "Purge All Files"}]},
+  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"}]},
   _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
-  // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'api'}]},
+  {name: "resource",columns:8, type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'resource'}]},
+  // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'resource'}]},
+  {name: "verb",columns:4, label: "Verb", type: "select", options: ["GET","POST","PUT","DELETE"],show: [{type: "matches", name: "task", value: 'resource'}]},
   // {name: "url", type: "url",columns:8,placeholder:"\\", label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
-  // {name:"data",}
+  {name:"dataset",label:"Data",type:"fieldset", array:{max:100},show: [{type: "matches", name: "task", value: 'resource'}],fields:[
+    {label:"Key"},
+    {label:"Value"}
+  ]}
 ]
 var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
 
@@ -1170,13 +1174,13 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
-debugger;
+// debugger;
 // instance.configuration.initial
 instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||
 !!_.difference(_.pluck(instance.configuration.map ,'name'),_.pluck(instance.version.code.map,'name')).length ||
 _.reduce(instance.version.code.map,function(config,result,item){
-// debugger;
+debugger;
   var configItem = _.find(config,{name:item.name})
   return result || (typeof configItem.value == 'undefined' || configItem.value == null || configItem.value == "" || configItem.type !== item.type )
 }.bind(null,instance.configuration.map),false)

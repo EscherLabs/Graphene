@@ -5,6 +5,15 @@ use App\App;
 Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
 
+
+// Get Workflow Instance External Resource Data by endpoint_id (POST or GET)
+Route::get('/workflows/fetch/{workflow_instance}/{endpoint}','WorkflowInstanceController@get_data'); // Check Permissions in Controller
+Route::post('/workflows/fetch/{workflow_instance}/{endpoint}','WorkflowInstanceController@get_data'); // Check Permissions in Controller
+// Get all Workflow Data by workflow_instance
+Route::post('/workflows/fetch/{workflow_instance}','WorkflowInstanceController@fetch'); // Check Permissions in Controller
+Route::get('/workflows/fetch/{workflow_instance}','WorkflowInstanceController@fetch'); // Check Permissions in Controller
+
+
 Route::get('/workflows','WorkflowController@summary');
 Route::get('/workflows/assignments','WorkflowController@assignments');
 Route::get('/workflows/history','WorkflowController@history');
@@ -93,4 +102,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/groups/{group}/workflowinstances','GroupController@list_workflowinstances')->middleware('can:list_components,group');
     // Update the order of workflowinstances in a group
     Route::post('/workflowinstances/order/{group}','GroupController@workflowinstances_order')->middleware('can:update,group');
+
+
+
 });

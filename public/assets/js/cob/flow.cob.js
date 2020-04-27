@@ -260,7 +260,6 @@ Cobler.types.Workflow = function(container){
 		},
 		initialize: function(el) {
 
-  
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -276,6 +275,31 @@ Cobler.types.Workflow = function(container){
       _.each(instance.configuration.map,function(item){
         mappedData.datamap[item.name] = item.value;
       })
+      
+      gform.options.rootpath = '/workflows/fetch/'+this.get().workflow_id+'/'
+      _.each(this.get().resources,function(item,name){
+        gform.collections.add(name, _.isArray(item)?item:[])
+      })
+      mappedData.resources = _.reduce(this.get().resources,function(resources, item, name){
+        resources[name] = item;
+        return resources;
+      },{})
+
+    //   Object.defineProperty(mappedData, "resources", {
+    //     // get: (gform.types[field.type].display||function(){
+    //     //     return this.toString();
+    //     // })
+    //     get: function(){
+    //         //(gform.types[field.type].display.bind(this)||
+    //         return [];
+    //         // if('display' in gform.types[field.type]){
+    //         //     return gform.types[field.type].display.call(this)
+    //         // }
+    //         // return this.toString();
+    //     },
+    //     enumerable: true
+    // });
+
 
       var data = {
         _flowstate:instance.configuration.initial,
@@ -345,7 +369,6 @@ Cobler.types.Workflow = function(container){
         this.form = new gform(formSetup, '.g_'+get().guid);
         this.initialstate = gform.instances.f0.get();
       }
-
       update = function(file,response){
         if(typeof response !== 'undefined'){
           var exists = _.find(this.get().current.files,{id:response.id});

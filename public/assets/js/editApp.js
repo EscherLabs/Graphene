@@ -726,7 +726,7 @@ renderBuilder = function(){
         case "radio":
         case "scale":
         case "range":
-        case "grid":
+        // case "grid":
         case "user":
         case "groups":
         case "smallcombo":
@@ -737,6 +737,8 @@ renderBuilder = function(){
           temp.fields[i].widgetType = 'bool';
           break;
         case "fieldset":
+        case "table":
+        case "template":
         case "grid":
           temp.fields[i].widgetType = 'section';
           break;
@@ -833,12 +835,12 @@ mainForm = function(){
       var temp = e.form.get();
       temp.fields = form.fields||[];
       
-      if(typeof temp.actions !== 'undefined' && temp.actions.length == 1 && _.isEmpty(temp.actions[0])){
-        delete temp.actions;
-      }      
-      if(typeof temp.events !== 'undefined' && temp.events.length == 1 && _.isEmpty(temp.events[0])){
-        delete temp.events;
-      }
+      // if(typeof temp.actions !== 'undefined' && temp.actions.length == 1 && _.isEmpty(temp.actions[0])){
+      //   delete temp.actions;
+      // }      
+      // if(typeof temp.events !== 'undefined' && temp.events.length == 1 && _.isEmpty(temp.events[0])){
+      //   delete temp.events;
+      // }
       myform = temp;
       form = myform;
       working_forms[formIndex].content = myform;
