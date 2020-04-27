@@ -310,7 +310,7 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->save();
     }
 
-    private function executeTasks($tasks, $data, $workflow_submission){
+    private function executeTasks($tasks, $data, &$workflow_submission){
         $m = new \Mustache_Engine;
 
         foreach($tasks as $task){
@@ -355,7 +355,6 @@ class WorkflowSubmissionActionController extends Controller {
                     }
                 break;
                 case "resource":
-
                     $workflow_instance = WorkflowInstance::where('id', '=',$workflow_submission->workflow_instance_id)->first();
                     if(!is_null($workflow_instance)) {
                           
@@ -366,16 +365,31 @@ class WorkflowSubmissionActionController extends Controller {
                             $data['request'] = $task->data;
 
                         }
-
                         $data = $this->resourceService->get_data_int($workflow_instance, $task->resource, $data);
-                        // dd($data);
                     }
-
                 break;
-                // case "data":
-                // break;
-                // case "membership":
-                // break;
+                case "purge_fields_by_name":
+                    // this is a "poor man" implementation of "Purge Protected" that clears all 
+                    // form values of a given name throughout the workflow history 
+                    // It isn't particularly smart, and doesn't look at the form definition at all.
+                    $protected_field_names = [];
+                    if(isset($task->field_names) && is_array($task->field_names)){
+                        $protected_field_names = $task->field_names;
+                    }
+                    $workflow_activity_logs = WorkflowActivityLog::where('workflow_submission_id',$workflow_submission->id)->get();
+                    foreach($workflow_activity_logs as $workflow_activity_log) {
+                        $log_data = $workflow_activity_log->data;
+                        array_walk_recursive($log_data, function(&$item, $key) use ($protected_field_names) {
+                            if (is_string($key) && in_array($key,$protected_field_names)) { $item = null; }
+                        });
+                        $workflow_activity_log->update(['data'=>$log_data]);
+                    }
+                    $submission_data = $workflow_submission->data;
+                    array_walk_recursive($submission_data, function(&$item, $key) use ($protected_field_names) {
+                        if (is_string($key) && in_array($key,$protected_field_names)) { $item = null; }
+                    });
+                    $workflow_submission->update(['data'=>$submission_data]);
+                break;
             }
         }
     }
