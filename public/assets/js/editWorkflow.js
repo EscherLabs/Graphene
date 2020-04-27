@@ -1180,7 +1180,6 @@ instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.c
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||
 !!_.difference(_.pluck(instance.configuration.map ,'name'),_.pluck(instance.version.code.map,'name')).length ||
 _.reduce(instance.version.code.map,function(config,result,item){
-debugger;
   var configItem = _.find(config,{name:item.name})
   return result || (typeof configItem.value == 'undefined' || configItem.value == null || configItem.value == "" || configItem.type !== item.type )
 }.bind(null,instance.configuration.map),false)
