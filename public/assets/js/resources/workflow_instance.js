@@ -81,13 +81,13 @@ $.ajax({
 					// ]},
 					
 					{name:"map",label:false,array:{min:data.workflow.code.map.length,max:data.workflow.code.map.length},type:"fieldset",fields:[
-						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.value.type}})</span></h4>'}},
+						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
 
 						{columns:0,name:"type",label:false,edit:false},
 						_.extend({show:[{type:"matches",name:"type",value:"string"}]},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"user"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"group"}],type:"smallcombo",options:'/api/groups',format:{label:"{{name}}",value:"{{id}}"}},valueField),
+						_.extend({show:[{type:"matches",name:"type",value:"user"}],type:"user"},valueField),
+						_.extend({show:[{type:"matches",name:"type",value:"email"}],type:"user_email"},valueField),
+						_.extend({show:[{type:"matches",name:"type",value:"group"}],type:"group"},valueField),
 						_.extend({show:[{type:"matches",name:"type",value:"endpoint"}],type:"select",options:'/api/groups/'+data.group_id+'/endpoints',format:{label:"{{name}}",value:"{{id}}"}},valueField),
 					]}
 				]}
