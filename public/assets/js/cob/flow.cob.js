@@ -359,6 +359,10 @@ Cobler.types.Workflow = function(container){
         formSetup.actions.push(action);
       });
       formSetup.methods = this.methods;
+      if(this.get().workflow.workflow.code.form.resource !== '' && this.get().workflow.workflow.code.form.resource in mappedData.resources){
+        _.extend(formSetup.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);
+      }
+
       if(this.get().current != null){
         this.initialstate = this.get().current.data;
         this.id = this.get().current.id;

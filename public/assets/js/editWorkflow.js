@@ -114,6 +114,7 @@ mainForm = function(){
         ]},
         {name:"files",label:"Allow File uploads",type:"switch",horizontal:true,format:{label:""}},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
+        {name:"resource",label:"Resources",type:"select",options:[{type:"optgroup",options:[{"label":"None",value:""}]},{type:"optgroup",options:'resources'}]},
         {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
         {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
