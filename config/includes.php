@@ -30,6 +30,7 @@ return [
                 ['file'=>'/assets/js/grapheneAppEngine.js'],
                 ['file'=>'/assets/js/vendor/moment.js'],
                 ['file'=>'/assets/js/vendor/math.min.js'],
+                ['file'=>'/assets/js/vendor/popper.min.js'],
                 ['file'=>'/assets/js/vendor/jquery.min.js'],
                 ['file'=>'/assets/js/vendor/colorpicker.min.js'],
                 ['file'=>'/assets/js/vendor/bootstrap.min.js'],

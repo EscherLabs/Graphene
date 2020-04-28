@@ -258,6 +258,7 @@
   <script src='/assets/js/vendor/moment_datepicker.js'></script>
 
   <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
+  <script type='text/javascript' src='/assets/js/vendor/popper.min.js'></script>
   <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
   
   <script type='text/javascript' src='/assets/js/editWorkflow.js'></script>

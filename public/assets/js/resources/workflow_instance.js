@@ -61,7 +61,7 @@ $.ajax({
 					{name: 'id', type:'hidden'}
 				],attributes:data, actions:false, name:'main'})
 
-				var valueField = {columns:8,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
+				var valueField = {columns:8,name:'value',label:"Value",title:'Value <span class="text-success pull-right">{{value}}</span>'}
 				data.configuration = data.configuration||{}
 				r_options = {data:{suppress_emails:data.configuration.suppress_emails,encrypted:data.configuration.encrypted,initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
 					var r = _.find(data.configuration.map,{name:resource.name});
