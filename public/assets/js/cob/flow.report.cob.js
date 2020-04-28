@@ -340,11 +340,14 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   if(typeof this.ractive !== 'undefined'){
                     this.ractive.teardown();
                   }
+                  mappedData.preview = previewForm.toString('_state');
                   mappedData.form = previewForm.toString('_state',true);
                   // mappedData.form = log.data;
                   this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
                   previewForm.on('change',function(e){
                     mappedData.form = e.form.toString('_state',true);
+                    mappedData.preview = previewForm.toString('_state');
+
                     this.ractive.set({form:mappedData.form}) 
                   }.bind(this))
     
