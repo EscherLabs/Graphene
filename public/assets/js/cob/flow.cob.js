@@ -309,7 +309,7 @@ Cobler.types.Workflow = function(container){
       }
       this.methods = [];
       _.each(this.get().workflow.workflow.code.methods,function(item,index){
-        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(data)');
+        eval('this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(data,data.data)');
       }.bind(this))
       var formSetup = {
         "data":data,
@@ -359,8 +359,14 @@ Cobler.types.Workflow = function(container){
         formSetup.actions.push(action);
       });
       formSetup.methods = this.methods;
-      if(this.get().workflow.workflow.code.form.resource !== '' && this.get().workflow.workflow.code.form.resource in mappedData.resources){
+
+      if(this.get().workflow.workflow.code.form.resource !== ''){
+       if(this.get().workflow.workflow.code.form.resource in mappedData.resources){
         _.extend(formSetup.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);
+       }
+       if(this.get().workflow.workflow.code.form.resource in formSetup.methods){
+        _.extend(formSetup.data._state,formSetup.methods[this.get().workflow.workflow.code.form.resource](data));
+       }
       }
 
       if(this.get().current != null){
