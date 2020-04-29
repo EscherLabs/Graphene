@@ -275,7 +275,8 @@ Cobler.types.Workflow = function(container){
       _.each(instance.configuration.map,function(item){
         mappedData.datamap[item.name] = item.value;
       })
-      
+
+      /* problem here  */
       gform.options.rootpath = '/workflows/fetch/'+this.get().workflow_id+'/'
       _.each(this.get().resources,function(item,name){
         gform.collections.add(name, _.isArray(item)?item:[])
@@ -360,6 +361,7 @@ Cobler.types.Workflow = function(container){
       });
       formSetup.methods = this.methods;
 
+      formSetup.data._state = formSetup.data._state ||{};
       if(this.get().workflow.workflow.code.form.resource !== ''){
        if(this.get().workflow.workflow.code.form.resource in mappedData.resources){
         _.extend(formSetup.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);

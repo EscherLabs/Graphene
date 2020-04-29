@@ -7,8 +7,13 @@ Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.s
 
 
 // Get Workflow Instance External Resource Data by endpoint_id (POST or GET)
-Route::get('/workflows/fetch/{workflow_instance}/{endpoint}','WorkflowInstanceController@get_data'); // Check Permissions in Controller
-Route::post('/workflows/fetch/{workflow_instance}/{endpoint}','WorkflowInstanceController@get_data'); // Check Permissions in Controller
+Route::post('/workflows/fetch/{workflow_instance}/all/{workflow_submission}','WorkflowInstanceController@fetch'); // Check Permissions in Controller
+Route::get('/workflows/fetch/{workflow_instance}/all/{workflow_submission}','WorkflowInstanceController@fetch'); // Check Permissions in Controller
+
+
+
+Route::get('/workflows/fetch/{workflow_instance}/{endpoint}/{workflow_submission?}','WorkflowInstanceController@get_data'); // Check Permissions in Controller
+Route::post('/workflows/fetch/{workflow_instance}/{endpoint}/{workflow_submission?}','WorkflowInstanceController@get_data'); // Check Permissions in Controller
 // Get all Workflow Data by workflow_instance
 Route::post('/workflows/fetch/{workflow_instance}','WorkflowInstanceController@fetch'); // Check Permissions in Controller
 Route::get('/workflows/fetch/{workflow_instance}','WorkflowInstanceController@fetch'); // Check Permissions in Controller

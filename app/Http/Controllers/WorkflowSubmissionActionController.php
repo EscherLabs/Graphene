@@ -365,7 +365,7 @@ class WorkflowSubmissionActionController extends Controller {
                             $data['request'] = $task->data;
 
                         }
-                        $data = $this->resourceService->get_data_int($workflow_instance, $task->resource, $data);
+                        $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
                     }
                 break;
                 case "purge_fields_by_name":

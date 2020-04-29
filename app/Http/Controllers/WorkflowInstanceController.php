@@ -186,7 +186,7 @@ class WorkflowInstanceController extends Controller
                             "workflow"=>$myWorkflow,
                             "workflow_id"=>$myWorkflow->id,
                             "widgetType"=>"Workflow",
-                            "resources"=>$this->fetch($myWorkflow,$request),
+                            "resources"=>$this->fetch($myWorkflow,$request,$current),
                             "container"=>true
                         ]],
                     []],
@@ -321,7 +321,9 @@ class WorkflowInstanceController extends Controller
     /* ----- section Borrowed from AppInstance  - refactor to use common code ----- */
 
 
-    public function fetch(WorkflowInstance $workflow_instance, Request $request) {
+    public function fetch(WorkflowInstance $workflow_instance,Request $request,WorkflowSubmission $workflow_submission=null) {
+        // dd($workflow_instance);
+
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
             $this->authorize('fetch' ,$workflow_instance);
@@ -334,15 +336,15 @@ class WorkflowInstanceController extends Controller
             $this->authorize('get_data', $workflow_instance);
         }
 
-        return $this->resourceService->fetch($workflow_instance, $request->all());
+        return $this->resourceService->fetch($workflow_instance, $workflow_submission, $request->all());
     }
 
-    public function get_data(WorkflowInstance $workflow_instance, $endpoint_name, Request $request) {
+    public function get_data(WorkflowInstance $workflow_instance,  $endpoint_name,Request $request, WorkflowSubmission $workflow_submission=null) {
 
         if (!$workflow_instance->public) {
             $this->authorize('get_data', $workflow_instance);
         }
-        $data = $this->resourceService->get_data_int($workflow_instance,$endpoint_name, $request->all());
+        $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission , $endpoint_name, $request->all());
 
         // $data = self::get_data_int($workflow_instance, $endpoint_name, $request);
 

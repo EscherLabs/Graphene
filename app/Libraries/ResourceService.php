@@ -16,6 +16,8 @@ use App\ResourceCache;
 use App\UserOption;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Arr;
+
 // use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
 use App\Libraries\Templater;
@@ -30,10 +32,87 @@ class ResourceService
     public function __construct(CustomAuth $customAuth) {
         // $this->middleware('auth')->except('run','fetch', 'get_data');
         $this->customAuth = $customAuth;
-        // $this->reportingService = new ResourceService($this->customAuth);
     }
 
-    public function fetch(WorkflowInstance $workflow_instance, $request) {
+    private function data(WorkflowInstance $WorkflowInstance, WorkflowSubmission $workflow_submission=null){
+        // dd($workflow_submission);
+        $m = new \Mustache_Engine;
+
+        $state_data = [];
+        $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
+        $WorkflowInstance->findVersion();
+        $flow = $WorkflowInstance->version->code->flow;
+
+        if(!is_null($workflow_submission)){
+            $state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
+                return $value->name === $workflow_submission->state;
+            });     
+            $owner = User::find($workflow_submission->user_id);
+            
+            // $state_data['status'] = $workflow_submission->status;
+
+            $state_data['form'] = $workflow_submission->data = $workflow_submission->data;
+            $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
+
+        }else{
+            $owner = Auth::user();
+            $state = Arr::first($flow, function ($value, $key) use ($WorkflowInstance) {
+                return $value->name === $WorkflowInstance->configuration->initial;
+            });
+
+            $state_data['form'] = (object)array();
+            $state_data['report_url'] = '';
+
+        }
+        // Set New Status (String)
+        if(isset($state->status)){
+            $state_data['status'] = $state->status;
+        }else{
+            $state_data['status'] = 'open';
+        }       
+
+        $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
+        $state_data['owner']['is'] = [];
+        if (isset($previous_state->logic)) {
+            $state_data['actor'] = null;
+            $state_data['owner']['is']['actor'] = false;
+        } else {
+            $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
+            $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
+        }
+        // $state_data['action'] = $request->get('action');
+        $state_data['workflow'] = $WorkflowInstance->workflow->only('name','description');
+        $state_data['workflow']['instance'] = $WorkflowInstance->only('group_id','slug','name','icon','public','configuration');
+        $state_data['workflow']['version'] = $WorkflowInstance->version->only('id','summary','description','stable');
+        // $state_data['comment'] = ($request->has('comment'))?$request->get('comment'):null;
+        // $state_data['previous']['status'] = $previous_status;
+        // $state_data['previous']['state'] = $previous_state->name;
+        // $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
+        // $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
+        // $state_data['was']['initial'] = ($WorkflowInstance->configuration->initial == $state_data['previous']['state']);
+        $state_data['datamap'] = $state_data['assignment'] = [];
+        foreach($WorkflowInstance->configuration->map as $resource){
+            $state_data['datamap'][$resource->name] = $resource->value;
+        }
+        $state_data['state'] = $state->name;
+        if (!isset($state->actions)) { $state->actions = []; }
+        $state_data['actions'] = array_map(function ($ar) {
+            return Arr::only((array)$ar,['label','name','type']);
+        }, $state->actions);
+        $state_data['is']['actionable'] = (count($state_data['actions'])>0);
+        $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
+        $state_data['is']['closed'] = ($state_data['status']=='closed')?true:false;
+        $state_data['is']['initial'] = ($WorkflowInstance->configuration->initial == $state_data['state']);
+        if (isset($state->assignment) && !isset($state->logic)) {
+            $state_data['assignment']['type'] = $state->assignment->type;
+            $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
+        } else {
+            // $workflow_submission->assignment_type = 'internal';
+            $state_data['assignment'] = null;
+        }
+        return $state_data;
+    }
+    public function fetch(WorkflowInstance $workflow_instance,$workflow_submission, $request) {
         // if (Auth::check()) { /* User is Authenticated */
         //      $current_user = Auth::user();
         //      $this->authorize('fetch' ,$workflow_instance);
@@ -42,7 +121,6 @@ class ResourceService
         //      if (is_null($workflow_instance)) { abort(403); }
         //  }
         $workflow_instance->findVersion();
-
         if($workflow_instance != null){
             $data = [
                 // 'user'=>$current_user
@@ -50,7 +128,7 @@ class ResourceService
             if($workflow_instance->workflow->code && isset($workflow_instance->workflow->code->resources) ){
                 foreach($workflow_instance->workflow->code->resources as $source){
                     if ($source->fetch === 'true' || $source->fetch === true) {
-                        $response = $this->get_data_int($workflow_instance, $source->name, $request);
+                        $response = $this->get_data_int($workflow_instance,$workflow_submission, $source->name, $request);
                         $data[$source->name] = $response['content'];
                     }
                 }
@@ -63,8 +141,11 @@ class ResourceService
 
     private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data, $workflow_instance_id) {
         // Derive and Map URL with Mustache
+        // dd($all_data);
+
         $m = new \Mustache_Engine;
         $url = $m->render($endpoint->config->url . $resource_info->path, $all_data);
+        // dd($url);
 
         if ($resource_info->cache === true || $resource_info->cache === 'true') {
             $cache = ResourceCache::where('workflow_instance_id', '=', $workflow_instance_id)
@@ -149,7 +230,8 @@ class ResourceService
         return $values;
     }
 
-    public function get_data_int(WorkflowInstance $workflow_instance, $endpoint_name, $request) {
+    public function get_data_int($workflow_instance, $workflow_submission, $endpoint_name, $request) {
+        
         // session_write_close(); // Don't keep waiting
         if(!isset($workflow_instance->workflow->code)){
             $workflow_instance->findVersion();
@@ -205,9 +287,13 @@ class ResourceService
 
         // dd($resource_endpoint);
 
-        $all_data = ['user'=>$current_user->toArray(),
-                    'request'=>isset($request['request'])?$request['request']:[]];
-
+        // $all_data = ['user'=>$current_user->toArray(),
+        // 'request'=>isset($request['request'])?$request['request']:[],
+        // 'data'=>$this->data($workflow_instance,$workflow_submission)];
+        $all_data = $this->data($workflow_instance,$workflow_submission);
+        $all_data['user'] = $current_user->toArray();
+        $all_data['request'] = isset($request['request'])?$request['request']:[];
+        
         $resource_found = false;
         
         if($workflow_instance->workflow->code && isset($workflow_instance->workflow->code->resources) ){

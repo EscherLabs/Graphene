@@ -68,7 +68,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
       }
 
       $.ajax({
-        url:'/workflows/fetch/'+this.get().options.workflow_instance_id,
+        url:'/workflows/fetch/'+this.get().options.workflow_instance_id+'/all/'+this.get().options.id,
         dataType : 'json',
         type: 'GET',
         success  : function(resources){
@@ -176,6 +176,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }.bind(null,this.get().is_assigned))
               // }
               mappedData.is.actionable = !!mappedData.actions.length
+
+              /* problem here  */
               gform.options.rootpath = '/workflows/fetch/'+mappedData.workflow.instance.id+'/'
 
               _.each(resources,function(item,name){
