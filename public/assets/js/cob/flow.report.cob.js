@@ -304,7 +304,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     user:this.get().user,
                   },
                   "fields":[
-                    {"name":"_state",edit:false,"label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields},
+                    {"name":"_state",edit:false,"label":"","type":"fieldset","fields": this.get().options.workflow_version.code.form.fields},
                     {
                       "type": "hidden",
                       "name": "_flowstate",
