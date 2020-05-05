@@ -404,7 +404,7 @@ class WorkflowSubmissionActionController extends Controller {
 {{#is.open}}This workflow is currently in the "{{state}}" state, and is assigned to 
     {{#assignment.user}}{{first_name}} {{last_name}}.{{/assignment.user}}
     {{#assignment.group}}
-        the {{name}} group ({{#assignment.group.members}}{{first_name}} {{last_name}}, {{/assignment.group.members}})<br>
+        the {{name}} group.<br>
     {{/assignment.group}}
 {{/is.open}}
 {{#is.closed}}This workflow is now CLOSED and in the "{{state}}" state.<br>{{/is.closed}}
