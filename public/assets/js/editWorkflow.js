@@ -159,10 +159,16 @@ mainForm = function(){
       renderBuilder();
     })
   }else{
-    var temp = new Cobler.types[gform.types[form.type].base]();
+    var formConfig = new Cobler.types[gform.types[form.type].base]();
     $("#mainform").html(gform.renderString(accordion))
 
-    $('.panelOptions').toggle(false);
+    $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
+		$('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+		$('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+		$('.panelEvents').toggle(!!_.find(formConfig.fields,{target:"#collapseEvents .panel-body"}));
+    $('.panelGrid').toggle(!!_.find(formConfig.fields,{target:"#collapseGrid .panel-body"}));
     
     new gform({
       name:"editor",
@@ -170,7 +176,7 @@ mainForm = function(){
       data: form,
       actions:[],
       clear:false,
-      fields: temp.fields,
+      fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
       // form = _.extend(form,e.form.get())

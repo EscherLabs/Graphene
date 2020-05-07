@@ -258,7 +258,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                   newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
                   newEvent.state = event.end_state;
-    
            
                   
                   newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
@@ -294,7 +293,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
     
     
-    
+
                 form = {
                   name:"display",
                   actions:[],
@@ -319,8 +318,22 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 
                 form.methods = [];
                 _.each(this.get().options.workflow_version.code.methods,function(item,index){
-                  eval('form.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(form.data)');
+                  eval('form.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(form.data,form.data.data)');
                 }.bind(this))
+
+
+                // var fd = log.data;
+                
+                // if(mappedData.workflow.instance.version.code.form.resource !== ''){
+                //   if(mappedData.workflow.instance.version.code.form.resource in mappedData.resources){
+                //     _.merge(form.data._state,mappedData.resources[mappedData.workflow.instance.version.code.form.resource]);
+                //   }
+                //   if(mappedData.workflow.instance.version.code.form.resource in form.methods){
+                //     _.merge(form.data._state,form.methods[mappedData.workflow.instance.version.code.form.resource]({},data));
+                //   }
+                // }
+                  debugger;
+
                 if(e.currentTarget.dataset.current){
                   var states =  _.map(mappedData.history,function(item){return item.state;})
                   states.push(mappedData.workflow.instance.configuration.initial)
@@ -328,8 +341,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                   gform.collections.update('files',_.where(mappedData.history,{file:true}));
                   previewForm = new gform(form);
+
                   // file = _.find(mappedData.history,{file:true});
-    
                   if(typeof templates.preview == 'undefined'){
                     previewForm.on('change',function(e){
                       $('#previewForm').html(e.form.toString('_state'))
@@ -342,17 +355,19 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   if(typeof this.ractive !== 'undefined'){
                     this.ractive.teardown();
                   }
+
                   mappedData.preview = previewForm.toString('_state');
                   mappedData.form = previewForm.toString('_state',true);
                   // mappedData.form = log.data;
                   this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
+
                   previewForm.on('change',function(e){
                     mappedData.form = e.form.toString('_state',true);
                     mappedData.preview = previewForm.toString('_state');
 
                     this.ractive.set({form:mappedData.form}) 
                   }.bind(this))
-    
+
                   if(mappedData.workflow.instance.version.code.form.files && mappedData.current_state.uploads){
                     $('#myId').html('');
                     this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+mappedData.original.workflow_submission_id+"/files", init: function() {
@@ -461,7 +476,19 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
     
                 if(_.find((_.find(this.get().options.workflow_version.code.flow,{name:this.get().options.state}) || {"actions": []}).actions,{name:e.currentTarget.dataset.event}).form){
-                  formStructure.data._state = this.get().options.data,
+                  formStructure.data._state = this.get().options.data;
+
+                    // formStructure.data._state = formStructure.data._state ||{};
+                    // if(this.get().workflow.workflow.code.form.resource !== ''){
+                    // if(this.get().workflow.workflow.code.form.resource in mappedData.resources){
+                    //   _.merge(formStructure.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);
+                    // }
+                    // if(this.get().workflow.workflow.code.form.resource in formStructure.methods){
+                    //   _.merge(formStructure.data._state,formStructure.methods[this.get().workflow.workflow.code.form.resource](data));
+                    // }
+                    // }
+
+
                   formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
                 }
     
@@ -490,6 +517,17 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   if(typeof e.form.find('_state') !== 'undefined'){
                     formData._state =e.form.get('_state')
                   }
+
+                  formData.data._state = formData.data._state ||{};
+                  // if(this.get().workflow.workflow.code.form.resource !== ''){
+                  //   if(this.get().workflow.workflow.code.form.resource in mappedData.resources){
+                  //     _.merge(formData.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);
+                  //   }
+                  //   if(this.get().workflow.workflow.code.form.resource in formData.methods){
+                  //     _.merge(formData.data._state,formData.methods[this.get().workflow.workflow.code.form.resource](data));
+                  //   }
+                  // }
+
                   $.ajax({
                     url:'/api/workflowsubmissions/'+e.form.get('_id'),
                     dataType : 'json',

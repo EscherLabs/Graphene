@@ -52,7 +52,7 @@ displayFields = _.map([
 		{ type: 'fieldset',columns:12, label: 'Duplicate', name: 'duplicate',fields:[
 			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
 			{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
-		]},	
+		]},
 		{ type: 'fieldset',columns:12, label: 'Remove', name: 'remove',fields:[
 			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
 			{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
@@ -79,7 +79,7 @@ baseFields = _.map([
 	{type: 'smallcombo', label: 'Value Calculation', name: 'method',columns:12,parse:[{type:"requires"},{name:"type",value:['color','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color',,'checkbox','switch','textarea'],type:"not_matches"}],options:[
 		"None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
 	},
-	{type: 'text', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}]},
+	{type: 'text', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color','number','checkbox','switch','textarea','output'],type:"not_matches"}]},
 	{type: 'textarea', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:'textarea',type:"matches"}],show:[{name:"type",value:'textarea',type:"matches"}]},
 	{type: 'color', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{type:"not_matches",name:"value",value:'#000000'},{name:"type",value:'color',type:"matches"}],show:[{name:"type",value:'color',type:"matches"}]},
 	// {type: 'date', label: 'Default value', name: 'value',columns:6,show:[{name:"type",value:'date',type:"matches"}]},
@@ -401,7 +401,7 @@ Cobler.types.input = function(container) {
 		{label: 'Output', value: 'output'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
-		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires"}], fields:[
+		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:["date",'template','output']}],parse:[{type:"requires"}], fields:[
 			{name:"input",type:"smallcombo",options:[
 				{label:"Datetime",value:"MM/DD/YYYY h:mm A"},
 				{label:"Date",value:"MM/DD/YYYY"},				
@@ -411,8 +411,9 @@ Cobler.types.input = function(container) {
 				{label:"Month/Year",value:"MM/YYYY"},
 				{label:"Day",value:"MM/DD"}
 
-			],label:"Date Format",parse:[{type:"requires"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'}}
-			,{name:"display",label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}
+			],label:"Date Format",parse:[{type:"requires"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'},show:[{type:"matches",name:'type',value:["date"]}]}
+			,{name:"display",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}
+			,{name:"value",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["output"],name:"/type"}]}
 
 		] }
 	])
@@ -434,6 +435,7 @@ Cobler.types.collection = function(container) {
 		// if(typeof temp !== 'undefined') {
 		// 	temp.selected = true;
 		// }
+		debugger;
 		return gform.render(item.type, _.extend({},myform.default,options));
 	}
 	function get() {		
