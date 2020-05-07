@@ -332,7 +332,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 //     _.merge(form.data._state,form.methods[mappedData.workflow.instance.version.code.form.resource]({},data));
                 //   }
                 // }
-                  debugger;
+                  // debugger;
 
                 if(e.currentTarget.dataset.current){
                   var states =  _.map(mappedData.history,function(item){return item.state;})
@@ -518,7 +518,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     formData._state =e.form.get('_state')
                   }
 
-                  formData.data._state = formData.data._state ||{};
+                  // formData.data._state = formData.data._state ||{};
                   // if(this.get().workflow.workflow.code.form.resource !== ''){
                   //   if(this.get().workflow.workflow.code.form.resource in mappedData.resources){
                   //     _.merge(formData.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);
