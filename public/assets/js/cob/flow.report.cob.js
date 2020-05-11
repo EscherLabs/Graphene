@@ -291,7 +291,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                 var log = _.find(mappedData.history,{id:parseInt(e.currentTarget.dataset.id),log:true});
     
-    
+                var states =  _.map(mappedData.history,function(item){return item.state;})
+                states.push(mappedData.workflow.instance.configuration.initial)
+                mappedData._flowstate_history = _.uniq(_.compact(states));
     
                 form = {
                   name:"display",
@@ -310,7 +312,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     },{
                       "type": "hidden",
                       "name": "_flowstate_history",
-                      "value": ''
+                      "value": mappedData._flowstate_history
                     }
                   ]
                 }
