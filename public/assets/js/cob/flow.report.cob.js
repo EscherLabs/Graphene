@@ -293,7 +293,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
     
     
-
                 form = {
                   name:"display",
                   actions:[],
@@ -320,7 +319,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 _.each(this.get().options.workflow_version.code.methods,function(item,index){
                   eval('form.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(form.data,form.data.data)');
                 }.bind(this))
-
+                form.events = this.get().options.workflow_version.code.form.events
 
                 // var fd = log.data;
                 
@@ -470,7 +469,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     }
                   ],
                   "fields":[
-                    {"name":"comment","type":"textarea","length":255}
+                    {"name":"comment","label":"Comment","type":"textarea","length":255}
                   ]
                 }
     
