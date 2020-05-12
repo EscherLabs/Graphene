@@ -704,7 +704,7 @@ Cobler.types.WorkflowStatus = function(container){
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"State",name:"state",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
+                        }.bind(null,newdata)},
                       ]
                     }
                   }).on('click',function(e){
@@ -801,7 +801,7 @@ Cobler.types.WorkflowAssignments = function(container){
                         {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
                         {label:"State",name:"state",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
+                        }.bind(null,newdata)},
                       ]
                     }
                   }).on('click',function(e){
@@ -1004,7 +1004,7 @@ Cobler.types.WorkflowHistory = function(container){
                         {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
                         {label:"State",name:"state",type:"select",options:function(data){
                           return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,history),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
+                        }.bind(null,history)},
                       ]
                     }
                   }).on('click',function(e){
