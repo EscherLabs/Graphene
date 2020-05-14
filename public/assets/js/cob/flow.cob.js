@@ -678,11 +678,11 @@ Cobler.types.WorkflowStatus = function(container){
   //usage
   // _.join(array_1,array_2,"id","thing_id","named_as")
 
-                  var getActions = function(item){
-                    item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                  }
+                  // var getActions = function(item){
+                  //   item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
+                  // }
 
-                  assignments = _.each(assignments, getActions)
+                  // assignments = _.each(assignments, getActions)
                   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows you have ever submitted</h5><div id="mygrid"></div>',{data:data,open:newdata,assignments:assignments});
 
                   myGrid = new GrapheneDataGrid({
@@ -777,11 +777,11 @@ Cobler.types.WorkflowAssignments = function(container){
                   
 
 
-                  var getActions = function(item){
-                    item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                  }
+                  // var getActions = function(item){
+                  //   item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
+                  // }
 
-                  assignments = _.each(assignments, getActions)
+                  // assignments = _.each(assignments, getActions)
                   this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows which require your action</h5><div id="assignmentgrid"></div>',{data:data,open:newdata,assignments:assignments});
 
                   assignmentGrid = new GrapheneDataGrid({
