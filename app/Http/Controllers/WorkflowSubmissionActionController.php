@@ -81,6 +81,18 @@ class WorkflowSubmissionActionController extends Controller {
         }
         return false;
     }
+    private function set_first_action_state($state_data) {
+        if (!isset($GLOBALS['first_action_state_data'])) {
+            $GLOBALS['first_action_state_data']=$state_data;
+        } 
+    }
+    private function get_first_action_state() {
+        if (isset($GLOBALS['first_action_state_data'])) {
+            return $GLOBALS['first_action_state_data'];
+        } else {
+            return false;
+        }
+    }
 
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
         if ($this->detect_infinite_loop()) {
@@ -129,7 +141,7 @@ class WorkflowSubmissionActionController extends Controller {
             $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
             $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
         }
-        $state_data['action'] = $request->get('action');
+        $state_data['action'] = Arr::only((array)$action,['label','name','type']);
         $state_data['workflow'] = $myWorkflowInstance->workflow->only('name','description');
         $state_data['workflow']['instance'] = $myWorkflowInstance->only('group_id','slug','name','icon','public','configuration');
         $state_data['workflow']['version'] = $myWorkflowInstance->version->only('id','summary','description','stable');
@@ -227,8 +239,13 @@ class WorkflowSubmissionActionController extends Controller {
         // Update Submission Object In DB
         $workflow_submission->update();
         
-        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action'],$request->get('comment'));
+        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action']['name'],$request->get('comment'));
         
+        // Save off the first "human-initiated" action state, for use
+        // later when we save emails.  Note: This function does nothing
+        // on non-human actions.
+        $this->set_first_action_state($state_data);
+
         // Check if this state has attached logic
         if (isset($state->logic)) {
             if (is_string($state->logic)) {
@@ -260,7 +277,18 @@ class WorkflowSubmissionActionController extends Controller {
         }
         else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
                 !$myWorkflowInstance->configuration->suppress_emails){
-            $this->send_default_emails($state_data);
+
+            // Reset Email State Data to info for last "human" action. (Non-logic)
+            $first_action_state_data = $this->get_first_action_state($state_data);
+            $email_state_data = $state_data;
+            if ($first_action_state_data !== false) {
+                $email_state_data['was'] = $first_action_state_data['was'];
+                $email_state_data['actor'] = $first_action_state_data['actor'];
+                $email_state_data['action'] = $first_action_state_data['action'];
+                $email_state_data['comment'] = $first_action_state_data['comment'];
+                $email_state_data['previous'] = $first_action_state_data['previous'];
+            }
+            $this->send_default_emails($email_state_data);
         }
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
@@ -399,17 +427,17 @@ class WorkflowSubmissionActionController extends Controller {
         // Email Actor and Owner
         $email_body = '
 {{to.first_name}} {{to.last_name}} - <br><br>
-{{#was.initial}}The workflow "{{workflow.name}}" was just submitted by {{owner.first_name}} {{owner.last_name}}.<br>{{/was.initial}}
-{{^was.initial}}An action ({{action}}) was recently taken on the "{{workflow.name}}" workflow by {{actor.first_name}} {{actor.last_name}}{{^owner.is.actor}}, which was originally submitted by / owned by {{owner.first_name}} {{owner.last_name}}{{/owner.is.actor}}.<br>{{/was.initial}}
+{{#was.initial}}The workflow "{{workflow.name}}" was just submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>{{/was.initial}}
+{{^was.initial}}An action ({{action.label}}) was recently taken on the "{{workflow.name}}" workflow by {{actor.first_name}} {{actor.last_name}}{{^owner.is.actor}}, which was originally submitted by / owned by {{owner.first_name}} {{owner.last_name}}{{/owner.is.actor}}.<br><br>{{/was.initial}}
+{{#comment}}The following comment was provided: "{{{comment}}}"<br><br>{{/comment}}
 {{#is.open}}This workflow is currently in the "{{state}}" state, and is assigned to 
-    {{#assignment.user}}{{first_name}} {{last_name}}.{{/assignment.user}}
+    {{#assignment.user}}{{first_name}} {{last_name}}.<br><br>{{/assignment.user}}
     {{#assignment.group}}
-        the {{name}} group.<br>
+        the {{name}} group.<br><br>
     {{/assignment.group}}
 {{/is.open}}
-{{#is.closed}}This workflow is now CLOSED and in the "{{state}}" state.<br>{{/is.closed}}
-{{#comment}}The following comment was provided: "{{{comment}}}"<br>{{/comment}}
-<br>You may view the current status as well as the complete history of this workflow here: {{report_url}}
+{{#is.closed}}This workflow is now CLOSED and in the "{{state}}" state.<br><br>{{/is.closed}}
+You may view the current status as well as the complete history of this workflow here: {{report_url}}
 ';
         $subject = 'Update '.$state_data['workflow']['instance']['name'];
         // Send Email To Owner (if the owner is not also the asignee)
@@ -452,27 +480,28 @@ class WorkflowSubmissionActionController extends Controller {
 {{#assignment.user}}{{first_name}} {{last_name}} - <br><br>{{/assignment.user}}
 {{#assignment.group}}"{{name}}" Group Member - <br><br>{{/assignment.group}}
 You have been assigned the "{{workflow.name}}" workflow, which was  
-submitted by {{owner.first_name}} {{owner.last_name}}.<br>
-{{#is.open}}
-    The workflow is currently OPEN and in the "{{state}}" state.    
-    {{^is.actionable}} There are no actions to take at this time.{{/is.actionable}} 
-    {{#is.actionable}} You may take any of the following actions:{{#actions}}{{label}},{{/actions}}{{/is.actionable}}<br>
-{{/is.open}}
-{{#is.closed}}
-    The workflow is currently CLOSED and in the "{{state}}" state. 
-    {{^is.actionable}} There are no actions to take at this time.{{/is.actionable}} 
-    {{#is.actionable}} You may take any of the following actions:{{#actions}}{{label}},{{/actions}}{{/is.actionable}}<br>
-{{/is.closed}}
+submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
+{{#is.closed}}The workflow is currently CLOSED and in the "{{state}}" state. <br><br>{{/is.closed}}
 {{^was.initial}}
     This workflow was last updated by {{actor.first_name}} {{actor.last_name}} who performed
-    the "{{action}}" action, and moved it into the current "{{state}}" state.  {{#comment}}They also
-    provided the following comment: "{{{comment}}}"{{/comment}}<br>
+    the "{{action.label}}" action.  <br><br>
+    {{#comment}}They also provided the following comment: "{{{comment}}}"<br><br>{{/comment}}
 {{/was.initial}}
+{{^is.actionable}} There are no actions to take at this time.<br><br>{{/is.actionable}} 
+{{#is.actionable}} 
+    {{#actions.1}}
+        You may take any of the following actions: {{#actions}}"{{label}}", {{/actions}}<br><br>
+    {{/actions.1}}
+    {{^actions.1}}
+        You may take the following action: "{{actions.0.label}}"<br><br>
+    {{/actions.1}}
+{{/is.actionable}}
+{{#is.open}}The workflow is currently OPEN and in the "{{state}}" state.<br><br>{{/is.open}}
 {{#is.actionable}}
-    <br>To take actions, or view the history / current status, visit the following: {{report_url}}
+    To take actions, or view the history / current status, visit the following: {{report_url}}<br><br>
 {{/is.actionable}}
 {{^is.actionable}}
-    <br>You may view the full history of this workflow here: {{report_url}}
+    You may view the full history of this workflow here: {{report_url}}<br><br>
 {{/is.actionable}}
 ';
         $subject = 'Assignment '.$state_data['workflow']['instance']['name'];
