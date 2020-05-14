@@ -31,10 +31,15 @@ class WorkflowSubmissionController extends Controller {
     public function __construct() {
         $this->customAuth = new CustomAuth();
     }
-
     public function list_user_workflow_submissions(Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::with('workflow')
+        $submissions = WorkflowSubmission::select(
+                'id','workflow_id','user_id','updated_at',
+                'assignment_type','assignment_id','state','status'
+            )
+            ->with(['workflow'=>function($query){
+                $query->select('id','name');
+            }])
             ->with('user')
             ->where('user_id','=',Auth::user()->id)
             ->where('status',"!=",'new')
@@ -48,7 +53,13 @@ class WorkflowSubmissionController extends Controller {
     }
     public function list_workflow_submission_assignments(Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::with('workflow')
+        $submissions = WorkflowSubmission::select(
+                'id','workflow_id','user_id','updated_at',
+                'assignment_type','assignment_id','state','status'
+            )
+            ->with(['workflow'=>function($query){
+                $query->select('id','name');
+            }])
             ->with('user')
             ->where('status',"=",'open')
             ->where(function($query) {
@@ -60,12 +71,34 @@ class WorkflowSubmissionController extends Controller {
                     $query->where('assignment_type',"=",'group');
                     $query->whereIn('assignment_id',Auth::user()->groups);
                 });
-            })->get();
+            })
+            ->orderBy('updated_at','asc')->get();
         foreach ($submissions as $submission) {
             $submission->getAssignment();
             $submission->getSubmittedAt();
         }
         return $submissions;
+    }
+    public function list_user_workflow_action_history(Request $request) {
+        if (!Auth::check()) { abort(403); }
+        $submissions = WorkflowSubmission::select(
+                'id','workflow_id','user_id','updated_at',
+                'assignment_type','assignment_id','state','status'
+            )
+            ->with(['workflow'=>function($query){
+                $query->select('id','name');
+            }])
+            ->with('user')
+            ->whereHas('logs', function($query) {
+                $query->where('user_id',Auth::user()->id);
+            })
+            ->where('status',"!=",'new')
+            ->orderBy('created_at')->get();
+        foreach ($submissions as $submission) {
+            $submission->getAssignment();
+            $submission->getSubmittedAt();
+        }
+        return $submissions; 
     }
     public function my_assignment_count(Request $request) {
         if (!Auth::check()) { abort(403); }
@@ -97,22 +130,6 @@ class WorkflowSubmissionController extends Controller {
         return $submissions;
 
     }   
-
-    public function list_user_workflow_action_history(Request $request) {
-        if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::with('workflow')
-            ->with('user')
-            ->whereHas('logs', function($query) {
-                $query->where('user_id',Auth::user()->id);
-            })
-            ->where('status',"!=",'new')
-            ->orderBy('created_at')->get();
-        foreach ($submissions as $submission) {
-            $submission->getAssignment();
-            $submission->getSubmittedAt();
-        }
-        return $submissions; 
-    }
     public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) { abort(403); }
         return WorkflowSubmission::where('id','=',$workflow_submission->id)
