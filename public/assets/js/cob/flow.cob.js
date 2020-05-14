@@ -651,77 +651,38 @@ Cobler.types.WorkflowStatus = function(container){
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
+
       $.ajax({
-        url:'/api/workflowinstances/user',
+        url:'/api/workflowsubmissions/user',
         dataType : 'json',
         type: 'GET',
-        success  : function(data){
-          $.ajax({
-            url:'/api/workflowsubmissions/user',
-            dataType : 'json',
-            type: 'GET',
-            success  : function(newdata){
-              $.ajax({
-                url:'/api/workflowsubmissions/user/assignments',
-                dataType : 'json',
-                type: 'GET',
-                success  : function(assignments){
-                  
-
-//  _.mixin({join:function(a,b,a_id,b_id,name){
-//   return _.map(a,function(left){
-//       var search = {};
-//       search[b_id||a_id||'id']=left[a_id||'id']
-//       left[name||(a_id.split('_id').join('')+'s')] =_.where(b,search);return left;})
-//   }})
-
-  //usage
-  // _.join(array_1,array_2,"id","thing_id","named_as")
-
-                  // var getActions = function(item){
-                  //   item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                  // }
-
-                  // assignments = _.each(assignments, getActions)
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows you have ever submitted</h5><div id="mygrid"></div>',{data:data,open:newdata,assignments:assignments});
-
-                  myGrid = new GrapheneDataGrid({
-                    el: "#mygrid",
-                    autoSize: 50, 
-                    data: newdata,
-                    actions:[],
-                    upload:false,download:false,columns:false,
-                    sortBy:"updated_at",
-                    reverse:true,
-                    form:{
-                      fields:[
-                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
-                        }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
-                        {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
-                        {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
-                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
-                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
-                        {label:"State",name:"state",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,newdata)},
-                      ]
-                    }
-                  }).on('click',function(e){
-                      document.location = "/workflows/report/"+e.model.attributes.id;
-                  })
-                  
-
-                }.bind(this)
-                
-              })
-
-
-            }.bind(this)
-
+        success  : function(newdata){
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows you have ever submitted</h5><div id="mygrid"></div>',{open:newdata});
+          myGrid = new GrapheneDataGrid({
+            el: "#mygrid",
+            autoSize: 50, 
+            data: newdata,
+            actions:[],
+            upload:false,download:false,columns:false,
+            sortBy:"updated_at",
+            reverse:true,
+            form:{
+              fields:[
+                {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
+                {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
+                {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
+                {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                {label:"State",name:"state",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.state}))
+                }.bind(null,newdata)},
+              ]
+            }
+          }).on('click',function(e){
+              document.location = "/workflows/report/"+e.model.attributes.id;
           })
-
-        
         }.bind(this)
       })
 		}
@@ -760,174 +721,146 @@ Cobler.types.WorkflowAssignments = function(container){
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
       $.ajax({
-        url:'/api/workflowinstances/user',
+        url:'/api/workflowsubmissions/user/assignments',
         dataType : 'json',
         type: 'GET',
-        success  : function(data){
-          $.ajax({
-            url:'/api/workflowsubmissions/user',
-            dataType : 'json',
-            type: 'GET',
-            success  : function(newdata){
-              $.ajax({
-                url:'/api/workflowsubmissions/user/assignments',
-                dataType : 'json',
-                type: 'GET',
-                success  : function(assignments){
-                  
+        success  : function(assignments){
 
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows which require your action</h5><div id="assignmentgrid"></div>');
+          assignmentGrid = new GrapheneDataGrid({
+            el: "#assignmentgrid",
+            autoSize: 50, 
+            data: assignments,
+            actions:[],upload:false,download:false,columns:false,
+            sortBy:"updated_at",
+            reverse:true,
+            form:{
+              fields:[
+                {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                }.bind(null,assignments),template:"{{attributes.workflow.name}}"},
+                {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div> '},
+                {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
+                {label:"State",name:"state",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.state}))
+                }.bind(null,assignments)},
+              ]
+            }
+          }).on('click',function(e){
+            document.location = "/workflows/report/"+e.model.attributes.id;
+          }).on("*",function(e){
+            if(e.event.startsWith("click_") && !e.model.waiting()){
+              e.model.waiting(true);
+              if(_.find(e.model.attributes.actions,{name:e.event.split("click_")[1]}).form){
+                e.model.waiting(false);
+                new gform(
+                  {
+                    "legend":e.model.attributes.workflow.name,
+                    "data":e.model.attributes.data,
+                    "events":e.model.attributes.workflow_version.code.form.events||{},
+                    "actions": [
+                      {
+                        "type": "cancel",
+                        "name": "submitted",
+                        "action":"canceled",
+                      },
+                      {
+                        "type": "save",
+                        "name": "submit",
+                        "label": "<i class='fa fa-check'></i> Submit"
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate",
+                        "value":e.model.attributes.state
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate_history",
+                        "value": e.model.attributes.state
+                      }
 
-                  // var getActions = function(item){
-                  //   item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                  // }
+                    ],
+                    "fields":[
+                      {"name":"_state","label":false,"type":"fieldset","fields": e.model.attributes.workflow_version.code.form.fields},                                
+                      {"name":"comment","type":"textarea","length":255}
+                    ]
+                  }).on('save',function(e,eForm){
+                    if(!eForm.form.validate(true))return;
 
-                  // assignments = _.each(assignments, getActions)
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows which require your action</h5><div id="assignmentgrid"></div>',{data:data,open:newdata,assignments:assignments});
+                    e.model.waiting(true);
 
-                  assignmentGrid = new GrapheneDataGrid({
-                    el: "#assignmentgrid",
-                    autoSize: 50, 
-                    data: assignments,
-                    actions:[],upload:false,download:false,columns:false,
-                    sortBy:"updated_at",
-                    reverse:true,
-                    form:{
-                      fields:[
-                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
-                        }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
-                        {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
-                        {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div> '},
-                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
-                        {label:"State",name:"state",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,newdata)},
-                      ]
-                    }
-                  }).on('click',function(e){
-                    document.location = "/workflows/report/"+e.model.attributes.id;
-                  }).on("*",function(e){
-                    if(e.event.startsWith("click_") && !e.model.waiting()){
-                      e.model.waiting(true);
-                      if(_.find(e.model.attributes.actions,{name:e.event.split("click_")[1]}).form){
+                    eForm.form.trigger('close')
+                    
+                    $.ajax({
+                      url:'/api/workflowsubmissions/'+e.model.attributes.id,
+                      type: 'PUT',
+                      dataType : 'json',
+                      contentType: 'application/json',
+                      data: JSON.stringify({_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},),
+                      success  : function(e,data){
                         e.model.waiting(false);
-                        new gform(
-                          {
-                            "legend":e.model.attributes.workflow.name,
-                            "data":e.model.attributes.data,
-                            "events":e.model.attributes.workflow_version.code.form.events||{},
-                            "actions": [
-                              {
-                                "type": "cancel",
-                                "name": "submitted",
-                                "action":"canceled",
-                              },
-                              {
-                                "type": "save",
-                                "name": "submit",
-                                "label": "<i class='fa fa-check'></i> Submit"
-                              },{
-                                "type": "hidden",
-                                "name": "_flowstate",
-                                "value":e.model.attributes.state
-                              },{
-                                "type": "hidden",
-                                "name": "_flowstate_history",
-                                "value": e.model.attributes.state
-                              }
+                        
+                        data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
+                        // data.updated_at = moment(data.updated_at).fromNow()
+                        e.model.set(data)
+  
+                        }.bind(null,e)
+                    })
+                  }.bind(null,e)).on('canceled',function(eForm){
+                    eForm.form.trigger('close')
+                  }).modal();
+              }else{
+                new gform(
+                  {
+                    "legend":e.model.attributes.workflow.name,
+                    "data":e.model.attributes.data,
+                    "events":e.model.attributes.workflow_version.code.form.events||{},
+                    "actions": [
+                      {
+                        "type": "cancel",
+                        "name": "submitted",
+                        "action":"canceled",
+                      },
+                      {
+                        "type": "save",
+                        "name": "submit",
+                        "label": "<i class='fa fa-check'></i> Submit"
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate",
+                        "value":e.model.attributes.state
+                      }
+                    ],
+                    "fields":[
+                      {"name":"comment","type":"textarea","length":255}
+                    ]
+                  }).on('save',function(e,eForm){
 
-                            ],
-                            "fields":[
-                              {"name":"_state","label":false,"type":"fieldset","fields": e.model.attributes.workflow_version.code.form.fields},                                
-                              {"name":"comment","type":"textarea","length":255}
-                            ]
-                          }).on('save',function(e,eForm){
-                            if(!eForm.form.validate(true))return;
+                    e.model.waiting(true);
 
-                            e.model.waiting(true);
+                    eForm.form.trigger('close')
+                $.ajax({
+                  url:'/api/workflowsubmissions/'+e.model.attributes.id,
+                  dataType : 'json',
+                  type: 'PUT',
+                  contentType: 'application/json',
+                  data: JSON.stringify({_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]}),
+                  success  : function(e,data){
+                    e.model.waiting(false);
+                    data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
+                    e.model.set(data)
+                    }.bind(null,e)
+                })
 
-                            eForm.form.trigger('close')
-                            
-                            $.ajax({
-                              url:'/api/workflowsubmissions/'+e.model.attributes.id,
-                              type: 'PUT',
-                              dataType : 'json',
-                              contentType: 'application/json',
-                              data: JSON.stringify({_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},),
-                              success  : function(e,data){
-                                e.model.waiting(false);
-                                
-                                data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
-                                // data.updated_at = moment(data.updated_at).fromNow()
-                                e.model.set(data)
-          
-                                }.bind(null,e)
-                            })
-                          }.bind(null,e)).on('canceled',function(eForm){
-                            eForm.form.trigger('close')
-                          }).modal();
-                      }else{
-                        new gform(
-                          {
-                            "legend":e.model.attributes.workflow.name,
-                            "data":e.model.attributes.data,
-                            "events":e.model.attributes.workflow_version.code.form.events||{},
-                            "actions": [
-                              {
-                                "type": "cancel",
-                                "name": "submitted",
-                                "action":"canceled",
-                              },
-                              {
-                                "type": "save",
-                                "name": "submit",
-                                "label": "<i class='fa fa-check'></i> Submit"
-                              },{
-                                "type": "hidden",
-                                "name": "_flowstate",
-                                "value":e.model.attributes.state
-                              }
-                            ],
-                            "fields":[
-                              {"name":"comment","type":"textarea","length":255}
-                            ]
-                          }).on('save',function(e,eForm){
+              }.bind(null,e)).on('canceled',function(eForm){
+                eForm.form.trigger('close')
+              }).modal();
 
-                            e.model.waiting(true);
-
-                            eForm.form.trigger('close')
-                        $.ajax({
-                          url:'/api/workflowsubmissions/'+e.model.attributes.id,
-                          dataType : 'json',
-                          type: 'PUT',
-                          contentType: 'application/json',
-                          data: JSON.stringify({_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]}),
-                          success  : function(e,data){
-                            e.model.waiting(false);
-                            data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
-                            e.model.set(data)
-                            }.bind(null,e)
-                        })
-
-                      }.bind(null,e)).on('canceled',function(eForm){
-                        eForm.form.trigger('close')
-                      }).modal();
-
-                    }
+            }
 
 
-                    }
-                  })
-
-                }.bind(this)
-                
-              })
-
-
-            }.bind(this)
-
+            }
           })
-
         
         }.bind(this)
       })
@@ -966,58 +899,50 @@ Cobler.types.WorkflowHistory = function(container){
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
+
       $.ajax({
-        url:'/api/workflowinstances/user',
+        url:'/api/workflowsubmissions/user/history',
         dataType : 'json',
         type: 'GET',
-        success  : function(data){
-          $.ajax({
-            url:'/api/workflowsubmissions/user/history',
-            dataType : 'json',
-            type: 'GET',
-            success  : function(history){
-                  
+        success  : function(history){
+              
+              var getActions = function(item){
+                item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
+              }
 
-                  var getActions = function(item){
-                    item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                  }
-
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`<h5>These are all of the workflows on which you have ever taken an action</h5><div id="historygrid"></div>`,{});
+              this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`<h5>These are all of the workflows on which you have ever taken an action</h5><div id="historygrid"></div>`,{});
 
 
-                  myGrid = new GrapheneDataGrid({
-                    el: "#historygrid",
-                    autoSize: 50, 
-                    data: history,
-                    actions:[],
-                    upload:false,download:false,columns:false,
-                    sortBy:"updated_at",
-                    reverse:true,
-                    form:{
-                      fields:[
-                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
-                        }.bind(null,history),template:"{{attributes.workflow.name}}"},
-                        {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
-                        {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
-                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
-                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
-                        {label:"State",name:"state",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,history)},
-                      ]
-                    }
-                  }).on('click',function(e){
-                      document.location = "/workflows/report/"+e.model.attributes.id;
-                  })
+              myGrid = new GrapheneDataGrid({
+                el: "#historygrid",
+                autoSize: 50, 
+                data: history,
+                actions:[],
+                upload:false,download:false,columns:false,
+                sortBy:"updated_at",
+                reverse:true,
+                form:{
+                  fields:[
+                    {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                      return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                    }.bind(null,history),template:"{{attributes.workflow.name}}"},
+                    {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                    {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
+                    {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
+                    {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                    {label:"State",name:"state",type:"select",options:function(data){
+                      return _.uniq(_.map(data,function(item){return item.state}))
+                    }.bind(null,history)},
+                  ]
+                }
+              }).on('click',function(e){
+                  document.location = "/workflows/report/"+e.model.attributes.id;
+              })
 
-            }.bind(this)
-
-          })
-
-        
         }.bind(this)
+
       })
+
 		}
 	}
 }
