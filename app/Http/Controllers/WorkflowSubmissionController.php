@@ -34,12 +34,8 @@ class WorkflowSubmissionController extends Controller {
 
     public function list_user_workflow_submissions(Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::with('workflowVersion')
-            ->with('workflow')
+        $submissions = WorkflowSubmission::with('workflow')
             ->with('user')
-            ->with(['logs'=>function($q){
-                $q->orderBy('updated_at','desc');
-            }])
             ->where('user_id','=',Auth::user()->id)
             ->where('status',"!=",'new')
             ->orderBy('updated_at','asc')
@@ -52,12 +48,8 @@ class WorkflowSubmissionController extends Controller {
     }
     public function list_workflow_submission_assignments(Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::with('workflowVersion')
-            ->with('workflow')
+        $submissions = WorkflowSubmission::with('workflow')
             ->with('user')
-            ->with(['logs'=>function($q){
-                $q->orderBy('updated_at','desc');
-            }])
             ->where('status',"=",'open')
             ->where(function($query) {
                 $query->where(function($query) {
@@ -98,7 +90,6 @@ class WorkflowSubmissionController extends Controller {
             ->where('status',"!=",'new')
             ->orderBy('updated_at','asc')
             ->get();
-        // $submission->getAssignment();
         foreach ($submissions as $submission) {
             $submission->getAssignment();
             $submission->getSubmittedAt();
@@ -107,11 +98,13 @@ class WorkflowSubmissionController extends Controller {
 
     }   
 
-    public function list_user_workflow_submission_history(Request $request) {
+    public function list_user_workflow_action_history(Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::with('workflowVersion')
+        $submissions = WorkflowSubmission::with('workflow')
             ->with('user')
-            ->with('workflow')
+            ->whereHas('logs', function($query) {
+                $query->where('user_id',Auth::user()->id);
+            })
             ->where('status',"!=",'new')
             ->orderBy('created_at')->get();
         foreach ($submissions as $submission) {

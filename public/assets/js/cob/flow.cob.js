@@ -683,7 +683,7 @@ Cobler.types.WorkflowStatus = function(container){
                   }
 
                   assignments = _.each(assignments, getActions)
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>Your workflows</h5><div id="mygrid"></div>',{data:data,open:newdata,assignments:assignments});
+                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows you have ever submitted</h5><div id="mygrid"></div>',{data:data,open:newdata,assignments:assignments});
 
                   myGrid = new GrapheneDataGrid({
                     el: "#mygrid",
@@ -782,7 +782,7 @@ Cobler.types.WorkflowAssignments = function(container){
                   }
 
                   assignments = _.each(assignments, getActions)
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These workflows waiting for your action</h5><div id="assignmentgrid"></div>',{data:data,open:newdata,assignments:assignments});
+                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows which require your action</h5><div id="assignmentgrid"></div>',{data:data,open:newdata,assignments:assignments});
 
                   assignmentGrid = new GrapheneDataGrid({
                     el: "#assignmentgrid",
@@ -982,7 +982,7 @@ Cobler.types.WorkflowHistory = function(container){
                     item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
                   }
 
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`<h5>These are all of the workflows you have every been involved in</h5><div id="historygrid"></div>`,{});
+                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`<h5>These are all of the workflows on which you have ever taken an action</h5><div id="historygrid"></div>`,{});
 
 
                   myGrid = new GrapheneDataGrid({

@@ -47,7 +47,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/workflowsubmissions/user','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflowsubmissions/user/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
     Route::get('/workflowsubmissions/user/assignments/count','WorkflowSubmissionController@my_assignment_count');
-    Route::get('/workflowsubmissions/user/history','WorkflowSubmissionController@list_user_workflow_submission_history');
+    Route::get('/workflowsubmissions/user/history','WorkflowSubmissionController@list_user_workflow_action_history');
 
     Route::get('/workflowsubmissions/{workflow_submission}/history','WorkflowSubmissionController@workflow_submission_history')->middleware('can:view,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@status')->middleware('can:view,workflow_submission');

@@ -5,9 +5,9 @@ workflow_report.assignments = `
                   </ul>
                   <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="workflows">
-                    <h5>Your workflows</h5><div id="mygrid"></div>
+                    <h5>These are all of the workflows you have ever submitted</h5><div id="mygrid"></div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="assignments">
-                    <h5>These workflows waiting for your action</h5><div id="assignmentgrid"></div>
+                    <h5>These are all of the workflows which require your action</h5><div id="assignmentgrid"></div>
                     </div>
                   </div>`;
