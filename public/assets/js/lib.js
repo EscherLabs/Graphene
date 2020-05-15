@@ -178,12 +178,13 @@ graphene = {
   grid:GrapheneDataGrid,
   apps:{}
 }
+if(typeof Berry !== 'undefined'){
 Berry.validations.is_https = {
     method: function(value) {
         return value.startsWith("https://");
     },
     message: 'Basic Auth Routes must start with "https://"'
-}
+}}
 
 var mime_type_icon_map = {
   // Media
