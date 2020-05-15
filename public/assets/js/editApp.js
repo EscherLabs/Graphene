@@ -802,8 +802,9 @@ mainForm = function(){
         {type: 'fieldset', show:[{name:"events",value:true,type:"matches"}],parse:[{name:"events",value:true,type:"matches"}],label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
       
-          {type: 'text', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
-            "None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
+          {type: 'text', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body"//,
+          // options:[
+          //   "None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
             ,parse:[{name:"event",value:"",type:"not_matches"}]}
         ]},
         {target: "#display",columns:9, type:"button",modifiers:"btn btn-danger pull-right margin-bottom",label:'<i class="fa fa-times"></i> Delete Form',action:"delete",name:"delete",show:[{type:"matches",name:"disabled",value:false}]},
@@ -940,7 +941,7 @@ renderBuilder()
 
 
 setupform = function(index){
-  formIndex = index||formIndex;
+  formIndex = (typeof index !== 'undefined')?index:formIndex;
   myform = working_forms[formIndex].content || {};
   $('#formlist').html(
     gform.renderString(
@@ -1010,5 +1011,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 });
-load(loaded.code);
-orig = $.extend({},loaded);
+$( document ).ready(function() {
+  load(loaded.code);
+  orig = $.extend({},loaded);
+});
