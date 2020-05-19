@@ -50,7 +50,8 @@ return [
                 ['file'=>'/assets/js/vendor/toastr.min.js'],
                 // Include ACE Manually (Doesn't Minify Well)
                 // ['file'=>'/assets/js/vendor/ace/ace.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
-                ['file'=>'/assets/js/vendor/jquery.nivo.slider.min.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
+                // Include Nivo Slider Manually (Doesn't Minify Well)
+                // ['file'=>'/assets/js/vendor/jquery.nivo.slider.min.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
                 ['file'=>'/assets/js/vendor/sortable.js'],
                 ['file'=>'/assets/js/cob/cob.js'],
                 ['file'=>'/assets/js/cob/content.cob.js'],
