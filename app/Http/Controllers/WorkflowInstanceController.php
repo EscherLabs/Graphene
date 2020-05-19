@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Gate;
 use App\WorkflowInstance;
 use App\Workflow;
 use App\WorkflowVersion;
@@ -326,7 +327,15 @@ class WorkflowInstanceController extends Controller
 
         if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
-            $this->authorize('fetch' ,$workflow_instance);
+            if (is_null($workflow_submission)) {
+                // Make sure that the person can fetch the current instance (submission is null)
+                $this->authorize('fetch' ,$workflow_instance);
+            } else {
+                // Make sure that the person can view the requested submission
+                if (Gate::denies('view', $workflow_submission)) {
+                    abort(403);
+                }
+            }
         } else { /* User is not Authenticated */
             $current_user = new User;
             if (is_null($workflow_instance)) { abort(403); }
