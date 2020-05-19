@@ -11,7 +11,8 @@ return [
                 ['file'=>'/assets/css/bootstrap.min.css'],
                 ['file'=>'/assets/css/font-awesome.min.css'],
                 ['file'=>'/assets/css/toastr.min.css'],
-                ['file'=>'/assets/css/nivo-slider.min.css'],
+                // Include Nivo Slider Manually (Doesn't Minify Well)
+                // ['file'=>'/assets/css/nivo-slider.min.css'],
                 ['file'=>'/assets/css/colorpicker.min.css'],
                 ['file'=>'/assets/css/summernote.min.css'],
                 ['file'=>'/assets/js/vendor/dropzone/dropzone.min.css'],
