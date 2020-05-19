@@ -341,9 +341,11 @@ class WorkflowInstanceController extends Controller
             if (is_null($workflow_instance)) { abort(403); }
         }
 
-        if (!$workflow_instance->public) {
-            $this->authorize('get_data', $workflow_instance);
-        }
+        // Public Workflows May not work correctly?  Need to reinvestigate this.
+        // Removing for now.
+        // if (!$workflow_instance->public) {
+        //     $this->authorize('get_data', $workflow_instance);
+        // }
 
         return $this->resourceService->fetch($workflow_instance, $workflow_submission, $request->all());
     }
