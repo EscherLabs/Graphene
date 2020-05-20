@@ -68,6 +68,7 @@ renderBuilder = function(){
         case "user":
         case "group":
         case "smallcombo":
+        case "files":
           temp.fields[i].widgetType = 'collection';
           break;
         case "checkbox":
