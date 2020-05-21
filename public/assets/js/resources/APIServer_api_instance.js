@@ -59,7 +59,7 @@ $.ajax({
 						
 						fields:[
 								{array:{min:resources.length,max:resources.length},label: '', name: 'resources', type: 'fieldset', fields:[
-									{label:false, name: 'name',columns:4, type:'output', format:{value:'<label class="control-label" style="float:right">{{value}}: </lable>'}},
+									{label:false, name: 'name',columns:4, type:'output', format:{value:'<label class="control-label" style="float:right">{{value}}: </label>'}},
 									{name: 'resource',label:false,columns:8, type: 'select', options: '/api/proxy/'+slug+'/resources/type/'+api.environment.type,format:{label:"{{name}}",value:function(item){return item.id;}}},
 									{label:false, name: 'name',columns:0, type:'hidden'}
 								]}			
