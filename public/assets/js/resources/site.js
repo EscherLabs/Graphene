@@ -20,6 +20,7 @@ $.ajax({
 		$('#theme .col-sm-9').berry({fields: [
 			{label: 'Icon', name:'icon', required: true, inline: true},
 			{label: 'CSS', name:'css', type:'ace', inline: true, mode:'ace/mode/css'},
+			{label: 'JavaScript', name:'js', type:'ace', inline: true, mode:'ace/mode/javascript'},
 		],attributes:data.theme, actions:false, name:'theme'})
 
 		$('#cas_config .cas_config_form').berry({fields: [

@@ -72,6 +72,15 @@ class UserDashboardController extends Controller
             ->header('Cache-Control','max-age='.$max_age);
     }
 
+    public function js(Request $request) {
+        $max_age = 604800; // Cache for 7 days
+        $site_js = config('app.site')->select('theme')->first()->theme->js;
+        return response($site_js,200)
+            ->header('Content-Type', 'text/javascript')
+            ->header('Pragma','cache')
+            ->header('Cache-Control','max-age='.$max_age);
+    }
+
     public function heartbeat(Request $request) {
         return ['status'=>true];
     }

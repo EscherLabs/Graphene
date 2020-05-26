@@ -31,7 +31,7 @@ class PortalMigration extends Seeder
             $site->domain = 'grapheneawsdev.escherlabs.com';
             $site->name = 'Graphene AWS';
             $bing_theme = json_decode(file_get_contents(base_path('public/assets/data').'/bing_theme.json'));
-            $site->theme = ['css'=>$bing_theme->css,'icon'=>'cloud'];
+            $site->theme = ['css'=>$bing_theme->css,'icon'=>'cloud', 'js' => ''];
             $site_theme_partials = [];
             foreach($bing_theme->partials as $partial) {
                 $site_theme_partials[$partial->name] = $partial->content;

@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $site = new \App\Site;
         $site->domain = 'graphenedev.local';
         $site->name = 'LocalDev';
-        $site->theme = ['css' => '','icon'=>'file'];
+        $site->theme = ['css' => '','icon'=>'file', 'js' => ''];
         $site->templates = ['main'=>(object)[],'partials'=>(object)[
             'footer'=>''
         ]];

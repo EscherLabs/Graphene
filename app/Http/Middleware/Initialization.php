@@ -48,7 +48,7 @@ class Initialization
                 /* site data has been passed in for creation */
                 if(!empty($request->domain)&& !empty($request->name)){
                     $site = new Site($request->all());
-                    $site->theme = ['css' => '','icon'=>'file'];
+                    $site->theme = ['css' => '','icon'=>'file', 'js' => ''];
                     $site->templates = ['main'=>(object)[],'partials'=>(object)[
                         'footer'=>''
                     ]];

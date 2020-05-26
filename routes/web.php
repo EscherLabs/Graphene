@@ -20,6 +20,7 @@ Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 /***** User Content *****/
 Route::get('/','UserDashboardController@index');
 Route::get('/css','UserDashboardController@css')->middleware('no.save.session');
+Route::get('/js','UserDashboardController@js')->middleware('no.save.session');
 Route::get('/app/{group}/{slug}', 'AppInstanceController@run');
 Route::get('/app/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/link/{link}/{extra?}','LinkController@redirect')->where('extra','(.*)')->middleware('no.save.session');
