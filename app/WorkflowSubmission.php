@@ -23,7 +23,12 @@ class WorkflowSubmission extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
-
+    public function assignment_user() {
+        return $this->belongsTo(User::class,'assignment_id');
+    }
+    public function assignment_group() {
+        return $this->belongsTo(Group::class,'assignment_id');
+    }
     public function logs() {
         return $this->hasMany(WorkflowActivityLog::class);
     }

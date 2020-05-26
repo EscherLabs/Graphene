@@ -60,7 +60,18 @@ class WorkflowSubmissionController extends Controller {
             ->with(['workflow'=>function($query){
                 $query->select('id','name');
             }])
-            ->with('user')
+            ->with(['user'=>function($query){
+                $query->select('id','email','first_name','last_name');
+            }])
+            ->with(['assignment_group'=>function($query){
+                $query->select('id','name','slug')->where('site_id',config('app.site')->id);
+            }])
+            ->with(['assignment_user'=>function($query){
+                $query->select('id','email','first_name','last_name');
+            }])
+            ->with(['logs'=>function($query){
+                $query->select('id','workflow_submission_id','created_at')->oldest();
+            }])
             ->where('status',"=",'open')
             ->where(function($query) {
                 $query->where(function($query) {
@@ -74,8 +85,16 @@ class WorkflowSubmissionController extends Controller {
             })
             ->orderBy('updated_at','asc')->get();
         foreach ($submissions as $submission) {
-            $submission->getAssignment();
-            $submission->getSubmittedAt();
+            // $submission->getAssignment();
+            // $submission->getSubmittedAt();
+            if($submission->assignment_type == "user"){
+                $submission->assignee = $submission->assignment_user;
+            } else {
+                $submission->assignee = $submission->assignment_group;
+            }
+            unset($submission->assignment_user); unset($submission->assignment_group);
+            $submission->submitted_at=$submission->logs[0]->created_at->format('Y-m-d H:i:s');
+            unset($submission->logs);
         }
         return $submissions;
     }
