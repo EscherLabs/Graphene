@@ -182,7 +182,10 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::delete('/sites/{site}','SiteController@destroy')->middleware('can:delete,site');
 
     Route::get('/sites/{site}/admins', 'SiteController@list_admins')->middleware('can:get,site');
-    
+
+    // Look up a site's original template content by template name
+    Route::get('/sites/{site}/originaltemplatecontent/{original_template_name}', 'SiteOriginalTemplateContentController@show')->middleware('can:get,site');
+
     /***** API Users *****/
     Route::get('/api_users','APIUserController@list_all_api_users')->middleware('can:get_all,App\APIUser');
     Route::get('/api_users/{api_user}','APIUserController@show')->middleware('can:get,api_user');

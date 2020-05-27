@@ -18,7 +18,7 @@ var paged = function(selector, options){
     }
     options.attributes[item.key] = item.content; 
   })
-  options.default ={label: false,type:'ace',mode:options.mode || 'ace/mode/handlebars', inlinemode:options.inlinemode}
+  options.default ={label: false,type:options.type||'ace',mode:options.mode || 'ace/mode/handlebars', inlinemode:options.inlinemode}
   this.options = $.extend(true,{editable: true,},options);
   this.active = this.options.items[0].key;
 
@@ -79,7 +79,9 @@ var paged = function(selector, options){
 		  (_.findWhere(this.options.items, {key: this.active}) || this.options.items[0]).disabled || false
 		);
     if(typeof this.berry.fields[this.active] !== 'undefined'){
-      this.berry.fields[this.active].editor.clearSelection();//.instances[0]
+      if(typeof this.berry.fields[this.active].editor !== 'undefined'){
+        this.berry.fields[this.active].editor.clearSelection();
+      }
       this.berry.fields[this.active].focus();
     }
   }.bind(this))

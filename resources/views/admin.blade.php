@@ -1,5 +1,9 @@
 @extends('default.admin')
 
+@section('top_page_styles')
+  <link href="/assets/css/ace-diff.min.css" rel="stylesheet">
+@endsection
+
 @section('content')
   @if(isset($group))
     <h4 class="panel-title" style="position: fixed;left: 200px;right: 0px;top: 50px;background: #f8f8f8;padding: 14px;z-index: 1001;border-bottom: solid 1px #f0f0f0;"><a href="/admin/groups/{{$group->id}}">{{$group->name}} <span class="text-muted">({{$group->slug}})</span></a></h4>
@@ -63,6 +67,7 @@
 @section('end_body_scripts_bottom')
   <script src='/assets/js/paged.js'></script> 
   <script src='/assets/js/vendor/moment.js'></script>
+  <script src="/assets/js/vendor/ace-diff.min.js"></script>
 
   <script src='/assets/js/resources/{{ $resource }}.js'></script> 
 @endsection
