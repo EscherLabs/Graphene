@@ -35,6 +35,7 @@ var paged = function(selector, options){
     var currentItem = _.findWhere(this.options.items, {key: this.active});
     if($(e.currentTarget).hasClass('pages_delete') && !currentItem.disabled){
       currentItem.removed = true;
+      this.active = this.options.items[0].key;
       this.render();
     }else{
       if($(e.currentTarget).hasClass('pages_edit') && !currentItem.disabled){
