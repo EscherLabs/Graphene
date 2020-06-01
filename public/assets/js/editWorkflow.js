@@ -703,7 +703,7 @@ function drawForm(name){
 
 
   formConfig = {
-    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
+    actions:[{target:"#display",type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-left",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
     // legend:"State",
     // sections:"tab",
     clear: false,
