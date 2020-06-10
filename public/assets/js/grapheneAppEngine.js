@@ -260,7 +260,7 @@ function App() {
 					hClass = 'bg-warning';
 					break;
 			}
-			new gform({legend:options.title,modal:{header_class:hClass},fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}]}).modal().on('cancel',function(e){
+			return new gform({legend:options.title,modal:{header_class:hClass},fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}]}).modal().on('cancel',function(e){
 				e.form.dispatch('close');
 				e.form.destroy();
 			});
