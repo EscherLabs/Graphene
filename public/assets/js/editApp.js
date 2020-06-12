@@ -999,7 +999,7 @@ document.addEventListener('DOMContentLoaded', function(){
     new gform({
       actions:[{type:'cancel'},{type:"save",label:'<i class="fa fa-check"></i> Update'}],
       legend:'Edit Form',
-      fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]
+      fields:[{type:'textarea',name:'descriptor',label:false,size:25 }],data:{descriptor:JSON.stringify(myform,null,'\t')}
     }).modal().on('save',function(e){
       myform = JSON.parse(e.form.get('descriptor')); 
       working_forms[formIndex].content = JSON.parse(e.form.get('descriptor'));
