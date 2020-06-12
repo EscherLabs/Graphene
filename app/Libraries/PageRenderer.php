@@ -142,6 +142,7 @@ class PageRenderer {
         }
         $render_data['apps_json'] = json_encode($render_data['apps']);
         $render_data['config_json'] = json_encode($data['config']);
+        $render_data['mobile_order'] = json_encode(isset($data['mobile_order'])?$data['mobile_order']:[]);
 
         /* Determine is Authenticated User Is Group Admin */
         if(isset($render_data['user']) && isset($render_data['user']['content_admin_groups']) && isset($render_data['user']['apps_admin_groups'])){
