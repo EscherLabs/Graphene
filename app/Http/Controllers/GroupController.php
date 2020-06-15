@@ -9,6 +9,7 @@ use App\Page;
 use App\GroupAdmins;
 use App\GroupMembers;
 use App\AppInstance;
+use App\WorkflowInstance;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
@@ -320,5 +321,17 @@ class GroupController extends Controller
             $ai->save();
         }
         return $order;
+    }
+    
+    public function workflowinstances_order(Group $group)
+	{
+        $order = request()->input('order');
+        foreach($order as $item){
+            $wi = WorkflowInstance::find($item['id']);
+            $wi->order = (int) $item['index'];
+            $wi->save();
+        }
+        return $order;
 	}
+
 }
