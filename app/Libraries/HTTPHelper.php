@@ -47,7 +47,6 @@ class HTTPHelper {
         }
         $context = stream_context_create(['http' =>$request_config]);
         $response_data = @file_get_contents($url, false, $context);
-        
         // Failed -- Return 502 Bad Gateway
         if ($response_data === FALSE || !isset($http_response_header)) {
             if (class_exists('Log')) {
@@ -61,6 +60,9 @@ class HTTPHelper {
         foreach($http_response_header as $header) {
             if (stristr($header, 'Content-Type: application/json')) {
                 $response_data = json_decode($response_data,true);
+                if (is_null($response_data)) {
+                    $response_data = ['error'=>'malformed json'];
+                }
             } else if (stristr($header, 'HTTP/')) {
                 $header_exploded = explode(' ',$header);
                 $response_code = $header_exploded[1];
