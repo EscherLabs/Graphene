@@ -100,6 +100,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::put('/workflowinstances/{workflow_instance}','WorkflowInstanceController@update')->middleware('can:update,workflow_instance');
     Route::get('/workflowinstances/{workflow_instance}/pages','WorkflowInstanceController@pages')->middleware('can:update,workflow_instance');
     Route::get('/workflowinstances/{workflow_instance}/submissions','WorkflowSubmissionController@list_instance_workflow_submissions');
+    Route::get('/workflowinstances/{workflow_instance}/user/submissions','WorkflowSubmissionController@list_my_instance_workflow_submissions');
     // Delete an existing workflow instance by workflow_instance_id
     Route::delete('/workflowinstances/{workflow_instance}','WorkflowInstanceController@destroy')->middleware('can:delete,workflow_instance');
 

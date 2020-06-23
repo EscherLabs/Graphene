@@ -151,6 +151,20 @@ class WorkflowSubmissionController extends Controller {
         }
         return $submissions;
     }   
+    public function list_my_instance_workflow_submissions(Request $request, WorkflowInstance $workflow_instance) {
+        if (!Auth::check()) { abort(403); }
+        $submissions = WorkflowSubmission::
+            select('assignment_id','assignment_type','created_at','updated_at','id','state','status','data')
+            ->where('user_id',Auth::user()->id)
+            ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->where('status',"!=",'new')
+            ->orderBy('updated_at','asc')
+            ->get();
+        foreach ($submissions as $submission) {
+            $submission->getSubmittedAt();
+        }
+        return $submissions;
+    }   
 
     public function workflow_submission_history(WorkflowSubmission $workflow_submission, Request $request) {
         if (!Auth::check()) { abort(403); }
