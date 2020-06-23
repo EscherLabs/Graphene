@@ -157,7 +157,6 @@ class WorkflowSubmissionController extends Controller {
             select('assignment_id','assignment_type','created_at','updated_at','id','state','status','data')
             ->where('user_id',Auth::user()->id)
             ->where('workflow_instance_id','=',$workflow_instance->id)
-            ->where('status',"!=",'new')
             ->orderBy('updated_at','asc')
             ->get();
         foreach ($submissions as $submission) {
