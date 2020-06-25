@@ -93,13 +93,14 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     // Lookup specific workflow instance by workflow_instance_id
     Route::get('/workflowinstances/{workflow_instance}','WorkflowInstanceController@show');
-    Route::get('/workflowinstances/{workflow_instance}/csv','WorkflowInstanceController@getcsv');
     // Create a new workflow instance
     Route::post('/workflowinstances','WorkflowInstanceController@create')->middleware('can:create,App\WorkflowInstance');
     // Update an existing workflow instance by workflow_instance_id
     Route::put('/workflowinstances/{workflow_instance}','WorkflowInstanceController@update')->middleware('can:update,workflow_instance');
     Route::get('/workflowinstances/{workflow_instance}/pages','WorkflowInstanceController@pages')->middleware('can:update,workflow_instance');
     Route::get('/workflowinstances/{workflow_instance}/submissions','WorkflowSubmissionController@list_instance_workflow_submissions');
+    Route::get('/workflowinstances/{workflow_instance}/csv','WorkflowInstanceController@getcsv');
+    Route::get('/workflowinstances/{workflow_instance}/grid','WorkflowInstanceController@getgrid');
     Route::get('/workflowinstances/{workflow_instance}/user/submissions','WorkflowSubmissionController@list_my_instance_workflow_submissions');
     // Delete an existing workflow instance by workflow_instance_id
     Route::delete('/workflowinstances/{workflow_instance}','WorkflowInstanceController@destroy')->middleware('can:delete,workflow_instance');

@@ -155,6 +155,7 @@ class WorkflowSubmissionController extends Controller {
         if (!Auth::check()) { abort(403); }
         $submissions = WorkflowSubmission::
             select('assignment_id','assignment_type','created_at','updated_at','id','state','status','data')
+            ->with('files')
             ->where('user_id',Auth::user()->id)
             ->where('workflow_instance_id','=',$workflow_instance->id)
             ->orderBy('updated_at','asc')

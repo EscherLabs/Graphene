@@ -24,6 +24,7 @@ use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use App\Libraries\ResourceService;
+use Illuminate\Support\Arr;
 
 class WorkflowInstanceController extends Controller
 {
@@ -305,6 +306,48 @@ class WorkflowInstanceController extends Controller
         }
         return response($csv,200)->header('Content-Type','text/csv')
             ->header('Content-Disposition','attachment; filename="'.$workflow_instance->name.'_workflow.csv"');
+    }
+
+    public function getgrid(WorkflowInstance $workflow_instance, Request $request) {
+        $all_fields = [
+            ["type"=>"options","name"=>"workflow.status","label"=>"Status","options"=>["open",'closed']],
+            ["type"=>"options","name"=>"workflow.state","label"=>"State","options"=>Arr::pluck($workflow_instance->version->code->flow,'name')],
+            ["type"=>"text","name"=>"workflow.unique_id","label"=>"Unique ID",],
+            ["type"=>"text","name"=>"workflow.first_name","label"=>"First Name",],
+            ["type"=>"text","name"=>"workflow.last_name","label"=>"Last Name",],
+            ["type"=>"text","name"=>"workflow.email","label"=>"Email",],
+            ["type"=>"date","name"=>"workflow.created_at","label"=>"Created","format"=> ["input"=> "YYYY-MM-DD h:mm:ss"]],
+            ["type"=>"date","name"=>"workflow.updated_at","label"=>"Updated","format"=> ["input"=> "YYYY-MM-DD h:mm:ss"]],
+        ];
+        $submissions = WorkflowSubmission::with('workflowVersion')
+            ->with('user')
+            ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->where('status',"!=",'new')
+            ->orderBy('created_at')->get();
+        $all_submissions = [];
+        $all_keys = [];
+        $csv = '';
+        foreach($submissions as $submission) {
+            $flat = [];
+            $this->flatten($submission->data,$flat);
+            $workflow_metadata = [
+                'workflow.status' => $submission->status,
+                'workflow.state' => $submission->state,
+                'workflow.unique_id' => $submission->user->unique_id,
+                'workflow.first_name' => $submission->user->first_name,
+                'workflow.last_name' => $submission->user->last_name,
+                'workflow.email' => $submission->user->email,
+                'workflow.created_at' => $submission->created_at->format('Y-m-d H:i:s'),
+                'workflow.updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
+            ];
+            $data = array_merge($submission->data,$workflow_metadata);
+            $all_keys = array_unique(array_merge($all_keys,array_keys($submission->data)),SORT_REGULAR);
+            $all_submissions[] = $data;
+        }
+        foreach($all_keys as $key) {
+            $all_fields[] = ["type"=>"text","name"=>$key,"label"=>$key];
+        }
+        return ['data'=>$all_submissions,'schema'=>$all_fields];
     }
 
     public function list_user_workflow_instance_submissions(WorkflowInstance $workflow_instance, Request $request, $status=null) {
