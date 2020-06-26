@@ -203,38 +203,10 @@ class WorkflowInstanceController extends Controller
     }
 
     public function report(WorkflowInstance $workflow_instance,Request $request) {
-
         return view('admin', ['resource'=>'workflow_instance_report','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
-
-        // if (Auth::user()->site_developer || Auth::user()->site_admin) {
-        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        // } else {
-        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        // }
-
-        // if (Auth::check()) { /* User is Authenticated */
-        //     $current_user = Auth::user();
-        //     $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        // } else{
-        //     abort(404);
-        // }
-
-        // $template = new Templater();
-        // return $template->render([
-        //     'mygroups'=>$links,
-        //     'name'=>'workflow',
-        //     'slug'=>'workflow',
-        //     'id'=>0,
-        //     'data'=>[],
-        //     'config'=>json_decode('{"sections":[[{"title":"Workflow Submissions","widgetType":"WorkflowReport","container":true,"titlebar":true,"options":{"id":'.$workflow_instance->id.'}}],[{"title":"Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
-        //     // 'group'=>(Object)array("id"=>"0"),
-        //     'scripts'=>[],
-        //     'styles'=>[],
-        //     'template'=>"main",
-        //     'apps'=>(Object)[],
-        //     'resource'=>'flow'
-        // ]);
-        // return $workflows;
+    }
+    public function raw(WorkflowInstance $workflow_instance,Request $request) {
+        return view('admin', ['resource'=>'workflow_instance_raw_data','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
     }
 
     private function is_assoc_arr($arr) {
@@ -308,16 +280,17 @@ class WorkflowInstanceController extends Controller
             ->header('Content-Disposition','attachment; filename="'.$workflow_instance->name.'_workflow.csv"');
     }
 
-    public function getgrid(WorkflowInstance $workflow_instance, Request $request) {
+    public function getraw(WorkflowInstance $workflow_instance, Request $request) {
         $all_fields = [
-            ["type"=>"options","name"=>"workflow.status","label"=>"Status","options"=>["open",'closed']],
-            ["type"=>"options","name"=>"workflow.state","label"=>"State","options"=>Arr::pluck($workflow_instance->version->code->flow,'name')],
-            ["type"=>"text","name"=>"workflow.unique_id","label"=>"Unique ID",],
-            ["type"=>"text","name"=>"workflow.first_name","label"=>"First Name",],
-            ["type"=>"text","name"=>"workflow.last_name","label"=>"Last Name",],
-            ["type"=>"text","name"=>"workflow.email","label"=>"Email",],
-            ["type"=>"date","name"=>"workflow.created_at","label"=>"Created","format"=> ["input"=> "YYYY-MM-DD h:mm:ss"]],
-            ["type"=>"date","name"=>"workflow.updated_at","label"=>"Updated","format"=> ["input"=> "YYYY-MM-DD h:mm:ss"]],
+            ["type"=>"hidden","name"=>"_w_id",],
+            ["type"=>"select","name"=>"_w_status","label"=>"Status","options"=>["open",'closed']],
+            ["type"=>"select","name"=>"_w_state","label"=>"State","options"=>Arr::pluck($workflow_instance->version->code->flow,'name')],
+            ["type"=>"text","name"=>"_w_unique_id","label"=>"Unique ID",],
+            ["type"=>"text","name"=>"_w_first_name","label"=>"First Name",],
+            ["type"=>"text","name"=>"_w_last_name","label"=>"Last Name",],
+            ["type"=>"text","name"=>"_w_email","label"=>"Email",],
+            ["type"=>"text","name"=>"_w_created_at","label"=>"Created"],
+            ["type"=>"text","name"=>"_w_updated_at","label"=>"Updated"],
         ];
         $submissions = WorkflowSubmission::with('workflowVersion')
             ->with('user')
@@ -331,14 +304,15 @@ class WorkflowInstanceController extends Controller
             $flat = [];
             $this->flatten($submission->data,$flat);
             $workflow_metadata = [
-                'workflow.status' => $submission->status,
-                'workflow.state' => $submission->state,
-                'workflow.unique_id' => $submission->user->unique_id,
-                'workflow.first_name' => $submission->user->first_name,
-                'workflow.last_name' => $submission->user->last_name,
-                'workflow.email' => $submission->user->email,
-                'workflow.created_at' => $submission->created_at->format('Y-m-d H:i:s'),
-                'workflow.updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
+                '_w_id' => $submission->id,
+                '_w_status' => $submission->status,
+                '_w_state' => $submission->state,
+                '_w_unique_id' => $submission->user->unique_id,
+                '_w_first_name' => $submission->user->first_name,
+                '_w_last_name' => $submission->user->last_name,
+                '_w_email' => $submission->user->email,
+                '_w_created_at' => $submission->created_at->format('Y-m-d H:i:s'),
+                '_w_updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
             ];
             $data = array_merge($submission->data,$workflow_metadata);
             $all_keys = array_unique(array_merge($all_keys,array_keys($submission->data)),SORT_REGULAR);
