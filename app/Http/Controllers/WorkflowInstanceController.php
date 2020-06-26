@@ -230,7 +230,7 @@ class WorkflowInstanceController extends Controller
         }
         if (is_object($arr) || $this->is_assoc_arr($arr)) {
             foreach($arr as $key => $ar) {
-                $children = $this->flatten($ar,$flat,$parent.$key.'.');
+                $children = $this->flatten($ar,$flat,$parent.$key.'_');
                 if (!is_null($children)) {
                     $flat[$parent.$key] = $children;
                 }
@@ -286,8 +286,7 @@ class WorkflowInstanceController extends Controller
             ["type"=>"select","name"=>"_w_status","label"=>"Status","options"=>["open",'closed']],
             ["type"=>"select","name"=>"_w_state","label"=>"State","options"=>Arr::pluck($workflow_instance->version->code->flow,'name')],
             ["type"=>"text","name"=>"_w_unique_id","label"=>"Unique ID",],
-            ["type"=>"text","name"=>"_w_first_name","label"=>"First Name",],
-            ["type"=>"text","name"=>"_w_last_name","label"=>"Last Name",],
+            ["type"=>"text","name"=>"_w_submitter","label"=>"Submitter",],
             ["type"=>"text","name"=>"_w_email","label"=>"Email",],
             ["type"=>"text","name"=>"_w_created_at","label"=>"Created"],
             ["type"=>"text","name"=>"_w_updated_at","label"=>"Updated"],
@@ -308,14 +307,13 @@ class WorkflowInstanceController extends Controller
                 '_w_status' => $submission->status,
                 '_w_state' => $submission->state,
                 '_w_unique_id' => $submission->user->unique_id,
-                '_w_first_name' => $submission->user->first_name,
-                '_w_last_name' => $submission->user->last_name,
+                '_w_submitter' => $submission->user->first_name.' '.$submission->user->last_name,
                 '_w_email' => $submission->user->email,
                 '_w_created_at' => $submission->created_at->format('Y-m-d H:i:s'),
                 '_w_updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
             ];
-            $data = array_merge($submission->data,$workflow_metadata);
-            $all_keys = array_unique(array_merge($all_keys,array_keys($submission->data)),SORT_REGULAR);
+            $data = array_merge($flat,$workflow_metadata);
+            $all_keys = array_unique(array_merge($all_keys,array_keys($flat)),SORT_REGULAR);
             $all_submissions[] = $data;
         }
         foreach($all_keys as $key) {
