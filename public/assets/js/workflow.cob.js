@@ -51,7 +51,8 @@ displayFields = _.map([
 		// ]},		
 		{ type: 'fieldset',columns:12, label: 'Duplicate', name: 'duplicate',fields:[
 			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
-			{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
+			{type: 'text', label: 'Label', name: 'label',placeholder:'default'},
+			{type: 'switch', label: 'Clone', name: 'clone',format:{label:''}}
 		]},
 		{ type: 'fieldset',columns:12, label: 'Remove', name: 'remove',fields:[
 			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
