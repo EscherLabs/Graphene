@@ -216,7 +216,8 @@ baseConditions = baseCond.concat(_.map([
 if(typeof workflow == 'undefined'){
 	baseConditions = baseConditions.concat(_.map([
 		{type: 'textarea', label: 'DataGrid Template', name: 'template',columns:12,parse:[{type:"requires"}]},
-
+		{type: 'checkbox', label: 'Hide DataGrid Column by default', name: 'showColumn',value:true,columns:12,options:[{label:"No",value:true},{label:"Yes",value:false}]},
+		
 		{type: 'table', label: 'Meta Data', array: {min:1,max:100},columns:12,parse:[{type:"requires"}],format:{template:"{{value.key}}:{{value.value}}"}, name: 'data', 
 		fields: [
 			{label: 'Key', name:"key",parse:[{type:"requires"},{type:"requires",name:"value"}]},
@@ -494,8 +495,9 @@ Cobler.types.collection = function(container) {
 			{label: 'Range', value: 'range'},
 
 			{label: 'User', value: 'user'},
-			{label: 'User Email', value: 'user_email'},
-			{label: 'Groups', value: 'Groups'},
+			// {label: 'User Email', value: 'user_email'},
+			// {label: 'Groups', value: 'Groups'},
+			{label: 'Groups', value: 'groups'},
 
 			{label: 'File', value: 'files'},
 			// {label: 'Grid', value: 'grid'},

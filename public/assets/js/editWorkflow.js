@@ -66,7 +66,9 @@ renderBuilder = function(){
         case "range":
         // case "grid":
         case "user":
+        case "user_email":
         case "group":
+        case "groups":
         case "smallcombo":
         case "files":
           temp.fields[i].widgetType = 'collection';
@@ -653,7 +655,7 @@ function createFlow() {
         }
 
         var stuff = _.map(state.actions,function(action){
-          var graph = '\n'+state.name;
+          var graph = '\n'+state.name.split(' ').join('_')+'';
           if(!i ){
             graph+='(("'+state.name+'"))';
           }else if( state.status == "closed"){
@@ -1008,7 +1010,27 @@ gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),f
 }));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
-  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
+  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",options:[
+    {
+      "type": "optgroup",
+      "options": "map_users",
+      "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+        return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+    },       
+    {
+      "type": "optgroup",
+      "options": "form_users",
+      "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+        var path = option.data.name
+        var search = option.data;
+        while(search.ischild){
+          path = search.parent.name+'.'+path;
+          search = search.parent;
+        }
+        return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+    }
+
+  ],search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},

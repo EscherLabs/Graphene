@@ -382,16 +382,18 @@ Cobler.types.Workflow = function(container){
         this.initialstate = gform.instances.f0.get();
       }
       update = function(file,response){
+        var files = this.get().current.files = this.get().current.files || this.form.collections.get('files')
+
         if(typeof response !== 'undefined'){
-          var exists = _.find(this.get().current.files,{id:response.id});
+          var exists = _.find(files,{id:response.id});
           if(typeof exists !== 'undefined'){
             _.merge(exists,response);
           }else{
-            this.get().current.files = this.get().current.files || [];
-            this.get().current.files.push(response)
+            files = files || [];
+            files.push(response)
           }
         }
-        this.get().current.files = _.map(this.get().current.files,function(file){
+        files = _.map(files,function(file){
           switch(file.mime_type){
             case "image/jpeg":
             case "image/png":
@@ -440,11 +442,18 @@ Cobler.types.Workflow = function(container){
 
         })
         $('.f_'+get().guid).html(gform.renderString(workflow_report.attachments, this.get().current))
-        gform.collections.update('files', this.get().current.files)
+        gform.collections.update('files', files)
+        this.get().current.files = files
+        var field = this.form.find({shown:true,type:'files'});
+        if(field){
+          $('[href="'+_.find(field.options,{id:response.id}).path+'"]').click()
+          // field.el.find((response.name)
+        }
 
       }.bind(this)
       if(this.id && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
         $('#myId').html('');
+
         this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
           this.on("success", update);
         }});
@@ -540,12 +549,12 @@ Cobler.types.Workflow = function(container){
               this.id = data.id;
               if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
                 $('#myId').html('');
-
                 this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
                   this.on("success", update);
                 }});
               }
               this.initialstate = data.data;
+              data.data.files = this.form.collections.get('files')
               this.set({current:data});
             }.bind(this),
             error:function(){
