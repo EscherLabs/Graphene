@@ -687,6 +687,7 @@ Cobler.types.WorkflowStatus = function(container){
                 {label:"State",name:"state",type:"select",options:function(data){
                   return _.uniq(_.map(data,function(item){return item.state}))
                 }.bind(null,newdata)},
+                {label:"ID",name:"id",type:"text"}
               ]
             }
           }).on('click',function(e){
@@ -754,6 +755,7 @@ Cobler.types.WorkflowAssignments = function(container){
                 {label:"State",name:"state",type:"select",options:function(data){
                   return _.uniq(_.map(data,function(item){return item.state}))
                 }.bind(null,assignments)},
+                {label:"ID",name:"id",type:"text"}
               ]
             }
           }).on('click',function(e){
@@ -942,6 +944,7 @@ Cobler.types.WorkflowHistory = function(container){
                     {label:"State",name:"state",type:"select",options:function(data){
                       return _.uniq(_.map(data,function(item){return item.state}))
                     }.bind(null,history)},
+                    {label:"ID",name:"id",type:"text"}
                   ]
                 }
               }).on('click',function(e){
