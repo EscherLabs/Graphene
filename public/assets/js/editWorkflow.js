@@ -511,6 +511,7 @@ function load(workflow_version) {
     gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
     gform.collections.update('map_users', _.where(e.form.get().map, {type: "user"}));
     gform.collections.update('map_groups', _.where(e.form.get().map, {type: "group"}));
+    gform.collections.update('map_emails', _.where(e.form.get().map, {type: "email"}));
     
   }).on('input:name',_.throttle(function(e){
     switch(e.field.parent.find('type').value){
@@ -522,6 +523,9 @@ function load(workflow_version) {
       break;
       case "group":
           gform.collections.update('map_groups', _.where(e.form.get().map, {type: "group"}));
+      break;
+      case "email":
+          gform.collections.update('map_emails', _.where(e.form.get().map, {type: "email"}));
       break;
     }
 
@@ -998,6 +1002,7 @@ function drawForm(name){
 
 gform.collections.add('endpoints', _.where(attributes.code.map, {type: "endpoint"}))
 gform.collections.add('map_users', _.where(attributes.code.map, {type: "user"}))
+gform.collections.add('map_emails', _.where(attributes.code.map, {type: "email"}))
 gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
@@ -1010,27 +1015,14 @@ gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),f
 }));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
-  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},
+  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"user_email",options:[{first_name:"Owner", email:"{{owner.email}}",display:"User that initiated workflow"},{first_name:"Actor", email:"{{actor.email}}",display:"User that is taking an action"},
     {
       "type": "optgroup",
-      "options": "map_users",
+      "options": "map_emails",
       "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
         return "{{datamap."+option.name+"}}"},label:"{{name}}"}
-    },       
-    {
-      "type": "optgroup",
-      "options": "form_users",
-      "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
-        var path = option.data.name
-        var search = option.data;
-        while(search.ischild){
-          path = search.parent.name+'.'+path;
-          search = search.parent;
-        }
-        return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
     }
-
-  ],search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
+  ],search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{display}}{{^display}}{{email}}{{/display}}</div>"}},valueField),
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
