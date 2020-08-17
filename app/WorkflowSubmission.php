@@ -11,6 +11,7 @@ class WorkflowSubmission extends Model
     protected $fillable = ['workflow_id','workflow_version_id','workflow_instance_id','workflow_instance_configuration','user_id','assignment_type','assignment_id','state','data','status'];
     protected $casts = ['workflow_instance_configuration'=>'object'];
     protected $appends = ['history'];
+    protected $hidden = ['history']; // Don't share the full history
 
     public function workflow() {
         return $this->belongsTo(Workflow::class);
@@ -80,7 +81,7 @@ class WorkflowSubmission extends Model
                 'data'=>$activity->data,
                 'action'=>$activity->action,
                 'comment'=>$activity->comment,
-                'state'=>$activity->start_state,
+                'state'=>$activity->end_state,
                 'status'=>$activity->status,
                 'assignment'=>[
                     'id'=>$activity->assignment_id,
@@ -88,6 +89,9 @@ class WorkflowSubmission extends Model
                 ],
                 'actor'=> [
                     'id' =>$activity->user_id,
+                ],
+                'previous' => [
+                    'state' => $activity->start_state,
                 ]
             ];
         }
