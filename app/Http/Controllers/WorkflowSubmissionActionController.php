@@ -173,6 +173,8 @@ class WorkflowSubmissionActionController extends Controller {
             $workflow_submission->assignment_type = 'internal';
             $state_data['assignment'] = null;
         }
+        // Add History to State Data (For use in Logic Blocks and anywhere else)
+        $state_data['history'] = $workflow_submission->history;
 
         // Check Permissions 
         if (isset($state->logic)) {

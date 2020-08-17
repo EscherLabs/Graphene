@@ -10,6 +10,7 @@ class WorkflowSubmission extends Model
     use SoftDeletes;
     protected $fillable = ['workflow_id','workflow_version_id','workflow_instance_id','workflow_instance_configuration','user_id','assignment_type','assignment_id','state','data','status'];
     protected $casts = ['workflow_instance_configuration'=>'object'];
+    protected $appends = ['history'];
 
     public function workflow() {
         return $this->belongsTo(Workflow::class);
@@ -68,5 +69,28 @@ class WorkflowSubmission extends Model
         } else {
             $this->attributes['data'] = json_encode($value);
         }
+    }
+
+    public function getHistoryAttribute() {
+        $activity_log = WorkflowActivityLog::where('workflow_submission_id',$this->id)->get();
+        $history = [];
+        foreach($activity_log as $activity) {
+            $history[] = [
+                'id'=>$activity->id,
+                'data'=>$activity->data,
+                'action'=>$activity->action,
+                'comment'=>$activity->comment,
+                'state'=>$activity->start_state,
+                'status'=>$activity->status,
+                'assignment'=>[
+                    'id'=>$activity->assignment_id,
+                    'type'=>$activity->assignment_type,
+                ],
+                'actor'=> [
+                    'id' =>$activity->user_id,
+                ]
+            ];
+        }
+        return $history;
     }
 }
