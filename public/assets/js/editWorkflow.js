@@ -655,7 +655,7 @@ function createFlow() {
         }
 
         if(state.status == "closed"){
-          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', state);
+          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', {name:state.name.split(' ').join('_')});
         }
 
         var stuff = _.map(state.actions,function(action){
