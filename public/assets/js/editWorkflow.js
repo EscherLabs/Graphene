@@ -908,7 +908,7 @@ function drawForm(name){
       {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
       {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
-    ], array: true
+    ], array: {max:100}
   } : {target:"#collapseLogic .panel-body", 
   name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
     {name: "name", label: false, type: 'output',format:{value:"<b>Logic Result: <i>{{value}}</i></b>"}},
