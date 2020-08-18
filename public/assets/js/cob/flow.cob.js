@@ -496,7 +496,10 @@ Cobler.types.Workflow = function(container){
         }
       }.bind(this))
       this.form.on('save',function(e){
-        if(!e.form.validate(true))return;
+        if(!e.form.validate(true)){  
+          toastr.error("Form invalid, please check for errors!", 'ERROR');
+          return;
+        }
         gform.types.fieldset.edit.call(e.form.find('_state'),false)
         e.form.find('_state').el.style.opacity = .7
         $('.gform-footer').hide();
