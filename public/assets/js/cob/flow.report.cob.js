@@ -193,8 +193,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               if(typeof this.history !== 'undefined'){
                 this.history.teardown();
               }
-     
-              this.history = new Ractive({el: this.container.elementOf(this).querySelector('.row .list'), template: templates.history, data: mappedData, partials: templates});
+              this.history = new Ractive({el: this.container.elementOf(this).querySelector('.row .list'), template: templates.history, data: _.extend({},this.methods,mappedData), partials: templates});
     
               // this.container.elementOf(this).querySelector('.row .list').innerHTML = gform.renderString(workflow_report.history, {workflow: this.get().options, data:data});
               $('[data-toggle="tooltip"]').tooltip()
@@ -239,13 +238,13 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 if(typeof this.ractive !== 'undefined'){
                   this.ractive.teardown();
                 }
-                this.ractive = new Ractive({el: document.querySelector('.report .view_container'), template: workflow_report.file_summary, data: mappedData, partials: templates});
+                this.ractive = new Ractive({el: document.querySelector('.report .view_container'), template: workflow_report.file_summary, data:  _.extend({},this.methods,mappedData), partials: templates});
                 $('[data-toggle="tooltip"]').tooltip()
 
     
     
               }.bind(this))
-              
+              this.methods = [];
               update = function (dummy, response){
                 if(typeof response !== 'undefined'){
                   var event = this.processFile.call(this,response);
@@ -283,7 +282,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   this.ractive.update(mappedData)
                 }
               }.bind(this)
-    
+              _.each(this.get().options.workflow_version.code.methods,function(item,index){
+                eval('this.methods["'+item.name+'"] = this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(null,mappedData)');
+              }.bind(this))
     
               $('.row .list').on('click','.filterable.submission', function(e){
                 $('.active').removeClass('active')
@@ -317,11 +318,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     }
                   ]
                 }
-                
-                form.methods = [];
-                _.each(this.get().options.workflow_version.code.methods,function(item,index){
-                  eval('form.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(form.data,form.data.data)');
-                }.bind(this))
+                form.methods = this.methods;
+                // _.each(this.get().options.workflow_version.code.methods,function(item,index){
+                //   eval('form.methods["'+item.name+'"] = form.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(form.data,form.data.data)');
+                // }.bind(this))
                 form.events = this.get().options.workflow_version.code.form.events
 
                 // var fd = log.data;
@@ -361,7 +361,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   mappedData.preview = previewForm.toString('_state');
                   mappedData.form = previewForm.toString('_state',true);
                   // mappedData.form = log.data;
-                  this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: mappedData, partials: templates});
+                  this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: _.extend({},this.methods,mappedData), partials: templates});
 
                   previewForm.on('change',function(e){
                     mappedData.form = e.form.toString('_state',true);
