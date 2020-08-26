@@ -1022,7 +1022,7 @@ var taskForm = [
       "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
         return "{{datamap."+option.name+"}}"},label:"{{name}}"}
     }
-  ],search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{display}}{{^display}}{{email}}{{/display}}</div>"}},valueField),
+  ],strict:false,search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{display}}{{^display}}{{email}}{{/display}}</div>"}},valueField),
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
@@ -1412,7 +1412,7 @@ _.reduce(instance.version.code.map,function(config,result,item){
               <dt>Emails:</dt>
               <dd>
               {{#configuration.suppress_emails}}
-              Do not send Emails will not be sent <i class="pull-right fa fa-envelope text-success"></i>
+              Do not send (Emails will not be sent) <i class="pull-right fa fa-envelope text-success"></i>
               {{/configuration.suppress_emails}}
               {{^configuration.suppress_emails}}
               Send default Emails <i class="pull-right fa fa-envelope text-danger"></i>
