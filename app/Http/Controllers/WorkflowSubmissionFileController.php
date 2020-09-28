@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Gumlet\ImageResize;
 use Storage;
+use Zip;
 use App\WorkflowSubmissionFile;
 use App\WorkflowSubmission;
 use App\WorkflowInstance;
@@ -40,6 +41,26 @@ class WorkflowSubmissionFileController extends Controller
 
     public function download(WorkflowSubmission $workflow_submission, WorkflowSubmissionFile $file) {
         return $this->get($workflow_submission,$file,true);
+    }
+
+    public function download_zip(WorkflowSubmission $workflow_submission) {
+        $my_workflow_submission = WorkflowSubmission::where('id',$workflow_submission->id)->with('workflowInstance')->first();
+        $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
+        $myzip = Zip::create(
+            $my_workflow_submission->workflowInstance->name.' - '.
+            str_pad($my_workflow_submission->id,6,'0',STR_PAD_LEFT).' - '.
+            $my_workflow_submission->updated_at->format('Y-m-d').'.zip',[]);
+        foreach($files as $file) {
+            $file_path = $file->get_file_path_absolute();
+            $unencrypted_file_exists = file_exists($file_path) && is_file($file_path);
+            $encrypted_file_exists = file_exists($file_path.'.encrypted') && is_file($file_path.'.encrypted');
+            if ($unencrypted_file_exists) {
+                $myzip->add($file_path,$file->name.'.'.$file->ext);
+            } else if ($encrypted_file_exists) {
+                $myzip->addRaw(decrypt(gzdecode(Storage::get($file->get_file_path().'.encrypted'))),$file->name.'.'.$file->ext);
+            }
+        }
+        return $myzip;
     }
 
     public function list_all_files(Request $request, WorkflowSubmission $workflow_submission) {

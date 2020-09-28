@@ -17,8 +17,11 @@
   </div>
       {{#workflow.instance.version.code.form.files}}
       <div>
-      <h3>Attachments</h3><hr/>
-      {{>files}}
+        <a class="pull-right btn btn-primary" href="/api/workflowsubmissions/{{original.workflow_submission_id}}/files/zip"><i class="fa fa-download"></i> Download All</a>
+        <h3>
+            Attachments
+        </h3><hr/>
+        {{>files}}
       </div>
       {{#current_state.uploads}}
       <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
