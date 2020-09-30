@@ -296,6 +296,7 @@ class AppInstanceController extends Controller
             } else {
                 abort(505,'Authentication Type Not Supported');
             }
+
             if ($resource_info->cache === true || $resource_info->cache === 'true') {
                 // TJC -- Laravel has a "non-bug" which prevents updateOrCreate from working 
                 // correctly in the event of a race condition.  See details:
@@ -443,9 +444,6 @@ class AppInstanceController extends Controller
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
             $response = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
         }
-        // else if ($endpoint->type == 'google_sheets') {
-        //     $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
-        // }
         return $response;
     }
 
@@ -460,6 +458,10 @@ class AppInstanceController extends Controller
         } else {
             $content_type = 'text/plain';
         }
-        return response($data['content'], $data['code'])->header('Content-Type', $content_type);
+        return response($data['content'], $data['code'])
+            ->header('Content-Type', $content_type)
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Expires', '0')
+            ->header('Pragma', 'no-cache');
     }
 }
