@@ -160,9 +160,25 @@ class ResourceService
             // Fetch Data based on Endpoint Type
             $httpHelper = new HTTPHelper();
             if ($endpoint->type == 'http_no_auth') {
-                $response = $httpHelper->http_fetch($url,$verb,$all_data['request']);
+                $response = $httpHelper->http_fetch(['url'=>$url, 'verb'=>$verb, 'data'=>$all_data['request']]);
             } else if ($endpoint->type == 'http_basic_auth') {
-                $response = $httpHelper->http_fetch($url,$verb,$all_data['request'],$endpoint->config->username, $endpoint->getSecret());
+                $http_config = [
+                    'url'  => $url,
+                    'verb' => $verb,
+                    'data' => $all_data['request'],
+                    'username' => $endpoint->config->username,
+                    'password' => $endpoint->getSecret(),
+                ];
+                if (isset($endpoint->config->content_type) && $endpoint->config->content_type !== '') {
+                    $http_config['content_type'] = $endpoint->config->content_type;
+                }
+                if (isset($endpoint->config->timeout) && $endpoint->config->timeout !== '') {
+                    $http_config['timeout'] = $endpoint->config->timeout;
+                }
+                if (isset($endpoint->config->headers) && is_array($endpoint->config->headers)) {
+                    $http_config['headers'] = $endpoint->config->headers;
+                }
+                $response = $httpHelper->http_fetch($http_config);
             } else {
                 abort(505,'Authentication Type Not Supported');
             }

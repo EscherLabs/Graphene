@@ -278,11 +278,18 @@ var createEngine = function(e){
               {label:'HTTP Basic Auth', value:'http_basic_auth'}, 
             ], required: true},
             {label: 'Configuration', name:'config', showColumn:false, fields:[
-              {label:'Url', required: false,parsable:'show', validate: {is_https:true}, show:{matches:{name:'type',value:'http_basic_auth'}}},
-              {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
+              {label:'URL', required: false,parsable:'show', validate: {is_https:true}, show:{matches:{name:'type',value:'http_basic_auth'}}},
+              {label:'URL', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
               {label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
               {label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-            ]}
+              {label:'Content Type', 'name':'content_type', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show',type:"select",options:[
+                {label:"Form Data (application/x-www-form-urlencoded)",value:'application/x-www-form-urlencoded'},
+                {label:"JSON (application/json)",value:'application/json'},
+                {label:"XML (application/xml)",value:'application/xml'},
+                {label:"Plain Text (text/plain)",value:'text/plain'},
+            ],'help':'Please specify the Content Type / Data Encoding your endpoint is expecting for POST / PUT / DELETE actions.  '+
+            '<div><i>Note this only applies to data which is <b>sent to</b> the endpoint, not data which is received from the endpoint.</i></div>'},  
+    ]}
           ],actions:false
         })
 
