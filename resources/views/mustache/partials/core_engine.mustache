@@ -164,8 +164,11 @@
 			case "page":
 			load(false);
 			break;			
-			case "flow":
+			case "workflow":
 			document.location = "/admin/workflowinstances/"+resource_id
+			break;			
+			case "app":
+			document.location = "/admin/appinstances/"+resource_id
 			break;
 		}
 	}
