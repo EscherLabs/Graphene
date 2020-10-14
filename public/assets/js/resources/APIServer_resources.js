@@ -11,7 +11,8 @@ $.ajax({
 			{label: 'Type', name:'resource_type', required: true, type:'select',
 			options:[
 				{label: 'MySQL Database',value: 'mysql'},
-				{label: 'Oracle Database', value:'oracle'},
+                {label: 'Oracle Database', value:'oracle'},
+                {label: 'Microsoft SQL Server Database', value:'sqlsrv'},
 				{label: 'Value', value:'value'},
 				{label: 'Secret Value (Encrypted at Rest)', value:'secret'}
 			]},
@@ -59,7 +60,15 @@ $.ajax({
 					{label: 'Username', name:'user'},
 					{label: 'Password', name:'pass'},
 				]})
-				break;									
+                break;	
+                case 'sqlsrv':
+                fields.push({name:'config',type:'fieldset',label:false,fields:[
+                    {label: 'Database Name',name: 'name'},
+                    {label: 'Username', name:'user'},
+                    {label: 'Password', name:'pass'},
+                    {label: 'Server / Hostname', name:'server'}
+                    ]})
+                break;									                                    
 				case 'secret':
 				case 'value':
 				fields.push({name:'config',type:'fieldset',label:false,fields:[
