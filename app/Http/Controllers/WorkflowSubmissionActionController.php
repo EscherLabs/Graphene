@@ -363,7 +363,17 @@ class WorkflowSubmissionActionController extends Controller {
                     }
                     $to = [];
                     foreach($task->to as $email){
-                        $to[] = $m->render($email, $data);
+                        $email_address = $m->render($email, $data);
+                        if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
+                            $to[] = $email_address;
+                        } else if ($email_address !== '') {
+                            $lookup = User::select('email')->where("unique_id",'=',$email_address)->first();
+                            if (!is_null($lookup)) {
+                                $to[] = $lookup->email;
+                            }    
+                        } else {
+                            // Email address is blank... skip it
+                        }
                     }
                     try {
                         Mail::raw( $content, function($message) use($to, $subject) { 
