@@ -228,15 +228,15 @@ class WorkflowSubmissionActionController extends Controller {
 
         // Execute Any Relevant Previous State Exit Tasks
         if(isset($previous_state->onLeave)){
-            $this->executeTasks($previous_state->onLeave, $state_data,$workflow_submission);
+            $this->executeTasks($previous_state->onLeave, $state_data, $workflow_submission, $myWorkflowInstance);
         }
         // Execute Any Relevant Action Tasks
         if(isset($action->tasks)){
-            $this->executeTasks($action->tasks, $state_data, $workflow_submission);
+            $this->executeTasks($action->tasks, $state_data, $workflow_submission, $myWorkflowInstance);
         }        
         // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
-            $this->executeTasks($state->onEnter, $state_data, $workflow_submission);
+            $this->executeTasks($state->onEnter, $state_data, $workflow_submission, $myWorkflowInstance);
         }
 
         // Update Submission Object In DB
@@ -341,7 +341,7 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->save();
     }
 
-    private function executeTasks($tasks, $data, &$workflow_submission){
+    private function executeTasks($tasks, $data, &$workflow_submission, &$workflow_instance){
         $m = new \Mustache_Engine;
 
         foreach($tasks as $task){
@@ -353,36 +353,52 @@ class WorkflowSubmissionActionController extends Controller {
             }
             switch($task->task) {
                 case "email":
-                    $content = "Workflow Notification Email";
-                    if($task->content){
-                        $content = $m->render($task->content, $data);
-                    }
-                    $subject = 'Workflow Notification';
-                    if($task->subject){
-                        $subject = $m->render($task->subject, $data);
-                    }
-                    $to = [];
-                    foreach($task->to as $email){
-                        $email_address = $m->render($email, $data);
-                        if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
-                            $to[] = $email_address;
-                        } else if ($email_address !== '') {
-                            $lookup = User::select('email')->where("unique_id",'=',$email_address)->first();
-                            if (!is_null($lookup)) {
-                                $to[] = $lookup->email;
-                            }    
-                        } else {
-                            // Email address is blank... skip it
+                    if(!isset($workflow_instance->configuration->suppress_email_tasks) || !$workflow_instance->configuration->suppress_email_tasks){ 
+                        $content = "Workflow Notification Email";
+                        if($task->content){
+                            $content = $m->render($task->content, $data);
                         }
-                    }
-                    try {
-                        Mail::raw( $content, function($message) use($to, $subject) { 
-                            $m = new \Mustache_Engine;
-                            $message->to($to);
-                            $message->subject($subject); 
-                        });
-                    } catch (\Exception $e) {
-                        // Failed to Send Email... Continue Anyway.
+                        $subject = 'Workflow Notification';
+                        if($task->subject){
+                            $subject = $m->render($task->subject, $data);
+                        }
+                        $to = [];
+                        foreach($task->to as $to_info){
+                            if (is_string($to_info)) { /* Backwards Compatibility with old Form Structure */
+                                $email_addres = $m->render($to_info, $data);
+                                if (filter_var($email_addres, FILTER_VALIDATE_EMAIL)) {
+                                    $to[] = $email_addres;
+                                }
+                            } else if (isset($to_info->email_type) && $to_info->email_type === 'email') {
+                                $email_address = $m->render($to_info->email_address, $data);
+                                if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
+                                    $to[] = $email_address;
+                                }
+                            } else if (isset($to_info->email_type) && $to_info->email_type === 'user') {
+                                $user_unique_id = $m->render($to_info->user, $data);
+                                $user = User::select('email')->where("unique_id",'=',$user_unique_id)->first();
+                                if (!is_null($user)) { $to[] = $user->email; }    
+                            } else if (isset($to_info->email_type) && $to_info->email_type === 'group') {
+                                $group_id = $m->render($to_info->group, $data);
+                                $users = User::select('email')
+                                    ->whereHas('group_members', function($q) use ($group_id) {
+                                        $q->where('group_id','=',$group_id);
+                                    })->get();
+                                foreach($users as $user) { 
+                                    $to[] = $user->email; 
+                                }    
+                            }
+                        }
+                        try {
+                            $to = array_unique($to);
+                            Mail::raw( $content, function($message) use($to, $subject) { 
+                                $m = new \Mustache_Engine;
+                                $message->to($to);
+                                $message->subject($subject); 
+                            });
+                        } catch (\Exception $e) {
+                            // Failed to Send Email... Continue Anyway.
+                        }
                     }
                 break;
                 case "purge_files":
@@ -396,18 +412,14 @@ class WorkflowSubmissionActionController extends Controller {
                     }
                 break;
                 case "resource":
-                    $workflow_instance = WorkflowInstance::where('id', '=',$workflow_submission->workflow_instance_id)->first();
-                    if(!is_null($workflow_instance)) {
-                          
-                        if(isset($task->verb)){
-                            $data['verb'] = $task->verb;
-                        }                    
-                        if(isset($task->data)){
-                            $data['request'] = $task->data;
+                    if(isset($task->verb)){
+                        $data['verb'] = $task->verb;
+                    }                    
+                    if(isset($task->data)){
+                        $data['request'] = $task->data;
 
-                        }
-                        $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
                     }
+                    $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
                 break;
                 case "purge_fields_by_name":
                     // this is a "poor man" implementation of "Purge Protected" that clears all 

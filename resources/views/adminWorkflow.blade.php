@@ -29,7 +29,7 @@
 
     <li role="presentation" class="active"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Form<span></a></li>
     <!-- <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li> -->
-    <li role="presentation"><a href="#options" aria-controls="options" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
+    <li role="presentation"><a href="#flowchart" aria-controls="flowchart" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
     <li role="presentation"><a href="#methods" aria-controls="methods" role="tab" data-toggle="tab"><i class="fa fa-bolt"></i> <span class="hidden-xs hidden-sm">Methods<span></a></li>
 
@@ -175,7 +175,7 @@
         
     </div> -->
   </div>
-  <div role="tabpanel" class="tab-pane" id="options">
+  <div role="tabpanel" class="tab-pane" id="flowchart">
     <div class="row">
       <div class="col-sm-8">
         <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>

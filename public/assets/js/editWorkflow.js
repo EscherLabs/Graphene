@@ -1015,14 +1015,50 @@ gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),f
 }));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
-  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"user_email",options:[{first_name:"Owner", email:"{{owner.email}}",display:"User that initiated workflow"},{first_name:"Actor", email:"{{actor.email}}",display:"User that is taking an action"},
-    {
-      "type": "optgroup",
-      "options": "map_emails",
-      "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
-        return "{{datamap."+option.name+"}}"},label:"{{name}}"}
-    }
-  ],strict:false,search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{display}}{{^display}}{{email}}{{/display}}</div>"}},valueField),
+  
+  
+    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:true,type:"fieldset",fields:[
+        {name:"email_type",label:"Type",type:"select",options:[{label:"Email Address",value:"email"},{label:"User",value:"user"},{label:"Group",value:"group"}]},
+        /* Begin Email Address Field */
+        _.extend({label:'Email Address <span class="text-success pull-right">{{value}}</span>',name:"email_address",show:[{type:"matches",name:"email_type",value:"email"}],type:"user_email",options:[
+            {first_name:"Owner", email:"{{owner.email}}",display:"User that initiated workflow"},{first_name:"Actor", email:"{{actor.email}}",display:"User that is taking an action"},{type:"optgroup",options: "map_emails",format:{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+        }],strict:false,search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{display}}{{^display}}{{email}}{{/display}}</div>"}},valueField),
+        /* End Email Address Field */
+        /* Begin User Field */
+        {name:"user",type:"user",strict:false,label:"ID",show: [{type: "matches", name: "email_type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+            {type: "optgroup",options: "map_users",format:{display:'{{name}}<div style="color:#aaa">Mapped value</div>',
+            value:function(option){return "{{datamap."+option.name+"}}"},label:"{{name}}"}},       
+            {type: "optgroup",options: "form_users",format:{display:'{{name}}<div style="color:#aaa">Form value</div>',
+            value:function(option){
+                var path = option.data.name
+                var search = option.data;
+                while(search.ischild){
+                    path = search.parent.name+'.'+path;
+                    search = search.parent;
+                }
+                return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+            }
+        ]},
+        /* End Email Field */
+        /* Begin Group Field */
+        {name:"group",type:"group",label:"ID",show: [{type: "matches", name: "email_type", value: "group"}],options:[       
+            {type: "optgroup",options: "map_groups",format:{display:'{{name}}<div style="color:#aaa">Mapped value</div>',
+            value:function(option){return "{{datamap."+option.name+"}}"},label:"{{name}}"}},       
+            {type: "optgroup",options: "form_groups",format:{display:'{{name}}<div style="color:#aaa">Form value</div>',
+            value:function(option){
+                var path = option.data.name
+                var search = option.data;
+                while(search.ischild){
+                    path = search.parent.name+'.'+path;
+                    search = search.parent;
+                }
+                return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+            },
+            {type:"optgroup",options:'/api/groups?members=20',format:{label:"{{name}}",value:"{{id}}"}}
+        ]},
+        /* End Email Field */
+    ]},
+
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
