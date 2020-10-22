@@ -14,7 +14,7 @@ class AddSignatureToWorkflowActivityLogTable extends Migration
     public function up()
     {
         Schema::table('workflow_activity_log', function (Blueprint $table) {
-            $table->text('signature')->after('data');
+            $table->text('signature')->nullable()->after('data');
         });
     }
 
