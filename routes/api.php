@@ -17,4 +17,11 @@ Route::group(['middleware' => ['public.api.auth', 'no.save.session'], 'prefix' =
     Route::match(['get','post'],'/apps/search/{type?}','AppController@search');
 
     Route::get('/reports/{name}/{param1?}','ReportController@run');
+
+    // Return workflow submission by id
+    Route::get('/workflow/submissions/{submission}','PublicAPIWorkflowController@get_submission'); 
+    // Return all workflow submissions by instance_id
+    // Optionally Pass: 
+    // • status = [open|closed|new]
+    Route::get('/workflow/instances/{instance}/submissions','PublicAPIWorkflowController@get_all_instance_submissions');
 });
