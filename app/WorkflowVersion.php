@@ -16,6 +16,6 @@ class WorkflowVersion extends Model
       return $this->hasOne(WorkflowInstance::class);
     }  
     public function user() {
-      return $this->belongsTo(User::class);
+      return $this->belongsTo(BulkUser::class,'user_id');
     }
 }

@@ -14,7 +14,7 @@ class WorkflowDeveloper extends Model
       return $this->belongsTo(Workflow::class);
     }
     public function user() {
-      return $this->belongsTo(User::class);
+      return $this->belongsTo(BulkUser::class,'user_id');
     }
     public static function boot()
     {

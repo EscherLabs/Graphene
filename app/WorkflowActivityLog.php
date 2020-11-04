@@ -17,7 +17,7 @@ class WorkflowActivityLog extends Model
         return $this->belongsTo(WorkflowSubmission::class);
     }
     public function user() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(BulkUser::class,'user_id');
     }
     public function getDataAttribute($value) {
         $payload = json_decode($value,true);
