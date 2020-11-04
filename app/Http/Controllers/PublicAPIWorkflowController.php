@@ -91,6 +91,9 @@ class PublicAPIWorkflowController extends Controller
         if ($request->has('unique_id')) {
             $query->where('users.unique_id','=',$request->unique_id);
         }
+        if ($request->has('state')) {
+            $query->where('state','=',$request->state);
+        }
         if ($paginate) {
             $rows = $query->paginate(100);
         } else {
