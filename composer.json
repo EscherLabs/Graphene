@@ -18,7 +18,7 @@
         "pulkitjalan/google-apiclient": "^4.0",
         "revolution/laravel-google-sheets": "^5.0",
         "stechstudio/laravel-zipstream": "^2.6",
-        "subfission/cas": ">=3.0"
+        "subfission/cas": ">=4.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
