@@ -242,7 +242,7 @@ class WorkflowSubmissionActionController extends Controller {
         // Update Submission Object In DB
         $workflow_submission->update();
         
-        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action']['name'],$request->get('comment'));
+        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action']['name'],$request->get('comment'),$request->get('signature'));
         
         // Save off the first "human-initiated" action state, for use
         // later when we save emails.  Note: This function does nothing
@@ -325,7 +325,7 @@ class WorkflowSubmissionActionController extends Controller {
         // This action can only be performed by action asignee
     }
 
-    private function logAction($workflow_submission, $start_state, $start_assignment, $action, $comment){
+    private function logAction($workflow_submission, $start_state, $start_assignment, $action, $comment,$signature=null){
         $activity = new WorkflowActivityLog();
         $activity->start_state = $start_state;
         $activity->workflow_instance_id = $workflow_submission->workflow_instance_id;
@@ -338,6 +338,7 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->assignment_id = $start_assignment['assignment_id'];
         $activity->comment = $comment;
         $activity->action = $action;
+        $activity->signature = $signature;
         $activity->save();
     }
 

@@ -171,13 +171,76 @@ gform.types['files']= _.extend({}, gform.types['smallcombo'], {
 
   }},format:{title:'<i class="fa fa-paperclip"></i> {{{label}}}{{^label}}Attachement{{/label}}',label:"{{name}}",value:"{{id}}",display:'<div style="height:50px;padding-left:60px;position:relative" href="{{path}}" target="_blank"><div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url({{path}});background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:0px;left:5px">{{{icon}}}</div> {{name}} <span class="pull-right">{{date}}</span></div>'}}
 })
+    
+gform.stencils.signaturePad = `
+<style>.signaturePad-canvas{border:solid 1px #bbb;} 
+.has-error .signaturePad-canvas{border-color:red;}</style>
+<div class="row clearfix form-group {{modifiers}} data-type="{{type}}">
+	{{>_label}}
+	{{#label}}
+	{{^horizontal}}<div class="col-md-12">{{/horizontal}}
+	{{#horizontal}}<div class="col-md-8">{{/horizontal}}
+	{{/label}}
+	{{^label}}
+	<div class="col-md-12">
+    {{/label}}
+    <canvas class="signaturePad-canvas" width="567" height="200"></canvas>
 
-graphene = {
+	<div class="">
+		<div class="input-group" style="width:100%" contentEditable="false"> 
+        </div>
+        <center style="color:#888"> {{{help}}}{{^help}}Sign Above{{/help}}</center>
+        <span class="font-xs text-danger" style="display:block;"></span>
+		{{>_actions}}
+	</div>
+</div>`;
+    gform.types['signaturePad'] = _.extend({}, gform.types['input'], gform.types['collection'], {
+    set: function(value) {
+        if(typeof value == 'undefined' || value == null){
+            this.signaturePad.clear();
+        }else{
+            this.signaturePad.fromData(value);
+        }
+    },
+    toString: function(name, report) {
+        if(!report){
+            return '<dt>'+this.label+'</dt> <dd><img src="'+( this.signaturePad.toDataURL())+'" alt="(Empty)"/></dd><hr>'
+          }else{
+            return  this.signaturePad.toDataURL();
+          }
+    },
+    get: function() {
+        // return '<img src='+( this.signaturePad.toDataURL("image/svg+xml"))+' alt="(Empty)" style="border:solid 1px"/>'
+        // return '<img src='+( this.signaturePad.toDataURL())+' alt="(Empty)"/>'
+        return  this.signaturePad.toDataURL();
+        // return  this.signaturePad.toData();
+    },
+    initialize: function() {
+        this.canvas = this.el.querySelector("canvas.signaturePad-canvas");
+
+        this.signaturePad = new SignaturePad(this.canvas,{onEnd:function(e){
+          this.owner.trigger('input')
+        }.bind(this),onBegin:function(e){
+          this.owner.trigger('change')
+        }.bind(this)});
+ 
+        gform.types[this.type].setLabel.call(this);
+
+
+    },satisfied:function(){
+        return !this.signaturePad.isEmpty();
+    },focus:function(){
+
+    }
+  });
+
+
+$g = {
   form:gform,
   forms:gform.instances,
   render:gform.m,
   modal:modal,
-  getID:generateUUID,
+  uuid:generateUUID,
   grid:GrapheneDataGrid,
   apps:{}
 }

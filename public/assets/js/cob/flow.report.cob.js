@@ -134,7 +134,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }
               }
               mappedData.history = _.map(data, function(event){
-                var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+                var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','signature','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
                 newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
                 newEvent.state = event.end_state;
                 newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
@@ -254,7 +254,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   if(event.deleted_at && typeof event.deleted_by == 'undefined' && event.user_id_deleted == this.get().user.id){
                     event.deleted_by = this.get().user;
                   }
-                  var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+                  var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','signature','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
     
                   newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
                   newEvent.state = event.end_state;
@@ -444,6 +444,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               $('.report').on('click','[data-event]',function(e){
                 var formStructure = {
                   "legend":this.get().options.workflow_instance.name,
+                  "name":'modal',
                   "events":this.get().options.workflow_version.code.form.events||{},
                   "data":{user:this.get().user,data:mappedData,_flowstate:this.get().options.state,_flowaction:e.currentTarget.dataset.event,_id:this.get().options.id},
                   "actions": [
@@ -494,6 +495,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
                 }
     
+                
                 var states =  _.map(mappedData.history,function(item){
                   return item.state;
                 })
@@ -518,6 +520,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                   if(typeof e.form.find('_state') !== 'undefined'){
                     formData._state =e.form.get('_state')
+                  }
+                  if(typeof e.form.find('signature') !== 'undefined'){
+                    formData.signature =e.form.get('signature')
                   }
 
                   // formData.data._state = formData.data._state ||{};
@@ -544,6 +549,10 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }.bind(this)).on('canceled',function(e){
                   e.form.trigger('close')
                 }).modal();
+                if(_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature){
+                  gform.addField.call(gform.instances.modal,gform.normalizeField({type:'signaturePad',required:true,label:"Signature",help:_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature_text||"Please Sign Above",name:"signature",target:".gform-footer",columns:8,operator:gform.instances.modal,array:false},gform.instances.modal))
+                }
+
               }.bind(this))
     
             }.bind(this,resources)

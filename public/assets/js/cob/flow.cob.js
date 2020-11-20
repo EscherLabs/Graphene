@@ -500,28 +500,84 @@ Cobler.types.Workflow = function(container){
           toastr.error("Form invalid, please check for errors!", 'ERROR');
           return;
         }
-        gform.types.fieldset.edit.call(e.form.find('_state'),false)
-        e.form.find('_state').el.style.opacity = .7
-        $('.gform-footer').hide();
-        var data = e.form.toJSON();
-        data.action = e.field.name;
-        $.ajax({
-          url:'/api/workflowsubmissions/'+this.get().workflow_id,
-          dataType : 'json',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          type: 'POST',
-          success  : function(data){
-            e.form.find('_state').el.style.opacity = 1
-            document.location = "/workflows/report/"+data.id;
-          }.bind(this),
-          error:function(){
-            e.form.find('_state').el.style.opacity = 1
-            gform.types.fieldset.edit.call(e.form.find('_state'),true)
-            $('.gform-footer').show();
-            toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
-          }
-        })
+        debugger
+        if(_.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name}).signature){
+
+          signature = new gform({legend:"Signature Required",actions:[{type:"cancel",label:'<i class="fa fa-times"></i> Clear'},{type:"save"}]}).on('cancel',function(e){
+            e.form.set({signature:null})
+            var signature = e.form.find('signature');
+            e.form.valid = true;
+            signature.valid = true;
+            signature.errors=""
+            gform.handleError(signature);
+          
+          }).on('save',function(e,name,modal){
+            if(modal.form.validate()){
+
+              // modal.form.find('signature').el.querySelector('canvas').style.borderColor = "#bbb"
+              modal.form.trigger('close')
+
+              gform.types.fieldset.edit.call(e.form.find('_state'),false)
+              e.form.find('_state').el.style.opacity = .7
+              $('.gform-footer').hide();
+              var data = e.form.toJSON();
+              data.signature = modal.form.get('signature');
+              data.action = name;
+              $.ajax({
+                url:'/api/workflowsubmissions/'+this.get().workflow_id,
+                dataType : 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                type: 'POST',
+                success  : function(data){
+                  e.form.find('_state').el.style.opacity = 1
+                  document.location = "/workflows/report/"+data.id;
+                }.bind(this),
+                error:function(){
+                  e.form.find('_state').el.style.opacity = 1
+                  gform.types.fieldset.edit.call(e.form.find('_state'),true)
+                  $('.gform-footer').show();
+                  toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+                }
+              })
+            }
+            // else{
+            //   modal.form.find('signature').el.querySelector('canvas').style.borderColor = "red"
+            // }
+  
+
+          }.bind(this,e,e.field.name)).on('input',function(e){
+            debugger;
+            if(e.form.el.classList.contains('in'))e.form.validate()
+            
+            // e.form.find('signature').el.querySelector('canvas').style.borderColor = "#bbb"
+          }).modal()
+
+          gform.addField.call(signature,gform.normalizeField({type:'signaturePad',required:true,label:"Signature",hideLabel:true,help:_.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name}).signature_text||"Please Sign Above",name:"signature",operator:signature,array:false},signature))
+        }else{
+          gform.types.fieldset.edit.call(e.form.find('_state'),false)
+          e.form.find('_state').el.style.opacity = .7
+          $('.gform-footer').hide();
+          var data = e.form.toJSON();
+          data.action = e.field.name;
+          $.ajax({
+            url:'/api/workflowsubmissions/'+this.get().workflow_id,
+            dataType : 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            type: 'POST',
+            success  : function(data){
+              e.form.find('_state').el.style.opacity = 1
+              document.location = "/workflows/report/"+data.id;
+            }.bind(this),
+            error:function(){
+              e.form.find('_state').el.style.opacity = 1
+              gform.types.fieldset.edit.call(e.form.find('_state'),true)
+              $('.gform-footer').show();
+              toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+            }
+          })
+        }
       }.bind(this))
       .on('canceled',function(e){
         e.form.set('_state',this.initialstate._state)
@@ -800,7 +856,7 @@ Cobler.types.WorkflowAssignments = function(container){
                     ]
                   }).on('save',function(e,eForm){
                     if(!eForm.form.validate(true))return;
-
+                    
                     e.model.waiting(true);
 
                     eForm.form.trigger('close')

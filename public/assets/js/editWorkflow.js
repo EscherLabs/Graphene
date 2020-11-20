@@ -821,7 +821,7 @@ function drawForm(name){
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
     name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
       {name: "label", label: "Label", columns: 6},
-      {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "label", value: ""}]},
+      {name: "name", label: "Name", columns: 6,required:true},
       {name: "type", label: "Type", type: "select", columns: 6, options:[
         {value: "success", label: "Success"},
         {value: "danger", label: "Danger"},
@@ -894,7 +894,9 @@ function drawForm(name){
 
 
     ]},
-    {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+    {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 6},
+    {name: "signature", label: "Require Signature",type:"switch",format:{label:""}, columns: 6},
+    {name: "signature_text", label: "Signature Text",placeholder:"Sign Above",help:"This text will show up below the signature box <br>(default text is 'Please Sign Above')",type:"text", columns: 12,show:[{name:"signature",value:true,type:"matches"}]},
     {type: 'select',other:true, columns:12, label:'Show Action', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
     [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Enable"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
   },
