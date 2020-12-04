@@ -258,6 +258,25 @@ Cobler.types.Workflow = function(container){
 		set: function (newItem) {
 			$.extend(item, newItem);
 		},
+    saveFlow:function(e,data){
+      $.ajax({
+        url:'/api/workflowsubmissions/'+this.get().workflow_id,
+        dataType : 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        type: 'POST',
+        success  : function(data){
+          e.form.find('_state').el.style.opacity = 1
+          document.location = "/workflows/report/"+data.id;
+        }.bind(this),
+        error:function(){
+          e.form.find('_state').el.style.opacity = 1
+          gform.types.fieldset.edit.call(e.form.find('_state'),true)
+          $('.gform-footer').show();
+          toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+        }
+      })
+    },
 		initialize: function(el) {
 
       if(typeof this.get().workflow_id == 'undefined'){return false;};
@@ -496,12 +515,19 @@ Cobler.types.Workflow = function(container){
         }
       }.bind(this))
       this.form.on('save',function(e){
-        if(!e.form.validate(true)){  
-          toastr.error("Form invalid, please check for errors!", 'ERROR');
-          return;
+
+          //check if validation required first
+        var currentAction = _.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name});
+
+        
+        if(currentAction.validate !== false && !e.form.validate(true)){  
+          if(currentAction.invalid_submission !== true || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?",{errors:_.values(e.form.errors)}) )){
+            toastr.error("Form invalid, please check for errors!", 'ERROR');
+            return;
+          }
         }
-        debugger
-        if(_.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name}).signature){
+        
+        if(currentAction.signature){
 
           signature = new gform({legend:"Signature Required",actions:[{type:"cancel",label:'<i class="fa fa-times"></i> Clear'},{type:"save"}]}).on('cancel',function(e){
             e.form.set({signature:null})
@@ -513,33 +539,15 @@ Cobler.types.Workflow = function(container){
           
           }).on('save',function(e,name,modal){
             if(modal.form.validate()){
-
               // modal.form.find('signature').el.querySelector('canvas').style.borderColor = "#bbb"
               modal.form.trigger('close')
-
               gform.types.fieldset.edit.call(e.form.find('_state'),false)
               e.form.find('_state').el.style.opacity = .7
               $('.gform-footer').hide();
               var data = e.form.toJSON();
               data.signature = modal.form.get('signature');
               data.action = name;
-              $.ajax({
-                url:'/api/workflowsubmissions/'+this.get().workflow_id,
-                dataType : 'json',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                type: 'POST',
-                success  : function(data){
-                  e.form.find('_state').el.style.opacity = 1
-                  document.location = "/workflows/report/"+data.id;
-                }.bind(this),
-                error:function(){
-                  e.form.find('_state').el.style.opacity = 1
-                  gform.types.fieldset.edit.call(e.form.find('_state'),true)
-                  $('.gform-footer').show();
-                  toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
-                }
-              })
+              this.saveFlow.call(this,e,data)
             }
             // else{
             //   modal.form.find('signature').el.querySelector('canvas').style.borderColor = "red"
@@ -547,36 +555,18 @@ Cobler.types.Workflow = function(container){
   
 
           }.bind(this,e,e.field.name)).on('input',function(e){
-            debugger;
             if(e.form.el.classList.contains('in'))e.form.validate()
             
             // e.form.find('signature').el.querySelector('canvas').style.borderColor = "#bbb"
           }).modal()
-
-          gform.addField.call(signature,gform.normalizeField({type:'signaturePad',required:true,label:"Signature",hideLabel:true,help:_.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name}).signature_text||"Please Sign Above",name:"signature",operator:signature,array:false},signature))
+          signature.fields.push(signature.add({type:'signaturePad',required:true,label:"Signature",hideLabel:true,help:_.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name}).signature_text||"Please Sign Above",name:"signature"}))
         }else{
           gform.types.fieldset.edit.call(e.form.find('_state'),false)
           e.form.find('_state').el.style.opacity = .7
           $('.gform-footer').hide();
           var data = e.form.toJSON();
           data.action = e.field.name;
-          $.ajax({
-            url:'/api/workflowsubmissions/'+this.get().workflow_id,
-            dataType : 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            type: 'POST',
-            success  : function(data){
-              e.form.find('_state').el.style.opacity = 1
-              document.location = "/workflows/report/"+data.id;
-            }.bind(this),
-            error:function(){
-              e.form.find('_state').el.style.opacity = 1
-              gform.types.fieldset.edit.call(e.form.find('_state'),true)
-              $('.gform-footer').show();
-              toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
-            }
-          })
+          this.saveFlow.call(this,e,data)
         }
       }.bind(this))
       .on('canceled',function(e){
@@ -670,7 +660,7 @@ Cobler.types.Workflows = function(container){
 		get: get,
 		set: function (newItem) {
 			$.extend(item, newItem);
-		},
+    },
 		initialize: function(el){
       if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;

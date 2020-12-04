@@ -437,7 +437,6 @@ Cobler.types.collection = function(container) {
 		// if(typeof temp !== 'undefined') {
 		// 	temp.selected = true;
 		// }
-		// debugger;
 		return gform.render(item.type, _.extend({},myform.default,options));
 	}
 	function get() {		

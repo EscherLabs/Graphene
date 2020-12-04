@@ -215,15 +215,34 @@ gform.stencils.signaturePad = `
         return  this.signaturePad.toDataURL();
         // return  this.signaturePad.toData();
     },
+    resizeCanvas:function() {
+      // This part causes the canvas to be cleared
+      this.canvas.width = this.owner.container.offsetWidth||this.canvas.width;
+
+    
+      // This library does not listen for canvas changes, so after the canvas is automatically
+      // cleared by the browser, SignaturePad#isEmpty might still return false, even though the
+      // canvas looks empty, because the internal data of this library wasn't cleared. To make sure
+      // that the state of this library is consistent with visual state of the canvas, you
+      // have to clear it manually.
+      this.signaturePad.clear();
+    },
     initialize: function() {
         this.canvas = this.el.querySelector("canvas.signaturePad-canvas");
 
+        
         this.signaturePad = new SignaturePad(this.canvas,{onEnd:function(e){
           this.owner.trigger('input')
         }.bind(this),onBegin:function(e){
           this.owner.trigger('change')
         }.bind(this)});
- 
+        window.onresize = gform.types['signaturePad'].resizeCanvas.bind(this);
+        setTimeout(gform.types['signaturePad'].resizeCanvas.bind(this), 200);
+
+        
+        // this.owner.on('initialized', function(f) {
+        //   gform.types['signaturePad'].resizeCanvas.call(f);
+        // }.bind(null,this));
         gform.types[this.type].setLabel.call(this);
 
 

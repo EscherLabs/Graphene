@@ -836,6 +836,7 @@ function drawForm(name){
 
       {name: "type",inline:false, label: "Actor(s)",parse:[{type:"requires"}], type: "smallcombo", options: [
         {value: "", label: "Assignee"},
+        {value: "internal", label: "Inactivity Based"},
         {value: "user", label: "User"},
         {value: "group", label: "Group"}
       ]},
@@ -843,7 +844,7 @@ function drawForm(name){
       // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
       //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
       // })
-
+      {type:"number",name:"delay",label:"Days of Inactivity",show: [{type: "matches", name: "type", value: "internal"}]},
       {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
       {
         "type": "optgroup",
@@ -897,6 +898,8 @@ function drawForm(name){
     {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 6},
     {name: "signature", label: "Require Signature",type:"switch",format:{label:""}, columns: 6},
     {name: "signature_text", label: "Signature Text",placeholder:"Sign Above",help:"This text will show up below the signature box <br>(default text is 'Please Sign Above')",type:"text", columns: 12,show:[{name:"signature",value:true,type:"matches"}]},
+    {name: "validate", label: "Validate",value:true,type:"switch",format:{label:""}, columns: 6},
+    {name: "invalid_submission", label: "Allow Invalid Submission",value:false,type:"switch",format:{label:""}, columns: 6,show:[{name:"validate",value:true,type:"matches"}]},
     {type: 'select',other:true, columns:12, label:'Show Action', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
     [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Enable"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
   },
@@ -1238,7 +1241,6 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
-// debugger;
 // instance.configuration.initial
 instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||

@@ -334,7 +334,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 //     _.merge(form.data._state,form.methods[mappedData.workflow.instance.version.code.form.resource]({},data));
                 //   }
                 // }
-                  // debugger;
 
                 if(e.currentTarget.dataset.current){
                   var states =  _.map(mappedData.history,function(item){return item.state;})
@@ -513,7 +512,19 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 new gform(formStructure).on('save',function(e){
                   document.querySelector('.report').innerHTML = '<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>';
     
-                  if(!e.form.validate(true))return;
+
+                  //check if validation required first
+                  var currentAction = _.find(_.find(this.get().options.workflow_version.code.flow,{name:mappedData.state}).actions,{name:e.form.get('_flowaction')});
+
+                  if(currentAction.validate !== false && !e.form.validate(true)){  
+                    if(currentAction.invalid_submission !== true || typeof e.form.errors.signature !== "undefined" || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?",{errors:_.values(e.form.errors)}) )){
+                      toastr.error("Form invalid, please check for errors!", 'ERROR');
+                      return;
+                    }
+                  }
+
+
+                  // if(!e.form.validate(true))return;
     
                   e.form.trigger('close')
                   formData = {comment:e.form.get('comment'),action:e.form.get('_flowaction')}
@@ -550,7 +561,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   e.form.trigger('close')
                 }).modal();
                 if(_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature){
-                  gform.addField.call(gform.instances.modal,gform.normalizeField({type:'signaturePad',required:true,label:"Signature",help:_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature_text||"Please Sign Above",name:"signature",target:".gform-footer",columns:8,operator:gform.instances.modal,array:false},gform.instances.modal))
+                  gform.instances.modal.fields.push(gform.instances.modal.add({type:'signaturePad',required:true,label:"Signature",help:_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature_text||"Please Sign Above",name:"signature",target:".gform-footer",columns:8}))
                 }
 
               }.bind(this))
