@@ -94,6 +94,39 @@ class PublicAPIWorkflowController extends Controller
         if ($request->has('state')) {
             $query->where('state','=',$request->state);
         }
+        if ($request->has('filter')) {
+            $query_filter = $request->filter;
+            $filters = explode('^',$query_filter);
+            $operators = ['>=','<=','>','<','!=','=','LIKE'];
+            foreach($filters as $current_filter) {
+                $current_operator = null;
+                $current_filter_name = null;
+                $current_filter_value = null;
+                foreach($operators as $operator) {
+                    if (stristr($current_filter,$operator)) {
+                        $filter_parts = explode($operator,$current_filter);
+                        $current_operator = $operator;
+                        $current_filter_name = $filter_parts[0];
+                        if ($current_operator === 'LIKE') {
+                            $current_filter_value = '%'.$filter_parts[1].'%';
+                        } else {
+                            $current_filter_value = $filter_parts[1];
+                        }
+                        break;
+                    }
+                }
+                if ($current_operator === null) {
+                    continue; // Invalid Operator -- Ignore it and continue
+                } else if (substr($current_filter_name,0,4) === 'data') {
+                    // Replace dots with arrows for searching inside of JSON Object
+                    $current_filter_name = str_replace('.','->',$current_filter_name);
+                } else if (!in_array($current_filter_name,['id','assignment_type','state','status','created_at','updated_at'])) {
+                    continue; // If it's not a valid name, ignore it and move on.
+                }
+                echo $current_filter_name.$current_operator.$current_filter_value."<br>";
+                $query->where($current_filter_name,$current_operator,$current_filter_value);
+            }
+        }
         if ($paginate) {
             $rows = $query->paginate(100);
         } else {
