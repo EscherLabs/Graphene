@@ -123,7 +123,6 @@ class PublicAPIWorkflowController extends Controller
                 } else if (!in_array($current_filter_name,['id','assignment_type','state','status','created_at','updated_at'])) {
                     continue; // If it's not a valid name, ignore it and move on.
                 }
-                echo $current_filter_name.$current_operator.$current_filter_value."<br>";
                 $query->where($current_filter_name,$current_operator,$current_filter_value);
             }
         }
