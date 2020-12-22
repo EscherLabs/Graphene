@@ -27,7 +27,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         default:
           
           // var icon = ;
-          file.icon = '<i class="fa '+mime_type_icon_map[file.mime_type] || mime_type_icon_map[file.mime_type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o"+' fa-3x" style="padding-top: 4px;"></i>';
+          file.icon = '<i class="fa '+(mime_type_icon_map[file.mime_type] || mime_type_icon_map[file.mime_type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o")+' fa-3x" style="padding-top: 4px;"></i>';
           file.preview = "";
         }
 
