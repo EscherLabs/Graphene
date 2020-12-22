@@ -245,7 +245,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
               }.bind(this))
               this.methods = [];
-              update = function (dummy, response){
+              update = function (file, response){
+
                 if(typeof response !== 'undefined'){
                   var event = this.processFile.call(this,response);
                   if(typeof event.user == 'undefined' && event.user_id_created == this.get().user.id){
@@ -278,6 +279,13 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                   }
               
+                  if(typeof file == 'object'){
+                    gform.collections.update('files',_.where(mappedData.history,{file:true}));
+                    var field = gform.instances.modal.find({shown:true,type:'files'});
+                    if(field){
+                      $('[href="'+_.find(field.options,{id:response.id}).path+'"]').click()
+                    }
+                  }
                   this.history.update(mappedData)
                   this.ractive.update(mappedData)
                 }
