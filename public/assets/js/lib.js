@@ -217,7 +217,7 @@ gform.stencils.signaturePad = `
     },
     resizeCanvas:function() {
       // This part causes the canvas to be cleared
-      this.canvas.width = this.owner.container.offsetWidth||this.canvas.width;
+      this.canvas.width = (this.el.offsetWidth)?this.el.offsetWidth-32:this.canvas.width;
 
     
       // This library does not listen for canvas changes, so after the canvas is automatically
