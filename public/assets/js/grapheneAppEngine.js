@@ -298,7 +298,7 @@ function(options){
 		for(var i in this.config.templates) {
 			this.partials[this.config.templates[i].name] = this.config.templates[i].content;
 		}
-
+		this.partials['Main'] = this.partials['Main']||'<div id="app_'+this.config.app_instance_id+'"></div>';
 		if(typeof this.config.scripts == 'object') {
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {

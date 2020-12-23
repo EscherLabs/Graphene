@@ -323,6 +323,7 @@ function editMobileOrder(){
 	function editUserOptions(item){
 		if(typeof item.bae !== 'undefined'){
 			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
+				if(!e.form.validate()){toastr.error("Please check form for errors","Invalid Options");return false;}
 				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
 				if(typeof item.bae.data.user.id !== 'undefined') {
 					$.ajax({
@@ -347,6 +348,8 @@ function editMobileOrder(){
 					e.form.trigger('close');
 					toastr.success('', 'Options Updated Successfully');
 				}
+
+				
 			}).on('cancel',function(e){
 				e.form.trigger('close')
 			})
