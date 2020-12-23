@@ -1,10 +1,8 @@
 workflow = true;
 gform.collections.add('files',[])
-renderBuilder = function(){
-
+renderNav = function(form){
   var target = document.querySelector('.target');
   $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>')
-  var form = myform;
   var map = "";
   _.each(path,function(p){
     form = _.find(form.fields,{name:p})
@@ -15,7 +13,10 @@ renderBuilder = function(){
 
   
   $(target).append('<hr>')
-
+  return form;
+}
+renderBuilder = function(){
+   var form = renderNav(myform);
   
   if(typeof cb === 'undefined'){
     cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
@@ -162,7 +163,12 @@ mainForm = function(){
       renderBuilder();
     })
   }else{
-    var formConfig = new Cobler.types[gform.types[form.type].base]();
+    var workingForm = myform;
+    _.each(path,function(p){
+      workingForm = _.find(workingForm.fields,{name:p})
+    })
+
+    var formConfig = new Cobler.types[gform.types[workingForm.type].base]();
     $("#mainform").html(gform.renderString(accordion))
 
     $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
@@ -182,16 +188,15 @@ mainForm = function(){
       fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
-      // form = _.extend(form,e.form.get())
       var workingForm = myform;
         _.each(path,function(p){
           workingForm = _.find(workingForm.fields,{name:p})
         })
-        
-      // workingForm = 
-      _.extend(workingForm,e.form.get())
-      
-
+        if(typeof e.field.data !== 'undefined' && e.field.data.section){
+          if(e.form.get().name == workingForm.name && e.field.name =="label"){workingForm.label =e.form.get().label}
+          if(e.form.get().label == workingForm.label&& e.field.name =="name"){workingForm.name =e.form.get().name}
+        }
+        renderNav(myform);
     })
 
   }
@@ -214,7 +219,7 @@ renderBuilder()
 
 document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  myform = loaded.code.form || {};
+  myform = _.extend({},loaded.code.form)
   // $('#cobler').click();
   path = [];
   // $(e.target).siblings().removeClass('active');
