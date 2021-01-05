@@ -356,6 +356,18 @@ class WorkflowSubmissionActionController extends Controller {
                 case "email":
                     if(!isset($workflow_instance->configuration->suppress_email_tasks) || !$workflow_instance->configuration->suppress_email_tasks){ 
                         $content = "Workflow Notification Email";
+                        if(!is_null($task->template)){
+                            $template_name = $task->template;
+
+                            $template = Arr::first($workflow_instance->version->code->templates, function ($value, $key) use ($template_name) {
+                                return "template_".$key === $template_name;
+                            }); // Needs error handling if this is null!
+
+                            if(!is_null($template)){
+                                $task->content = $template->content;
+                            }
+                        }
+
                         if($task->content){
                             $content = $m->render($task->content, $data);
                         }

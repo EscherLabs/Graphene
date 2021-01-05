@@ -428,6 +428,10 @@ function load(workflow_version) {
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
     }));
+
+    gform.collections.update('templates', _.map(_.pluck(templatePage.toJSON(),'name'),function(item,i){
+      return {value:"template_"+i,label:item}
+    }));
     bt.fixStyle()
   })
   // wf_form = "{}";
@@ -1020,8 +1024,11 @@ var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"},20));
 gform.collections.add('form_groups', temp.filter({type:"group"},20));
 
-gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
+gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i){
   return {value:"method_"+i,label:item}
+}));
+gform.collections.add('templates', _.map(_.pluck(attributes.code.templates,'name'),function(item,i){
+  return {value:"template_"+i,label:item}
 }));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
@@ -1071,7 +1078,11 @@ var taskForm = [
 
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "template", type: "smallcombo", value:"",
+  options:[
+    {value:"",label:"Custom body template"},{type:'optgroup',options:'templates',format:{label:"Template: {{label}}"}}],
+    label: "Body Template",show: [{type: "matches", name: "task", value: 'email'}],strict:true},
+  {name: "content", type: "textarea", label: "Custom Body",show: [{type: "matches", name: "task", value: 'email'},{type: "matches", name: "template", value: ''}]},
   {name: "resource",columns:8, type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "verb",columns:4, label: "Verb", type: "select", options: ["GET","POST","PUT","DELETE"],show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
