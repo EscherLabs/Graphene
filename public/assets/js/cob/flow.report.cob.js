@@ -283,6 +283,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     gform.collections.update('files',_.where(mappedData.history,{file:true}));
                     var field = gform.instances.modal.find({shown:true,type:'files'});
                     if(field){
+                      field.set(response.name)
+                      field.renderMenu();
                       $('[href="'+_.find(field.options,{id:response.id}).path+'"]').click()
                     }
                   }

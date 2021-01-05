@@ -465,6 +465,8 @@ Cobler.types.Workflow = function(container){
         this.get().current.files = files
         var field = this.form.find({shown:true,type:'files'});
         if(field){
+          field.set(response.name)
+          field.renderMenu();
           $('[href="'+_.find(field.options,{id:response.id}).path+'"]').click()
           // field.el.find((response.name)
         }
