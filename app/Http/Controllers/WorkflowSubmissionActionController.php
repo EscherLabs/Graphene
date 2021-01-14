@@ -112,11 +112,12 @@ class WorkflowSubmissionActionController extends Controller {
         });
         $previous_status = $workflow_submission->status;
         // Get Action (Object)
-        //01/05/2020, AKT - Changed request() to $request in order to be able to use request parameter sent to function
+        // 01/05/2021, AKT - Changed request() to $request in order to be able to use request parameter sent to function
         //added use($request) in the callback function to able to use the parameter
-        $action = Arr::first($previous_state->actions, function ($value, $key) use ($request){
+        $action = Arr::first($previous_state->actions, function ($value, $key) use ($request) {
             return $value->name === $request->get('action');
         });
+
         // Set New State (String)
         $workflow_submission->state = $action->to;   
         // Determine New State (Object) -- State we are entering
@@ -138,7 +139,7 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
         $state_data['owner']['is'] = [];
 
-        //01/05/2020, AKT - Added $is_internal the actor of the workflow
+        // 01/05/2021, AKT - Added $is_internal the actor of the workflow
         if (isset($previous_state->logic) || $is_internal
         ) {
             $state_data['actor'] = null;
@@ -492,7 +493,7 @@ class WorkflowSubmissionActionController extends Controller {
 You may view the current status as well as the complete history of this workflow here: {{report_url}}
 ';
         $subject = 'Update '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
-        // Send Email To Owner (if the owner is not also the asignee)
+        // Send Email To Owner (if the owner is not also the assignee)
         if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']) 
             || isset($state_data['assignment']['group'])) {
             $to = $state_data['owner'];
@@ -576,7 +577,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
         }
     }
 
-    // 01/12/2020, AKT - Implemented inactivity related
+    // 01/12/2021, AKT - Implemented inactivity related
     public function workflow_automated_inactivity(){
         //Get all the open submissions
         $submissions =  WorkflowSubmission::where('status','open')->get();
@@ -593,30 +594,35 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
             if(isset($instance)){
                 //Calling findVersion function to get version information
                 $instance->findVersion();
-                foreach ($instance->workflow->code->flow as $state) { //Goes through each state of the workflow
-                    foreach ($state->actions as $action) { // Goes through each action of the state
-//                    try{
-                        //Checks if the action is an internal action and the last updated date is equal to or greater than delay of the internal action
-                        if (isset($action->assignment) && $action->assignment->type === 'internal' &&
-                            isset($action->assignment->delay) && $submission->updated_at->diffInDays(Carbon::now()) >= $action->assignment->delay
-                            && isset($action->name) && !is_null($action->name)) {
-                            // Creating a new request
-                            $action_request = new Request();
-                            $action_request->setMethod('PUT'); //Setting the request type to PUT
-                            $action_request->request->add(["action" => $action->name, "comment" => "Automated ".$action->label." action was taken due to inactivity for ".$action->assignment->delay." days"]); // Setting the request parameters
-                            $submission->assignment_type = $action->assignment->type; // Setting the assignment type of the action
-                            $w_instances[] = [
-                                "assignment" => $action->assignment, //returns the assignment type of the action
-                                "result" => $this->action($submission, $action_request, true), // runs the action method
-                                "submission_id" => $submission->id, // submission id
-                                "time" => Carbon::now(), // current date to compare to submission updated date
-                                "delay" => $action->assignment->delay, // delay(days) of the action
-                                "updated_at" => $submission->updated_at->toDateTimeString(), // submission assignment date
-                                "diff" => $submission->updated_at->diffInDays(Carbon::now()) // Day difference between now and the last updated date of the submission - Validating the actions those were run
-                            ];
+
+                //Getting the current state of the workflow
+                $state = Arr::first($instance->workflow->code->flow,function($value,$key) use ($submission){
+                    return $value->name === $submission->state;
+                });
+                // If the state is a valid state, then continue
+                if(isset($state) && !is_null($state)){
+                    if($submission->state === $state->name){
+                        foreach ($state->actions as $action) { // Goes through each action of the state
+                            //Checks if the action is an internal action and the last updated date is equal to or greater than delay of the internal action
+                            if (isset($action->assignment) && $action->assignment->type === 'internal' &&
+                                isset($action->assignment->delay) && $submission->updated_at->diffInDays(Carbon::now()) >= $action->assignment->delay &&
+                                isset($action->name) && !is_null($action->name)) {
+
+                                $action_request = new Request();// Creating a new request
+                                $action_request->setMethod('PUT'); //Setting the request type to PUT
+                                $action_request->request->add(["action" => $action->name, "comment" => "Automated " . $action->label . " action was taken due to inactivity for " . $action->assignment->delay . " days"]); // Setting the request parameters
+                                $submission->assignment_type = $action->assignment->type; // Setting the assignment type of the action
+                                $w_instances[] = [
+                                    "assignment" => $action->assignment, //returns the assignment type of the action
+                                    "submission_id" => $submission->id, // submission id
+                                    "time" => Carbon::now(), // current date to compare to submission updated date
+                                    "delay" => $action->assignment->delay, // delay(days) of the action
+                                    "updated_at" => $submission->updated_at->toDateTimeString(), // submission assignment date
+                                    "diff" => $submission->updated_at->diffInDays(Carbon::now()), // Day difference between now and the last updated date of the submission - Validating the actions those were run
+                                    "result" => $this->action($submission, $action_request, true) // runs the action method
+                                ];
+                            }
                         }
-//                    }catch (\Exception $e){
-//                    }
                     }
                 }
             }
