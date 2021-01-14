@@ -16,3 +16,6 @@ config/database.php
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+#Don't include PhpStorm config folders/ files
+.idea

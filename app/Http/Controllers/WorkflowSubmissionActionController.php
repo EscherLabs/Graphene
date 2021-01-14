@@ -93,8 +93,8 @@ class WorkflowSubmissionActionController extends Controller {
             return false;
         }
     }
-
-    public function action(WorkflowSubmission $workflow_submission, Request $request) {
+    // 01/14/2021, AKT -  Added a new parameter with a default value for automated workflow actions
+    public function action(WorkflowSubmission $workflow_submission, Request $request,$is_internal=false){
         if ($this->detect_infinite_loop()) {
             return response('Infinite Loop Detected! Quitting!', 508);
         }
@@ -112,9 +112,11 @@ class WorkflowSubmissionActionController extends Controller {
         });
         $previous_status = $workflow_submission->status;
         // Get Action (Object)
-        $action = Arr::first($previous_state->actions, function ($value, $key) {
-            return $value->name === request()->get('action');
-        });  
+        //01/05/2020, AKT - Changed request() to $request in order to be able to use request parameter sent to function
+        //added use($request) in the callback function to able to use the parameter
+        $action = Arr::first($previous_state->actions, function ($value, $key) use ($request){
+            return $value->name === $request->get('action');
+        });
         // Set New State (String)
         $workflow_submission->state = $action->to;   
         // Determine New State (Object) -- State we are entering
@@ -135,7 +137,10 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
         $state_data['owner']['is'] = [];
-        if (isset($previous_state->logic)) {
+
+        //01/05/2020, AKT - Added $is_internal the actor of the workflow
+        if (isset($previous_state->logic) || $is_internal
+        ) {
             $state_data['actor'] = null;
             $state_data['owner']['is']['actor'] = false;
         } else {
@@ -181,7 +186,8 @@ class WorkflowSubmissionActionController extends Controller {
             // No Permission Check for Logic Block
         } else {
 
-            if (isset($action->assignment)) {  // This action can be performed by action asignee
+            // 01/14/2021, AKT - Added is_internal to make sure the code below won't run if the action function is called by an automated job.
+            if (isset($action->assignment) && !$is_internal) {  // This action can be performed by action asignee
                 $action_assignment_type = $m->render($action->assignment->type, $state_data);
                 $action_assignment_id = $m->render($action->assignment->id, $state_data);
                 if (($action_assignment_type === 'user' && $action_assignment_id === Auth::user()->unique_id) || 
@@ -190,8 +196,8 @@ class WorkflowSubmissionActionController extends Controller {
                 } else {
                     return response('Permission Denied', 403);
                 }        
-            } else { // This action can be performed by the state asignee
-                if ($start_assignment['assignment_type']== "internal" || ($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === Auth::user()->id) || 
+            } else { // This action can be performed by the state assignee
+                if ($start_assignment['assignment_type']== "internal" || ($start_assignment['assignment_type'] === 'user' && $start_assignment['assignment_id'] === Auth::user()->id) ||
                     ($start_assignment['assignment_type'] === 'group' && Auth::user()->group_member($start_assignment['assignment_id']))) {
                     // Continue!
                 } else {
@@ -215,7 +221,14 @@ class WorkflowSubmissionActionController extends Controller {
                     $workflow_submission->assignment_id = $user->id;
                     $state_data['assignment']['user'] = $user->only('first_name','last_name','email','unique_id','params');
                 } else if ($state->assignment->type == "group"){
-                    $group = Group::where("id",'=',$state_data['assignment']['id'])->where('site_id',config('app.site')->id)->first();
+                    // 01/14/2021, AKT - Added a condition to check if the code is being run internally.
+                    // Otherwise, it won't require the site_id because we won't have it.
+                    if(!$is_internal) {
+                        $group = Group::where("id", '=', $state_data['assignment']['id'])->where('site_id', config('app.site')->id)->first();
+                    }
+                    else{
+                        $group = Group::where("id", '=', $state_data['assignment']['id'])->first();
+                    }
                     if(is_null($group)) { throw new \Exception('Assigned Group Does Not Exist'); }
                     $workflow_submission->assignment_id = $group->id;
                     $state_data['assignment']['group'] = $group->only('name','slug','id');
@@ -265,17 +278,18 @@ class WorkflowSubmissionActionController extends Controller {
             $jsexec = new JSExecHelper(['_'=>'lodash.min.js','moment'=>'moment.js']);
             $logic_result = $jsexec->run($method_code,$state_data);
 
+            // 01/14/2021, AKT - Added $is_internal parameter to the action() function calls below to send the current value of $is_internal
             if ($logic_result['success']===false) {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
-                return $this->action($workflow_submission, $request); // action = error
+                return $this->action($workflow_submission, $request,$is_internal); // action = error
             } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
                 $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
                 $request->merge(['action'=>'true','comment'=>$comment]);
-                return $this->action($workflow_submission, $request); //action = true
+                return $this->action($workflow_submission, $request,$is_internal); //action = true
             } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
                 $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
                 $request->merge(['action'=>'false','comment'=>$comment]);
-                return $this->action($workflow_submission, $request); // action = false
+                return $this->action($workflow_submission, $request,$is_internal); // action = false
             }
         }
         else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
@@ -560,5 +574,53 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
             // Failed to Send Email... 
             // Continue Anyway.
         }
+    }
+
+    // 01/12/2020, AKT - Implemented inactivity related
+    public function workflow_automated_inactivity(){
+        //Get all the open submissions
+        $submissions =  WorkflowSubmission::where('status','open')->get();
+        //Get all the workflow instances
+        $all_instances = WorkflowInstance::get();
+
+        //Creating an array for development purposes
+        $w_instances=[];
+        foreach ($submissions as $submission){
+            //Find the instance of the submission
+            $instance = $all_instances->where('id',$submission->workflow_instance_id)->first();
+
+            //Check if the instance exist
+            if(isset($instance)){
+                //Calling findVersion function to get version information
+                $instance->findVersion();
+                foreach ($instance->workflow->code->flow as $state) { //Goes through each state of the workflow
+                    foreach ($state->actions as $action) { // Goes through each action of the state
+//                    try{
+                        //Checks if the action is an internal action and the last updated date is equal to or greater than delay of the internal action
+                        if (isset($action->assignment) && $action->assignment->type === 'internal' &&
+                            isset($action->assignment->delay) && $submission->updated_at->diffInDays(Carbon::now()) >= $action->assignment->delay
+                            && isset($action->name) && !is_null($action->name)) {
+                            // Creating a new request
+                            $action_request = new Request();
+                            $action_request->setMethod('PUT'); //Setting the request type to PUT
+                            $action_request->request->add(["action" => $action->name, "comment" => "Automated ".$action->label." action was taken due to inactivity for ".$action->assignment->delay." days"]); // Setting the request parameters
+                            $submission->assignment_type = $action->assignment->type; // Setting the assignment type of the action
+                            $w_instances[] = [
+                                "assignment" => $action->assignment, //returns the assignment type of the action
+                                "result" => $this->action($submission, $action_request, true), // runs the action method
+                                "submission_id" => $submission->id, // submission id
+                                "time" => Carbon::now(), // current date to compare to submission updated date
+                                "delay" => $action->assignment->delay, // delay(days) of the action
+                                "updated_at" => $submission->updated_at->toDateTimeString(), // submission assignment date
+                                "diff" => $submission->updated_at->diffInDays(Carbon::now()) // Day difference between now and the last updated date of the submission - Validating the actions those were run
+                            ];
+                        }
+//                    }catch (\Exception $e){
+//                    }
+                    }
+                }
+            }
+        }
+        return $w_instances;
     }
 }

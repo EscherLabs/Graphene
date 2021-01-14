@@ -28,6 +28,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        //Calls workflow_automated_inactivity function for inactivity based actions
+        $schedule->call('App\Http\Controllers\WorkflowSubmissionActionController@workflow_automated_inactivity')
+            ->name('scheduled_inactivity_action')
+            ->dailyAt(config('app.scheduled_inactivity'))
+            ->timezone('America/New_York')
+            ->onOneServer();
+
         // $schedule->command('inspire')
         //          ->hourly();
     }
