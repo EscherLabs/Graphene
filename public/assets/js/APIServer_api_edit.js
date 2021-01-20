@@ -100,7 +100,14 @@ function load(app_version) {
       // {type:'output',name:'test',format:{value:'<div></div>'},label:false},
       {
         "name":"resources",
-        "array":true,
+        "array": {
+            "min": 0,
+            "max": 50,
+            "duplicate": {
+                "enable": "auto",
+                "clone": false
+            }
+        },
         "type":"fieldset",
         "fields": [
           // "database": {}
