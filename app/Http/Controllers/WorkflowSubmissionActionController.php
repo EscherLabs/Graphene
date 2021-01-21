@@ -188,9 +188,8 @@ class WorkflowSubmissionActionController extends Controller {
         foreach($state->actions as $ar){
             if(!isset($ar->assignment) || // See if an assignment is made for the action. If not, then add it to the list of actions
                 (isset($ar->assignment) && // If assignment is set, then check
-                ($ar->assignment->type === 'user' && $ar->assignment->id === Auth::user()->unique_id) || // If the user is either authorized to take the action
-                ($ar->assignment->type === 'group' && Auth::user()->group_member($ar->assignment->id)) // If the user is an authorized group to take the action
-                )){
+                ($ar->assignment->type === 'user') || ($ar->assignment->type === 'group')) // If the action is either user group type
+                ){
                 $state_data['actions'][]= Arr::only((array)$ar,['label','name','type']); // Add the action to the list of actions to be sent in the email
             }
         }
@@ -459,10 +458,9 @@ class WorkflowSubmissionActionController extends Controller {
                     $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
 
                     foreach($files as $file) {
-//                        dd ($file->get_file_path());
                         Storage::delete($file->get_file_path());
                         Storage::delete($file->get_file_path().'.encrypted');
-                        $file->user_id_deleted = Auth::check()?Auth::user()->id:null;
+                        $file->user_id_deleted = Auth::check()?Auth::user()->id:null; // To see if the user is an authenticated user/ or an internal user
                         $file->save();
                         $file->delete();
                     }

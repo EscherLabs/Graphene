@@ -34,7 +34,7 @@ class WorkflowSubmissionFile extends Model
     public function file_dir() {
         // 01/21/2021, AKT - When running an internal call from the kernel, config('app.site')->id doesn't have a site_id
         // This function is also used when purging files by an automated internal call
-        // Thus, a new function (get_site_id) has been created to resolve the site_id
+        // Thus, a new private function (get_site_id) has been created to resolve the site_id
         return 'sites/'.$this->get_site_id().'/workflow_submissions/files';
     }
     public function get_file_path() {
@@ -43,12 +43,12 @@ class WorkflowSubmissionFile extends Model
     public function get_file_path_absolute() {
         return $this->root_dir().'/'.$this->file_dir().'/'.$this->id.'.'.$this->ext;
     }
+
     // 01/21/2021, AKT - Returns site_id
     private function get_site_id(){
         if(!isset(config('app.site')->id)) {// Checks if app.site has an id
-            // Uses the relationships between submission, instances and group to resolve the site_id
-            // The query can (should?) be improved
-            return $this->workflowSubmission()->first()->workflowInstance()->first()->group()->first()->site_id;
+//            // Uses the relationships between submission, instances and group to resolve the site_id
+            return $this->workflowSubmission->workflowInstance->group->site_id; // Returns the site id of the file
         }
         else{
             // Returns the current app.site's id (site_id)
