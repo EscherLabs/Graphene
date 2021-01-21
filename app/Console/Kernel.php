@@ -32,9 +32,9 @@ class Kernel extends ConsoleKernel
         $schedule->call('App\Http\Controllers\WorkflowSubmissionActionController@workflow_automated_inactivity')
             ->name('scheduled_inactivity_action')
             ->dailyAt(config('app.scheduled_inactivity'))
-            ->timezone('America/New_York');
-//            ->onOneServer();
-
+            ->timezone('America/New_York')
+            ->onOneServer();
+//
         // $schedule->command('inspire')
         //          ->hourly();
     }
