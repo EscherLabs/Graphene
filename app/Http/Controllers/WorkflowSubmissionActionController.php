@@ -461,7 +461,6 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     private function send_default_emails($state_data) {
-//        dd($state_data);
         $m = new \Mustache_Engine;
         // Email Actor and Owner
         $email_body = '
@@ -480,9 +479,13 @@ You may view the current status as well as the complete history of this workflow
 ';
         $subject = 'Update '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
         // Send Email To Owner (if the owner is not also the asignee)
-        // 01/22/2021, AKT - Fixed the code below to prevent sending emails to the owner if the actor is internal
-        if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']&& isset($state_data['actor']['id']))
-            || (isset($state_data['assignment']['group']) && isset($state_data['actor']['id']))) {
+        // 01/22/2021, AKT - Fixed the code below to prevent sending emails to the owner:
+        // if the actor is internal, if the owner is in the assigned group
+        if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']&& isset($state_data['actor']['unique_id']))
+            || (isset($state_data['assignment']['group']) &&
+                sizeof(array_filter($state_data['assignment']['group']['members'], // Do not send update emails if owner is in the assigned group
+                    function($el) use($state_data){ return $el['unique_id']===$state_data['owner']['unique_id'];}))===0
+                && isset($state_data['actor']['unique_id']))) {
             $to = $state_data['owner'];
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
