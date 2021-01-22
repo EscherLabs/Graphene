@@ -126,10 +126,18 @@ function App() {
 			return this.$el[0].querySelectorAll(selectors)
 		}.bind(this),
 		render:function(template, data){
-			return gform.m(this.partials[template],_.extend({}, this.partials, data));
+			var local_ractive = Ractive({
+			template: this.partials[template],
+			partials: this.partial,
+			data: data
+			});
+			return local_ractive.toHTML();
+
+			// return gform.m(this.partials[template],_.extend({}, this.partials, data));
 			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
-		version: function(){return '1.2.0'},
+
+		version: function(){return '1.2.1'},
 		findForm:function(name){
 			var form = _.find(this.options.config.forms,{name:name})
 			if(typeof form !== 'undefined'){
@@ -298,7 +306,8 @@ function(options){
 		for(var i in this.config.templates) {
 			this.partials[this.config.templates[i].name] = this.config.templates[i].content;
 		}
-		this.partials['Main'] = this.partials['Main']||'<div id="app_'+this.config.app_instance_id+'"></div>';
+		
+		this.partials['Main'] =  this.partials['Main'] || this.partials['main'] || '<div id="app_'+this.config.app_instance_id+'"></div>';
 		if(typeof this.config.scripts == 'object') {
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
