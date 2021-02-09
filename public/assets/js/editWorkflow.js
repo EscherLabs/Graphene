@@ -825,8 +825,8 @@ function drawForm(name){
    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
     {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
-    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
-    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
     name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
       {name: "label", label: "Label", columns: 6},
@@ -921,7 +921,7 @@ function drawForm(name){
 
       {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
-      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
+      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
     ], array: {max:100}
   } : {target:"#collapseLogic .panel-body", 
   name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
@@ -931,7 +931,7 @@ function drawForm(name){
   {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
     {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
-    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
+    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
   ], array: {min:3,max:3}
 })
 
@@ -1034,7 +1034,7 @@ var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
   
   
-    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:true,type:"fieldset",fields:[
+    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:{min:1,max:10},type:"fieldset",fields:[
         {name:"email_type",label:"Type",type:"select",options:[{label:"Email Address",value:"email"},{label:"User",value:"user"},{label:"Group",value:"group"}]},
         /* Begin Email Address Field */
         _.extend({label:'Email Address <span class="text-success pull-right">{{value}}</span>',name:"email_address",show:[{type:"matches",name:"email_type",value:"email"}],type:"user_email",options:[
