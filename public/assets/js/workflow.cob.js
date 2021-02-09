@@ -496,7 +496,7 @@ Cobler.types.collection = function(container) {
 			{label: 'User', value: 'user'},
 			// {label: 'User Email', value: 'user_email'},
 			// {label: 'Groups', value: 'Groups'},
-			{label: 'Groups', value: 'groups'},
+			{label: 'Group', value: 'group'},
 
 			{label: 'File', value: 'files'},
 			// {label: 'Grid', value: 'grid'},
@@ -509,6 +509,8 @@ Cobler.types.collection = function(container) {
 		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 		// 	// {name:"Title",label:"title"}
 		// ] },
+
+		{name:"strict",label:"Strict",type:"switch",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
 		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
