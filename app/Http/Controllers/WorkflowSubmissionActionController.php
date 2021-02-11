@@ -343,7 +343,12 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     private function executeTasks($tasks, $data, &$workflow_submission, &$workflow_instance){
-        $m = new \Mustache_Engine;
+        $m = new \Mustache_Engine([
+            'escape' => function($value) {
+                $value = is_array($value) ? implode(',', $value) : $value;
+                return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+            }
+        ]);
 
         foreach($tasks as $task){
             $task->data = [];
@@ -383,23 +388,36 @@ class WorkflowSubmissionActionController extends Controller {
                                     $to[] = $email_addres;
                                 }
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'email') {
-                                $email_address = $m->render($to_info->email_address, $data);
-                                if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
-                                    $to[] = $email_address;
+                                $email_addresses = $m->render($to_info->email_address, $data);
+                                $email_addresses = explode(',',$email_addresses);
+
+                                foreach ($email_addresses as $email_address) {
+                                    if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
+                                        $to[] = $email_address;
+                                    }
                                 }
+
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'user') {
-                                $user_unique_id = $m->render($to_info->user, $data);
-                                $user = User::select('email')->where("unique_id",'=',$user_unique_id)->first();
-                                if (!is_null($user)) { $to[] = $user->email; }    
+                                $user_unique_ids = $m->render($to_info->user, $data);
+                                $user_unique_ids = explode(',',$user_unique_ids);
+
+                                foreach ($user_unique_ids as $user_unique_id) {
+                                    $user = User::select('email')->where("unique_id", '=', $user_unique_id)->first();
+                                    if (!is_null($user)) { $to[] = $user->email; }
+                                }
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'group') {
-                                $group_id = $m->render($to_info->group, $data);
-                                $users = User::select('email')
-                                    ->whereHas('group_members', function($q) use ($group_id) {
-                                        $q->where('group_id','=',$group_id);
-                                    })->get();
-                                foreach($users as $user) { 
-                                    $to[] = $user->email; 
-                                }    
+                                $group_ids = $m->render($to_info->group, $data);
+                                $group_ids = explode(',',$group_ids);
+
+                                foreach ($group_ids as $group_id) {
+                                    $users = User::select('email')
+                                        ->whereHas('group_members', function($q) use ($group_id) {
+                                            $q->where('group_id','=',$group_id);
+                                        })->get();
+                                    foreach($users as $user) {
+                                        $to[] = $user->email;
+                                    }
+                                }
                             }
                         }
                         try {
