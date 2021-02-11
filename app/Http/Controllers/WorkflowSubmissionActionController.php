@@ -346,7 +346,7 @@ class WorkflowSubmissionActionController extends Controller {
         //02/11/2021, AT - Added support for array of different type of fields, such as users, groups and emails for the task emails
         $m = new \Mustache_Engine([
             'escape' => function($value) {
-                $value = is_array($value) ? implode(',', $value) : $value;
+                $value = is_array($value)?implode(',',$value):$value;
                 return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
             }
         ]);
@@ -392,18 +392,15 @@ class WorkflowSubmissionActionController extends Controller {
                                 //02/11/2021, AT - Added support for array of emails
                                 $email_addresses = $m->render($to_info->email_address, $data);
                                 $email_addresses = explode(',',$email_addresses);
-
                                 foreach ($email_addresses as $email_address) {
                                     if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
                                         $to[] = $email_address;
                                     }
                                 }
-
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'user') {
                                 //02/11/2021, AT - Added support for array of users
                                 $user_unique_ids = $m->render($to_info->user, $data);
                                 $user_unique_ids = explode(',',$user_unique_ids);
-
                                 foreach ($user_unique_ids as $user_unique_id) {
                                     $user = User::select('email')->where("unique_id", '=', $user_unique_id)->first();
                                     if (!is_null($user)) { $to[] = $user->email; }
@@ -412,7 +409,6 @@ class WorkflowSubmissionActionController extends Controller {
                                 //02/11/2021, AT - Added support for array of groups
                                 $group_ids = $m->render($to_info->group, $data);
                                 $group_ids = explode(',',$group_ids);
-
                                 foreach ($group_ids as $group_id) {
                                     $users = User::select('email')
                                         ->whereHas('group_members', function($q) use ($group_id) {
