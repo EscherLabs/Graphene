@@ -343,6 +343,7 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     private function executeTasks($tasks, $data, &$workflow_submission, &$workflow_instance){
+        //02/11/2021, AT - Added support for array of different type of fields, such as users, groups and emails for the task emails
         $m = new \Mustache_Engine([
             'escape' => function($value) {
                 $value = is_array($value) ? implode(',', $value) : $value;
@@ -388,6 +389,7 @@ class WorkflowSubmissionActionController extends Controller {
                                     $to[] = $email_addres;
                                 }
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'email') {
+                                //02/11/2021, AT - Added support for array of emails
                                 $email_addresses = $m->render($to_info->email_address, $data);
                                 $email_addresses = explode(',',$email_addresses);
 
@@ -398,6 +400,7 @@ class WorkflowSubmissionActionController extends Controller {
                                 }
 
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'user') {
+                                //02/11/2021, AT - Added support for array of users
                                 $user_unique_ids = $m->render($to_info->user, $data);
                                 $user_unique_ids = explode(',',$user_unique_ids);
 
@@ -406,6 +409,7 @@ class WorkflowSubmissionActionController extends Controller {
                                     if (!is_null($user)) { $to[] = $user->email; }
                                 }
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'group') {
+                                //02/11/2021, AT - Added support for array of groups
                                 $group_ids = $m->render($to_info->group, $data);
                                 $group_ids = explode(',',$group_ids);
 
