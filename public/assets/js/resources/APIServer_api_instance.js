@@ -46,15 +46,20 @@ $.ajax({
 					]},'.main')
 
 				if(api.api_version.resources.length >0 && api.api_version.resources[0].name.length){
-					var data = _.merge(api,api.api_version)
+
+					var resources = _.map(api.api_version.resources,function(resource){
+						resource.resource = parseInt((_.find(this.resources,{name:resource.name}) ||{resource:null}).resource);
+						return resource
+					}.bind({resources:api.resources}))
+
 					new gform({
 						name: 'resources',
-						data: data,
+						data: {resources:resources},
 						actions:[],
 						
 						fields:[
-								{array:{min:data.resources.length,max:data.resources.length},label: '', name: 'resources', type: 'fieldset', fields:[
-									{label:false, name: 'name',columns:4, type:'output', format:{value:'<label class="control-label" style="float:right">{{value}}: </lable>'}},
+								{array:{min:resources.length,max:resources.length},label: '', name: 'resources', type: 'fieldset', fields:[
+									{label:false, name: 'name',columns:4, type:'output', format:{value:'<label class="control-label" style="float:right">{{value}}: </label>'}},
 									{name: 'resource',label:false,columns:8, type: 'select', options: '/api/proxy/'+slug+'/resources/type/'+api.environment.type,format:{label:"{{name}}",value:function(item){return item.id;}}},
 									{label:false, name: 'name',columns:0, type:'hidden'}
 								]}			
@@ -128,7 +133,6 @@ $.ajax({
 					}
 				]
 				}).on('save',function(e){
-					debugger;
 					var temp = this.attributes;
 					temp.params = e.form.get().params
 					this.set(temp)

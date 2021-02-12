@@ -17,7 +17,7 @@
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
-    <li><a href="#" id="instances">Instances</a></li>
+    <!-- <li><a href="#" id="instances">Instances</a></li> -->
     <li role="separator" class="divider"></li>
     <li><a href="#" id="publish">Publish (new version)</a></li>
     <!-- <li><a href="#">Visit</a></li> -->
@@ -148,7 +148,7 @@
 
   <script src='/assets/js/paged.js'></script> 
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-  <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/templates/admin.js'></script> -->
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
   <!-- <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
@@ -180,6 +180,7 @@
   <script src='/assets/js/vendor/moment_datepicker.js'></script>
   
   <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
+  <script type='text/javascript' src='/assets/js/vendor/popper.min.js'></script>
   <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
   
   <script type='text/javascript' src='/assets/js/editApp.js'></script>

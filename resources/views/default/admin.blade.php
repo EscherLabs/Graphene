@@ -15,6 +15,7 @@
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
     <link href="/assets/css/toastr.min.css" rel="stylesheet">
+    <link rel='stylesheet' type='text/css' href='/assets/css/colorpicker.min.css'>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
@@ -185,7 +186,6 @@
     <script src='/assets/js/vendor/summernote.min.js'></script>
     <script src='/assets/js/vendor/dropzone.min.js'></script>
 		<script src="/assets/js/vendor/sortable.js"></script>
-		<script src="/assets/js/templates/admin.js"></script>
     <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
     <script src='/assets/js/vendor/toastr.min.js'></script> 
     @yield('end_body_scripts_top')
@@ -195,6 +195,8 @@
     <script src='/assets/js/vendor/state-machine.js'></script>
 
     <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
+    <script src="/assets/js/templates/admin.js"></script>
+
     <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>
         <script src='/assets/js/lib.js'></script> 
  
@@ -218,11 +220,11 @@
       "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
       @endcan   
       @can('create','App\AppInstance')
-      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
+      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createappinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
       @endcan   
 
       @can('create','App\WorkflowInstance')
-      "<a href='#' style='border-left-color:#167ed8' class='list-group-action' data-action='createworkflow'><i class='fa fa-check'></i> Workflow Instance</a>"+
+      "<a href='#' style='border-left-color:#167ed8' class='list-group-action' data-action='createworkflowinstance'><i class='fa fa-check'></i> Workflow Instance</a>"+
       @endcan   
 
       @can('create','App\Endpoint')

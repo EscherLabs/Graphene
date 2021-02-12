@@ -1,11 +1,11 @@
-  <div class="row">
+<div class="row">
     <div class="col-md-9">  
     <div class="pull-right" style="width: 300px;height: 40px;" id="search"></div>
 
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         {{#app_developers.length}}<li role="presentation" class="active"><a href="#uapps" aria-controls="uapps" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> <span class="hidden-xs hidden-sm">My &mu;Apps<span></a></li>{{/app_developers.length}}
-        {{#workflows.length}}<li role="presentation"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab"><i class="fa fa-check"></i> <span class="hidden-xs hidden-sm">My Workflows</span></a></li>{{/workflows.length}}
+        {{#workflow_developers.length}}<li role="presentation"><a href="#workflows" aria-controls="workflows" role="tab" data-toggle="tab"><i class="fa fa-check"></i> <span class="hidden-xs hidden-sm">My Workflows</span></a></li>{{/workflow_developers.length}}
 
         <li role="presentation" {{^app_developers.length}} class="active" {{/app_developers.length}}><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab"><i class="fa fa-lock"></i> <span class="hidden-xs hidden-sm">My Groups</span></a></li>
 
@@ -46,7 +46,7 @@
                       </ul>
                     </div>
 
-                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
+                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i> {{name}}</div>
                       <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
                       {{#unlisted}}
                       <i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
@@ -150,7 +150,7 @@
         </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane groups {{^app_developers.length}}active{{/app_developers.length}}" id="groups">
+        <div role="tabpanel" class="tab-pane groups {{^app_developers.length}}{{^workflow_developers.length}}active{{/workflow_developers.length}}{{/app_developers.length}}" id="groups">
         <div class="masonry-grid">
         {{#group_admins}}
         <div class="filterable grid-item" style="display:inline-block;">
@@ -295,7 +295,8 @@
 
         <div role="tabpanel" class="tab-pane workflows" id="workflows">
         <div class="masonry-grid">
-        {{#workflows.length}}
+        {{#workflow_developers}}
+        {{#workflow}}
 
         <div class="filterable grid-item" style="display:inline-block;">
         		<div class="panel panel-default" style="border-top: solid 3px #9ac337;">
@@ -309,8 +310,9 @@
               <div class="panel-content" style="padding:15px 10px 10px">
                 <p style="color: #666;font-size: small;">{{description}}</p>
                   {{#workflow_instances}}
-                  <div class="appInstance">
-                 
+
+                  <div class="workflowInstance">
+
                     <div class="dropdown parent-hover pull-right">
                       <a id="dLabel" href="javascript:void(0);" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i style="padding: 5px 10px;" class="fa fa-ellipsis-v"></i>
@@ -325,7 +327,7 @@
                       </ul>
                     </div>
 
-                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i>{{name}} </div>
+                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseExample{{id}}" aria-expanded="false" aria-controls="collapseExample{{id}}"><span class="fa fa-collapse"></span><span class="pull-right text-muted">{{group.name}}</span> <div> <i class="fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}"></i> {{name}}</div>
                       <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
                       {{#unlisted}}
                       <i title="Unlisted" data-toggle="tooltip" data-placement="top" class="text-warning fa fa-unlink"></i>
@@ -347,6 +349,15 @@
                       <i title="Open to Group Members" data-toggle="tooltip" data-placement="top"  class="fa fa-users"></i>
                       {{/composite_limit}}
 
+                      {{#configuration.suppress_emails}}
+                      <i title="Suppress Emails" data-toggle="tooltip" data-placement="top"  class="fa fa-envelope text-danger"></i>
+                      {{/configuration.suppress_emails}}
+                      {{^configuration.suppress_emails}}
+                      <i title="Send Emails" data-toggle="tooltip" data-placement="top"  class="fa fa-envelope text-success"></i>
+                      {{/configuration.suppress_emails}}
+
+
+
                       {{^hidden_xs}}
                       <i class="pull-right fa fa-phone"></i>
                       {{/hidden_xs}}
@@ -367,6 +378,7 @@
                       <div style="background: #ffffff;padding: 10px 15px 5px;overflow:scroll">
                       <h5>{{version.summary}}</h5>
                       <p class="text-muted">{{version.description}}</p>
+                      <dl class="dl-horizontal"><dt>Initial State:</dt><dd>{{configuration.initial}}{{^configuration.initial}}<span class="text-danger"> - None - </span>{{/configuration.initial}}</dd></dl>
 
                         {{#resources.length}}
                         <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
@@ -394,8 +406,9 @@
 
 				    </div>
         </div>
+        {{/workflow}}
 
-        {{/workflows.length}}
+        {{/workflow_developers}}
         </div>
         </div>
 
@@ -436,4 +449,3 @@
           {{^group_members.length}}None{{/group_members.length}}{{#group_members}}<div>{{group.name}}</div>{{/group_members}}
     </div>
   </div>
-  

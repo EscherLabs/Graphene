@@ -37,7 +37,10 @@ class CASAuth
             if ($user->$attribute_name !== '' && $user->$attribute_name !== null && $new_attribute_value === '') {
                 continue;
             }
-
+            // Never update unique_id if unique_id is already set
+            if ($attribute_name === 'unique_id' && isset($user->unique_id)) {
+                continue;
+            }
             $user->$attribute_name = $new_attribute_value;
             // Allow null emails but not empty string email
             if ($attribute_name === 'email' && $new_attribute_value === '') {

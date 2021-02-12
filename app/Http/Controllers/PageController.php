@@ -202,6 +202,7 @@ class PageController extends Controller
                 'id'=>$myPage->id,
                 'resource'=>'page',
                 'name'=>$myPage->name,
+                'mobile_order'=>$myPage->mobile_order,
             ]);            
         }
         abort(404,'Page not found');

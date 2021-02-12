@@ -129,9 +129,21 @@ function load(app_version) {
   //     toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
   //   }
   // }});
+  formIndex = 0;
+  working_forms = _.each(loaded.code.forms,function(form,i){
+    if(typeof form.content == 'string'){
+      form.content = JSON.parse(form.content||'{"fields":[]}');
+      if(_.isArray(form.content) &&  form.content.length){
+        form.content = {fields:[]};
+      }
+    }
+    form.content.name = form.name || form.content.name;
+    form.i = i+'';
+    form.label = form.content.legend||form.content.name;
+  })
+  setupform();
 }
-load(loaded.code);
-orig = $.extend({},loaded);
+
 
 
 $(document).keydown(function(e) {
@@ -251,11 +263,12 @@ $('#save').on('click',function() {
 
   if(!errorCount){
     data.code.scripts = scriptPage.toJSON();
-    data.code.forms = _.map(working_forms,function(form){
+    data.code.forms = _.map(working_forms,function(original_form){
+      var form = JSON.parse(JSON.stringify(original_form));
       if(typeof form.content == 'object'){
         form.content = JSON.stringify(form.content)
       }
-      return form;
+      return _.omit(form,'i');
     })
 
 
@@ -267,6 +280,7 @@ $('#save').on('click',function() {
       data: data,
       success:function(e) {
         attributes.updated_at = e.updated_at;
+        loadInstances();
         toastr.success('', 'Successfully Saved')
       },
       error:function(e) {
@@ -336,18 +350,270 @@ $('#publish').on('click', function() {
         }
   });
 });
+loadInstances = function(){
+  $.get('/api/appinstances?app_id=' + loaded.app_id, function(app_instances) {
+    if(app_instances.length > 0){
+      // viewTemplate = Hogan.compile();
 
-$('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/app/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/appinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-  $.get('/api/appinstances?app_id=' + loaded.app_id, function(data) {
-    if(data.length > 0){
-      modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
-    }else{
-      modal({title: 'No instances Found', content: 'This App is not currently instantiated.'});
-    }
+      // modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
+
+
+        app_instances = _.map(app_instances, function(instance){
+          instance.options = _.each(instance.options, function(option, i){
+            return {key: i, value: option};
+          })
+          instance.user_options_default = _.map(instance.options, function(user_option, i){
+            return {key: i, value: user_option};
+          })
+          if(instance.version !== null) {
+            instance.resources = _.map(instance.resources, function(instance, resource, i){
+              // var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+              // if(typeof group !== 'undefined'){
+                resource.endpoint = _.find(instance.group.endpoints,{id:parseInt(resource.endpoint)})
+              // }
+              
+              resource.resource = _.find(instance.version.resources,{name:resource.name})
+              return resource;
+            }.bind(null, instance))
+          }
+          instance.version_summary = (instance.version !== null )?instance.version.summary||'Working Version':"Please configure version";
+          
+          instance.version_id =  (instance.app_version_id!==null ? (instance.app_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.app_version_id+')') : "Latest Saved");
+
+          instance.error = (instance.version === null )||!!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length ||!!_.difference(_.pluck(instance.resources ,'name'),_.pluck(instance.version.resources,'name')).length
+          return instance;
+        })
+      }
+      // gform.addClass(document.querySelector('.nav-sidebar'),'hidden');
+      if(document.querySelector('.sidebar').querySelector('#instances') !== null){
+        document.querySelector('.sidebar').querySelector('#instances').remove();
+      }
+      document.querySelector('.sidebar').appendChild(gform.create(gform.m(`<div id="instances" style="margin: 0 -15px">
+      <hr><h5 style="color:#fefefe">Instances</h5>
+      <style>.appInstance{
+        color: #ddd;
+        text-decoration: none;
+        border:solid 1px #333;
+        border-width:1px 0;
+        cursor: pointer;
+        background: #666;
+        padding: 5px;
+        position:relative;
+      }
+      .appInstance  #dLabel{
+        color: #ddd;
+      }
+      .appInstance .fa-warning.text-danger{
+        position: absolute;
+        left: 70px;
+        top: 20px;
+        font-size: 50px;
+        text-shadow: 0px 0px 3px #fff;
+      }
+      .fa-lock-0:before{
+        content:"\f023";
+      }
+      .fa-lock-:before{
+        content:"\f09c";
+      }
+      
+    </style>
+      {{#app_instances}}
+      <div class="appInstance">
+        {{#error}}<a href="/admin/appinstances/{{id}}" target="_blank" class="fa fa-warning text-danger"></a>{{/error}}
+        <div class="btn-group parent-hover" style="position: absolute;right: 2px;top:2px">
+        <a class="btn btn-xs btn-default" target="_blank" href="/app/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i></a>
+        <a class="btn btn-xs btn-default" href="/admin/appinstances/{{id}}"><i class="fa fa-pencil"></i></a>
+      </div>
+        <div data-appID={{id}}>
+        
+        <div style="overflow:hidden">
+          {{group.name}}
+
+        </div> 
+        <div> <i class="pull-right fa {{#app_version_id}}fa-lock{{/app_version_id}} {{^app_version_id}}fa-lock-{{app_version_id}}{{/app_version_id}}" style="padding-top:3px"></i> {{name}}</div>
+          <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
+          {{#unlisted}}
+          <i class="fa fa-unlink"></i>
+          {{/unlisted}}
+          {{^unlisted}}
+          <i class="fa fa-link"></i>
+          {{/unlisted}}
+          {{#public}}
+          <i class=" fa fa-eye"></i>
+          {{/public}}
+          {{^public}}
+          <i class="fa fa-eye-slash"></i>
+          {{/public}}
+
+          {{#composite_limit}}
+          <i class="fa fa-user"></i>
+          {{/composite_limit}}
+          {{^composite_limit}}
+          <i class="fa fa-users"></i>
+          {{/composite_limit}}
+
+          {{^hidden_xs}}
+          <i class="pull-right fa fa-phone"></i>
+          {{/hidden_xs}}
+          {{^hidden_sm}}
+          <i class="pull-right fa fa-mobile"></i>
+          {{/hidden_sm}}
+          {{^hidden_md}}
+          <i class="pull-right fa fa-desktop"></i>
+          {{/hidden_md}}
+
+          <!--i class="pull-right device_{{device}}"></i-->
+
+          </div>
+        </a>
+        </div>
+      
+      </div>
+        
+      {{/app_instances}}
+      {{^app_instances}}
+      <div class="appInstance">No instances</div>
+      {{/app_instances}}</div>`,{app_instances: app_instances})))
+      $('#instances').on('click','[data-appID]',function(app_instances,e){
+        var temp = _.find(app_instances, {id:parseInt(e.currentTarget.dataset.appid)});
+        modal({title: temp.name, content: gform.m(`
+
+        <div class="">
+          <div class="row">
+            <dl class="dl-horizontal col-md-6">
+              <dt>Group:</dt>
+              <dd>{{group.name}} <span class="text-muted">({{group.id}})</span></dd>
+              <dt>Name:</dt>
+              <dd>{{name}}</dd>
+              <dt>Slug:</dt>
+              <dd>{{slug}}</dd>
+              <dt>Icon:</dt>
+              <dd><i class="{{icon}}"></i> ({{^icon}} - None - {{/icon}}{{icon}})</dd>
+              
+              <dt>Version Selected:</dt>
+              <dd>{{version_id}}</dd>
+              <dt>Using Version:</dt>
+              <dd>{{version_summary}}<p class="text-muted">{{description}}</p></dd>
+            </dl>
+            <dl class="dl-horizontal col-md-6">
+              <dt>Included in menu:</dt>
+              <dd>          
+              {{#unlisted}}
+              No <i class="text-warning pull-right fa fa-unlink"></i>
+              {{/unlisted}}
+              {{^unlisted}}
+              Yes <i class="pull-right fa fa-link"></i>
+              {{/unlisted}}
+              </dd>
+              <dt>Public:</dt>
+              <dd>          
+              {{#public}}
+              Yes <i class="pull-right text-success fa fa-eye"></i>
+              {{/public}}
+              {{^public}}
+              No <i class="pull-right text-danger fa fa-eye-slash"></i>
+              {{/public}}</dd>
+              <dt>Limit To Composites:</dt>
+              <dd>
+              {{#composite_limit}}
+              Yes <i class="fa fa-user"></i>
+              {{/composite_limit}}
+              {{^composite_limit}}
+              No, Open to all Group Members <i class="pull-right fa fa-users"></i>
+              {{/composite_limit}}
+              </dd>
+              <dt>Phone:</dt>
+              <dd>
+              {{^hidden_xs}}
+              Yes
+              {{/hidden_xs}}
+              {{#hidden_xs}}
+              No
+              {{/hidden_xs}}
+              </dd>
+              <dt>Tablet:</dt>
+              <dd>
+              {{^hidden_sm}}
+              Yes
+              {{/hidden_sm}}
+              {{#hidden_sm}}
+              No
+              {{/hidden_sm}}
+              </dd>
+              <dt>Desktop:</dt>
+              <dd>
+              {{^hidden_md}}
+              Yes
+              {{/hidden_md}}
+              {{#hidden_md}}
+              No
+              {{/hidden_md}}
+              </dd>
+            </dl>
+          </div>
+    
+          <div style="overflow:scroll">
+            <p class="text-muted">{{version.description}}</p>
+    
+              {{#resources.length}}
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+              <table>
+              <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+              {{#resources}}
+              <tr>
+              <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
+              </tr>
+              {{/resources}} 
+            </table>
+              {{/resources.length}}
+    
+              {{#options.length}}                      
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+    
+              <table>
+              <tr><th colspan="2" style="color:#666">Admin Options</th><tr>
+              {{#options}}
+              <tr>
+              <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
+              </tr>
+              {{/options}}                         
+              </table>                      
+    
+              {{/options.length}}
+          
+    
+              {{#user_options_default.length}}
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+    
+              <table>
+              <tr><th colspan="2" style="color:#666">Default User Options</th><tr>
+              {{#user_options_default}}
+              <tr>
+              <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
+              </tr>
+              {{/user_options_default}}
+              </table>
+    
+              {{/user_options_default.length}}
+          </div>
+        </div>`,temp)});
+      }.bind(null,app_instances))
+    
   })
-});
 
+  // $('#instances').on('click', function() {
+  //   viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/app/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/appinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
+  //   $.get('/api/appinstances?app_id=' + loaded.app_id, function(data) {
+  //     if(data.length > 0){
+  //       modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
+  //     }else{
+  //       modal({title: 'No instances Found', content: 'This App is not currently instantiated.'});
+  //     }
+  //   })
+  // });
+}
+loadInstances();
 $('#versions').on('click', function() {
   $.ajax({
     url: root + loaded.app_id + '/versions',
@@ -460,8 +726,10 @@ renderBuilder = function(){
         case "radio":
         case "scale":
         case "range":
-        case "grid":
+        // case "grid":
         case "user":
+        case "user_email":
+        case "group":
         case "groups":
         case "smallcombo":
           temp.fields[i].widgetType = 'collection';
@@ -471,6 +739,8 @@ renderBuilder = function(){
           temp.fields[i].widgetType = 'bool';
           break;
         case "fieldset":
+        case "table":
+        case "template":
         case "grid":
           temp.fields[i].widgetType = 'section';
           break;
@@ -505,19 +775,19 @@ mainForm = function(){
 
         {name:"legend",label:"Label",columns:6},
         {name:"name",label:"Name",columns:6,edit:[{type:"matches",name:"disabled",value:false}]},
-        {name:"autoFocus",columns:6,label:"Auto Focus",value:true,type:"checkbox"},
+        {name:"autoFocus",horizontal:true,columns:12,label:"Auto Focus",value:true,type:"switch",format:{label:""}},
 
-        {name:"default",label:false,columns:6,type:'fieldset',fields:[
-          {name:"horizontal",label:"Horizontal",type:"checkbox"}
+        {name:"default",label:false,columns:12,type:'fieldset',fields:[
+          {name:"horizontal",horizontal:true,label:"Horizontal",type:"switch",format:{label:""}}
         ]},
         {name:"disabled",show:false,label:false,type:"checkbox",value:(_.find(working_forms,{name:form.name})||{disabled:false}).disabled},
 
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
 
-        {type: 'switch',format:{label:""}, label: 'Custom Actions', name: 'actions', show:[{name:"type",value:['output'],type:"not_matches"}],parse:[{type:"not_matches",name:"actions",value:false}]},
-        {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
+        {type: 'switch',format:{label:""},horizontal:true, label: 'Custom Actions', name: 'actions',parse:[{value:true,type:"matches"}]},
+        {type: 'fieldset',columns:12,array:true, label:false,name:"actions",  show:[{name:"actions",value:true,type:"matches"}],fields:[
           
-          {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save","button"]},
+          {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save","button"],parse:[{type:"requires"}]},
           // {name:"name",columns:6,label:"Name"},
           {name:"action",columns:6,label:"Action",parse:[{type:"requires"}]},
           {name:"label",columns:6,label:"Label",parse:[{type:"requires"}]},
@@ -526,14 +796,17 @@ mainForm = function(){
             {label:"Success",value:"btn btn-success"},
             {label:"Info",value:"btn btn-info"}]}
 
-        ]},
-        {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
+        ],parse:[{name:"actions",value:true,type:"matches"}]},
+        {type: 'switch',format:{label:""},parse:[{value:true,type:"matches"}],horizontal:true, label: 'Events', name: 'events'},
 
-        {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
+        {parse:false,type:"output",label:false,value:"<h3>Events</h3>", show:[{name:"events",value:true,type:"matches"}]},
+
+        {type: 'fieldset', show:[{name:"events",value:true,type:"matches"}],parse:[{name:"events",value:true,type:"matches"}],label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
       
-          {type: 'text', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
-            "None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
+          {type: 'text', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body"//,
+          // options:[
+          //   "None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
             ,parse:[{name:"event",value:"",type:"not_matches"}]}
         ]},
         {target: "#display",columns:9, type:"button",modifiers:"btn btn-danger pull-right margin-bottom",label:'<i class="fa fa-times"></i> Delete Form',action:"delete",name:"delete",show:[{type:"matches",name:"disabled",value:false}]},
@@ -562,7 +835,22 @@ mainForm = function(){
           "modifiers": "btn btn-danger"})
       }
     }).on('input', _.throttle(function(e){
-      form = _.extend(form,e.form.get());
+      var temp = e.form.get();
+      temp.fields = form.fields||[];
+      
+      // if(typeof temp.actions !== 'undefined' && temp.actions.length == 1 && _.isEmpty(temp.actions[0])){
+      //   delete temp.actions;
+      // }      
+      // if(typeof temp.events !== 'undefined' && temp.events.length == 1 && _.isEmpty(temp.events[0])){
+      //   delete temp.events;
+      // }
+      myform = temp;
+      form = myform;
+      working_forms[formIndex].content = myform;
+      
+
+
+      // form = _.extend(form,e.form.get());
       // if(typeof e.form.get().actions == 'undefined'){
       //   delete form.actions;
       // }
@@ -655,7 +943,7 @@ renderBuilder()
 
 
 setupform = function(index){
-  formIndex = index;
+  formIndex = (typeof index !== 'undefined')?index:formIndex;
   myform = working_forms[formIndex].content || {};
   $('#formlist').html(
     gform.renderString(
@@ -683,18 +971,7 @@ setupform = function(index){
 
 document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  formIndex = 0;
-  working_forms = _.each(loaded.code.forms,function(form,i){
-    if(typeof form.content == 'string'){
-      form.content = JSON.parse(form.content||'{"fields":[]}');
-      if(_.isArray(form.content) &&  form.content.length){
-        form.content = {fields:[]};
-      }
-    }
-    form.content.name = form.name || form.content.name;
-    form.i = i+'';
-    form.label = form.content.legend||form.content.name;
-  })
+
   // working_forms = _.each(working_forms,function(form,i){
   //   form.content = JSON.parse(form.content);
   //   form.content.name = form.name || form.content.name;
@@ -724,7 +1001,7 @@ document.addEventListener('DOMContentLoaded', function(){
     new gform({
       actions:[{type:'cancel'},{type:"save",label:'<i class="fa fa-check"></i> Update'}],
       legend:'Edit Form',
-      fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]
+      fields:[{type:'textarea',name:'descriptor',label:false,size:25 }],data:{descriptor:JSON.stringify(myform,null,'\t')}
     }).modal().on('save',function(e){
       myform = JSON.parse(e.form.get('descriptor')); 
       working_forms[formIndex].content = JSON.parse(e.form.get('descriptor'));
@@ -732,7 +1009,11 @@ document.addEventListener('DOMContentLoaded', function(){
       renderBuilder(); 
     }).on('cancel',function(e){e.form.trigger('close')})
   })
-  setupform(formIndex);
+  // setupform(formIndex);
 
 
+});
+$( document ).ready(function() {
+  load(loaded.code);
+  orig = $.extend({},loaded);
 });

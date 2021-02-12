@@ -73,7 +73,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //       this.action = this.item.action;
   //   }
   //   // else if(typeof this.mapOptions !== 'undefined'){
-  //   //     debugger;
   //   // }
   //   if(typeof item === 'object') {
   //       _.extend(item,this);
@@ -81,7 +80,7 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //   this.label = gform.renderString((item||{}).label||this.item.label, this);
 
   //   // var oldDiv = document.getElementById(this.id);
-  //   // debugger;
+
   //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
   //   var oldDiv = this.el;
   //   this.destroy();

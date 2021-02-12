@@ -16,7 +16,9 @@ return [
     */
 
     'name' => 'Graphene',
-    'cache_bust_id' => isset($_SERVER['CACHE_BUST_ID'])?$_SERVER['CACHE_BUST_ID']:1,
+    'workflow_max_loop' => env('WORKFLOW_MAX_LOOP',10),
+    'node_path' => env('NODE_PATH','node'),
+    'cache_bust_id' => env('CACHE_BUST_ID',1),
 
     /*
     |--------------------------------------------------------------------------
@@ -29,9 +31,9 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', isset($_SERVER['APP_ENV'])?$_SERVER['APP_ENV']:'local'),
+    'env' => env('APP_ENV','local'),
 
-    'force_https' => env('FORCE_HTTPS', isset($_SERVER['FORCE_HTTPS'])?$_SERVER['FORCE_HTTPS']:false),
+    'force_https' => env('FORCE_HTTPS',false),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,7 +46,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', isset($_SERVER['APP_DEBUG'])?$_SERVER['APP_DEBUG']:true),
+    'debug' => env('APP_DEBUG',true),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,7 +72,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE',isset($_SERVER['APP_TIMEZONE'])?$_SERVER['APP_TIMEZONE']:'America/New_York'),
+    'timezone' => env('APP_TIMEZONE','America/New_York'),
 
     /*
     |--------------------------------------------------------------------------
@@ -109,10 +111,10 @@ return [
     |
     */
 
-    'key' => env('APP_KEY',isset($_SERVER['APP_KEY'])?$_SERVER['APP_KEY']:'CHANGEMECHANGEMECHANGEMECHANGEME'),
+    'key' => env('APP_KEY','CHANGEMECHANGEMECHANGEMECHANGEME'),
     'cipher' => 'AES-256-CBC',
 
-    'key_portal' => env('APP_KEY_PORTAL',isset($_SERVER['APP_KEY_PORTAL'])?$_SERVER['APP_KEY_PORTAL']:''),
+    'key_portal' => env('APP_KEY_PORTAL',''),
 
 
     /*

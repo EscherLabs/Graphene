@@ -54,7 +54,8 @@ $.ajax({
 					// {label: 'App', name:'app_name', enabled: false,parseable:false,value:},
 					{label: 'Slug', name:'slug', required: true},
 					{label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+					{label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}},
 					{label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
 					{label: 'App', name:'app_id', required: true, type:'hidden'},
 					{name: 'app', type:'hidden'},
@@ -64,14 +65,20 @@ $.ajax({
 					var item = Berries.main.toJSON();
 					if(typeof gform.instances.options !== 'undefined') {
 						item.options = gform.instances.options.toJSON();
-					}			
+					}else{
+						item.options = {};
+					}
 					if(typeof gform.instances.user_options_default !== 'undefined') {
 						item.user_options_default = gform.instances.user_options_default.toJSON();
+					}else{
+						item.user_options_default = {};
 					}
 					if(typeof Berries.resources !== 'undefined') {
 						item.resources = Berries.resources.toJSON().resources;
+					}else{
+						item.resources = [];
 					}
-					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', dataType : 'json', data: item, success:function(){
+					$.ajax({url: '/api/appinstances/'+item.id, type: 'PUT', dataType : 'json',contentType: 'application/json', data: JSON.stringify(item), success:function(){
 							toastr.success('', 'Successfully updated App Instance')
 						}.bind(this),
 						error:function(e) {

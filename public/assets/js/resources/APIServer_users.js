@@ -18,8 +18,20 @@ $.ajax({
 			},
 			{name: 'id', type:'hidden'}
 		];
-		tableConfig.data = data;
+        tableConfig.data = data;
+        tableConfig.actions = [
+			{'name':'delete',max:1},'|',
+            {'name':'edit',max:1},
+            {'name':'lookup_app_secret',max:1,min:1, 'label': '<i class="fa fa-key"></i> Lookup App Secret'},'|',
+			{'name':'create'}
+		]
 		tableConfig.name = "api_users";
-		grid = new GrapheneDataGrid(tableConfig)
+        grid = new GrapheneDataGrid(tableConfig)
+        grid.on('model:lookup_app_secret',function(e){
+            url = "/api/proxy/"+slug+"/api_users/"+e.model.attributes.id+"/decrypted_secret";
+            $.ajax({url:url,success:function(data){
+                modal({content:'<pre style="text-align:center;">'+atob(data.api_secret)+"</pre>"})
+            }});
+		})
 	}
 });

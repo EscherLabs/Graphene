@@ -10,9 +10,11 @@ Homestead.json
 /storage/cache/mustache/*
 !/storage/cache/mustache/.gitkeep 
 
-config/database.php
-
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+#Idea files and .DS_Store
+.idea
+.DS_Store

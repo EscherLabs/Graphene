@@ -8,7 +8,7 @@ myconditions=[
 		{label: 'Name',name:"name",show:[{type:'matches',name:"type",value:["matches","not_matches","contains","requires"]}]},
 		{ label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1},show:[{type:'matches',name:"type",value:["matches","not_matches","contains"]}]},
 		{label: false,columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:'matches',name:"type",value:"conditions"}]},
-		{name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
+		{label:'Condition',name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
 			{label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires']},
 			{label: 'Name',name:"name"},
 			{ label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1}}
@@ -18,15 +18,61 @@ myconditions=[
 
 	
 ]
+displayFields = _.map([
 
+	{type: 'number', label: 'Size', name: 'size',min:1,parse:[{type:"requires",name:"size"}],show:[{name:"type",value:['textarea','select','radio'],type:"matches"}]},
+	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
+	{type: 'switch', label: 'Force New Row {{#value}}- <span class="text-success">Yes</span>{{/value}}', name: 'forceRow',show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],parse:[{type:"requires"},{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],format:{label:''}},
+
+	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
+		return parseInt(e.value);
+	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
+			return parseInt(e.initial.value||12)
+	} },
+
+	{type: 'select', label: 'Offset',value:0, name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)",value:function(e){
+		return parseInt(e.value);
+	}},parse:[{type:"not_matches",name:"columns",value:12},{type:"not_matches",value:0}],show:[{name:"columns",value:[12],type:"not_matches"},{name:"columns",type:"requires"}],value:function(e){
+		return parseInt(e.initial.value||0)
+	}},	
+	
+	
+	
+	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
+
+	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
+		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
+		{type: 'number', label: 'Maximum', name: 'max',placeholder:5},
+
+
+		// {type: 'fieldset',columns:12, label: 'Append', name: 'append',fields:[
+		// 	{type: 'radio',size:0, label: 'Enable', name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
+		// 	{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
+		// ]},		
+		{ type: 'fieldset',columns:12, label: 'Duplicate', name: 'duplicate',fields:[
+			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
+			{type: 'text', label: 'Label', name: 'label',placeholder:'default'},
+			{type: 'switch', label: 'Clone', name: 'clone',format:{label:''}}
+		]},
+		{ type: 'fieldset',columns:12, label: 'Remove', name: 'remove',fields:[
+			{type: 'radio', label: 'Enable', value:"auto", name: 'enable',options:[{label:"No",value:false},{label:"Yes",value:true},{label:"Auto",value:'auto'}]},
+			{type: 'text', label: 'Label', name: 'label',placeholder:'default'}
+		]},
+	]},
+	// {type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]}
+
+],function(item){
+	item.target = "#collapseDisplay .panel-body";
+	return item;
+})
 baseFields = _.map([
 	{type: 'text', required: true, title: 'Field Label', name: 'label'},
 	{type: 'text', label: 'Name', name: 'name'},
 	{type: 'text', label: 'Placeholder', name: 'placeholder',parse:[{type:"requires",name:"placeholder"}],show:[{name:"type",value:['radio','checkbox','switch'],type:"not_matches"}]},
 	{type: 'text', label: 'Display', name: 'display',columns:12,parse:[{type:"requires"}],show:[{name:"type",value:['checkbox'],type:"matches"}]},
+	{type: 'text', label: "&nbsp;", post:"Post", name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['select'],type:"matches"}]},
 	{type: 'text', label: false, forceRow:true, pre: "Pre", name: 'pre',parse:[{type:"requires"}],show:[{name:"type",value:['radio','checkbox','switch','color','select'],type:"not_matches"}]},
 	{type: 'text', label: false, post:"Post", name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['radio','checkbox','switch','color','select'],type:"not_matches"}]},
-	{type: 'text', label: false, post:"Post",offset:6, name: 'post',parse:[{type:"requires"}],show:[{name:"type",value:['select'],type:"matches"}]},
 
 	// {type: 'switch', label: 'Validate', name: 'validate',format:{label:''},parse:[{type:"not_matches",name:"validate",value:false}]},
 
@@ -34,7 +80,7 @@ baseFields = _.map([
 	{type: 'smallcombo', label: 'Value Calculation', name: 'method',columns:12,parse:[{type:"requires"},{name:"type",value:['color','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color',,'checkbox','switch','textarea'],type:"not_matches"}],options:[
 		"None",{type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}]
 	},
-	{type: 'text', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}]},
+	{type: 'text', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:['color','number','checkbox','switch','textarea'],type:"not_matches"}],show:[{name:"type",value:['color','number','checkbox','switch','textarea','output'],type:"not_matches"}]},
 	{type: 'textarea', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{name:"type",value:'textarea',type:"matches"}],show:[{name:"type",value:'textarea',type:"matches"}]},
 	{type: 'color', label: 'Default value', name: 'value',columns:12,parse:[{type:"requires"},{type:"not_matches",name:"value",value:'#000000'},{name:"type",value:'color',type:"matches"}],show:[{name:"type",value:'color',type:"matches"}]},
 	// {type: 'date', label: 'Default value', name: 'value',columns:6,show:[{name:"type",value:'date',type:"matches"}]},
@@ -42,52 +88,42 @@ baseFields = _.map([
 	{type: 'checkbox', label: 'Default value', name: 'value',parse:[{type:"not_matches",name:"value",value:false},{type:"matches",name:"type",value:["checkbox","switch"]}],show:[{type:"matches",name:"type",value:["checkbox","switch"]}]},
 
 
+	{type: 'number', label: "Min", name: 'min',placeholder:0,columns:4,show:[{type:"matches",name:"type",value:"number"}],parse:[{type:"matches",name:"type",value:"number"},{type:"requires"}]},
+	{type: 'number', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"number"}],parse:[{type:"matches",name:"type",value:"number"},{type:"requires"}]},
+	{type: 'number', label: "Step", name: 'step',columns:4,show:[{type:"matches",name:"type",value:"number"}],parse:[{type:"matches",name:"type",value:"number"},{type:"requires"}]},
+	
+	{type: 'date', label: "Min", name: 'min',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false},{type:"requires"}]},
+	{type: 'date', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:false},{type:"requires"}]},
+	{type: 'select', label: "Min", name: 'min',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true},{type:"requires"}],options:function(e){
+		return [];//gform.instances.modal.filter({type:"date"});
+	},placeholder:"None",format:{value:'{{name}}'}},
+	{type: 'select', label: "Max", name: 'max',columns:4,show:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true}],parse:[{type:"matches",name:"type",value:"date"},{type:"matches",name:"minMaxType",value:true},{type:"requires"}],options:function(e){
+		return [];//gform.instances.modal.filter({type:"date"});
+
+	},placeholder:"None",format:{value:'{{name}}'}},
+	{type: 'switch', label: "",columns:4, name: 'minMaxType',show:[{type:"matches",name:"type",value:"date"}],parse:false,options:[{label:"Date",value:false},{label:"Field",value:true}]},
+	
 	{type: 'textarea',columns:12, label: 'Instructions', name: 'help',parse:[{type:"requires"}],show:[{name:"type",value:['output'],type:"not_matches"}]},
+	{type: 'textarea',columns:12, label: 'More Information', name: 'info',parse:[{type:"requires"}]},
 	{type: 'checkbox', label: 'Multiple Selections', name: 'multiple',min:1,show:[{name:"type",value:['select','radio'],type:"matches"}]},
 	{type: 'number', label: 'Limit Selections',parse:[{type:"requires"}],placeholder:"No Limit", name: 'limit',min:1,show:[{name:"type",value:['select','radio'],type:"matches"},{name:"multiple",value:true,type:"matches"}]},
 	{type: 'number', label: 'Limit Length', name: 'limit',min:1,parse:[{name:"type",value:['select','radio'],type:"not_matches"},{type:"requires"}],show:[{name:"type",value:['select','radio'],type:"not_matches"}]},
-	{type: 'checkbox', label: 'Fillable',value:true, name: 'fillable',parse:[{type:"not_matches",value:true}]}
+	{type: 'checkbox', label: 'Fillable',forceRow:true, value:true, name: 'fillable',parse:[{type:"not_matches",value:true}]}
 
 ],function(item){
 	item.target = "#collapseBasic .panel-body";
 	return item;
-}).concat(_.map([
-
-	{type: 'number', label: 'Size', name: 'size',min:1,parse:[{type:"requires",name:"size"}],show:[{name:"type",value:['textarea','select','radio'],type:"matches"}]},
-	{name:"horizontal",label:"Horizontal",type:"select",value:"i",parse:[{type:"not_matches",name:"horizontal",value:"i"}],options:[{label:"Inherit",value:"i"},{label:"Yes",value:true},{label:"No",value:false}]},
-
-	{type: 'select', label: 'Width',forceRow:true, value:12, name: 'columns', min:1, max:12, format:{label:"{{value}} Column(s)",value:function(e){
-		return parseInt(e.value);
-	}},parse:[{type:"not_matches",name:"columns",value:12}],value:function(e){
-			return parseInt(e.initial.value||12)
-		
-	} },
-	{type: 'select', label: 'Offset', value:"0", name: 'offset', min:0, max:11, format:{label:"{{value}} Column(s)"},parse:[{type:"not_matches",name:"columns",value:"12"}] ,show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
-	{type: 'checkbox', label: 'Force New Row', name: 'forceRow',show:[{name:"columns",value:["12"],type:"not_matches"},{name:"columns",type:"requires"}]},
-	{type: 'switch', label: 'Allow duplication',forceRow:true,format:{label:''}, name: 'array',parse:[{type:"not_matches",name:"array",value:false}], show:[{name:"type",value:['output'],type:"not_matches"}]},
-	{type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
-
-	{type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
-		{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
-		{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
-	]}
-],function(item){
-	item.target = "#collapseDisplay .panel-body";
-	return item;
-})
-
-
-)
+}).concat(displayFields)
 minCond = [
-	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
+	{type: 'select',other:true, columns:12, label:'Show the field <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"/show",value:true}],options:		
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Edit"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"/show",value:['other'],type:"matches"}]},
 
-	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
+	{type: 'select',other:true, columns:12, label:'Allow the field to be Edited <span class="pull-right text-muted">"edit"</span>', value:true,name:"edit",parse:[{type:"not_matches",name:"/edit",value:true}],options:		
 		[{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Parse"',value:'parse'},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
 	},
-	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+	{type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"/edit",value:['other'],type:"matches"}]},
 
 ]
 baseCond =minCond.concat([
@@ -154,9 +190,7 @@ baseConditions = baseCond.concat(_.map([
 			return !!field.parent.index;
 		}}]},
 		{name:'type',label:'Type',type:'select',options:[
-		
 			{type:'optgroup',options:['none','matches','date','valid_url','valid_email','length','numeric','pattern','custom']}
-	
 		]
 	},
 
@@ -171,7 +205,7 @@ baseConditions = baseCond.concat(_.map([
 		{type: 'select',other:true,value:true,columns:12, label:"Apply",name:"conditions", show:[{name:"type",value:['none'],type:"not_matches"}], options:		
 			[{label:'Always',value:true},{label:"Conditionally",value:"other"}]
 		},
-		{type: 'fieldset',columns:11,offset:1, label:"{{index}}{{^index}}Conditions{{/index}}",name:"conditions",fields:myconditions,array:{min:1,max:1},show:[{name:"conditions",value:['other'],type:"matches"}]}
+		{type: 'fieldset',columns:11,offset:1, label:"Conditions",name:"conditions",fields:myconditions,array:{min:1,max:1},show:[{name:"conditions",value:['other'],type:"matches"}]}
 	],array:true}
 ],function(item){
 	item.target = "#collapseValidation .panel-body";
@@ -180,13 +214,14 @@ baseConditions = baseCond.concat(_.map([
 
 
 if(typeof workflow == 'undefined'){
-	baseConditions = baseCond.concat(_.map([
-		{type: 'textarea', label: 'Template', name: 'template',columns:12,parse:[{type:"requires"}]},
-
-		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"}], name: 'data', 
+	baseConditions = baseConditions.concat(_.map([
+		{type: 'textarea', label: 'DataGrid Template', name: 'template',columns:12,parse:[{type:"requires"}]},
+		{type: 'checkbox', label: 'Hide DataGrid Column by default', name: 'showColumn',value:true,columns:12,options:[{label:"No",value:true},{label:"Yes",value:false}]},
+		
+		{type: 'table', label: 'Meta Data', array: {min:1,max:100},columns:12,parse:[{type:"requires"}],format:{template:"{{value.key}}:{{value.value}}"}, name: 'data', 
 		fields: [
-			{label: 'Key', name:"key"},
-			{label: 'Value', name:"value"}
+			{label: 'Key', name:"key",parse:[{type:"requires"},{type:"requires",name:"value"}]},
+			{label: 'Value', name:"value",parse:[{type:"requires"},{type:"requires",name:"key"}]}
 		]
 	}
 	],function(item){
@@ -255,7 +290,6 @@ gformEditor = function(container){
 			gform.instances.editor.destroy();
 		}
 		$(opts.formTarget).html(gform.renderString(accordion))
-
 		$('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
 		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
 		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
@@ -270,6 +304,9 @@ gformEditor = function(container){
 
 
 		var mygform = new gform(formConfig,$(opts.formTarget)[0] ||  $(container.elementOf(this))[0]);
+		mygform.onGet = function(data){
+			return data;
+		}
 		mygform.on('change:label',function(e){
 			if(e.field.name == 'label' && e.form.get('name') == ""){
 				e.form.find('name').update({placeholder:e.form.get('label').toLowerCase().split(' ').join('_')})
@@ -366,7 +403,7 @@ Cobler.types.input = function(container) {
 		{label: 'Output', value: 'output'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
-		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:"date"}],parse:[{type:"requires",name:"format"}], fields:[
+		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:["date",'template','output']}],parse:[{type:"requires"}], fields:[
 			{name:"input",type:"smallcombo",options:[
 				{label:"Datetime",value:"MM/DD/YYYY h:mm A"},
 				{label:"Date",value:"MM/DD/YYYY"},				
@@ -376,7 +413,9 @@ Cobler.types.input = function(container) {
 				{label:"Month/Year",value:"MM/YYYY"},
 				{label:"Day",value:"MM/DD"}
 
-			],label:"Date Format",parse:[{type:"requires",name:"input"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'}}
+			],label:"Date Format",parse:[{type:"requires"}],format:{title:'Date Format <span class="pull-right" style="font-weight:normal">{{value}}</span>'},show:[{type:"matches",name:'type',value:["date"]}]}
+			,{name:"display",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}
+			,{name:"value",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["output"],name:"/type"}]}
 
 		] }
 	])
@@ -450,12 +489,16 @@ Cobler.types.collection = function(container) {
 			{label: 'Dropdown', value: 'select'},
 			{label: 'List', value: 'radio'},
 			{label: 'Combobox', value: 'smallcombo'},
-			{label: 'User', value: 'user'},
-			{label: 'Groups', value: 'Groups'},
-
-			{label: 'File', value: 'files'},
+			
 			// {label: 'Scale', value: 'scale'},
 			{label: 'Range', value: 'range'},
+
+			{label: 'User', value: 'user'},
+			// {label: 'User Email', value: 'user_email'},
+			// {label: 'Groups', value: 'Groups'},
+			{label: 'Group', value: 'group'},
+
+			{label: 'File', value: 'files'},
 			// {label: 'Grid', value: 'grid'},
 		]}
 
@@ -466,16 +509,18 @@ Cobler.types.collection = function(container) {
 		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 		// 	// {name:"Title",label:"title"}
 		// ] },
+
+		{name:"strict",label:"Strict",type:"switch",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
 		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"Resource",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
 					if(e.event == 'initialized'){
 						var result = "object";
-						if(typeof e.initial.parent.value['max'] !== 'undefined'){
+						if(typeof e.initial.parent.initialValue['max'] !== 'undefined' && !isNaN(e.initial.parent.initialValue['max'])){
 							result = "int";
 						}
-						if(typeof e.initial.parent.value['path'] !== 'undefined'){
+						if(typeof e.initial.parent.initialValue['path'] !== 'undefined' &&  e.initial.parent.initialValue['path'].length){
 							result = "string";
 						}
 						
@@ -496,7 +541,7 @@ Cobler.types.collection = function(container) {
 				{type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires"}], fields:[
 					{name:"label",label:"Label",parse:[{type:"requires"}]},
 					{name:"value",label:"Value",parse:[{type:"requires"}]},
-					{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"/type"}]}
+					{name:"display",label:"Display",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
 					// {name:"Title",label:"title"}
 				] },
 				{type: 'select',other:true, columns:12, label:'Show the Options <span class="pull-right text-muted">"show"</span>', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
@@ -544,9 +589,12 @@ Cobler.types.bool = function(container) {
 		return _.extend({},item);
 	}
 	function toJSON() {
-
-		return _.omit(get(),'widgetType','editable')
-		// return  _.transform(get(),function(r,v) {_.extend(r,v)},{});//get();
+		var temp = _.omit(get(),'widgetType','editable')
+		temp.options = _.map(temp.options,function(i){return _.omit(i,'selected')});
+		if(_.isEmpty(temp.options[0]) && _.isEmpty(temp.options[1])){
+			temp = _.omit(temp,'options')
+		}
+		return temp;
 	}
 	function set(newItem) {
 		newItem.display = newItem.display||newItem.details;
@@ -564,8 +612,10 @@ Cobler.types.bool = function(container) {
 			{label: 'Switch', value: 'switch'}
 		]}
 	].concat(baseFields,baseConditions,_.map([{type: 'fieldset', label: false, array: {min:2,max:2},columns:12, name: 'options', fields: [
-		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Label','name':'label'},
-		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Value','name':'value'},
+		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Label','name':'label',parse:[{type:"requires"}]},
+		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Value','name':'value',parse:[{type:"requires"}],value:function(e){
+			return (typeof e.initial.value !== 'string')?'':e.initial.value;
+		}},
 	]}],function(item){
 		item.target = "#collapseOptions .panel-body";
 		return item;
@@ -579,13 +629,22 @@ Cobler.types.bool = function(container) {
 		set: set,
 	}
 }
-
+function clean(field){
+	var temp = _.omit(field,'widgetType','editable');
+	if(typeof temp.fields !== 'undefined'){
+		temp.fields = _.map(temp.fields,function(field){
+			return clean(field);
+		})
+	}
+	return temp;
+}
 Cobler.types.section = function(container) {
 	function render() {
 		var temp = get();
 
 		var content = "";
 		_.each(temp.fields,function(e){
+			
 			var nTemp = new Cobler.types[gform.types[e.type||'text'].base]()
 			nTemp.set(e);
 			content += nTemp.render()
@@ -597,13 +656,21 @@ Cobler.types.section = function(container) {
 	function get() {
 		item.widgetType = 'section';
 		item.editable = true;
-		item.type = 'fieldset';
+		// item.type = 'fieldset';
 
 		item.fields = item.fields ||[];
 		return item;
 	}
 	function toJSON() {
-		return _.omit(get(),'widgetType','editable')
+		
+		// var temp = _.omit(get(),'widgetType','editable');
+		// if(0 in temp.fields){
+		// 	temp.fields = _.map(temp.fields,function(field){
+		// 		return _.omit(field,'widgetType','editable');
+		// 	})
+		// }
+
+		return clean(get());
 	}
 	function set(newItem) {
 		var fields = item.fields||newItem.fields;
@@ -616,20 +683,26 @@ Cobler.types.section = function(container) {
 		label: 'Label'
 	}
 	var fields = [
-		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Group Label', name: 'label'},
-		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
-		{target: "#collapseBasic .panel-body", type: 'switch',format:{label:''}, label: 'Allow duplication', name: 'array', show:[{name:"type",value:['output'],type:"not_matches"}]},
 
-		{target: "#collapseBasic .panel-body", type: 'fieldset',columns:12, label:false,name:"array",show:[{name:"array",value:true,type:"matches"},{name:"type",value:['output'],type:"not_matches"}],fields:[
-			{type: 'number', label: 'Minimum', name: 'min',placeholder:1},
-			{type: 'number', label: 'Maximum', name: 'max',placeholder:5}
+		{target:"#display",type: 'smallcombo',columns:9, label: false, name: 'type', value: 'text', 'options': [
+			{label: 'Fieldset', value: 'fieldset'},
+			{label: 'Template', value: 'template'},
+			{label: 'Table', value: 'table'},
+			// {label: 'Scale', value: 'scale'},
+			// {label: 'Grid', value: 'grid'},
 		]},
-		{target:"#collapseDisplay .panel-body", type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
+		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Section Label', name: 'label',data:{section:true}},
+		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
+		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'/type',value:"template"}],parse:[{type:"requires"}], fields:[
+			{name:"display",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}
+
+		] },
+		// {target:"#collapseDisplay .panel-body", type: 'textarea',columns:12, label: 'Template', name: 'template',parse:[{type:"requires"}]},
 
 		{target: "#display",columns:9, type:"button",modifiers:"btn btn-default pull-left margin-bottom",label:"Manage Section",action:"manage",name:"manage",show:[{type:"test",name:"manage",test:function(e){
             return !e.owner.options.nomanage;
 		}}]}
-	].concat(baseCond)
+	].concat(baseCond).concat(displayFields)
 	return {
 		fields: fields,
 		render: render,
@@ -741,7 +814,7 @@ Events
   <div class="panel-heading" role="tab" id="headingGrid">
     <h4 class="panel-title">
       <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseGrid" aria-expanded="false" aria-controls="collapseGrid">
-Grid
+Other
       </a>
     </h4>
   </div>

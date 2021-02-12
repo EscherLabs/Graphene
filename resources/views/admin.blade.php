@@ -64,5 +64,6 @@
   <script src='/assets/js/paged.js'></script> 
   <script src='/assets/js/vendor/moment.js'></script>
 
+  <script src='/assets/js/vendor/moment_datepicker.js'></script>
   <script src='/assets/js/resources/{{ $resource }}.js'></script> 
 @endsection

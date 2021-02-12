@@ -40,7 +40,7 @@ class GroupPolicy
 
     public function update(User $user, Group $group)
     {
-        if ($user->site_admin) {
+        if ($user->group_admin($group->id) || $user->site_admin) {
             return true;
         }
     }

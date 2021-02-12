@@ -71,6 +71,9 @@ class AppInstancePolicy
         if ($user->site_admin || $user->group_admin($app_instance->group_id) || $user->group_member($app_instance->group_id)) {
             return true;
         }
+        if ($app_instance->public == true) {
+            return true;
+        }
     }
 
     // public function get_data(User $user, AppInstance $app_instance)

@@ -1,10 +1,8 @@
 workflow = true;
 gform.collections.add('files',[])
-renderBuilder = function(){
-
+renderNav = function(form){
   var target = document.querySelector('.target');
   $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>')
-  var form = myform;
   var map = "";
   _.each(path,function(p){
     form = _.find(form.fields,{name:p})
@@ -15,7 +13,10 @@ renderBuilder = function(){
 
   
   $(target).append('<hr>')
-
+  return form;
+}
+renderBuilder = function(){
+   var form = renderNav(myform);
   
   if(typeof cb === 'undefined'){
     cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
@@ -36,7 +37,6 @@ renderBuilder = function(){
       mainForm();
     })
     document.getElementById('sortableList').addEventListener('click', function(e) {
-      // debugger;
       cb.deactivate();
       cb.collections[0].addItem(e.target.dataset.type || e.target.parentElement.dataset.type);
     })
@@ -65,11 +65,13 @@ renderBuilder = function(){
         case "radio":
         case "scale":
         case "range":
-        case "grid":
+        // case "grid":
         case "user":
+        case "user_email":
+        case "group":
         case "groups":
-        case "files":
         case "smallcombo":
+        case "files":
           temp.fields[i].widgetType = 'collection';
           break;
         case "checkbox":
@@ -77,6 +79,8 @@ renderBuilder = function(){
           temp.fields[i].widgetType = 'bool';
           break;
         case "fieldset":
+        case "table":
+        case "template":
         case "grid":
           temp.fields[i].widgetType = 'section';
           break;
@@ -110,10 +114,11 @@ mainForm = function(){
         // {name:"legend",label:"Label"},
         // {name:"name",label:"Name"},
         {name:"default",label:false,type:'fieldset',fields:[
-          {name:"horizontal",label:"Horizontal",type:"checkbox"}
+          {name:"horizontal",horizontal:true,label:"Horizontal",type:"switch",format:{label:""}}
         ]},
-        {name:"files",label:"Allow File uploads",type:"checkbox"},
+        {name:"files",label:"Allow File uploads",type:"switch",horizontal:true,format:{label:""}},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
+        {name:"resource",label:"Initial Data Source",type:"select",options:["None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',label:"Method",options:'methods',format:{label:"{{label}}"}},{type:"optgroup",label:"Resource",options:'resources'}]},
         {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
         {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
@@ -158,10 +163,21 @@ mainForm = function(){
       renderBuilder();
     })
   }else{
-    var temp = new Cobler.types[gform.types[form.type].base]();
+    var workingForm = myform;
+    _.each(path,function(p){
+      workingForm = _.find(workingForm.fields,{name:p})
+    })
+
+    var formConfig = new Cobler.types[gform.types[workingForm.type].base]();
     $("#mainform").html(gform.renderString(accordion))
 
-    $('.panelOptions').toggle(false);
+    $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+		$('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
+		$('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+		$('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+		$('.panelEvents').toggle(!!_.find(formConfig.fields,{target:"#collapseEvents .panel-body"}));
+    $('.panelGrid').toggle(!!_.find(formConfig.fields,{target:"#collapseGrid .panel-body"}));
     
     new gform({
       name:"editor",
@@ -169,19 +185,18 @@ mainForm = function(){
       data: form,
       actions:[],
       clear:false,
-      fields: temp.fields,
+      fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
-      // form = _.extend(form,e.form.get())
       var workingForm = myform;
         _.each(path,function(p){
           workingForm = _.find(workingForm.fields,{name:p})
         })
-        
-      // workingForm = 
-      _.extend(workingForm,e.form.get())
-      
-
+        if(typeof e.field.data !== 'undefined' && e.field.data.section){
+          if(e.form.get().name == workingForm.name && e.field.name =="label"){workingForm.label =e.form.get().label}
+          if(e.form.get().label == workingForm.label&& e.field.name =="name"){workingForm.name =e.form.get().name}
+        }
+        renderNav(myform);
     })
 
   }
@@ -204,7 +219,7 @@ renderBuilder()
 
 document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  myform = loaded.code.form || {};
+  myform = _.extend({},loaded.code.form)
   // $('#cobler').click();
   path = [];
   // $(e.target).siblings().removeClass('active');
@@ -306,7 +321,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //       this.action = this.item.action;
   //   }
   //   // else if(typeof this.mapOptions !== 'undefined'){
-  //   //     debugger;
   //   // }
   //   if(typeof item === 'object') {
   //       _.extend(item,this);
@@ -314,7 +328,6 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
   //   this.label = gform.renderString((item||{}).label||this.item.label, this);
 
   //   // var oldDiv = document.getElementById(this.id);
-  //   // debugger;
   //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
   //   var oldDiv = this.el;
   //   this.destroy();
@@ -409,11 +422,15 @@ function load(workflow_version) {
 	$('.nav-tabs').stickyTabs();
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var temp = new gform(myform);
-    gform.collections.update('form_users', temp.filter({type:"user"}));
-    gform.collections.update('form_groups', temp.filter({type:"group"}));
+    gform.collections.update('form_users', temp.filter({type:"user"},20));
+    gform.collections.update('form_groups', temp.filter({type:"group"},20));
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
+    }));
+
+    gform.collections.update('templates', _.map(_.pluck(templatePage.toJSON(),'name'),function(item,i){
+      return {value:"template_"+i,label:item}
     }));
     bt.fixStyle()
   })
@@ -488,14 +505,14 @@ function load(workflow_version) {
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Key</h4>',columns:9,type:"output"},
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Type</h4>',columns:3,type:"output"},
 
-    {name:"map",label:false,array:true,type:"fieldset",fields:[
+    {name:"map",label:false,array:{max:100},type:"fieldset",fields:[
       {name:"name",label:false,columns:9,placeholder:"Key"},
       {name:"type",label:false,type:"select",columns:3,options:[
         {label:"String",value:"string"},
         {label:"Group",value:"group"},
         {label:"User",value:"user"},
         {label:"Email",value:"email"},
-        {label:"Endpoint",value:"endpoint"}
+        // {label:"Endpoint",value:"endpoint"}
       ]}
     ]}
   ]}
@@ -503,6 +520,7 @@ function load(workflow_version) {
     gform.collections.update('endpoints', _.where(e.form.get().map, {type: "endpoint"}));
     gform.collections.update('map_users', _.where(e.form.get().map, {type: "user"}));
     gform.collections.update('map_groups', _.where(e.form.get().map, {type: "group"}));
+    gform.collections.update('map_emails', _.where(e.form.get().map, {type: "email"}));
     
   }).on('input:name',_.throttle(function(e){
     switch(e.field.parent.find('type').value){
@@ -514,6 +532,9 @@ function load(workflow_version) {
       break;
       case "group":
           gform.collections.update('map_groups', _.where(e.form.get().map, {type: "group"}));
+      break;
+      case "email":
+          gform.collections.update('map_emails', _.where(e.form.get().map, {type: "email"}));
       break;
     }
 
@@ -625,34 +646,47 @@ function createFlow() {
     // options.trigger('change')
 //<span class="fa fa-plus"></span> 
     try{
+      // flow_states = _.map(flow_states,function(state){
+      //   state.name = state.name||state.state_id;
+      //   return state;
+      // })
       var graph = _.map(flow_states,function(state,i,j){
-
+        state.name = state.name||state.state_id;
         var graph = '\n'+state.name.split(' ').join('_')+'';
         if(i){
-          graph+='["'+state.name+'"]';
+          if(state.logic){
+            graph+='{"'+state.name+'"}';
+          }else{
+            graph+='["'+state.name+'"]';
+          }
         }else{
           graph+='(("'+state.name+'"))';
         }
 
         if(state.status == "closed"){
-          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', state);
+          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', {name:state.name.split(' ').join('_')});
         }
 
         var stuff = _.map(state.actions,function(action){
-          var graph = '\n'+state.name;
+          var graph = '\n'+state.name.split(' ').join('_')+'';
           if(!i ){
             graph+='(("'+state.name+'"))';
           }else if( state.status == "closed"){
             graph+='("'+state.name+'")';
           }else{
-            graph+='["'+state.name+'"]';
+            if(state.logic){
+              graph+='{"'+state.name+'"}';
+            }else{
+              graph+='["'+state.name+'"]';
+            }
           }
+
           return graph+'-->|'+action.label+'|'+' '+action.to.split(' ').join('_')+'';
         })
         return graph+stuff.join('')
       })
       if(typeof flowForm !== 'undefined' && flowForm.isActive){
-        graph.push('\nclass '+flowForm.get('name').split(' ').join('_')+' selectedClass');
+        graph.push('\nclass '+(flowForm.get('name')||flowForm.get('state_id')).split(' ').join('_')+' selectedClass');
       }  
       myfunc('graph TB'+''+graph.join(''))
     }catch(e){}
@@ -661,15 +695,16 @@ function createFlow() {
 
 
 
-// var callback = function(e){
-// debugger;
-// }
-
-// debugger;
 flow_states = attributes.code.flow||'[{"name":"origin"}]';
 if(typeof flow_states == 'string'){
   flow_states = JSON.parse(flow_states);
 }
+flow_states = _.map(flow_states,function(state){
+  if(typeof state.state_id == 'undefined'){
+    state.state_id = gform.getUID();
+  }
+  return state;
+})
 createFlow();
 
 
@@ -677,22 +712,46 @@ createFlow();
 
 function drawForm(name){
 
-
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
 
 
   formConfig = {
-    actions:[{type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
+    actions:[{target:"#display",type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-left",label:'<i class="fa fa-times"></i> Delete'},{target:"#display",type:"button",modifiers:"btn btn-info pull-right",label:'<i class="fa fa-check"></i>',action:"done"}],
     // legend:"State",
     // sections:"tab",
-    clear:false,
-    data: _.find(flow_states,{name:name}),
+    clear: false,
+    data: _.find(flow_states,{name:name})
   }
+  myconditions = [
+    {label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires','conditions']},
+    {label: 'Name',name:"name",show:[{type:'matches',name:"type",value:["matches","not_matches","contains","requires"]}]},
+    {label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1},show:[{type:'matches',name:"type",value:["matches","not_matches","contains"]}]},
+    {label: false, columns:12,name:'op',type:"switch",format:{label:'{{label}}'},options:[{label:"or",value:'or'},{label:"and",value:'and'}],value:'and',show:[{type:'matches',name:"type",value:"conditions"}]},
+    {label:'Condition',name:'conditions',columns:10,offset:1,type:'fieldset',array:true,show:[{type:'matches',name:"type",value:"conditions"}],fields:[
+      {label:"Type",name:"type",type:"select",options:['matches','not_matches','contains','requires']},
+      {label: 'Name',name:"name"},
+      { label: 'Value{{#index}}({{index}}){{/index}}',name:"value", array: {min:1}}
+    ]}
+  ]
 
   formConfig.fields=_.map(
-  _.map([
+    _.map([        
+      {type: 'switch', label: 'Logic', name: 'hasLogic',format:{label:''},parse:false,show:false,value:function(e){
+        return (typeof e.initial.owner.options.data.logic !== 'undefined');
+      }},
+      {type: 'select', label: false,other:true, name: 'logic',target:"#collapseEvents .panel-body",options:[
+          {label:"Conditions",value:'other'},
+          {type:'optgroup',min:0,max:4,show:false},
+          {type:'optgroup',options:'methods',format:{label:"Method: {{label}}"}}
+        ]
+        ,show:[{name:"hasLogic",value:true,type:"matches"}]}
+      ,{type: "fieldset", name: "logic", label: false, fields: myconditions,show:[{name:"hasLogic",value:true,type:"matches"},{name:"logic",value:['other'],type:"matches"}]}
+    ],function(item){
+      item.target = "#collapseLogic .panel-body";
+      return item;
+    }).concat(_.map([
     {type: "fieldset", name: "assignment", label: false, fields: [
       {name: "type",inline:false, label: "Type", type: "smallcombo", options: [
         {value: "user", label: "User"},
@@ -703,7 +762,7 @@ function drawForm(name){
       //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
       // })
 
-      {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {type:"user",strict:false,label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
       {
         "type": "optgroup",
         "options": "map_users",
@@ -760,70 +819,163 @@ function drawForm(name){
       ],function(item){
     item.target = "#collapseAssignment .panel-body";
     return item;
-  }).concat([
+  })).concat([
    // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
-    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
-    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
-    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state"},
-    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
-    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
-    {target:"#collapseActions .panel-body", 
-      name: "actions", label: false, type: "fieldset", fields: [
-        {name: "label", label: "Label", columns: 6},
-        {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "lable", value: ""}]},
-        {name: "type", label: "Type", type: "select", columns: 6, options:[
-          {value: "success", label: "Success"},
-          {value: "danger", label: "Danger"},
-          {value: "info", label: "Info"},
-          {value: "warning", label: "Warning"},
-          {value: "default", label: "Default"},
-          {value: "primary", label: "Primary"},
-          {value: "link", label: "Simple"}
-        ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-      {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
-        {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
+   {target:"#collapseBasic .panel-body", name: "state_id",type:'hidden', label: false},
+   {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
+   {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
+    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+    (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
+    name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
+      {name: "label", label: "Label", columns: 6},
+      {name: "name", label: "Name", columns: 6,required:true},
+      {name: "type", label: "Type", type: "select", columns: 6, options:[
+        {value: "success", label: "Success"},
+        {value: "danger", label: "Danger"},
+        {value: "info", label: "Info"},
+        {value: "warning", label: "Warning"},
+        {value: "default", label: "Default"},
+        {value: "primary", label: "Primary"},
+        {value: "link", label: "Simple"}
+      ]/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+    {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+    {name: "assignment",type:"fieldset",parse:[{type:"requires"}],label:false,fields:[
 
-        {name: "tasks", label: "Tasks", type: "fieldset", fields: taskForm, array: true}
-      ], array: true
-    }
+      {name: "type",inline:false, label: "Actor(s)",parse:[{type:"requires"}], type: "smallcombo", options: [
+        {value: "", label: "Assignee"},
+        {value: "internal", label: "Inactivity Based"},
+        {value: "user", label: "User"},
+        {value: "group", label: "Group"}
+      ]},
+
+      // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+      //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
+      // })
+      {type:"number",name:"delay",label:"Days of Inactivity",show: [{type: "matches", name: "type", value: "internal"}]},
+      {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+      {
+        "type": "optgroup",
+        "options": "map_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+          return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+      },       
+      {
+        "type": "optgroup",
+        "options": "form_users",
+        "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+          var path = option.data.name
+          var search = option.data;
+          while(search.ischild){
+            path = search.parent.name+'.'+path;
+            search = search.parent;
+          }
+          return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+      }
+      ]},
+      {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
+        {
+          "type": "optgroup",
+          "options": "map_groups",
+          "format":{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){
+            return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+        },       
+        {
+          "type": "optgroup",
+          "options": "form_groups",
+          "format":{display:'{{name}}<div style="color:#aaa">Form value</div>',value:function(option){
+            var path = option.data.name
+            var search = option.data;
+            while(search.ischild){
+              path = search.parent.name+'.'+path;
+              search = search.parent;
+            }
+            return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+        },
+        {
+          "type":"optgroup",
+          "options":'/api/groups?members=20',
+          "format":{label:"{{name}}",value:"{{id}}"}
+        }
+      ]},
+      
+
+
+
+    ]},
+    {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 6},
+    {name: "signature", label: "Require Signature",type:"switch",format:{label:""}, columns: 6},
+    {name: "signature_text", label: "Signature Text",placeholder:"Sign Above",help:"This text will show up below the signature box <br>(default text is 'Please Sign Above')",type:"text", columns: 12,show:[{name:"signature",value:true,type:"matches"}]},
+    {name: "validate", label: "Validate",value:true,type:"switch",format:{label:""}, columns: 6},
+    {name: "invalid_submission", label: "Allow Invalid Submission",value:false,type:"switch",format:{label:""}, columns: 6,show:[{name:"validate",value:true,type:"matches"}]},
+    {type: 'select',other:true, columns:12, label:'Show Action', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
+    [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Enable"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
+  },
+  {type: 'fieldset',columns:11,offset:'1', label:false,name:"show",fields:myconditions,array:{min:1,max:1},show:[{name:"show",value:['other'],type:"matches"}]},
+
+  {type: 'select',other:true, columns:12, label:'Enable Action', value:true,name:"edit",parse:[{type:"not_matches",name:"edit",value:true}],options:		
+    [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Show"',value:'show'}, {label:"Conditionally",value:"other"}]}]
+  },
+  {type: 'fieldset',columns:11,offset:'1', label:false,name:"edit",fields:myconditions,array:{min:1,max:1},show:[{name:"edit",value:['other'],type:"matches"}]},
+
+      {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
+
+      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
+    ], array: {max:100}
+  } : {target:"#collapseLogic .panel-body", 
+  name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
+    {name: "name", label: false, type: 'output',format:{value:"<b>Logic Result: <i>{{value}}</i></b>"}},
+    {name: "label", label: "Label", columns: 6},
+
+  {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
+    {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
+
+    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
+  ], array: {min:3,max:3}
+})
 
   ])
   
   )
   $('#flow-form').html(gform.renderString(flowAccordion))
 
-
-  $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
-  $('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));
+  // $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
+  $('.panelAssignment').toggle(!!_.find(formConfig.fields,{target:"#collapseAssignment .panel-body"}) && !formConfig.data.logic);
   $('.panelBasic').toggle(!!_.find(formConfig.fields,{target:"#collapseBasic .panel-body"}));
-  $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
-  $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
+  $('.panelLogic').toggle(!!_.find(formConfig.fields,{target:"#collapseLogic .panel-body"}) && !!formConfig.data.logic);
+  $('.panelOnleave').toggle(!!_.find(formConfig.fields,{target:"#collapseOnleave .panel-body"}) && !formConfig.data.logic);
+  $('.panelActions').toggle(!!_.find(formConfig.fields,{target:"#collapseActions .panel-body"}) && !formConfig.data.logic);
+
+  // $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
+  // $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
 
 
 
   flowForm = new gform(formConfig,'#flow-form').on('input', function(e){
     var temp =  e.form.get();
     temp.onEnter = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
-    temp.onLeave = _.compact(_.map(temp.onEnter,function(e){if(e.task){return e} }))
+    temp.onLeave = _.compact(_.map(temp.onLeave,function(e){if(e.task){return e} }))
     temp.actions = _.compact(_.map(temp.actions,function(e){if(e.name && e.label){return e} }))
 
     _.each(temp.actions,function(action){
       action.tasks = _.compact(_.map(action.tasks,function(e){if(e.task){return e} }))
     })
 
-    flow_states[_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')})] = temp;
+    flow_states[_.findIndex(flow_states,{state_id:e.form.options.data.state_id||e.form.get('state_id')})] = temp;
 
     gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
+    var tempName = e.form.get('name')||temp.state_id;
 
-    if(e.form.get('name') != e.form.options.data.name){
+    if(tempName != e.form.options.data.name){
       _.each(flow_states,function(state){
         _.each(state.actions,function(action,i){
           // if(action.from == e.form.options.data.name){
           //   action.from = e.form.toJSON().name
           // }
           if(action.to == e.form.options.data.name){
-            action.to = e.form.get('name');
-            if(e.form.get('name') == state.name){
+            action.to = tempName;
+            if(tempName == state.name){
               _.where(e.form.fields,{name:'actions'})[i].find('to').set(action.to)
             }
           }
@@ -832,27 +984,11 @@ function drawForm(name){
 
     }
 
-    e.form.options.data.name = e.form.get('name');
-
-    // if(e.form.get('name') !== e.form.options.data.name){
-    //   _.each(flow_states,function(state){
-    //     _.each(state.actions,function(action){
-    //       // if(action.from == e.form.options.data.name){
-    //       //   action.from = e.form.toJSON().name
-    //       // }
-    //       if(action.to == e.form.options.data.name){
-    //         action.to = e.form.get('name')
-    //       }
-          
-    //     })
-    //   })
-    //   e.form.options.data.name = e.form.get('name');
-
-    // }
+    e.form.options.data.name = tempName;
     
     createFlow();
   }).on('delete',function(e){
-        var removed = flow_states.splice(_.findIndex(flow_states,{name:e.form.options.data.name||e.form.get('name')}),1)
+        var removed = flow_states.splice(_.findIndex(flow_states,{state_id:e.form.options.data.state_id||e.form.get('state_id')}),1)
         _.each(flow_states,function(state){
           _.each(state.actions,function(action){
             if(action.from == removed[0].name){
@@ -880,34 +1016,92 @@ function drawForm(name){
 
 gform.collections.add('endpoints', _.where(attributes.code.map, {type: "endpoint"}))
 gform.collections.add('map_users', _.where(attributes.code.map, {type: "user"}))
+gform.collections.add('map_emails', _.where(attributes.code.map, {type: "email"}))
 gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 var temp = new gform(attributes.code.form);
-gform.collections.add('form_users', temp.filter({type:"user"}));
-gform.collections.add('form_groups', temp.filter({type:"group"}));
+gform.collections.add('form_users', temp.filter({type:"user"},20));
+gform.collections.add('form_groups', temp.filter({type:"group"},20));
 
-gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
+gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i){
   return {value:"method_"+i,label:item}
 }));
+gform.collections.add('templates', _.map(_.pluck(attributes.code.templates,'name'),function(item,i){
+  return {value:"template_"+i,label:item}
+}));
 var taskForm = [
-  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"}/*,{value: "api", label: "API"}*/, {value: "email", label: "Email"}]},
-  _.extend({label:'To <span class="text-success pull-right">{{value}}</span>',array:true,name:"to",show:[{type:"matches",name:"task",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
+  {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
+  
+  
+    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:{min:1,max:10},type:"fieldset",fields:[
+        {name:"email_type",label:"Type",type:"select",options:[{label:"Email Address",value:"email"},{label:"User",value:"user"},{label:"Group",value:"group"}]},
+        /* Begin Email Address Field */
+        _.extend({label:'Email Address <span class="text-success pull-right">{{value}}</span>',name:"email_address",show:[{type:"matches",name:"email_type",value:"email"}],type:"user_email",options:[
+            {first_name:"Owner", email:"{{owner.email}}",display:"User that initiated workflow"},{first_name:"Actor", email:"{{actor.email}}",display:"User that is taking an action"},{type:"optgroup",options: "map_emails",format:{display:'{{name}}<div style="color:#aaa">Mapped value</div>',value:function(option){return "{{datamap."+option.name+"}}"},label:"{{name}}"}
+        }],strict:false,search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{display}}{{^display}}{{email}}{{/display}}</div>"}},valueField),
+        /* End Email Address Field */
+        /* Begin User Field */
+        {name:"user",type:"user",strict:false,label:"ID",show: [{type: "matches", name: "email_type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
+            {type: "optgroup",options: "map_users",format:{display:'{{name}}<div style="color:#aaa">Mapped value</div>',
+            value:function(option){return "{{datamap."+option.name+"}}"},label:"{{name}}"}},       
+            {type: "optgroup",options: "form_users",format:{display:'{{name}}<div style="color:#aaa">Form value</div>',
+            value:function(option){
+                var path = option.data.name
+                var search = option.data;
+                while(search.ischild){
+                    path = search.parent.name+'.'+path;
+                    search = search.parent;
+                }
+                return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+            }
+        ]},
+        /* End Email Field */
+        /* Begin Group Field */
+        {name:"group",type:"group",label:"ID",show: [{type: "matches", name: "email_type", value: "group"}],options:[       
+            {type: "optgroup",options: "map_groups",format:{display:'{{name}}<div style="color:#aaa">Mapped value</div>',
+            value:function(option){return "{{datamap."+option.name+"}}"},label:"{{name}}"}},       
+            {type: "optgroup",options: "form_groups",format:{display:'{{name}}<div style="color:#aaa">Form value</div>',
+            value:function(option){
+                var path = option.data.name
+                var search = option.data;
+                while(search.ischild){
+                    path = search.parent.name+'.'+path;
+                    search = search.parent;
+                }
+                return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+            },
+            {type:"optgroup",options:'/api/groups?members=20',format:{label:"{{name}}",value:"{{id}}"}}
+        ]},
+        /* End Email Field */
+    ]},
+
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
+  {name: "template", type: "smallcombo", value:"",
+  options:[
+    {value:"",label:"Custom body template"},{type:'optgroup',options:'templates',format:{label:"Template: {{label}}"}}],
+    label: "Body Template",show: [{type: "matches", name: "task", value: 'email'}],strict:true},
+  {name: "content", type: "textarea", label: "Custom Body",show: [{type: "matches", name: "task", value: 'email'},{type: "matches", name: "template", value: ''}]},
+  {name: "resource",columns:8, type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'resource'}]},
+  {name: "verb",columns:4, label: "Verb", type: "select", options: ["GET","POST","PUT","DELETE"],show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
-  // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"},show: [{type: "matches", name: "task", value: 'api'}]},
-  // {name: "url", type: "url",columns:8,placeholder:"\\", label: "Path", show: [{type: "matches", name: "task", value: 'api'}]},
-  // {name:"data",}
+  {type:"output","value":"This task purges all values of a specified name from the form data, and throughout the workflow history",show: [{"type": "matches","name": "task","value": "purge_fields_by_name"}]},
+  {name:"dataset",label:"Data",type:"fieldset", array:{max:100},show: [{type: "matches", name: "task", value: 'resource'}],fields:[
+    {label:"Key"},
+    {label:"Value"}
+  ]},
+  {
+    "label": "Field Name","name": "field_names","type": "text",
+    "array": {"min": null,"max": null},
+    "show": [{"type": "matches","name": "task","value": "purge_fields_by_name"}],
+  }
 ]
 var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
-
 
 $('#flow-preview').on('click','.nodes .node',function(e){
 
   // console.log(e.currentTarget.id);
-// debugger;
   // drawForm(e.currentTarget.id);
   drawForm(e.currentTarget.textContent);
   createFlow();
@@ -920,18 +1114,28 @@ $('#add-state').on('click',function() {
   while(typeof _.find(flow_states,{name:gform.renderString("newState{{i}}",{i:i})}) !== 'undefined'){
     i++;
   }
-  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),actions:[]});
+  flow_states.push({name:gform.renderString("newState{{i}}",{i:i}),state_id:gform.getUID(),actions:[]});
   drawForm(gform.renderString("newState{{i}}",{i:i}));
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
   createFlow();
 })
+$('#add-logic').on('click',function() {
+  i=0;
+  while(typeof _.find(flow_states,{name:gform.renderString("newLogic{{i}}",{i:i})}) !== 'undefined'){
+    i++;
+  }
+  flow_states.push({name:gform.renderString("newLogic{{i}}",{i:i}),state_id:gform.getUID(),logic:{},actions:[{label:"True",name:"true"},{label:"False",name:"false"},{label:"Error",name:"error"}]});
+  drawForm(gform.renderString("newLogic{{i}}",{i:i}));
+  gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
+  createFlow();
+})
 $('#save').on('click',function() {
   var data = {code:{flow:flow_states}};
   if(true || !errorCount){
     // data.code.form = JSON.parse(formPage.toJSON()[0].content);
-    data.code.form = myform;
+    data.code.form = JSON.stringify(myform);
     data.updated_at = attributes.updated_at;
     data.code.map = map.toJSON().map;
     template_errors = templatePage.errors();
@@ -946,6 +1150,7 @@ $('#save').on('click',function() {
       data: JSON.stringify(data),
       success:function(e) {
         attributes.updated_at = e.updated_at;
+        loadInstances();
         toastr.success('', 'Successfully Saved')
       },
       error:function(e) {
@@ -976,10 +1181,13 @@ $('#save').on('click',function() {
 
 $('#import').on('click', function() {
     $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Workflow',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
+    var descriptor = JSON.parse(this.toJSON()['descriptor']);
+    descriptor.code.form = JSON.stringify(descriptor.code.form);
+
       $.ajax({
         url: root+attributes.workflow_id+'/code',
         contentType: 'application/json',
-        data: JSON.stringify($.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor))),
+        data: JSON.stringify($.extend({force: true, updated_at:''}, descriptor )),
         method: 'PUT',
         success: function(){
           Berries.update.trigger('close');
@@ -1015,16 +1223,301 @@ $('#publish').on('click', function() {
   });
 });
 
-$('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
-  $.get('/api/workflowinstances?workflow_id=' + loaded.workflow_id, function(data) {
-    if(data.length > 0){
-      modal({title: 'This Workflow has the following instances', content: viewTemplate.render({items: data})});
-    }else{
-      modal({title: 'No instances Found', content: 'This Workflow is not currently instantiated.'});
-    }
+// $.get('/api/workflowinstances?workflow_id=' + loaded.app_id, function(data) {
+//   if(data.length > 0){
+//     // viewTemplate = Hogan.compile();
+
+//     // modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
+//     document.querySelector('.sidebar').appendChild(gform.create(gform.m('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>',{items: data})))
+//   }else{
+//   }
+// })
+
+loadInstances = function(){
+  $.get('/api/workflowinstances?workflow_id=' + loaded.workflow_id, function(workflow_instances) {
+    if(workflow_instances.length > 0){
+      // viewTemplate = Hogan.compile();
+
+      // modal({title: 'This workflow has the following instances', content: viewTemplate.render({items: data})});
+
+
+        workflow_instances = _.map(workflow_instances, function(instance){
+          if(instance.configuration !== null){
+            if(instance.version !== null) {
+              instance.configuration.resources = _.map(instance.configuration.resources, function(instance, resource, i){
+                // var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+                // if(typeof group !== 'undefined'){
+                  resource.endpoint = _.find(instance.group.endpoints,{id:parseInt(resource.endpoint)})
+                // }
+                
+                resource.resource = _.find(instance.version.code.resources,{name:resource.name})
+                return resource;
+              }.bind(null, instance))
+
+              instance.version_summary = instance.version.summary||'Working Version';
+              
+              instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
+// instance.configuration.initial
+instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
+!!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||
+!!_.difference(_.pluck(instance.configuration.map ,'name'),_.pluck(instance.version.code.map,'name')).length ||
+_.reduce(instance.version.code.map,function(config,result,item){
+  var configItem = _.find(config,{name:item.name})
+  return result || (typeof configItem.value == 'undefined' || configItem.value == null || configItem.value == "" || configItem.type !== item.type )
+}.bind(null,instance.configuration.map),false)
+              // instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length
+            }
+
+            instance.configuration.map = _.map(instance.configuration.map, function(instance, map, i){
+              // var group = _.find(loaded.group_admins,{group_id:instance.group_id})
+              map.display = map.value;
+
+              if(map.type == 'group'){
+                var finder = _.find(gform.collections.get('/api/groups?members=20')||[],{id:parseInt(map.value)});
+                if(finder != null){
+                  map.display = finder.name;
+                }
+              }
+              if(map.type == 'endpoint'){
+                var finder = _.find(instance.group.endpoints,{id:parseInt(map.value)})
+                if(finder != null){
+                  map.display = finder.config.url+' ('+finder.name+')';
+                }
+              }
+              if(typeof map.display == 'undefined' || map.display == null || map.display == ''){
+                map.display = '<span class="text-danger"> - None - </span>';
+              }
+              return map;
+            }.bind(null, instance))
+          }
+
+          return instance;
+        })
+      }
+      // gform.addClass(document.querySelector('.nav-sidebar'),'hidden');
+      if(document.querySelector('.sidebar').querySelector('#instances') !== null){
+        document.querySelector('.sidebar').querySelector('#instances').remove();
+      }
+      document.querySelector('.sidebar').appendChild(gform.create(gform.m(`<div id="instances" style="margin: 0 -15px">
+      <hr><h5 style="color:#fefefe">Instances</h5>
+      <style>.workflowInstance{
+        color: #ddd;
+        text-decoration: none;
+        border:solid 1px #333;
+        border-width:1px 0;
+        cursor: pointer;
+        background: #666;
+        padding: 5px;
+        position:relative;
+      }
+      .workflowInstance  #dLabel{
+        color: #ddd;
+      }
+      .workflowInstance .fa-warning.text-danger{
+        position: absolute;
+        left: 70px;
+        top: 20px;
+        font-size: 50px;
+        text-shadow: 0px 0px 3px #fff;
+      }
+      .fa-lock-0:before{
+        content:"\f023";
+      }
+      .fa-lock-:before{
+        content:"\f09c";
+      }
+      
+    </style>
+      {{#workflow_instances}}
+      <div class="workflowInstance">
+        {{#error}}<a href="/admin/workflowinstances/{{id}}" target="_blank" class="fa fa-warning text-danger"></a>{{/error}}
+        <div class="btn-group parent-hover" style="position: absolute;right: 2px;top:2px">
+        <a class="btn btn-xs btn-default" target="_blank" href="/workflow/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i></a>
+        <a class="btn btn-xs btn-default" href="/admin/workflowinstances/{{id}}"><i class="fa fa-pencil"></i></a>
+      </div>
+        <div data-workflowID={{id}}>
+        
+        <div style="overflow:hidden">
+          {{group.name}}
+
+        </div> 
+        <div> <i class="pull-right fa {{#workflow_version_id}}fa-lock{{/workflow_version_id}} {{^workflow_version_id}}fa-lock-{{workflow_version_id}}{{/workflow_version_id}}" style="padding-top:3px"></i> {{name}}</div>
+          <div style="border-top:solid 1px #e4e4e4;border-bottom:solid 0px #ddd;padding:5px 0 0px;margin:5px 0">
+          {{#unlisted}}
+          <i class="fa fa-unlink"></i>
+          {{/unlisted}}
+          {{^unlisted}}
+          <i class="fa fa-link"></i>
+          {{/unlisted}}
+          {{#public}}
+          <i class=" fa fa-eye"></i>
+          {{/public}}
+          {{^public}}
+          <i class="fa fa-eye-slash"></i>
+          {{/public}}
+
+          {{#composite_limit}}
+          <i class="fa fa-user"></i>
+          {{/composite_limit}}
+          {{^composite_limit}}
+          <i class="fa fa-users"></i>
+          {{/composite_limit}}
+
+          {{^hidden_xs}}
+          <i class="pull-right fa fa-phone"></i>
+          {{/hidden_xs}}
+          {{^hidden_sm}}
+          <i class="pull-right fa fa-mobile"></i>
+          {{/hidden_sm}}
+          {{^hidden_md}}
+          <i class="pull-right fa fa-desktop"></i>
+          {{/hidden_md}}
+
+          <!--i class="pull-right device_{{device}}"></i-->
+
+          </div>
+        </a>
+        </div>
+      
+      </div>
+        
+      {{/workflow_instances}}
+      {{^workflow_instances}}
+      <div class="workflowInstance">No instances</div>
+      {{/workflow_instances}}</div>`,{workflow_instances: workflow_instances})))
+      $('#instances').on('click','[data-workflowID]',function(workflow_instances,e){
+        var temp = _.find(workflow_instances, {id:parseInt(e.currentTarget.dataset.workflowid)});
+        modal({title: temp.name, content: gform.m(`
+
+        <div class="">
+          <div class="row">
+            <dl class="dl-horizontal col-md-6">
+              <dt>Group:</dt>
+              <dd>{{group.name}} <span class="text-muted">({{group.id}})</span></dd>
+              <dt>Name:</dt>
+              <dd>{{name}}</dd>
+              <dt>Slug:</dt>
+              <dd>{{slug}}</dd>
+              <dt>Icon:</dt>
+              <dd><i class="{{icon}}"></i> ({{^icon}} - None - {{/icon}}{{icon}})</dd>
+              
+              <dt>Version Selected:</dt>
+              <dd>{{version_id}}</dd>
+              <dt>Using Version:</dt>
+              <dd>{{version_summary}}<p class="text-muted">{{description}}</p></dd><dt></dt>
+              <dt>Initial State:</dt>
+              <dd>{{configuration.initial}}{{^configuration.initial}}<span class="text-danger"> - None - </span>{{/configuration.initial}}</dd>
+
+            </dl>
+            <dl class="dl-horizontal col-md-6">
+              <dt>Included in menu:</dt>
+              <dd>          
+              {{#unlisted}}
+              No <i class="text-warning pull-right fa fa-unlink"></i>
+              {{/unlisted}}
+              {{^unlisted}}
+              Yes <i class="pull-right fa fa-link"></i>
+              {{/unlisted}}
+              </dd>
+              <dt>Public:</dt>
+              <dd>          
+              {{#public}}
+              Yes <i class="pull-right text-success fa fa-eye"></i>
+              {{/public}}
+              {{^public}}
+              No <i class="pull-right text-danger fa fa-eye-slash"></i>
+              {{/public}}</dd>
+              <dt>Limit To Composites:</dt>
+              <dd>
+              {{#composite_limit}}
+              Yes <i class="fa fa-user"></i>
+              {{/composite_limit}}
+              {{^composite_limit}}
+              No, Open to all Group Members <i class="pull-right fa fa-users"></i>
+              {{/composite_limit}}
+              </dd>
+
+              <dt>Phone:</dt>
+              <dd>
+              {{^hidden_xs}}
+              Yes
+              {{/hidden_xs}}
+              {{#hidden_xs}}
+              No
+              {{/hidden_xs}}
+              </dd>
+              <dt>Tablet:</dt>
+              <dd>
+              {{^hidden_sm}}
+              Yes
+              {{/hidden_sm}}
+              {{#hidden_sm}}
+              No
+              {{/hidden_sm}}
+              </dd>
+              <dt>Desktop:</dt>
+              <dd>
+              {{^hidden_md}}
+              Yes
+              {{/hidden_md}}
+              {{#hidden_md}}
+              No
+              {{/hidden_md}}
+              </dd>
+
+              <dt>Emails:</dt>
+              <dd>
+              {{#configuration.suppress_emails}}
+              Do not send (Emails will not be sent) <i class="pull-right fa fa-envelope text-success"></i>
+              {{/configuration.suppress_emails}}
+              {{^configuration.suppress_emails}}
+              Send default Emails <i class="pull-right fa fa-envelope text-danger"></i>
+              {{/configuration.suppress_emails}}
+              </dd>
+            </dl>
+          </div>
+    
+          <div style="overflow:scroll">
+            <p class="text-muted">{{version.description}}</p>
+    
+              {{#configuration.resources.length}}
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+              <table>
+              <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+              {{#configuration.resources}}
+              <tr>
+              <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
+              </tr>
+              {{/configuration.resources}} 
+            </table>
+              {{/configuration.resources.length}}
+    
+              {{#configuration.map.length}}                      
+              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
+    
+              <table style="min-width:100%">
+              <tr><th colspan="2" style="color:#666">Data Map</th><th>Type</th><tr>
+              {{#configuration.map}}
+              <tr>
+              <td valign="top" style="text-align:right;width:100px">{{name}}:&nbsp;</td><td class="text-muted">{{{display}}}</td><td class="text-muted;width:100px">({{type}})</td>
+              </tr>
+              {{/configuration.map}}                         
+              </table>                      
+    
+              {{/configuration.map.length}}
+          </div>
+        </div>`,temp)});
+      }.bind(null,workflow_instances))
+    
   })
-});
+}
+$.get('/api/groups?members=20', function(groups) {
+gform.collections.add('/api/groups?members=20',groups)
+loadInstances();
+
+})
+
+
 
 $('#versions').on('click', function() {
   $.ajax({
@@ -1106,6 +1599,7 @@ Basic
 
 
 
+
 <div class="panel panel-default panelOnenter">
   <div class="panel-heading" role="tab" id="headingOnenter">
     <h4 class="panel-title">
@@ -1146,6 +1640,20 @@ Actions
     </h4>
   </div>
   <div id="collapseActions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingActions">
+    <div class="panel-body">
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default panelLogic">
+  <div class="panel-heading" role="tab" id="headingLogic">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseLogic" aria-expanded="false" aria-controls="collapseLogic">
+      Logic
+      </a>
+    </h4>
+  </div>
+  <div id="collapseLogic" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLogic">
     <div class="panel-body">
     </div>
   </div>

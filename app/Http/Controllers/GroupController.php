@@ -9,6 +9,7 @@ use App\Page;
 use App\GroupAdmins;
 use App\GroupMembers;
 use App\AppInstance;
+use App\WorkflowInstance;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
@@ -211,8 +212,11 @@ class GroupController extends Controller
             return 1;
         }
     }
-    public function list_members(Group $group)
+    public function list_members(Group $group, Request $request)
     {
+        if($request->has('all')){
+            return $group->members()->with('bulkuser')->get()->pluck('bulkUser');
+        }
         if (isset($group->membersCount) && $group->membersCount->aggregate > 1000) {
             return $group->members()->where('status','=','internal')->with('user')->get();
         } else {
@@ -288,31 +292,46 @@ class GroupController extends Controller
     }
     public function order()
 	{
-        $order = Request::get('order');
+        $order = request()->input('order');
         foreach($order as $item){
             $group = Group::find($item['id']);
             $group->order = (int) $item['index'];
             $group->save();
         }
+        return $order;
 	}
 
     public function pages_order(Group $group)
 	{
-        $order = Request::get('order');
+        $order = request()->input('order');
         foreach($order as $item){
             $page = Page::find($item['id']);
             $page->order = (int) $item['index'];
             $page->save();
         }
+        return $order;
 	}
 
     public function appinstances_order(Group $group)
 	{
-        $order = Request::get('order');
+        $order = request()->input('order');
         foreach($order as $item){
             $ai = AppInstance::find($item['id']);
             $ai->order = (int) $item['index'];
             $ai->save();
         }
+        return $order;
+    }
+    
+    public function workflowinstances_order(Group $group)
+	{
+        $order = request()->input('order');
+        foreach($order as $item){
+            $wi = WorkflowInstance::find($item['id']);
+            $wi->order = (int) $item['index'];
+            $wi->save();
+        }
+        return $order;
 	}
+
 }

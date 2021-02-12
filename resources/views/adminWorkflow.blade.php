@@ -17,7 +17,7 @@
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
-    <li><a href="#" id="instances">Instances</a></li>
+    <!-- <li><a href="#" id="instances">Instances</a></li> -->
     <li role="separator" class="divider"></li>
     <li><a href="#" id="publish">Publish (new version)</a></li>
     <!-- <li><a href="#">Visit</a></li> -->
@@ -29,7 +29,7 @@
 
     <li role="presentation" class="active"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Form<span></a></li>
     <!-- <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li> -->
-    <li role="presentation"><a href="#options" aria-controls="options" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
+    <li role="presentation"><a href="#flowchart" aria-controls="flowchart" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
     <li role="presentation"><a href="#methods" aria-controls="methods" role="tab" data-toggle="tab"><i class="fa fa-bolt"></i> <span class="hidden-xs hidden-sm">Methods<span></a></li>
 
@@ -50,7 +50,7 @@
             <div style="display:none;position: absolute;top: -5px;left: 0;right: 0;bottom: -20px;z-index:-1;background: #eaeaea;border: solid #9aa5b1;border-width: 0 1px;"></div>
             <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
                   <a class="btn btn-default" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-eye"></i><span class="visible-lg"> View</span></a>
-                  <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25,value:JSON.stringify(myform,null,'\t') }]}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
+                  <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25 }],data:{descriptor:JSON.stringify(myform,null,'\t')}}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
                   <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
                 </div>
             <ul id="sortableList" class="form-types-group">
@@ -175,14 +175,14 @@
         
     </div> -->
   </div>
-  <div role="tabpanel" class="tab-pane" id="options">
+  <div role="tabpanel" class="tab-pane" id="flowchart">
     <div class="row">
       <div class="col-sm-8">
         <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
       </div>
       <div class="col-sm-4" style="margin-top:5px">
 
-        <div style="height:40px">          <div class="btn btn-info" id="add-state" >New State</div></div>
+        <div style="height:40px">          <div class="btn btn-info" id="add-state" >New State</div> <div class="btn btn-default" id="add-logic" >New Logic Block</div></div>
 
         <div class="panel panel-default">
           <div class="panel-body">
@@ -217,7 +217,7 @@
 
   <script src='/assets/js/paged.js'></script> 
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-  <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/templates/admin.js'></script> -->
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
   <!-- <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
@@ -258,6 +258,7 @@
   <script src='/assets/js/vendor/moment_datepicker.js'></script>
 
   <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
+  <script type='text/javascript' src='/assets/js/vendor/popper.min.js'></script>
   <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
   
   <script type='text/javascript' src='/assets/js/editWorkflow.js'></script>

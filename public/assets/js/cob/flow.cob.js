@@ -258,9 +258,27 @@ Cobler.types.Workflow = function(container){
 		set: function (newItem) {
 			$.extend(item, newItem);
 		},
+    saveFlow:function(e,data){
+      $.ajax({
+        url:'/api/workflowsubmissions/'+this.get().workflow_id,
+        dataType : 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        type: 'POST',
+        success  : function(data){
+          e.form.find('_state').el.style.opacity = 1
+          document.location = "/workflows/report/"+data.id;
+        }.bind(this),
+        error:function(){
+          e.form.find('_state').el.style.opacity = 1
+          gform.types.fieldset.edit.call(e.form.find('_state'),true)
+          $('.gform-footer').show();
+          toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+        }
+      })
+    },
 		initialize: function(el) {
 
-  
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -271,6 +289,38 @@ Cobler.types.Workflow = function(container){
       var instance = this.get().workflow;
       this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="label label-default pull-right status"></span>';
       mappedData = {actor:this.get().user,form:{},owner:null,state:instance.configuration.initial,history:[]};
+      // mappedData.workflow = this.get();
+      mappedData.datamap = {};
+      _.each(instance.configuration.map,function(item){
+        mappedData.datamap[item.name] = item.value;
+      })
+
+      /* problem here  */
+      gform.options.rootpath = '/workflows/fetch/'+this.get().workflow_id+'/'
+      _.each(this.get().resources,function(item,name){
+        gform.collections.add(name, _.isArray(item)?item:[])
+      })
+      mappedData.resources = _.reduce(this.get().resources,function(resources, item, name){
+        resources[name] = item;
+        return resources;
+      },{})
+
+    //   Object.defineProperty(mappedData, "resources", {
+    //     // get: (gform.types[field.type].display||function(){
+    //     //     return this.toString();
+    //     // })
+    //     get: function(){
+    //         //(gform.types[field.type].display.bind(this)||
+    //         return [];
+    //         // if('display' in gform.types[field.type]){
+    //         //     return gform.types[field.type].display.call(this)
+    //         // }
+    //         // return this.toString();
+    //     },
+    //     enumerable: true
+    // });
+
+
       var data = {
         _flowstate:instance.configuration.initial,
         _state:(this.get().current||this.get()).data,
@@ -279,7 +329,7 @@ Cobler.types.Workflow = function(container){
       }
       this.methods = [];
       _.each(this.get().workflow.workflow.code.methods,function(item,index){
-        eval('this.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(data)');
+        eval('this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(data,data.data)');
       }.bind(this))
       var formSetup = {
         "data":data,
@@ -301,14 +351,45 @@ Cobler.types.Workflow = function(container){
         ]
       }
 
+      var actions = _.filter((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(action){
+        if(typeof action.assignment == 'undefined'){
+          return true;
+        }else{
+          if(action.assignment.type == "user"){
+            if(gform.m(action.assignment.id,mappedData) == mappedData.actor.id.toString()){
+              return true;
+            }
+          }else if(action.assignment.type == "group"){
+            if(mappedData.actor.groups.indexOf(parseInt(gform.m(action.assignment.id,mappedData))) >=0){
+              return true;
+            }
+          }
+        }
+        return false;
+
+
+      })
+
+
       //create actions buttons that are active in current(initial) state
-      _.each((_.find(instance.version.code.flow,{name:instance.configuration.initial}) || {"actions": []}).actions,function(action){
+      _.each(actions,function(action){
         action.modifiers = 'btn btn-'+action.type;
         action.action = 'save';
         action.type = 'button';
         formSetup.actions.push(action);
       });
       formSetup.methods = this.methods;
+
+      formSetup.data._state = formSetup.data._state ||{};
+      if(this.get().workflow.workflow.code.form.resource !== ''){
+       if(this.get().workflow.workflow.code.form.resource in mappedData.resources){
+        _.extend(formSetup.data._state,mappedData.resources[this.get().workflow.workflow.code.form.resource]);
+       }
+       if(this.get().workflow.workflow.code.form.resource in formSetup.methods){
+        _.extend(formSetup.data._state,formSetup.methods[this.get().workflow.workflow.code.form.resource](data));
+       }
+      }
+
       if(this.get().current != null){
         this.initialstate = this.get().current.data;
         this.id = this.get().current.id;
@@ -319,17 +400,19 @@ Cobler.types.Workflow = function(container){
         this.form = new gform(formSetup, '.g_'+get().guid);
         this.initialstate = gform.instances.f0.get();
       }
-
       update = function(file,response){
+        var files = this.get().current.files = this.get().current.files || this.form.collections.get('files')
+
         if(typeof response !== 'undefined'){
-          var exists = _.find(this.get().current.files,{id:response.id});
+          var exists = _.find(files,{id:response.id});
           if(typeof exists !== 'undefined'){
             _.merge(exists,response);
           }else{
-            this.get().current.files.push(response)
+            files = files || [];
+            files.push(response)
           }
         }
-        this.get().current.files = _.map(this.get().current.files,function(file){
+        files = _.map(files,function(file){
           switch(file.mime_type){
             case "image/jpeg":
             case "image/png":
@@ -378,11 +461,20 @@ Cobler.types.Workflow = function(container){
 
         })
         $('.f_'+get().guid).html(gform.renderString(workflow_report.attachments, this.get().current))
-        gform.collections.update('files', this.get().current.files)
+        gform.collections.update('files', files)
+        this.get().current.files = files
+        var field = this.form.find({shown:true,type:'files'});
+        if(field){
+          field.set(response.name)
+          field.renderMenu();
+          $('[href="'+_.find(field.options,{id:response.id}).path+'"]').click()
+          // field.el.find((response.name)
+        }
 
       }.bind(this)
       if(this.id && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
         $('#myId').html('');
+
         this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
           this.on("success", update);
         }});
@@ -425,30 +517,59 @@ Cobler.types.Workflow = function(container){
         }
       }.bind(this))
       this.form.on('save',function(e){
-        debugger;
-        if(!e.form.validate(true))return;
-        gform.types.fieldset.edit.call(e.form.find('_state'),false)
-        e.form.find('_state').el.style.opacity = .7
-        $('.gform-footer').hide();
-        var data = e.form.toJSON();
-        data.action = e.field.name;
-        $.ajax({
-          url:'/api/workflowsubmissions/'+this.get().workflow_id,
-          dataType : 'json',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          type: 'POST',
-          success  : function(data){
-            e.form.find('_state').el.style.opacity = 1
-            document.location = "/workflows/report/"+data.id;
-          }.bind(this),
-          error:function(){
-            e.form.find('_state').el.style.opacity = 1
-            gform.types.fieldset.edit.call(e.form.find('_state'),true)
-            $('.gform-footer').show();
-            toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+
+          //check if validation required first
+        var currentAction = _.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name});
+
+        
+        if(currentAction.validate !== false && !e.form.validate(true)){  
+          if(currentAction.invalid_submission !== true || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?",{errors:_.values(e.form.errors)}) )){
+            toastr.error("Form invalid, please check for errors!", 'ERROR');
+            return;
           }
-        })
+        }
+        
+        if(currentAction.signature){
+
+          signature = new gform({legend:"Signature Required",actions:[{type:"cancel",label:'<i class="fa fa-times"></i> Clear'},{type:"save"}]}).on('cancel',function(e){
+            e.form.set({signature:null})
+            var signature = e.form.find('signature');
+            e.form.valid = true;
+            signature.valid = true;
+            signature.errors=""
+            gform.handleError(signature);
+          
+          }).on('save',function(e,name,modal){
+            if(modal.form.validate()){
+              // modal.form.find('signature').el.querySelector('canvas').style.borderColor = "#bbb"
+              modal.form.trigger('close')
+              gform.types.fieldset.edit.call(e.form.find('_state'),false)
+              e.form.find('_state').el.style.opacity = .7
+              $('.gform-footer').hide();
+              var data = e.form.toJSON();
+              data.signature = modal.form.get('signature');
+              data.action = name;
+              this.saveFlow.call(this,e,data)
+            }
+            // else{
+            //   modal.form.find('signature').el.querySelector('canvas').style.borderColor = "red"
+            // }
+  
+
+          }.bind(this,e,e.field.name)).on('input',function(e){
+            if(e.form.el.classList.contains('in'))e.form.validate()
+            
+            // e.form.find('signature').el.querySelector('canvas').style.borderColor = "#bbb"
+          }).modal()
+          signature.fields.push(signature.add({type:'signaturePad',required:true,label:"Signature",hideLabel:true,help:_.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name}).signature_text||"Please Sign Above",name:"signature"}))
+        }else{
+          gform.types.fieldset.edit.call(e.form.find('_state'),false)
+          e.form.find('_state').el.style.opacity = .7
+          $('.gform-footer').hide();
+          var data = e.form.toJSON();
+          data.action = e.field.name;
+          this.saveFlow.call(this,e,data)
+        }
       }.bind(this))
       .on('canceled',function(e){
         e.form.set('_state',this.initialstate._state)
@@ -476,16 +597,16 @@ Cobler.types.Workflow = function(container){
             type: 'POST',
             success  : function(data){
                $('.flow-title .status').html('All Changes Saved').addClass('label-success')
-              // debugger;
               this.id = data.id;
               if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
                 $('#myId').html('');
-
                 this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
                   this.on("success", update);
                 }});
               }
               this.initialstate = data.data;
+              data.data.files = this.form.collections.get('files')
+              this.set({current:data});
             }.bind(this),
             error:function(){
           
@@ -541,7 +662,7 @@ Cobler.types.Workflows = function(container){
 		get: get,
 		set: function (newItem) {
 			$.extend(item, newItem);
-		},
+    },
 		initialize: function(el){
       if(this.container.owner.options.disabled && this.get().enable_min){
           var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
@@ -590,219 +711,218 @@ Cobler.types.WorkflowStatus = function(container){
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
+
       $.ajax({
-        url:'/api/workflowinstances/user',
+        url:'/api/workflowsubmissions/user',
         dataType : 'json',
         type: 'GET',
-        success  : function(data){
-          $.ajax({
-            url:'/api/workflowsubmissions/user',
-            dataType : 'json',
-            type: 'GET',
-            success  : function(newdata){
-              $.ajax({
-                url:'/api/workflowsubmissions/user/assignments',
-                dataType : 'json',
-                type: 'GET',
-                success  : function(assignments){
-                  
-
-//  _.mixin({join:function(a,b,a_id,b_id,name){
-//   return _.map(a,function(left){
-//       var search = {};
-//       search[b_id||a_id||'id']=left[a_id||'id']
-//       left[name||(a_id.split('_id').join('')+'s')] =_.where(b,search);return left;})
-//   }})
-
-  //usage
-  // _.join(array_1,array_2,"id","thing_id","named_as")
-
-                  
-                  var getActions = function(item){
-                    item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
-                  }
-
-                  assignments.direct = _.each(assignments.direct, getActions)
-                  assignments.group = _.each(assignments.group, getActions)
-
-                  this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(workflow_report.assignments,{data:data,open:newdata,assignments:assignments});
-                  assignmentData = assignments.direct.concat(assignments.group);
-
-                  assignmentGrid = new GrapheneDataGrid({
-                    el: "#assignmentgrid",
-                    autoSize: 50, 
-                    data: assignmentData,
-                    actions:[],upload:false,download:false,columns:false,
-                    sortBy:"updated_at",
-                    reverse:true,
-                    form:{
-                      fields:[
-                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
-                        }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
-                        {label:"Initiated",name:"created_at",template:"<div>{{attributes.created_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
-                        {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div> '},
-                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
-                        {label:"State",name:"state",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
-                      ]
-                    }
-                  }).on('click',function(e){
-                    document.location = "/workflows/report/"+e.model.attributes.id;
-                  }).on("*",function(e){
-                    if(e.event.startsWith("click_") && !e.model.waiting()){
-                      e.model.waiting(true);
-                      if(_.find(e.model.attributes.actions,{name:e.event.split("click_")[1]}).form){
-                        e.model.waiting(false);
-                        new gform(
-                          {
-                            "legend":e.model.attributes.workflow.name,
-                            "data":e.model.attributes.data,
-                            "events":e.model.attributes.workflow_version.code.form.events||{},
-                            "actions": [
-                              {
-                                "type": "cancel",
-                                "name": "submitted",
-                                "action":"canceled",
-                              },
-                              {
-                                "type": "save",
-                                "name": "submit",
-                                "label": "<i class='fa fa-check'></i> Submit"
-                              },{
-                                "type": "hidden",
-                                "name": "_flowstate",
-                                "value":e.model.attributes.state
-                              },{
-                                "type": "hidden",
-                                "name": "_flowstate_history",
-                                "value": e.model.attributes.state
-                              }
-
-                            ],
-                            "fields":[
-                              {"name":"_state","label":false,"type":"fieldset","fields": e.model.attributes.workflow_version.code.form.fields},                                
-                              {"name":"comment","type":"textarea","length":255}
-                            ]
-                          }).on('save',function(e,eForm){
-                            if(!eForm.form.validate(true))return;
-
-                            e.model.waiting(true);
-
-                            eForm.form.trigger('close')
-                            
-                            $.ajax({
-                              url:'/api/workflowsubmissions/'+e.model.attributes.id,
-                              type: 'PUT',
-                              dataType : 'json',
-                              contentType: 'application/json',
-                              data: JSON.stringify({_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},),
-                              success  : function(e,data){
-                                e.model.waiting(false);
-                                
-                                data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
-                                // data.updated_at = moment(data.updated_at).fromNow()
-                                e.model.set(data)
-          
-                                }.bind(null,e)
-                            })
-                          }.bind(null,e)).on('canceled',function(eForm){
-                            eForm.form.trigger('close')
-                          }).modal();
-                      }else{
-                        new gform(
-                          {
-                            "legend":e.model.attributes.workflow.name,
-                            "data":e.model.attributes.data,
-                            "events":e.model.attributes.workflow_version.code.form.events||{},
-                            "actions": [
-                              {
-                                "type": "cancel",
-                                "name": "submitted",
-                                "action":"canceled",
-                              },
-                              {
-                                "type": "save",
-                                "name": "submit",
-                                "label": "<i class='fa fa-check'></i> Submit"
-                              },{
-                                "type": "hidden",
-                                "name": "_flowstate",
-                                "value":e.model.attributes.state
-                              }
-                            ],
-                            "fields":[
-                              {"name":"comment","type":"textarea","length":255}
-                            ]
-                          }).on('save',function(e,eForm){
-
-                            e.model.waiting(true);
-
-                            eForm.form.trigger('close')
-                        $.ajax({
-                          url:'/api/workflowsubmissions/'+e.model.attributes.id,
-                          dataType : 'json',
-                          type: 'PUT',
-                          contentType: 'application/json',
-                          data: JSON.stringify({_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]}),
-                          success  : function(e,data){
-                            e.model.waiting(false);
-                            data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
-                            e.model.set(data)
-                            }.bind(null,e)
-                        })
-
-                      }.bind(null,e)).on('canceled',function(eForm){
-                        eForm.form.trigger('close')
-                      }).modal();
-
-                    }
-
-
-                    }
-                  })
-                  myGrid = new GrapheneDataGrid({
-                    el: "#mygrid",
-                    autoSize: 50, 
-                    data: newdata,
-                    actions:[],
-                    upload:false,download:false,columns:false,
-                    sortBy:"updated_at",
-                    reverse:true,
-                    form:{
-                      fields:[
-                        {label:"Workflow Name",name:"name",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.workflow.name}))
-                        }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
-                        {label:"Initiated",name:"created_at",template:"<div>{{attributes.created_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
-                        {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
-                        {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
-                        
-                        {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
-                        {label:"State",name:"state",type:"select",options:function(data){
-                          return _.uniq(_.map(data,function(item){return item.state}))
-                        }.bind(null,newdata),template:'<span style="text-transform:capitalize">{{attributes.state}}</span>'},
-                      ]
-                    }
-                  }).on('click',function(e){
-                      document.location = "/workflows/report/"+e.model.attributes.id;
-                  })
-                  
-    
-                  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                    assignmentGrid.draw()
-                  })
-
-                }.bind(this)
-                
-              })
-
-
-            }.bind(this)
-
+        success  : function(newdata){
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows you have ever submitted</h5><div id="mygrid"></div>',{open:newdata});
+          myGrid = new GrapheneDataGrid({
+            el: "#mygrid",
+            autoSize: 50, 
+            data: newdata,
+            actions:[],
+            upload:false,download:false,columns:false,
+            sortBy:"updated_at",
+            reverse:true,
+            form:{
+              fields:[
+                {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                }.bind(null,newdata),template:"{{attributes.workflow.name}}"},
+                {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
+                {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
+                {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                {label:"State",name:"state",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.state}))
+                }.bind(null,newdata)},
+                {label:"ID",name:"id",type:"text"}
+              ]
+            }
+          }).on('click',function(e){
+              document.location = "/workflows/report/"+e.model.attributes.id;
           })
+        }.bind(this)
+      })
+		}
+	}
+}
 
+
+Cobler.types.WorkflowAssignments = function(container){
+	function get() {
+		item.widgetType = 'WorkflowAssignments';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+		Title: {},
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      return gform.renderString(workflow_report.status, temp);
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+      $.ajax({
+        url:'/api/workflowsubmissions/user/assignments',
+        dataType : 'json',
+        type: 'GET',
+        success  : function(assignments){
+
+          this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString('<h5>These are all of the workflows which require your action</h5><div id="assignmentgrid"></div>');
+          assignmentGrid = new GrapheneDataGrid({
+            el: "#assignmentgrid",
+            autoSize: 50, 
+            data: assignments,
+            actions:[],upload:false,download:false,columns:false,
+            sortBy:"updated_at",
+            reverse:true,
+            form:{
+              fields:[
+                {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                }.bind(null,assignments),template:"{{attributes.workflow.name}}"},
+                {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div> '},
+                {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} ({{attributes.assignment_type}})</span>'},
+                {label:"State",name:"state",type:"select",options:function(data){
+                  return _.uniq(_.map(data,function(item){return item.state}))
+                }.bind(null,assignments)},
+                {label:"ID",name:"id",type:"text"}
+              ]
+            }
+          }).on('click',function(e){
+            document.location = "/workflows/report/"+e.model.attributes.id;
+          }).on("*",function(e){
+            if(e.event.startsWith("click_") && !e.model.waiting()){
+              e.model.waiting(true);
+              if(_.find(e.model.attributes.actions,{name:e.event.split("click_")[1]}).form){
+                e.model.waiting(false);
+                new gform(
+                  {
+                    "legend":e.model.attributes.workflow.name,
+                    "data":e.model.attributes.data,
+                    "events":e.model.attributes.workflow_version.code.form.events||{},
+                    "actions": [
+                      {
+                        "type": "cancel",
+                        "name": "submitted",
+                        "action":"canceled",
+                      },
+                      {
+                        "type": "save",
+                        "name": "submit",
+                        "label": "<i class='fa fa-check'></i> Submit"
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate",
+                        "value":e.model.attributes.state
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate_history",
+                        "value": e.model.attributes.state
+                      }
+
+                    ],
+                    "fields":[
+                      {"name":"_state","label":false,"type":"fieldset","fields": e.model.attributes.workflow_version.code.form.fields},                                
+                      {"name":"comment","type":"textarea","length":255}
+                    ]
+                  }).on('save',function(e,eForm){
+                    if(!eForm.form.validate(true))return;
+                    
+                    e.model.waiting(true);
+
+                    eForm.form.trigger('close')
+                    
+                    $.ajax({
+                      url:'/api/workflowsubmissions/'+e.model.attributes.id,
+                      type: 'PUT',
+                      dataType : 'json',
+                      contentType: 'application/json',
+                      data: JSON.stringify({_state:eForm.form.get()._state,comment:eForm.form.get().comment,action:e.event.split("click_")[1]},),
+                      success  : function(e,data){
+                        e.model.waiting(false);
+                        
+                        data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
+                        // data.updated_at = moment(data.updated_at).fromNow()
+                        e.model.set(data)
+  
+                        }.bind(null,e)
+                    })
+                  }.bind(null,e)).on('canceled',function(eForm){
+                    eForm.form.trigger('close')
+                  }).modal();
+              }else{
+                new gform(
+                  {
+                    "legend":e.model.attributes.workflow.name,
+                    "data":e.model.attributes.data,
+                    "events":e.model.attributes.workflow_version.code.form.events||{},
+                    "actions": [
+                      {
+                        "type": "cancel",
+                        "name": "submitted",
+                        "action":"canceled",
+                      },
+                      {
+                        "type": "save",
+                        "name": "submit",
+                        "label": "<i class='fa fa-check'></i> Submit"
+                      },{
+                        "type": "hidden",
+                        "name": "_flowstate",
+                        "value":e.model.attributes.state
+                      }
+                    ],
+                    "fields":[
+                      {"name":"comment","type":"textarea","length":255}
+                    ]
+                  }).on('save',function(e,eForm){
+
+                    e.model.waiting(true);
+
+                    eForm.form.trigger('close')
+                $.ajax({
+                  url:'/api/workflowsubmissions/'+e.model.attributes.id,
+                  dataType : 'json',
+                  type: 'PUT',
+                  contentType: 'application/json',
+                  data: JSON.stringify({_state:e.model.attributes.data,comment:eForm.form.get().comment,action:e.event.split("click_")[1]}),
+                  success  : function(e,data){
+                    e.model.waiting(false);
+                    data.actions = (_.find(data.workflow_version.code.flow,{name:data.state}) || {"actions": []}).actions;
+                    e.model.set(data)
+                    }.bind(null,e)
+                })
+
+              }.bind(null,e)).on('canceled',function(eForm){
+                eForm.form.trigger('close')
+              }).modal();
+
+            }
+
+
+            }
+          })
         
         }.bind(this)
       })
@@ -810,3 +930,82 @@ Cobler.types.WorkflowStatus = function(container){
 	}
 }
 
+
+Cobler.types.WorkflowHistory = function(container){
+	function get() {
+		item.widgetType = 'WorkflowHistory';
+		return item;
+	}
+	var item = {
+		guid: generateUUID()}
+	var fields = {
+		Title: {},
+	}
+	return {
+    container:container,
+		fields: fields,
+		render: function() {
+      var temp = get();
+      temp.workflow_admin = group_admin;
+      return gform.renderString(workflow_report.status, temp);
+		},
+		edit: berryEditor.call(this, container),
+		toJSON: get,
+		get: get,
+		set: function (newItem) {
+			$.extend(item, newItem);
+		},
+		initialize: function(el){
+      if(this.container.owner.options.disabled && this.get().enable_min){
+          var collapsed = (Lockr.get(this.get().guid) || {collapsed:this.get().collapsed}).collapsed;
+          this.set({collapsed:collapsed});
+          $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
+      }
+
+      $.ajax({
+        url:'/api/workflowsubmissions/user/history',
+        dataType : 'json',
+        type: 'GET',
+        success  : function(history){
+              
+              var getActions = function(item){
+                item.actions = (_.find(item.workflow_version.code.flow,{name:item.state}) || {"actions": []}).actions;
+              }
+
+              this.container.elementOf(this).querySelector('.collapsible').innerHTML = gform.renderString(`<h5>These are all of the workflows on which you have ever taken an action</h5><div id="historygrid"></div>`,{});
+
+
+              myGrid = new GrapheneDataGrid({
+                el: "#historygrid",
+                autoSize: 50, 
+                data: history,
+                actions:[],
+                upload:false,download:false,columns:false,
+                sortBy:"updated_at",
+                reverse:true,
+                form:{
+                  fields:[
+                    {label:"Workflow Name",name:"name",type:"select",options:function(data){
+                      return _.uniq(_.map(data,function(item){return item.workflow.name}))
+                    }.bind(null,history),template:"{{attributes.workflow.name}}"},
+                    {label:"Submitted",name:"submitted_at",template:"<div>{{attributes.submitted_at}}</div> by {{attributes.user.first_name}} {{attributes.user.last_name}}"},
+                    {label:"Last Updated",name:"updated_at",template:'<div>{{attributes.updated_at}}</div> <div class="label label-default">{{attributes.logs.0.action}}</div>'},
+                    {label:"Assigned",name:"assignment_type",type:"select",options:[{value:'group',label:'Group'},{value:'user',label:'User'}],template:'<span style="text-transform:capitalize">{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}} <div>({{attributes.assignment_type}})</div></span>'},
+                    {label:"Status",name:"status",type:"select",options:['open','closed'],template:'<span style="text-transform:capitalize">{{attributes.status}}</span>'},
+                    {label:"State",name:"state",type:"select",options:function(data){
+                      return _.uniq(_.map(data,function(item){return item.state}))
+                    }.bind(null,history)},
+                    {label:"ID",name:"id",type:"text"}
+                  ]
+                }
+              }).on('click',function(e){
+                  document.location = "/workflows/report/"+e.model.attributes.id;
+              })
+
+        }.bind(this)
+
+      })
+
+		}
+	}
+}

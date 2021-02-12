@@ -16,6 +16,25 @@ use App\Libraries\PageRenderer;
 class WorkflowController extends Controller
 {
     public function __construct() {
+        $this->menu = [[
+            "name"=> "My Workflows",
+            "slug"=> "workflow_dashboard",
+            "type"=> "workflow",
+            "url"=> "/workflows",
+            "id"=>""
+        ],[
+            "name"=> "My Assignments",
+            "slug"=> "workflow_assignments",
+            "type"=> "workflow",
+            "url"=> "/workflows/assignments",
+            "id"=>"1"
+        ],[
+            "name"=> "My History",
+            "slug"=> "workflow_history",
+            "type"=> "workflow",
+            "url"=> "/workflows/history",
+            "id"=>"2"
+        ]];
     }
 
     public function list_all_workflows(Request $request) {
@@ -68,8 +87,10 @@ class WorkflowController extends Controller
         }else if(!($first->gte($second) || isset($post_data['force']))){
             abort(409, $workflow_version);
         }
+        $code = $request->code;
+        $code['form'] = json_decode($code['form']);
+        $workflow_version->code = $code;
 
-        $workflow_version->code = $request->code;
         $workflow_version->user_id = Auth::user()->id;
         $workflow_version->save();
         return $workflow_version;
@@ -175,13 +196,54 @@ class WorkflowController extends Controller
                 "layout"=>'<div class="col-sm-9 cobler_container"></div><div class="col-sm-3 cobler_container"></div>'
             ],
             'resource'=>'workflow',
+            'id'=>'',
             'name'=>'Workflow Dashboard',
-            'menu' => [
-                "name"=> "Workflow Dashboard",
-                "slug"=> "workflow_dashboard",
-                "type"=> "workflow",
-                "url"=> "/workflows",
-            ]
+            'menu' => $this->menu
+        ]);        
+    }
+
+
+    public function assignments(Request $request) {
+        if (!Auth::check()) { /* User is not Authenticated */
+            abort(403);
+        }
+        $renderer = new PageRenderer();
+        return $renderer->render([
+            'config'=>[
+                "sections"=>[
+                    [[
+                        "title"=>"Workflow Assignments",
+                        "widgetType"=>"WorkflowAssignments",
+                        "container"=>true
+                    ]]],
+                "layout"=>'<div class="col-sm-12 cobler_container"></div>'
+            ],
+            'resource'=>'workflow',
+            'id'=>'1',
+            'name'=>'Workflow Assignments',
+            'menu' => $this->menu
+        ]);        
+    }
+
+    public function history(Request $request) {
+        if (!Auth::check()) { /* User is not Authenticated */
+            abort(403);
+        }
+        $renderer = new PageRenderer();
+        return $renderer->render([
+            'config'=>[
+                "sections"=>[
+                    [[
+                        "title"=>"Workflow History",
+                        "widgetType"=>"WorkflowHistory",
+                        "container"=>true
+                    ]]],
+                "layout"=>'<div class="col-sm-12 cobler_container"></div>'
+            ],
+            'resource'=>'workflow',
+            'id'=>'2',
+            'name'=>'Workflow History',
+            'menu' => $this->menu
         ]);        
     }
 }

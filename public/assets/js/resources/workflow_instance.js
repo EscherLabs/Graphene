@@ -61,9 +61,9 @@ $.ajax({
 					{name: 'id', type:'hidden'}
 				],attributes:data, actions:false, name:'main'})
 
-				var valueField = {columns:8,name:'value',label:'Value <span class="text-success pull-right">{{value}}</span>'}
+				var valueField = {columns:8,name:'value',label:"Value",title:'Value <span class="text-success pull-right">{{value}}</span>'}
 				data.configuration = data.configuration||{}
-				r_options = {data:{suppress_emails:data.configuration.suppress_emails,initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
+				r_options = {data:{suppress_emails:data.configuration.suppress_emails,suppress_email_tasks:data.configuration.suppress_email_tasks,encrypted:data.configuration.encrypted,initial:data.configuration.initial,map:_.map(data.workflow.code.map,function(resource){
 					var r = _.find(data.configuration.map,{name:resource.name});
 					if(typeof r !== 'undefined' && r.type == resource.type){
 						resource.value = r.value;
@@ -72,7 +72,9 @@ $.ajax({
 					return resource;
 				})}, actions:[],fields:[
 					{name:"initial",label:"Initial State", options:_.pluck(data.version.code.flow,'name'), type:"smallcombo"},
-					{name:"suppress_emails",title:'Suppress Default Emails{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}',type:"switch",inline:false},
+                    {columns:6,name:"suppress_emails",title:'Suppress Default Emails{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}',type:"switch",inline:false},
+                    {columns:6,name:"suppress_email_tasks",title:'Suppress Email Tasks{{#value}}<div class="text-danger">Custom emails (from email "Tasks") will not be sent</div>{{/value}}{{^value}}<div class="text-success">Custom emails (from email "Tasks") will be sent</div>{{/value}}',type:"switch",inline:false},
+                    {name:"encrypted",title:'Encrypt Data at Rest{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}',type:"switch",inline:false},
 					// {name:"emails",label:false, type:"fieldset",show:[{type:"matches",name:"suppress_emails",value:true}],fields:[
 					// 	{name:"actor",label:"Actor",type:"checkbox",value:true,columns:3},
 					// 	{name:"owner",label:"Owner",type:"checkbox",value:true,columns:3},
@@ -80,13 +82,13 @@ $.ajax({
 					// ]},
 					
 					{name:"map",label:false,array:{min:data.workflow.code.map.length,max:data.workflow.code.map.length},type:"fieldset",fields:[
-						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.value.type}})</span></h4>'}},
+						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
 
 						{columns:0,name:"type",label:false,edit:false},
 						_.extend({show:[{type:"matches",name:"type",value:"string"}]},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"user"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"email"}],type:"smallcombo",search:"/api/users/search/{{search}}{{value}}",format:{label:"{{first_name}} {{last_name}}",value:"{{email}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"group"}],type:"smallcombo",options:'/api/groups',format:{label:"{{name}}",value:"{{id}}"}},valueField),
+						_.extend({show:[{type:"matches",name:"type",value:"user"}],type:"user"},valueField),
+						_.extend({show:[{type:"matches",name:"type",value:"email"}],type:"user_email"},valueField),
+						_.extend({show:[{type:"matches",name:"type",value:"group"}],type:"group"},valueField),
 						_.extend({show:[{type:"matches",name:"type",value:"endpoint"}],type:"select",options:'/api/groups/'+data.group_id+'/endpoints',format:{label:"{{name}}",value:"{{id}}"}},valueField),
 					]}
 				]}

@@ -21,6 +21,8 @@ class PageRenderer {
             'admin' => url ('/admin'),
             'login' => url ('/login'),
         ];
+        $data['debug'] = config('app.debug');
+        $data['includes'] = config('includes');
     }
 
     private function build_response($data) {
@@ -140,12 +142,12 @@ class PageRenderer {
         }
         $render_data['apps_json'] = json_encode($render_data['apps']);
         $render_data['config_json'] = json_encode($data['config']);
+        $render_data['mobile_order'] = json_encode(isset($data['mobile_order'])?$data['mobile_order']:[]);
 
         /* Determine is Authenticated User Is Group Admin */
         if(isset($render_data['user']) && isset($render_data['user']['content_admin_groups']) && isset($render_data['user']['apps_admin_groups'])){
             $render_data['group']['admin'] = in_array($render_data['group']['id'], $render_data['user']['content_admin_groups']) || in_array($render_data['group']['id'], $render_data['user']['apps_admin_groups']);   
         }
-        
         return $this->build_response($render_data);
         
     }

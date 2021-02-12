@@ -57,10 +57,11 @@ $.ajax({
 				})
 			}},
 			{'name': 'report', 'label': '<i class="fa fa-list-ol"></i> Report', callback: function(model){
-
 				document.location = "/admin/workflowinstances/"+model.attributes.id+"/report";
+            }},
+            {'name': 'raw_data', 'label': '<i class="fa fa-table"></i> Raw Data', callback: function(model){
+				document.location = "/admin/workflowinstances/"+model.attributes.id+"/raw";
 			}}
-
 		]
 		if(resource_id !== ''){
 			tableConfig.schema = [

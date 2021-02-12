@@ -290,6 +290,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
   });
 
 Route::get('/ellucianmobile/login','EllucianMobileController@login');
+Route::get('/ellucianmobile/checkauth','EllucianMobileController@check_auth');
 Route::get('/ellucianmobile/redirect/{base_64_redirect}','EllucianMobileController@redirect');
 Route::get('/ellucianmobile/userinfo','EllucianMobileController@userinfo');
 Route::get('/ellucianmobile/config','EllucianMobileController@config');

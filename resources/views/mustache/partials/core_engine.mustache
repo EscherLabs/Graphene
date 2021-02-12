@@ -1,53 +1,26 @@
 <div class="hidden-xs"> </div>
-
-<script src='/assets/js/grapheneAppEngine.js?cb={{cache_bust_id}}'></script> 
-<script src='/assets/js/vendor/moment.js?cb={{cache_bust_id}}'></script>
-
-<script src='/assets/js/vendor/jquery.min.js?cb={{cache_bust_id}}'></script>
-<script src="/assets/js/vendor/bootstrap.min.js?cb={{cache_bust_id}}"></script>
-<script src='/assets/js/vendor/hogan.min.js?cb={{cache_bust_id}}'></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<!--<script src="../../assets/js/ie10-viewport-bug-workaround.js?cb={{cache_bust_id}}"></script>-->
-<script src='/assets/js/vendor/summernote.min.js?cb={{cache_bust_id}}'></script>
-
-<script src='/assets/js/vendor/berry.full.js?cb={{cache_bust_id}}'></script> 
-<script src='/assets/js/vendor/moment_datepicker.js?cb={{cache_bust_id}}'></script>
-
-<script src='/assets/js/vendor/bootstrap.full.berry.js?cb={{cache_bust_id}}'></script> 
-<script src='/assets/js/vendor/berrytables.full.js?cb={{cache_bust_id}}'></script> 
-
-{{! <script src='/assets/js/vendor/cobler.min.js'></script>  }}
-<script src='/assets/js/vendor/bootstrap.cobler.js?cb={{cache_bust_id}}'></script> 
-<script src="/assets/js/vendor/lodash.min.js?cb={{cache_bust_id}}"></script>
-<script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
-<script src='/assets/js/vendor/gform_bootstrap.min.js?cb={{cache_bust_id}}'></script> 
-<script src='/assets/js/vendor/GrapheneDataGrid.min.js?cb={{cache_bust_id}}'></script> 
-
-<script src='/assets/js/vendor/ractive.min.js?cb={{cache_bust_id}}'></script>    
-<script src='/assets/js/vendor/lockr.min.js?cb={{cache_bust_id}}'></script>    
-<script src='/assets/js/vendor/toastr.min.js?cb={{cache_bust_id}}'></script> 
+{{#debug}}
+    {{! JavaScript Includes}}
+    {{#includes.javascript.src.body}}
+        <script type="text/javascript" src="{{file}}?cb={{cache_bust_id}}" {{#attributes}}{{name}}="{{value}}" {{/attributes}}></script>
+    {{/includes.javascript.src.body}}
+    {{! CSS Includes}}
+    {{#includes.css.src.body}}
+        <link href="{{file}}?cb={{cache_bust_id}}" rel="stylesheet" type="text/css" {{#attributes}}{{name}}="{{value}}" {{/attributes}}>
+    {{/includes.css.src.body}}
+{{/debug}}
+{{^debug}}
+    {{#includes.javascript.src.body.0}} {{! Check if any exists first}}
+        <script src="/assets/compiled/js/graphenecore.body.min.js?cb={{cache_bust_id}}"></script>
+    {{/includes.javascript.src.body.0}}
+    {{#includes.css.src.body.0}} {{! Check if any exists first}}
+        <link href="/assets/compiled/css/graphenecore.body.min.css?cb={{cache_bust_id}}" rel="stylesheet" type="text/css">
+    {{/includes.css.src.body.0}}
+{{/debug}}
+{{! Include stuff here that doesn't minify particularly well (like ACE and Nivo Slider)}}
 <script src="/assets/js/vendor/ace/ace.js?cb={{cache_bust_id}}" charset="utf-8"></script>
-<script src="/assets/js/vendor/jquery.nivo.slider.min.js?cb={{cache_bust_id}}" charset="utf-8"></script>
-
-
-<script src="/assets/js/vendor/sortable.js?cb={{cache_bust_id}}"></script>
-<script src='/assets/js/cob/cob.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/cob/content.cob.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/cob/image.cob.js?cb={{cache_bust_id}}'></script>
-
-<script src='/assets/js/cob/uapp.cob.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/cob/flow.cob.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/templates/workflow.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/cob/flow.report.cob.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/cob/links.cob.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/templates/widget.js?cb={{cache_bust_id}}'></script>
-<script src='/assets/js/lib.js?cb={{cache_bust_id}}'></script> 
-{{! <script src='/assets/js/vendor/json_formatter.js'></script>  }}
 {{#is_admin}}
     <script src='/assets/js/vendor/state-machine.js?cb={{cache_bust_id}}'></script>
-
-
-
     <script>
       Ractive.DEBUG = false;
       startContent = "<div>"+
@@ -57,8 +30,6 @@
       "<a href='#' style='' class='list-group-action' data-action='createlink'><i class='fa fa-link'></i> Link</a>"+
       "</div>";
     </script>
-
-
 {{/is_admin}}
 <!-- Included Scripts -->
 {{#scripts}}
@@ -68,7 +39,7 @@
 <script >
 	resource_type = "{{resource}}"||"page";
 	var config = {{{config_json}}};
-	var mobile_order = {{{data}}};
+	var mobile_order = {{{mobile_order}}};
 	var apps = {{{apps_json}}};
 	_.findWhere = _.find;
 	_.where = _.filter;
@@ -193,9 +164,11 @@
 			case "page":
 			load(false);
 			break;			
-			case "flow":
-			debugger;
+			case "workflow":
 			document.location = "/admin/workflowinstances/"+resource_id
+			break;			
+			case "app":
+			document.location = "/admin/appinstances/"+resource_id
 			break;
 		}
 	}
@@ -302,12 +275,11 @@
 		}
 
 		$.ajax({
-				url:'/api/workflowsubmissions/user/assignments',
+				url:'/api/workflowsubmissions/user/assignments/count',
 				dataType : 'json',
 				type: 'GET',
-		//     data: (Lockr.get('/api/apps/instances/'+this.get().app_id+'/user_options')|| {options:{}}),
 				success  : function(assignments){
-					var total = _.where(assignments.direct,{status:"open"}).length+_.where(assignments.group,{status:"open"}).length;
+					var total = assignments.count;
 					$('.notificationCount').toggle(!!total).html(total)
 					if(total>0){
 						$('.notificationCount').next().addClass('shake')
@@ -351,13 +323,15 @@ function editMobileOrder(){
 	function editUserOptions(item){
 		if(typeof item.bae !== 'undefined'){
 			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
+				if(!e.form.validate()){toastr.error("Please check form for errors","Invalid Options");return false;}
 				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
 				if(typeof item.bae.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
 						dataType : 'json',
 						url:url,
-						data: {'options': e.form.get()},
+						contentType: 'application/json',
+						data: JSON.stringify({'options': e.form.get()}),
 						success:function(app,data){
 							app.update({user:{options:data.options}});
 							this.trigger('close');
@@ -374,6 +348,8 @@ function editMobileOrder(){
 					e.form.trigger('close');
 					toastr.success('', 'Options Updated Successfully');
 				}
+
+				
 			}).on('cancel',function(e){
 				e.form.trigger('close')
 			})
@@ -527,6 +503,3 @@ function editMobileOrder(){
 				mymodal = modal({title: "Widget Summary", content: formatter.render() });//templates.widgets_summary.render(cb.collections[row||0].getItems()[element||0].bae.data)});
 			}
 		</script>
-      <script src="/assets/js/vendor/dropzone/dropzone.min.js"></script>
-      <link href="/assets/js/vendor/dropzone/dropzone.min.css"  rel="stylesheet"></link>
-		<script src="/assets/js/resources/creators.js?cb={{cache_bust_id}}"></script>

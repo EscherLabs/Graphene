@@ -30,14 +30,16 @@ class AppInstanceController extends Controller
 
     public function list_all_app_instances(Request $request) {
         if (Auth::user()->site_admin) {
-            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('app')
+            $app_instances = AppInstance::with(array('app','group'=>function($q){
+                $q->with('endpoints');
+            }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id);
                 })->orderBy('group_id','desc')->orderBy('order','desc');
         } else {
-            $app_instances = AppInstance::select('id','app_id','group_id','app_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('app')
+            $app_instances = AppInstance::with(array('app','group'=>function($q){
+                $q->with('endpoints');
+            }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
                 })->orderBy('group_id','desc')->orderBy('order','desc');
@@ -272,12 +274,29 @@ class AppInstanceController extends Controller
             // Fetch Data based on Endpoint Type
             $httpHelper = new HTTPHelper();
             if ($endpoint->type == 'http_no_auth') {
-                $response = $httpHelper->http_fetch($url,$verb,$all_data['request']);
+                $response = $httpHelper->http_fetch(['url'=>$url, 'verb'=>$verb, 'data'=>$all_data['request']]);
             } else if ($endpoint->type == 'http_basic_auth') {
-                $response = $httpHelper->http_fetch($url,$verb,$all_data['request'],$endpoint->config->username, $endpoint->getSecret());
+                $http_config = [
+                    'url'  => $url,
+                    'verb' => $verb,
+                    'data' => $all_data['request'],
+                    'username' => $endpoint->config->username,
+                    'password' => $endpoint->getSecret(),
+                ];
+                if (isset($endpoint->config->content_type) && $endpoint->config->content_type !== '') {
+                    $http_config['content_type'] = $endpoint->config->content_type;
+                }
+                if (isset($endpoint->config->timeout) && $endpoint->config->timeout !== '') {
+                    $http_config['timeout'] = $endpoint->config->timeout;
+                }
+                if (isset($endpoint->config->headers) && is_array($endpoint->config->headers)) {
+                    $http_config['headers'] = $endpoint->config->headers;
+                }
+                $response = $httpHelper->http_fetch($http_config);
             } else {
                 abort(505,'Authentication Type Not Supported');
             }
+
             if ($resource_info->cache === true || $resource_info->cache === 'true') {
                 // TJC -- Laravel has a "non-bug" which prevents updateOrCreate from working 
                 // correctly in the event of a race condition.  See details:
@@ -303,7 +322,13 @@ class AppInstanceController extends Controller
         if ($resource_info->modifier == 'csv') {
             $response['content'] = array_map("str_getcsv", explode("\n", $response['content']));
         } else if ($resource_info->modifier == 'xml') {
-            $response['content'] = json_decode(json_encode(simplexml_load_string($response['content'], 'SimpleXMLElement', LIBXML_NOCDATA)),true);
+            // UTF-8 Encode Data to prevent any errors during XML Parsing
+            try {
+                $xml_data = simplexml_load_string($response['content'],'SimpleXMLElement',LIBXML_NOCDATA);
+            } catch (\Exception $e) {
+                $xml_data = simplexml_load_string(utf8_encode($response['content']),'SimpleXMLElement',LIBXML_NOCDATA);
+            }
+            $response['content'] = json_decode(json_encode($xml_data),true);
         } else {
             try{
                 if(is_string($response['content'])){
@@ -419,9 +444,6 @@ class AppInstanceController extends Controller
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
             $response = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $app_instance->id);
         }
-        // else if ($endpoint->type == 'google_sheets') {
-        //     $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
-        // }
         return $response;
     }
 
@@ -436,6 +458,10 @@ class AppInstanceController extends Controller
         } else {
             $content_type = 'text/plain';
         }
-        return response($data['content'], $data['code'])->header('Content-Type', $content_type);
+        return response($data['content'], $data['code'])
+            ->header('Content-Type', $content_type)
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Expires', '0')
+            ->header('Pragma', 'no-cache');
     }
 }

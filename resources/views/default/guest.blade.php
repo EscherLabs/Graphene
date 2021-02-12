@@ -30,7 +30,7 @@
     <![endif]-->
   </head>
   <body class="topbar @yield('body_classes')">
-    @if( Request::get('topbar') !== 'false' )
+    @if( request()->input('topbar') !== 'false' )
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">

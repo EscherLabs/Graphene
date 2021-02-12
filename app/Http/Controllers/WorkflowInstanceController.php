@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Gate;
 use App\WorkflowInstance;
 use App\Workflow;
 use App\WorkflowVersion;
@@ -22,25 +23,31 @@ use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
+use App\Libraries\ResourceService;
+use Illuminate\Support\Arr;
 
 class WorkflowInstanceController extends Controller
 {
     public function __construct() {
         // $this->middleware('auth')->except('run','fetch', 'get_data');
-
         $this->customAuth = new CustomAuth();
+        $this->resourceService = new ResourceService($this->customAuth);
     }
 
     public function list_all_workflow_instances(Request $request) {
         if (Auth::user()->site_admin) {
-            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('workflow')
+            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public','configuration')
+                ->with(array('workflow','group'=>function($q){
+                    $q->with('endpoints');
+                }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id);
                 })->orderBy('group_id','desc')->orderBy('order','desc');
         } else {
-            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public')
-                ->with('workflow')
+            $workflow_instances = WorkflowInstance::select('id','workflow_id','group_id','workflow_version_id','name','slug','icon','order','device','unlisted','public','configuration')
+                ->with(array('workflow','group'=>function($q){
+                    $q->with('endpoints');
+                }))
                 ->whereHas('group', function($q){
                     $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
                 })->orderBy('group_id','desc')->orderBy('order','desc');
@@ -65,7 +72,7 @@ class WorkflowInstanceController extends Controller
         return $workflows;
 
     }
-
+    
     public function admin(WorkflowInstance $workflow_instance) {
         $workflow_instance->load(array('group'=>function($query){}));
         return view('admin', ['resource'=>'workflow_instance','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
@@ -181,6 +188,7 @@ class WorkflowInstanceController extends Controller
                             "workflow"=>$myWorkflow,
                             "workflow_id"=>$myWorkflow->id,
                             "widgetType"=>"Workflow",
+                            "resources"=>$this->fetch($myWorkflow,$request,$current),
                             "container"=>true
                         ]],
                     []],
@@ -195,48 +203,21 @@ class WorkflowInstanceController extends Controller
     }
 
     public function report(WorkflowInstance $workflow_instance,Request $request) {
-
-
         return view('admin', ['resource'=>'workflow_instance_report','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
+    }
+    public function raw(WorkflowInstance $workflow_instance,Request $request) {
+        return view('admin', ['resource'=>'workflow_instance_raw_data','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
+    }
 
-
-
-        // if (Auth::user()->site_developer || Auth::user()->site_admin) {
-        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->orderBy('name')->get();
-        // } else {
-        //     $workflows = Workflow::with('user')->where('site_id',config('app.site')->id)->whereIn('id',Auth::user()->developer_workflows)->orderBy('name')->get();
-        // }
-
-        // if (Auth::check()) { /* User is Authenticated */
-        //     $current_user = Auth::user();
-        //     $links = Group::AppsPages()->where('unlisted','=',0)->orderBy('order')->get();
-        // } else{
-        //     abort(404); 
-        // }
-
-        // $template = new Templater();
-        // return $template->render([
-        //     'mygroups'=>$links,
-        //     'name'=>'workflow',
-        //     'slug'=>'workflow',
-        //     'id'=>0,
-        //     'data'=>[],
-        //     'config'=>json_decode('{"sections":[[{"title":"Workflow Submissions","widgetType":"WorkflowReport","container":true,"titlebar":true,"options":{"id":'.$workflow_instance->id.'}}],[{"title":"Workflows","widgetType":"Workflows","titlebar":true,"container":true}]],"layout":"<div class=\"col-sm-9 cobler_container\"></div><div class=\"col-sm-3 cobler_container\"></div>"}'),
-        //     // 'group'=>(Object)array("id"=>"0"),
-        //     'scripts'=>[],
-        //     'styles'=>[],
-        //     'template'=>"main",
-        //     'apps'=>(Object)[],
-        //     'resource'=>'flow'
-        // ]);
-        // return $workflows;
+    private function is_assoc_arr($arr) {
+        return (is_array($arr) && count(array_filter(array_keys($arr), 'is_string')) > 0);
     }
 
     private function flatten($arr,&$flat,$parent='') {
         if (is_string($arr) || is_bool($arr) || is_numeric($arr)) {
             return $arr;
         }
-        if (is_array($arr)) {
+        if (is_array($arr) && !$this->is_assoc_arr($arr)) {
             $cat = [];
             foreach($arr as $elem) {
                 if (is_string($elem) || is_bool($elem) || is_numeric($elem)) {
@@ -247,19 +228,22 @@ class WorkflowInstanceController extends Controller
             }
             return '"'.implode('", "',$cat).'"';
         }
-        if (is_object($arr)) {
+        if (is_object($arr) || $this->is_assoc_arr($arr)) {
             foreach($arr as $key => $ar) {
-                $children = $this->flatten($ar,$flat,$parent.$key.'.');
+                $children = $this->flatten($ar,$flat,$parent.$key.'_');
                 if (!is_null($children)) {
                     $flat[$parent.$key] = $children;
                 }
             }
             return null;
         }
-    }    
-
+    }
     public function getcsv(WorkflowInstance $workflow_instance, Request $request) {
-        $submissions = $workflow_instance->submissions()->with('user')->get();
+        $submissions = WorkflowSubmission::with('workflowVersion')
+            ->with('user')
+            ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->where('status',"!=",'new')
+            ->orderBy('created_at')->get();
         $all_submissions = [];
         $all_keys = [];
         $csv = '';
@@ -269,6 +253,10 @@ class WorkflowInstanceController extends Controller
             $data = array_merge($flat, [
                 'status' => $submission->status,
                 'state' => $submission->state,
+                'unique_id' => $submission->user->unique_id,
+                'first_name' => $submission->user->first_name,
+                'last_name' => $submission->user->last_name,
+                'email' => $submission->user->email,
                 'created_at' => $submission->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
                 'report_url' => '=HYPERLINK("'.URL::to('/workflows/report/'.$submission->id).'","Open Report")'
@@ -292,6 +280,48 @@ class WorkflowInstanceController extends Controller
             ->header('Content-Disposition','attachment; filename="'.$workflow_instance->name.'_workflow.csv"');
     }
 
+    public function getraw(WorkflowInstance $workflow_instance, Request $request) {
+        $all_fields = [
+            ["type"=>"hidden","name"=>"_w_id",],
+            ["type"=>"select","name"=>"_w_status","label"=>"Status","options"=>["open",'closed']],
+            ["type"=>"select","name"=>"_w_state","label"=>"State","options"=>Arr::pluck($workflow_instance->version->code->flow,'name')],
+            ["type"=>"text","name"=>"_w_unique_id","label"=>"Unique ID",],
+            ["type"=>"text","name"=>"_w_submitter","label"=>"Submitter",],
+            ["type"=>"text","name"=>"_w_email","label"=>"Email",],
+            ["type"=>"text","name"=>"_w_created_at","label"=>"Created"],
+            ["type"=>"text","name"=>"_w_updated_at","label"=>"Updated"],
+        ];
+        $submissions = WorkflowSubmission::with('workflowVersion')
+            ->with('user')
+            ->where('workflow_instance_id','=',$workflow_instance->id)
+            ->where('status',"!=",'new')
+            ->orderBy('created_at')->get();
+        $all_submissions = [];
+        $all_keys = [];
+        $csv = '';
+        foreach($submissions as $submission) {
+            $flat = [];
+            $this->flatten($submission->data,$flat);
+            $workflow_metadata = [
+                '_w_id' => $submission->id,
+                '_w_status' => $submission->status,
+                '_w_state' => $submission->state,
+                '_w_unique_id' => $submission->user->unique_id,
+                '_w_submitter' => $submission->user->first_name.' '.$submission->user->last_name,
+                '_w_email' => $submission->user->email,
+                '_w_created_at' => $submission->created_at->format('Y-m-d H:i:s'),
+                '_w_updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
+            ];
+            $data = array_merge($flat,$workflow_metadata);
+            $all_keys = array_unique(array_merge($all_keys,array_keys($flat)),SORT_REGULAR);
+            $all_submissions[] = $data;
+        }
+        foreach($all_keys as $key) {
+            $all_fields[] = ["type"=>"text","name"=>$key,"label"=>$key];
+        }
+        return ['data'=>$all_submissions,'schema'=>$all_fields];
+    }
+
     public function list_user_workflow_instance_submissions(WorkflowInstance $workflow_instance, Request $request, $status=null) {
         if (is_null($status)) {
             $submissions = WorkflowSubmission::where('user_id',Auth::user()->id)->get();
@@ -301,5 +331,64 @@ class WorkflowInstanceController extends Controller
         }
         return $submissions;
     }
+
+
+
+    /* ----- section Borrowed from AppInstance  - refactor to use common code ----- */
+
+
+    public function fetch(WorkflowInstance $workflow_instance,Request $request,WorkflowSubmission $workflow_submission=null) {
+        // dd($workflow_instance);
+
+        if (Auth::check()) { /* User is Authenticated */
+            $current_user = Auth::user();
+            if (is_null($workflow_submission)) {
+                // Make sure that the person can fetch the current instance (submission is null)
+                $this->authorize('fetch' ,$workflow_instance);
+            } else {
+                // Make sure that the person can view the requested submission
+                if (Gate::denies('view', $workflow_submission)) {
+                    abort(403);
+                }
+            }
+        } else { /* User is not Authenticated */
+            $current_user = new User;
+            if (is_null($workflow_instance)) { abort(403); }
+        }
+
+        // Public Workflows May not work correctly?  Need to reinvestigate this.
+        // Removing for now.
+        // if (!$workflow_instance->public) {
+        //     $this->authorize('get_data', $workflow_instance);
+        // }
+
+        return $this->resourceService->fetch($workflow_instance, $workflow_submission, $request->all());
+    }
+
+    public function get_data(WorkflowInstance $workflow_instance,  $endpoint_name,Request $request, WorkflowSubmission $workflow_submission=null) {
+
+        if (!$workflow_instance->public) {
+            $this->authorize('get_data', $workflow_instance);
+        }
+        $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission , $endpoint_name, $request->all());
+
+        // $data = self::get_data_int($workflow_instance, $endpoint_name, $request);
+
+        if (is_array($data['content']) || is_object($data['content'])) {
+            $content_type = 'application/json';
+            $data['content'] = json_encode($data['content']);
+        } else if (is_bool($data['content']) || is_numeric($data['content'])) {
+            $content_type = 'application/json';
+            $data['content'] = (string)$data['content'];
+        } else {
+            $content_type = 'text/plain';
+        }
+        return response($data['content'], $data['code'])->header('Content-Type', $content_type);
+    }
+
+    /* ----- End section from AppInstance ----- */
+
+
+
 
 }

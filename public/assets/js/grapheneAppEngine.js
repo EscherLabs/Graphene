@@ -44,11 +44,21 @@ function App() {
 			this.load();
 		}
 	}
-	function update(newData) {
+	function update(newData,silent) {
 		_.merge(this.data, newData || {});
 		_.each(newData,function(i,name){
-			this.collections.update(name)
-			this.eventBus.dispatch(name,i);
+			this.collections.update(name,i);
+			switch(name){
+				case "user":
+					if(typeof this.inline !== 'undefined'){
+						this.inline.set(i.options);
+					}
+				case "options":
+					break;
+				default:
+				this.eventBus.dispatch(name,i);
+
+			}
 		}.bind(this))
 		if(typeof this.inline == 'object' && this.inline instanceof gform) {
 			this.inline.set(this.data.user.options)
@@ -68,7 +78,7 @@ function App() {
 	this.eventBus = new gform.eventBus({owner:'instance',item:'resource', handlers:{}}, this);
 	this.collections =  new gform.collectionManager(this.data)
 
-	return {
+	var returnable = {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
 		put:_.partial(router, 'PUT').bind(this),
@@ -88,25 +98,26 @@ function App() {
 		trigger: this.eventBus.dispatch,
 		options: function(newOptions){
 			this.app.update( { user: $.extend(true,{},this.data.user,{ options: newOptions }  )});
-				var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
-				if(typeof this.data.user.id !== 'undefined') {
-					$.ajax({
-						type: 'POST',
-						dataType : 'json',
-						url:url,
-						data: {'options': newOptions},
-						success:function(data){
-							this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
-							this.app.trigger('options');
-						}.bind(this),
-						error:function(data) {
-							toastr.error(data.statusText, 'An error occured updating options')
-						}
-					})
-				}else{
-					Lockr.set(url, {'options': this.data.user.options})
-					this.app.trigger('options');
-				}
+			var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
+			if(typeof this.data.user.id !== 'undefined') {
+				$.ajax({
+					type: 'POST',
+					dataType : 'json',
+					contentType: 'application/json',
+					url:url,
+					data: JSON.stringify({'options': newOptions}),
+					success:function(data){
+						this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
+						this.app.trigger('options');
+					}.bind(this),
+					error:function(data) {
+						toastr.error(data.statusText, 'An error occured updating options')
+					}
+				})
+			}else{
+				Lockr.set(url, {'options': this.data.user.options})
+				this.app.trigger('options');
+			}
 
 		}.bind(this),
 		$el:this.$el,
@@ -115,10 +126,18 @@ function App() {
 			return this.$el[0].querySelectorAll(selectors)
 		}.bind(this),
 		render:function(template, data){
-			return gform.m(this.partials[template],_.extend({}, this.partials, data));
+			var local_ractive = Ractive({
+			template: this.partials[template],
+			partials: this.partial,
+			data: data
+			});
+			return local_ractive.toHTML();
+
+			// return gform.m(this.partials[template],_.extend({}, this.partials, data));
 			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
-		version: function(){return '1.2.0'},
+
+		version: function(){return '1.2.1'},
 		findForm:function(name){
 			var form = _.find(this.options.config.forms,{name:name})
 			if(typeof form !== 'undefined'){
@@ -146,6 +165,8 @@ function App() {
 					formOptions.collections = this.collections;
 					formOptions.selector = target;
 					formOptions.methods = this.methods;
+					formOptions.data = this.app;
+
 					if(typeof target == 'string'){
 						target = this.app.find(target)[0];
 					}
@@ -159,6 +180,7 @@ function App() {
 				formOptions.collections = this.collections;
 				formOptions.selector = target;
 				formOptions.methods = this.methods;
+				formOptions.data = this.app;
 				var newForm = new gform(formOptions,target)
 				this.forms[newForm.name] = newForm;
 				return this.forms[newForm.name]
@@ -249,7 +271,7 @@ function App() {
 					hClass = 'bg-warning';
 					break;
 			}
-			new gform({legend:options.title,modal:{header_class:hClass},fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}]}).modal().on('cancel',function(e){
+			return new gform({legend:options.title,modal:{header_class:hClass},fields:[{type:'output',name:'modal',label:false,format:{},value:gform.m(options.content,_.extend({}, this.partials, data))}],actions:(options.actions||[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}])}).modal().on('cancel',function(e){
 				e.form.dispatch('close');
 				e.form.destroy();
 			});
@@ -267,6 +289,12 @@ function App() {
 		//chart
 		//use promises and local fetch?
 	}
+	_.each(this.methods,function(method,key){
+		if(typeof returnable[key] == 'undefined'){
+			returnable[key] = method.bind(this);
+		}
+	})
+	return returnable;
 }
  
 grapheneAppEngine = 
@@ -278,7 +306,8 @@ function(options){
 		for(var i in this.config.templates) {
 			this.partials[this.config.templates[i].name] = this.config.templates[i].content;
 		}
-
+		
+		this.partials['Main'] =  this.partials['Main'] || this.partials['main'] || '<div id="app_'+this.config.app_instance_id+'"></div>';
 		if(typeof this.config.scripts == 'object') {
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
@@ -330,7 +359,13 @@ function(options){
 
   this.draw = function() {
 		this.options.defaultHtml = this.$el.html();
-    this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
+		if(typeof this.component == 'undefined'){
+			this.component = Ractive.extend(
+				{data:this.methods,css:this.options.config.css, template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], partials: this.partials}
+			)
+		}
+		this.ractive = this.component({data: this.data,el: this.$el[0]});
+	    // this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
 
 		this.$el.find('[data-toggle="tooltip"]').tooltip();
 		this.$el.find('[data-toggle="popover"]').popover();
@@ -391,7 +426,6 @@ function(options){
 		// _.each(this.forms,function(form, name){
 		// }.bind(this))
 
-
 		if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
 	
       this.methods[this.options.initializer].call(this,this);
@@ -400,7 +434,7 @@ function(options){
       })
       this.app.on('apply', function(name, args) {
         if(typeof this.methods[name] !== 'undefined'){ this.methods[name].apply(this, args.args) }
-      }) 
+      })
     }
   }
   this.call = function(method, args) {
