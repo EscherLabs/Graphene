@@ -343,7 +343,7 @@ function load(app_version) {
         {
           "name":"required",
           "label": false,
-          "array":true,
+          "array":{min:1,max:100},
           "type":"fieldset",
           fields:[
             {'name':'name','label':'Name',"inline":true,columns:6},
@@ -369,7 +369,7 @@ function load(app_version) {
         {
           "name":"optional",
           "label": false,
-          "array":true,
+          "array":{min:1,max:100},
           "type":"fieldset",
           fields:[
             {'name':'name','label':'Name',"inline":true,columns:6},
