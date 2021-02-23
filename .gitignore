@@ -5,7 +5,6 @@ Homestead.yaml
 Homestead.json
 .env
 .vscode
-.DS_Store
 
 # Don't Include Mustache Cache
 /storage/cache/mustache/*
@@ -17,6 +16,3 @@ config/database.php
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-
-#Don't include PhpStorm config folders/ files
-.idea

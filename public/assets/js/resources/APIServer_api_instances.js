@@ -5,7 +5,7 @@ $.ajax({
 	url: url,		
 	success: function(data){
 		tableConfig.schema = [
-			{label: 'Name', name:'name', required: true},
+			{label: 'Name', name:'name', required: true,type:"text",template:"{{attributes.name}} - ({{attributes.environment.type}})"},
 			{label: 'Slug', name:'slug', required: true},
 			{label: 'Environment', name:'environment_id', required: true,type:'select',options:'/api/proxy/'+slug+'/environments',format:{label:"{{name}}",value:function(item){return item.id;}}},	
 			// {label: 'Type', name:['dev','test','prod'], required: true},
