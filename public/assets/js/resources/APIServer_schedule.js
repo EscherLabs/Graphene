@@ -14,10 +14,10 @@ $.ajax({
 			{label: 'Name', name:'name', required: true},
 			{label: 'Schedule', name:'cron', required: true},
 			{label: 'Verb',name:'verb', type:'select', options:["GET", "POST", "PUT", "DELETE"]},			
-			{label: 'Environment Type', name:'type', type:'select', options:['dev','test','prod'], required: true},			
-			{label: 'Service Instance', name:'api_instance_id', required: true,type:'select', options:'/api/proxy/'+slug+'/api_instances',format:{label:"{{name}}",value:"{{id}}"}},			
+			{label: 'API Instance', name:'api_instance_id', required: true,type:'select', options:'/api/proxy/'+slug+'/api_instances',format:{label:"{{name}} - ({{environment.name}})",value:function(item){return item.id;}}},			
 			{label: 'Route', name:'route', required: true},
-			{label: 'Enabled', name:'enabled',value:true,type:'checkbox',"template":'{{#attributes.enabled}}Yes{{/attributes.enabled}}{{^attributes.enabled}}No{{/attributes.enabled}}'},			
+			{label: 'Enabled', name:'enabled',value:true,type:'checkbox',"template":'{{#attributes.enabled}}Yes{{/attributes.enabled}}{{^attributes.enabled}}No{{/attributes.enabled}}',options: [
+			{"label": "Disabled","value":0},{"label": "Enabled","value":1}]},			
 			{
 				"show":false,
 				"name": "args_view",
@@ -80,7 +80,7 @@ $.ajax({
             var templateString = gform.m('Last executed {{execution_time.scheduled}}<br>Ran for {{execution_time.minutes}} minutes and {{execution_time.seconds}} seconds<br><br>Last Results: <pre>{{last_response}}</pre><br>Scheduled to run:<pre>{{#scheduled_times}}{{text}} ({{value}})<br>{{/scheduled_times}}</pre>',grid_event.model.attributes)
             modal({title:'Report', content:templateString})
         }).on('model:run',function(grid_event){
-            if (prompt("Are you sure you want to run this Scheduled Job?  This action cannot be undone!")) {
+            if (confirm("Are you sure you want to run this Scheduled Job?  This action cannot be undone!")) {
                 $.ajax({url:url+'/'+grid_event.model.attributes.id+'/run',type:'GET',
                     success:function(response) {
                         modal({title:'Response',content:'<pre>'+JSON.stringify(response,null,'\t')+'</pre>'})
