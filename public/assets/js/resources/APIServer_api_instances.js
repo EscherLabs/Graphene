@@ -29,7 +29,7 @@ $.ajax({
 		tableConfig.name = "api_instances";
 		grid = new GrapheneDataGrid(tableConfig).on('click',function(e){window.location.href = '/admin/apiserver/'+slug+'/api_instance/'+e.model.attributes.id})
         grid.on('model:documentation',function(e){
-            window.open = 'api_docs/'+e.model.attributes.id;
+            window.open('/admin/apiserver/'+slug+'/api_docs/'+e.model.attributes.id)
         });
 	}
 });
