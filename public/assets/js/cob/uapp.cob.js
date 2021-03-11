@@ -106,7 +106,7 @@ Cobler.types.uApp = function(container){
               }.bind(this));
             }.bind(this)
             this.bae = grapheneAppEngine(opts);
-            $g.apps[opts.config.app_instance_id] = this;
+            graphene.apps[opts.config.app_instance_id] = this;
 
 
           }.bind(this)

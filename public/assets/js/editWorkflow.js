@@ -1,8 +1,10 @@
 workflow = true;
 gform.collections.add('files',[])
-renderNav = function(form){
+renderBuilder = function(){
+
   var target = document.querySelector('.target');
   $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>')
+  var form = myform;
   var map = "";
   _.each(path,function(p){
     form = _.find(form.fields,{name:p})
@@ -13,10 +15,7 @@ renderNav = function(form){
 
   
   $(target).append('<hr>')
-  return form;
-}
-renderBuilder = function(){
-   var form = renderNav(myform);
+
   
   if(typeof cb === 'undefined'){
     cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
@@ -163,12 +162,7 @@ mainForm = function(){
       renderBuilder();
     })
   }else{
-    var workingForm = myform;
-    _.each(path,function(p){
-      workingForm = _.find(workingForm.fields,{name:p})
-    })
-
-    var formConfig = new Cobler.types[gform.types[workingForm.type].base]();
+    var formConfig = new Cobler.types[gform.types[form.type].base]();
     $("#mainform").html(gform.renderString(accordion))
 
     $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
@@ -188,15 +182,16 @@ mainForm = function(){
       fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
+      // form = _.extend(form,e.form.get())
       var workingForm = myform;
         _.each(path,function(p){
           workingForm = _.find(workingForm.fields,{name:p})
         })
-        if(typeof e.field.data !== 'undefined' && e.field.data.section){
-          if(e.form.get().name == workingForm.name && e.field.name =="label"){workingForm.label =e.form.get().label}
-          if(e.form.get().label == workingForm.label&& e.field.name =="name"){workingForm.name =e.form.get().name}
-        }
-        renderNav(myform);
+        
+      // workingForm = 
+      _.extend(workingForm,e.form.get())
+      
+
     })
 
   }
@@ -219,7 +214,7 @@ renderBuilder()
 
 document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  myform = _.extend({},loaded.code.form)
+  myform = loaded.code.form || {};
   // $('#cobler').click();
   path = [];
   // $(e.target).siblings().removeClass('active');
@@ -427,10 +422,6 @@ function load(workflow_version) {
     gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
-    }));
-
-    gform.collections.update('templates', _.map(_.pluck(templatePage.toJSON(),'name'),function(item,i){
-      return {value:"template_"+i,label:item}
     }));
     bt.fixStyle()
   })
@@ -825,12 +816,12 @@ function drawForm(name){
    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
     {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
-    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
-    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
     name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
       {name: "label", label: "Label", columns: 6},
-      {name: "name", label: "Name", columns: 6,required:true},
+      {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "label", value: ""}]},
       {name: "type", label: "Type", type: "select", columns: 6, options:[
         {value: "success", label: "Success"},
         {value: "danger", label: "Danger"},
@@ -845,7 +836,6 @@ function drawForm(name){
 
       {name: "type",inline:false, label: "Actor(s)",parse:[{type:"requires"}], type: "smallcombo", options: [
         {value: "", label: "Assignee"},
-        {value: "internal", label: "Inactivity Based"},
         {value: "user", label: "User"},
         {value: "group", label: "Group"}
       ]},
@@ -853,7 +843,7 @@ function drawForm(name){
       // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
       //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
       // })
-      {type:"number",name:"delay",label:"Days of Inactivity",show: [{type: "matches", name: "type", value: "internal"}]},
+
       {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
       {
         "type": "optgroup",
@@ -904,11 +894,7 @@ function drawForm(name){
 
 
     ]},
-    {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 6},
-    {name: "signature", label: "Require Signature",type:"switch",format:{label:""}, columns: 6},
-    {name: "signature_text", label: "Signature Text",placeholder:"Sign Above",help:"This text will show up below the signature box <br>(default text is 'Please Sign Above')",type:"text", columns: 12,show:[{name:"signature",value:true,type:"matches"}]},
-    {name: "validate", label: "Validate",value:true,type:"switch",format:{label:""}, columns: 6},
-    {name: "invalid_submission", label: "Allow Invalid Submission",value:false,type:"switch",format:{label:""}, columns: 6,show:[{name:"validate",value:true,type:"matches"}]},
+    {name: "form", label: "Show Form",type:"switch",format:{label:""}, columns: 12},
     {type: 'select',other:true, columns:12, label:'Show Action', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
     [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Enable"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
   },
@@ -921,7 +907,7 @@ function drawForm(name){
 
       {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
-      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
+      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
     ], array: {max:100}
   } : {target:"#collapseLogic .panel-body", 
   name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
@@ -931,7 +917,7 @@ function drawForm(name){
   {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
     {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
-    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
+    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: true}
   ], array: {min:3,max:3}
 })
 
@@ -1024,17 +1010,14 @@ var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"},20));
 gform.collections.add('form_groups', temp.filter({type:"group"},20));
 
-gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i){
+gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
   return {value:"method_"+i,label:item}
-}));
-gform.collections.add('templates', _.map(_.pluck(attributes.code.templates,'name'),function(item,i){
-  return {value:"template_"+i,label:item}
 }));
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
   
   
-    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:{min:1,max:10},type:"fieldset",fields:[
+    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:true,type:"fieldset",fields:[
         {name:"email_type",label:"Type",type:"select",options:[{label:"Email Address",value:"email"},{label:"User",value:"user"},{label:"Group",value:"group"}]},
         /* Begin Email Address Field */
         _.extend({label:'Email Address <span class="text-success pull-right">{{value}}</span>',name:"email_address",show:[{type:"matches",name:"email_type",value:"email"}],type:"user_email",options:[
@@ -1078,11 +1061,7 @@ var taskForm = [
 
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "template", type: "smallcombo", value:"",
-  options:[
-    {value:"",label:"Custom body template"},{type:'optgroup',options:'templates',format:{label:"Template: {{label}}"}}],
-    label: "Body Template",show: [{type: "matches", name: "task", value: 'email'}],strict:true},
-  {name: "content", type: "textarea", label: "Custom Body",show: [{type: "matches", name: "task", value: 'email'},{type: "matches", name: "template", value: ''}]},
+  {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "resource",columns:8, type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "verb",columns:4, label: "Verb", type: "select", options: ["GET","POST","PUT","DELETE"],show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
@@ -1257,6 +1236,7 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
+// debugger;
 // instance.configuration.initial
 instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||
