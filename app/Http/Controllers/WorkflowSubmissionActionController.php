@@ -296,7 +296,7 @@ class WorkflowSubmissionActionController extends Controller {
         // Update Submission Object In DB
         $workflow_submission->update();
         
-        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action']['name'],$request->get('comment'),$request->get('signature'));
+        $this->logAction($workflow_submission,$start_state,$start_assignment,$state_data['action']['name'],$request->get('comment'));
         
         // Save off the first "human-initiated" action state, for use
         // later when we save emails.  Note: This function does nothing
@@ -394,7 +394,7 @@ class WorkflowSubmissionActionController extends Controller {
         // This action can only be performed by action asignee
     }
 
-    private function logAction($workflow_submission, $start_state, $start_assignment, $action, $comment,$signature=null){
+    private function logAction($workflow_submission, $start_state, $start_assignment, $action, $comment){
         $activity = new WorkflowActivityLog();
         $activity->start_state = $start_state;
         $activity->workflow_instance_id = $workflow_submission->workflow_instance_id;
@@ -407,18 +407,11 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->assignment_id = $start_assignment['assignment_id'];
         $activity->comment = $comment;
         $activity->action = $action;
-        $activity->signature = $signature;
         $activity->save();
     }
 
     private function executeTasks($tasks, $data, &$workflow_submission, &$workflow_instance){
-        //02/11/2021, AT - Added support for array of different type of fields, such as users, groups and emails for the task emails
-        $m = new \Mustache_Engine([
-            'escape' => function($value) {
-                $value = is_array($value)?implode(',',$value):$value;
-                return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
-            }
-        ]);
+        $m = new \Mustache_Engine;
 
         foreach($tasks as $task){
             $task->data = [];
@@ -458,35 +451,23 @@ class WorkflowSubmissionActionController extends Controller {
                                     $to[] = $email_addres;
                                 }
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'email') {
-                                //02/11/2021, AT - Added support for array of emails
-                                $email_addresses = $m->render($to_info->email_address, $data);
-                                $email_addresses = explode(',',$email_addresses);
-                                foreach ($email_addresses as $email_address) {
-                                    if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
-                                        $to[] = $email_address;
-                                    }
+                                $email_address = $m->render($to_info->email_address, $data);
+                                if (filter_var($email_address, FILTER_VALIDATE_EMAIL)) {
+                                    $to[] = $email_address;
                                 }
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'user') {
-                                //02/11/2021, AT - Added support for array of users
-                                $user_unique_ids = $m->render($to_info->user, $data);
-                                $user_unique_ids = explode(',',$user_unique_ids);
-                                foreach ($user_unique_ids as $user_unique_id) {
-                                    $user = User::select('email')->where("unique_id", '=', $user_unique_id)->first();
-                                    if (!is_null($user)) { $to[] = $user->email; }
-                                }
+                                $user_unique_id = $m->render($to_info->user, $data);
+                                $user = User::select('email')->where("unique_id",'=',$user_unique_id)->first();
+                                if (!is_null($user)) { $to[] = $user->email; }    
                             } else if (isset($to_info->email_type) && $to_info->email_type === 'group') {
-                                //02/11/2021, AT - Added support for array of groups
-                                $group_ids = $m->render($to_info->group, $data);
-                                $group_ids = explode(',',$group_ids);
-                                foreach ($group_ids as $group_id) {
-                                    $users = User::select('email')
-                                        ->whereHas('group_members', function($q) use ($group_id) {
-                                            $q->where('group_id','=',$group_id);
-                                        })->get();
-                                    foreach($users as $user) {
-                                        $to[] = $user->email;
-                                    }
-                                }
+                                $group_id = $m->render($to_info->group, $data);
+                                $users = User::select('email')
+                                    ->whereHas('group_members', function($q) use ($group_id) {
+                                        $q->where('group_id','=',$group_id);
+                                    })->get();
+                                foreach($users as $user) { 
+                                    $to[] = $user->email; 
+                                }    
                             }
                         }
                         $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content]);

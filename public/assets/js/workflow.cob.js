@@ -439,6 +439,7 @@ Cobler.types.collection = function(container) {
 		// if(typeof temp !== 'undefined') {
 		// 	temp.selected = true;
 		// }
+		// debugger;
 		return gform.render(item.type, _.extend({},myform.default,options));
 	}
 	function get() {		
@@ -694,7 +695,7 @@ Cobler.types.section = function(container) {
 			// {label: 'Scale', value: 'scale'},
 			// {label: 'Grid', value: 'grid'},
 		]},
-		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Section Label', name: 'label',data:{section:true}},
+		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Section Label', name: 'label'},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'/type',value:"template"}],parse:[{type:"requires"}], fields:[
 			{name:"display",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}

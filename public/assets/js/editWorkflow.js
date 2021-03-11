@@ -832,12 +832,12 @@ function drawForm(name){
    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
     {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
-    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
-    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: {min:1,max:10}},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
     name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
       {name: "label", label: "Label", columns: 6},
-      {name: "name", label: "Name", columns: 6,required:true},
+      {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "label", value: ""}]},
       {name: "type", label: "Type", type: "select", columns: 6, options:[
         {value: "success", label: "Success"},
         {value: "danger", label: "Danger"},
@@ -1040,7 +1040,7 @@ var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
   
   
-    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:{min:1,max:10},type:"fieldset",fields:[
+    {name:"to",label:"To",show:[{type:"matches",name:"task",value:"email"}],array:true,type:"fieldset",fields:[
         {name:"email_type",label:"Type",type:"select",options:[{label:"Email Address",value:"email"},{label:"User",value:"user"},{label:"Group",value:"group"}]},
         /* Begin Email Address Field */
         _.extend({label:'Email Address <span class="text-success pull-right">{{value}}</span>',name:"email_address",show:[{type:"matches",name:"email_type",value:"email"}],type:"user_email",options:[
@@ -1083,11 +1083,7 @@ var taskForm = [
     ]},
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
-  {name: "template", type: "smallcombo", value:"",
-  options:[
-    {value:"",label:"Custom body template"},{type:'optgroup',options:'templates',format:{label:"Template: {{label}}"}}],
-    label: "Body Template",show: [{type: "matches", name: "task", value: 'email'}],strict:true},
-  {name: "content", type: "textarea", label: "Custom Body",show: [{type: "matches", name: "task", value: 'email'},{type: "matches", name: "template", value: ''}]},
+  {name: "content", type: "textarea", label: "Content",show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "resource",columns:8, type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "verb",columns:4, label: "Verb", type: "select", options: ["GET","POST","PUT","DELETE"],show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
@@ -1275,6 +1271,7 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
+// debugger;
 // instance.configuration.initial
 instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||
