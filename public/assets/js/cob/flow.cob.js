@@ -339,7 +339,7 @@ Cobler.types.Workflow = function(container){
           data:mappedData
         }
         let myPromise = new Promise(function(myResolve, myReject) {
-          debugger;
+
 
           if(
             //nothing started - we can assume starting a new one
@@ -411,6 +411,7 @@ Cobler.types.Workflow = function(container){
                       type: 'POST',
                       success  : function(myResolve,data){
                         // location.reload();
+
                         this.set({current:{data:{}}})
                         this.initialstate = this.get().current.data;
                         // this.initialstate = gform.instances['workflow'].get();
@@ -477,7 +478,6 @@ Cobler.types.Workflow = function(container){
       
         myPromise.then(
           function(value) { 
-            debugger;
             this.methods = [];
             _.each(this.get().workflow.workflow.code.methods,function(item,index){
               eval('this.methods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(data,data.data)');
