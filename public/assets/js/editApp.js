@@ -376,11 +376,11 @@ loadInstances = function(){
               return resource;
             }.bind(null, instance))
           }
-          instance.version_summary = instance.version.summary||'Working Version';
+          instance.version_summary = (instance.version !== null )?instance.version.summary||'Working Version':"Please configure version";
           
           instance.version_id =  (instance.app_version_id!==null ? (instance.app_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.app_version_id+')') : "Latest Saved");
 
-          instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length ||!!_.difference(_.pluck(instance.resources ,'name'),_.pluck(instance.version.resources,'name')).length
+          instance.error = (instance.version === null )||!!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length ||!!_.difference(_.pluck(instance.resources ,'name'),_.pluck(instance.version.resources,'name')).length
           return instance;
         })
       }

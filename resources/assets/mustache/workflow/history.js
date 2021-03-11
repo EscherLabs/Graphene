@@ -12,7 +12,7 @@ workflow_report.history = `<ul class="list-group workflow-history" style="margin
     <div class="filterable list-group-item submission" target="_blank" data-id="{{id}}" ><div><h5>{{action}} <span class="text-muted">by {{actor.first_name}} {{actor.last_name}}</span><span class="pull-right" data-toggle="tooltip" title="{{updated_at.date}} @ {{updated_at.time}}" data-placement="top">({{updated_at.fromNow}})</span></h5></div>
     <span class="label label-default">{{previous.state}}</span> <i class="fa fa-long-arrow-right text-muted"></i> <span class="label label-success{{#closed}} label-danger{{/closed}}">{{state}}</span>
     <span style="display:none" class="pull-right text-muted">{{updated_at.date}} @ {{updated_at.time}} </span>
-    {{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}</div>
+    {{#comment}}<h5>Comment:</h5><p>{{comment}}</p>{{/comment}}{{#signature}}<img style="width: 100%;border: solid 1px #aaa;padding: 2px;margin: 10px 0;" src="{{signature}}" alt="(Empty)"/>{{/signature}}</div>
   {{/log}}
   {{#file}}
     <div style="height:60px;padding-left:70px" target="_blank" data-id="{{id}}" class="filterable list-group-item file {{#deleted_at}}list-group-item-danger{{/deleted_at}}">

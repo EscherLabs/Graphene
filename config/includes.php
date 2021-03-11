@@ -48,6 +48,7 @@ return [
                 ['file'=>'/assets/js/vendor/ractive.min.js'],
                 ['file'=>'/assets/js/vendor/lockr.min.js'],
                 ['file'=>'/assets/js/vendor/toastr.min.js'],
+                ['file'=>'/assets/js/vendor/signaturePad.min.js'],
                 // Include ACE Manually (Doesn't Minify Well)
                 // ['file'=>'/assets/js/vendor/ace/ace.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
                 ['file'=>'/assets/js/vendor/jquery.nivo.slider.min.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
