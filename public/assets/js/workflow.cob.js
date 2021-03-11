@@ -401,6 +401,7 @@ Cobler.types.input = function(container) {
 		{label: 'Password', value: 'password'},
 		{label: 'Color', value: 'color'},
 		{label: 'Output', value: 'output'},
+		{label: 'File', value: 'base64'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:["date",'template','output']}],parse:[{type:"requires"}], fields:[
