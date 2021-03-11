@@ -56,38 +56,44 @@ renderBuilder = function(){
   }
 
   if(typeof form !== 'undefined'){
+    
     var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
+    _.each(temp.fields,function(field){
+      field.widgetType = gform.types[field.type].base||'input'
+    })
+    // for(var i in temp.fields){
       // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
       // temp.fields[i].options = mapOptions.getobject()
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-        case "scale":
-        case "range":
-        // case "grid":
-        case "user":
-        case "user_email":
-        case "group":
-        case "groups":
-        case "smallcombo":
-        case "files":
-          temp.fields[i].widgetType = 'collection';
-          break;
-        case "checkbox":
-        case "switch":
-          temp.fields[i].widgetType = 'bool';
-          break;
-        case "fieldset":
-        case "table":
-        case "template":
-        case "grid":
-          temp.fields[i].widgetType = 'section';
-          break;
-        default:
-          temp.fields[i].widgetType = 'input';
-      }
-    }
+
+      // switch(temp.fields[i].type) {
+      //   case "select":
+      //   case "radio":
+      //   case "scale":
+      //   case "range":
+      //   // case "grid":
+      //   case "user":
+      //   case "user_email":
+      //   case "group":
+      //   case "groups":
+      //   case "smallcombo":
+      //   case "files":
+      //   case "base64_file":
+      //     temp.fields[i].widgetType = 'collection';
+      //     break;
+      //   case "checkbox":
+      //   case "switch":
+      //     temp.fields[i].widgetType = 'bool';
+      //     break;
+      //   case "fieldset":
+      //   case "table":
+      //   case "template":
+      //   case "grid":
+      //     temp.fields[i].widgetType = 'section';
+      //     break;
+      //   default:
+      //     temp.fields[i].widgetType = 'input';
+      // }
+    // }
     
     list.className = list.className.replace('hidden', '');
     cb.collections[0].load(temp.fields);
@@ -118,7 +124,7 @@ mainForm = function(){
         ]},
         {name:"files",label:"Allow File uploads",type:"switch",horizontal:true,format:{label:""}},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
-        {name:"resource",label:"Initial Data Source",type:"select",options:["None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',label:"Method",options:'methods',format:{label:"{{label}}"}},{type:"optgroup",label:"Resource",options:'resources'}]},
+        {name:"resource",label:"Initial Data Source",type:"select",options:["None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',label:"Methods",options:'methods',format:{label:"{{label}}"}},{type:"optgroup",label:"Resources",options:'resources'}]},
         {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
         {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
@@ -779,7 +785,15 @@ function drawForm(name){
             path = search.parent.name+'.'+path;
             search = search.parent;
           }
-          return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+          // var temp = new gform(myform)
+          // temp.find(path).array
+          if(option.array){
+            return "{{#form."+path+"}}{{.}},{{/form."+path+"}}";
+          }else{
+            return "{{form."+path+"}}";
+          }
+        },label:"{{label}}{{^label}}{{name}}{{/label}}"}
+          
       }
       ]},
       {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       

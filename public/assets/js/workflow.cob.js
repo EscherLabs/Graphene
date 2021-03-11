@@ -498,7 +498,9 @@ Cobler.types.collection = function(container) {
 			// {label: 'Groups', value: 'Groups'},
 			{label: 'Group', value: 'group'},
 
-			{label: 'File', value: 'files'},
+			{label: 'File Selector', value: 'files'},
+
+		{label: 'File (base64)', value: 'base64_file'},
 			// {label: 'Grid', value: 'grid'},
 		]}
 

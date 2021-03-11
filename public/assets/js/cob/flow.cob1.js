@@ -252,9 +252,7 @@ Cobler.types.Workflow = function(container){
       temp.workflow_admin = group_admin;
       if(typeof temp.workflow !== 'undefined'){
         temp.allowFiles = temp.workflow.version.code.form.files && _.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads
-      }
-      
-      return gform.renderString(workflow_report.workflow, temp);
+      }      return gform.renderString(workflow_report.workflow, temp);
 		},
 		edit: berryEditor.call(this, container),
 		toJSON: get,
@@ -378,7 +376,7 @@ Cobler.types.Workflow = function(container){
       <dd>{{updated_at.date}} @ {{{updated_at.time}}}</dd>
       </dl>
           {{/current}}`,{current:$g.formatDates(this.get().current)});
-          new gform({legend:"Workflow in progress",modal:{header_class:'bg-info'},fields:[{type:'output',name:'modal',label:false,format:{},value:content}],actions:[
+          return new gform({legend:"Workflow in progress",modal:{header_class:'bg-info'},fields:[{type:'output',name:'modal',label:false,format:{},value:content}],actions:[
             {type:'button',action:'discard',label:'<i class="fa fa-times"></i> Discard',"modifiers": "btn btn-danger pull-left"},
             {type:'save',label:'<i class="fa fa-times"></i> Save For later',"modifiers": "btn btn-info pull-right"},
             {type:'button',action:'use',label:'<i class="fa fa-times"></i> Use',"modifiers": "btn btn-success pull-right"}
@@ -411,6 +409,7 @@ Cobler.types.Workflow = function(container){
                       type: 'POST',
                       success  : function(myResolve,data){
                         // location.reload();
+
                         this.set({current:{data:{}}})
                         this.initialstate = this.get().current.data;
                         // this.initialstate = gform.instances['workflow'].get();
@@ -477,7 +476,6 @@ Cobler.types.Workflow = function(container){
       
         myPromise.then(
           function(value) { 
-            debugger;
             this.methods = [];
             _.each(this.get().workflow.workflow.code.methods,function(item,index){
               eval('this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(data,data.data)');
@@ -589,6 +587,7 @@ Cobler.types.Workflow = function(container){
         })
             this.initialstate = this.initialstate||gform.instances['workflow'].get();
             update = function(file,response){
+debugger;
               var files = this.get().current.files = this.get().current.files || this.form.collections.get('files')
 
               if(typeof response !== 'undefined'){
@@ -793,6 +792,7 @@ Cobler.types.Workflow = function(container){
                   data: JSON.stringify(this.form.get()),
                   type: 'POST',
                   success  : function(data){
+                    debugger;
                     $('.flow-title .status').html('All Changes Saved').removeClass('label-danger').addClass('label-success')
                     $g.waiting = false
                     this.id = data.id;

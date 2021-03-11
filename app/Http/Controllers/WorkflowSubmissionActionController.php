@@ -15,6 +15,7 @@ use App\Page;
 use App\ResourceCache;
 use App\UserOption;
 use App\WorkflowSubmissionFile;
+use App\BulkUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
@@ -35,7 +36,6 @@ class WorkflowSubmissionActionController extends Controller {
         $this->customAuth = new CustomAuth();
         $this->resourceService = new ResourceService($this->customAuth);
     }
-
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
         $myWorkflowInstance = WorkflowInstance::with('workflow')
             ->where('id', '=', $workflow_instance->id)->with('workflow')->first();
@@ -44,14 +44,20 @@ class WorkflowSubmissionActionController extends Controller {
         }
         $myWorkflowInstance->findVersion();
         $current_user = Auth::check()?Auth::user():(new User);
-
-        // Get any existing workflow submissions with a 'new' status
-        $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
-            ->where('workflow_instance_id',$workflow_instance->id)
-            ->where('status','new')->first();
-        if (is_null($workflow_submission)) {
-            $workflow_submission = new WorkflowSubmission();
+        if($save_or_submit === 'save' && $request->has('id')){
+            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
+                ->where('workflow_instance_id',$workflow_instance->id)
+                ->find($request->get('id'));//where('id','=',$request->get('id'))->first();
+        }else{
+            // Get any existing workflow submissions with a 'new' status
+            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
+                ->where('workflow_instance_id',$workflow_instance->id)
+                ->where('status','new')->first();
+            if (is_null($workflow_submission)) {
+                $workflow_submission = new WorkflowSubmission();
+            }
         }
+       //dd($myWorkflowInstance->configuration->title?$myWorkflowInstance->configuration->title:'{{workflow.name}}');
         $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
         $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
         $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
@@ -62,6 +68,51 @@ class WorkflowSubmissionActionController extends Controller {
         $workflow_submission->user_id = $current_user->id;
         $workflow_submission->assignment_type = 'user';
         $workflow_submission->assignment_id = Auth::user()->id;
+        $m = new \Mustache_Engine;
+
+        $data = $this->createDataObject($workflow_submission, $request);
+
+        $myWorkflowInstance->reduceFields(function($field, &$data){
+            switch($field->type){
+                case "user":
+                    if(isset($data->{$field->name}) && !is_null($data->{$field->name})){
+                        $user = BulkUser::where("unique_id","=",$data->{$field->name})->first();
+                        if(!is_null($user)){
+                            $data->{$field->name."-user"} = $user->only('first_name','last_name','email','unique_id','params'); 
+                        }       
+                    }
+                    break;
+                case "group":
+                    if(isset($data->{$field->name}) && !is_null($data->{$field->name})){
+                        $group = Group::where("id",'=',$data->{$field->name})->where('site_id',config('app.site')->id)->first();
+                        if(!is_null($group)){
+                            $data->{$field->name."-group"} = $group->only('name','slug'); 
+                        }
+                    }
+                    break;
+                case "files":
+                    if(isset($data->{$field->name}) && !is_null($data->{$field->name})){
+                        $file = WorkflowSubmissionFile::where('id',$data->{$field->name})->first();
+                        if(!is_null($file)){
+                            $data->{$field->name."-file"} = $file->only('name','mime_type','path','icon');
+
+                        }
+                    // dd($data->{$field->name."-file"});
+                    }
+                    break;
+            }
+        }, $data['form']);
+// dd($data['form']);
+        try{
+            $workflow_submission->title = $m->render(isset($myWorkflowInstance->configuration->title)?$myWorkflowInstance->configuration->title:'{{workflow.name}}',$data);
+        } catch(Exception $e){
+            $workflow_submission->title = $m->render('{{workflow.name}}',$data);
+        }
+        if($save_or_submit === 'save' && $request->has('comment')){
+            $workflow_submission->status = 'saved';
+            $workflow_submission->comment = $request->get('comment');
+        }
+
         $workflow_submission->save();
         if ($save_or_submit === 'save') {
             return $workflow_submission;
@@ -69,6 +120,26 @@ class WorkflowSubmissionActionController extends Controller {
             return $this->action($workflow_submission, $request);
         }
     }
+
+
+    public function destroy(WorkflowSubmission $workflowSubmission) {
+        if($workflowSubmission->status == 'new' || $workflowSubmission->status == 'saved'){
+            $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
+            foreach($files as $file) {
+                Storage::delete($file->get_file_path());
+                Storage::delete($file->get_file_path().'.encrypted');
+                $file->user_id_deleted = Auth::user()->id;
+                $file->save();
+                $file->delete();
+            }
+            if ($workflowSubmission->delete()) {
+                return 1;
+            }
+        }else{
+            abort(409, 'Workflows with the status "'.$workflowSubmission->status.'" can not be deleted.');
+        }
+    }
+
 
     private function detect_infinite_loop() {
         if (!isset($GLOBALS['action_stack_depth'])) {
@@ -93,7 +164,89 @@ class WorkflowSubmissionActionController extends Controller {
             return false;
         }
     }
+    public function createDataObject(WorkflowSubmission $workflow_submission, Request $request){
+        if ($this->detect_infinite_loop()) {
+            return response('Infinite Loop Detected! Quitting!', 508);
+        }
+        $m = new \Mustache_Engine;
+        $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
+        $myWorkflowInstance->findVersion();
+        $owner = User::find($workflow_submission->user_id);
+        $start_state = $workflow_submission->state;
+        $start_assignment = $workflow_submission->only('assignment_type','assignment_id');
+        $flow = $myWorkflowInstance->version->code->flow;
+        $methods = $myWorkflowInstance->version->code->methods;
+        // Determine Previous State (Object) -- State we are leaving
+        $previous_state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
+            return $value->name === $workflow_submission->state;
+        });
+        $previous_status = $workflow_submission->status;
+        // Get Action (Object)
+        $action = Arr::first($previous_state->actions, function ($value, $key) {
+            return $value->name === request()->get('action');
+        });  
+        // Set New State (String)
+        $workflow_submission->state = $myWorkflowInstance->configuration->initial;
+        // Determine New State (Object) -- State we are entering
+        $state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
+            return $value->name === $workflow_submission->state;
+        });     
+        // Set New Status (String)
+        // if(isset($state->status)){
+        //     $workflow_submission->status = $state->status;
+        // }else{
+        //     $workflow_submission->status = 'open';
+        // }         
 
+        $state_data = [];
+        $state_data['id'] = $workflow_submission->id;
+        $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
+        $state_data['form'] = $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
+        $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
+        $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
+        $state_data['owner']['is'] = [];
+        if (isset($previous_state->logic)) {
+            $state_data['actor'] = null;
+            $state_data['owner']['is']['actor'] = false;
+        } else {
+            $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
+            $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
+        }
+        $state_data['action'] = Arr::only((array)$action,['label','name','type']);
+        $state_data['workflow'] = $myWorkflowInstance->workflow->only('name','description');
+        $state_data['workflow']['instance'] = $myWorkflowInstance->only('group_id','slug','name','icon','public','configuration');
+        $state_data['workflow']['version'] = $myWorkflowInstance->version->only('id','summary','description','stable');
+        $state_data['comment'] = ($request->has('comment'))?$request->get('comment'):null;
+        $state_data['previous']['status'] = $previous_status;
+        $state_data['previous']['state'] = $previous_state->name;
+        $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
+        $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
+        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
+        $state_data['datamap'] = $state_data['assignment'] = [];
+        foreach($myWorkflowInstance->configuration->map as $resource){
+            $state_data['datamap'][$resource->name] = $resource->value;
+        }
+        $state_data['status'] = $workflow_submission->status;
+        $state_data['state'] = $state->name;
+        if (!isset($state->actions)) { $state->actions = []; }
+        $state_data['actions'] = array_map(function ($ar) {
+            return Arr::only((array)$ar,['label','name','type']);
+        }, $state->actions);
+        $state_data['is']['actionable'] = (count($state_data['actions'])>0);
+        $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
+        $state_data['is']['closed'] = ($state_data['status']=='closed')?true:false;
+        $state_data['is']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
+        // if (isset($state->assignment) && !isset($state->logic)) {
+        //     $state_data['assignment']['type'] = $workflow_submission->assignment_type = $state->assignment->type;
+        //     $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
+        // } else {
+        //     $workflow_submission->assignment_type = 'internal';
+        //     $state_data['assignment'] = null;
+        // }
+        // Add History to State Data (For use in Logic Blocks and anywhere else)
+        $state_data['history'] = $workflow_submission->history;
+        return $state_data;
+    }
     public function action(WorkflowSubmission $workflow_submission, Request $request) {
         if ($this->detect_infinite_loop()) {
             return response('Infinite Loop Detected! Quitting!', 508);
