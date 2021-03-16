@@ -190,6 +190,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               },{})
         
     
+              // if(mappedData.allowFiles){
+                mappedData.hasFiles = (_.filter(mappedData.history,function(item){if(item.file && (item.deleted_at == null)){return item;} }).length>0)
+              // }
               if(typeof this.history !== 'undefined'){
                 this.history.teardown();
               }

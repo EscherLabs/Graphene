@@ -1,4 +1,4 @@
-  workflow_report.report = `<div>
+workflow_report.report = `<div>
     <span class="label pull-right label-success{{#data.closed}} label-danger{{/data.closed}}">{{data.end_state}}</span>
     Submitted {{workflow.created_at.fromNow}} by <h4>{{owner.first_name}} {{owner.last_name}}</h4><hr>
     <div class="row">
@@ -17,7 +17,7 @@
   </div>
       {{#workflow.instance.version.code.form.files}}
       <div>
-        <a class="pull-right btn btn-primary" href="/api/workflowsubmissions/{{original.workflow_submission_id}}/files/zip"><i class="fa fa-download"></i> Download All</a>
+        <a class="pull-right btn btn-primary {{^hasFiles }}disabled{{/hasFiles}}" href="/api/workflowsubmissions/{{original.workflow_submission_id}}/files/zip"><i class="fa fa-download"></i> Download All</a>
         <h3>
             Attachments
         </h3><hr/>

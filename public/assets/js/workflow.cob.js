@@ -401,6 +401,7 @@ Cobler.types.input = function(container) {
 		{label: 'Password', value: 'password'},
 		{label: 'Color', value: 'color'},
 		{label: 'Output', value: 'output'},
+		{label: 'File', value: 'base64'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:["date",'template','output']}],parse:[{type:"requires"}], fields:[
@@ -499,7 +500,9 @@ Cobler.types.collection = function(container) {
 			// {label: 'Groups', value: 'Groups'},
 			{label: 'Groups', value: 'groups'},
 
-			{label: 'File', value: 'files'},
+			{label: 'File Selector', value: 'files'},
+
+		{label: 'File (base64)', value: 'base64_file'},
 			// {label: 'Grid', value: 'grid'},
 		]}
 

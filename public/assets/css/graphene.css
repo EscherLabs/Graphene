@@ -1107,3 +1107,42 @@ fieldset:disabled .actions{
 #workflows .dataTable,#workflows .assignments {
   cursor: pointer;
 }
+
+
+#waiting {
+  /* position: absolute; */
+  /* width: 100%; */
+  /* top: 0; */
+  /* height: 100%; */
+  /* overflow: hidden; */
+
+  padding: 5px 10px;position:fixed;bottom:20px;left:0;color:#333;background:rgb(200 200 200 );box-shadow:0 0 2px #fff;
+  border:rgb(200 200 200);
+  height: auto;
+  /* width:200px; */
+
+  white-space: nowrap;
+  transition: all 1s;
+  
+}
+
+#waiting.hide_wait {
+  /* top: 100%; */
+  padding:5px 0;
+  overflow:hidden;
+  opacity: 0;
+  width:0;
+  /* bottom:0; */
+  /* height: 0; */
+}
+hr.thin{
+  margin:5px 0;
+}
+
+.missing-field{
+  text-overflow: ellipsis;
+    /* width: 100%; */
+    overflow: hidden;
+    max-width: 100%;
+    display: inline-block;
+}

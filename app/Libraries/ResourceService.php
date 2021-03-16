@@ -44,6 +44,7 @@ class ResourceService
         $flow = $WorkflowInstance->version->code->flow;
 
         if(!is_null($workflow_submission)){
+            $state_data['id']=$workflow_submission->id;
             $state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
                 return $value->name === $workflow_submission->state;
             });     
