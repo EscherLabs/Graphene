@@ -87,20 +87,6 @@ $.ajax({
 					this.dispatch('edited')
 					this.draw();
 				}.bind(model))
-			// $().berry({
-			// 	legend:'Config',
-			// 	name:'config',
-			// 	model:model,
-			// 	"flatten": false,
-			// 	fields:fields
-			// 	}).on('saved',function(){
-			// 		// this.set(Berries.config.toJSON())			
-			// 		this.owner.options.edit(this);
-			// 		this.owner.draw();
-			// 	}.bind(model))
-		
-
-
 		})
 	}
 });

@@ -117,6 +117,24 @@ gform.types['user']= _.extend({}, gform.types['smallcombo'], {
 	},
   defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{unique_id}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
 })
+gform.types['user_id']= _.extend({}, gform.types['smallcombo'], {
+  toString: function(name,display){
+		if(!display){
+			if(typeof this.combo !== 'undefined'){
+				return '<dt>'+this.label+'</dt> <dd>'+(this.combo.innerText||'(empty)')+'</dd><hr>'
+			}else{
+				return '<dt>'+this.label+'</dt> <dd>'+(this.get()||'(empty)')+'</dd><hr>'
+			}
+    }else{
+      if(typeof this.options !== 'undefined' && this.options.length){
+        return _.find(this.options,{id:this.value})||this.value;
+      }else{
+        return this.value;
+      }
+		}
+	},
+  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:function(item){return item.id}, display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}, template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'}
+})
 gform.types['user_email']= _.extend({}, gform.types['user'], {
   toString: function(name,display){
 		if(!display){
@@ -151,7 +169,7 @@ gform.types['group']= _.extend({}, gform.types['smallcombo'], {
       }
 		}
 	},
-  defaults:{options: '/api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
+  defaults:{options: '/api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}, template:'{{attributes.name}}'}
 })
 gform.types['files']= _.extend({}, gform.types['smallcombo'], {
   toString: function(name,display){
@@ -188,6 +206,11 @@ Berry.validations.is_https = {
     },
     message: 'Basic Auth Routes must start with "https://"'
 }}
+
+gform.validations.is_https = function(value) {
+  return ( value.startsWith("https://")) ? false : 'Basic Auth Routes must start with "https://"';
+}
+
 
 var mime_type_icon_map = {
   // Media

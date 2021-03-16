@@ -99,16 +99,20 @@ class AppInstanceController extends Controller
         $app_instance->app_version_id = null;
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
+
+        if(isset($request['groups'])){
+            $app_instance['groups'] = array_filter($request['groups']);
+        }
+
         $app_instance->save();
         return $app_instance;
     }
 
     public function update(Request $request, AppInstance $app_instance) {
         $data = $request->all();
-        if($request->app_version_id == -1 || $request->app_version_id == ''){$data['app_version_id'] = null;}
 
         if(isset($data['groups'])){
-            $data['groups'] = json_decode($data['groups']);
+            $data['groups'] = array_filter($data['groups']);
         }
 
         $app_instance->update($data);

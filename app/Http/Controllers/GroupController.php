@@ -256,11 +256,13 @@ class GroupController extends Controller
     }
     public function add_composite(Group $group, Group $composite_group)
     {
-        return $group->add_composite($composite_group);
+        $group->add_composite($composite_group);
+        return $composite_group;
     }
     public function remove_composite(Group $group, Group $composite_group)
     {
-        return $group->remove_composite($composite_group);
+        $group->remove_composite($composite_group);
+        return $composite_group;
     }
     public function list_images(Group $group)
     {

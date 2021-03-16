@@ -114,6 +114,9 @@ class WorkflowInstanceController extends Controller
         $workflow_instance->workflow_version_id = null;
         $workflow_instance->workflow_id = $request->get('workflow_id');
         $workflow_instance->group_id = $request->get('group_id');
+        if(isset($request['groups'])){
+            $workflow_instance['groups'] = array_filter($request['groups']);
+        }
         $workflow_instance->save();
         return $workflow_instance;
     }
@@ -123,7 +126,7 @@ class WorkflowInstanceController extends Controller
         if($request->workflow_version_id == -1 || $request->workflow_version_id == ''){$data['workflow_version_id'] = null;}
 
         if(isset($data['groups'])){
-            $data['groups'] = json_decode($data['groups']);
+            $data['groups'] = array_filter($data['groups']);
         }
 
         $workflow_instance->update($data);
