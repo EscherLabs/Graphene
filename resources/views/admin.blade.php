@@ -14,28 +14,22 @@
 @endsection
 
 @section('end_body_scripts_top')
-<script src='/assets/js/vendor/ractive.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
-<script src='/assets/js/vendor/bluebird.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
+<script src='/assets/js/vendor/ractive.min.js'></script>    
+<script src='/assets/js/vendor/bluebird.min.js'></script>    
 
   <script>
-// function getData(urls,callback){
-//   if(typeof urls == 'string')urls = [urls];
-//   Promise.all(_.map(urls, url =>{
-//     return new Promise((resolve,reject) => {
-//       gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
-//     })
-//   })).then(data => {
-//     let ss = callback.toString().split('=>')[0].split('(');
-//     ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
-//       //assumes no more parameters are expected in the callback than the number of urls requested
-//       $g.collections.add(item.trim(), data[index])
-//       return data;
-//     },data)
-
-//     callback.apply(null, data);
-//   }).catch(function(data){
-//   })
-// }
+function getData(urls,callback){
+  if(typeof urls == 'string')urls = [urls];
+  Promise.all(_.map(urls,function(url){
+  return new Promise(function(resolve,reject){
+		gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
+	})
+})).then(function(data){
+    callback.apply(null,data);
+  }).catch(function(data){
+  debugger;
+})
+}
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
     var group = {!! $group ?? "{}" !!};
@@ -157,7 +151,12 @@ ractive = new Ractive({el: "admin-content-target",template:`
   <div id="table" style="margin:-21px -21px -44px"><center style="margin:200px"><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center></div>
 {{/group}}
 `,data: _.extend({},data), partials: templates  })
+// this.ractive = new Ractive({el: document.querySelector('.report'), template: templates.report, data: _.extend({},this.methods,mappedData), partials: templates});
 @endverbatim
+
+
+
+
   </script>
 @endsection
 

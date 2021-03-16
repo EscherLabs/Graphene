@@ -1069,6 +1069,11 @@ gform.validations.is_https = function(value) {
   return ( value.startsWith("https://")) ? false : 'Basic Auth Routes must start with "https://"';
 }
 
+gform.validations.is_https = function(value) {
+  return ( value.startsWith("https://")) ? false : 'Basic Auth Routes must start with "https://"';
+}
+
+
 var mime_type_icon_map = {
   // Media
   image: "fa-file-image-o",
