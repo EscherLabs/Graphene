@@ -340,7 +340,6 @@ Cobler.types.Workflow = function(container){
         }
         let myPromise = new Promise(function(myResolve, myReject) {
 
-
           if(
             //nothing started - we can assume starting a new one
             (this.get().current == null) ||
