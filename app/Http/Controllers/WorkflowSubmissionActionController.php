@@ -685,21 +685,11 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
                                 ]);
                                 $submission->assignment_type = $action->assignment->type; // Setting the assignment type of the action
                                 $this->action($submission, $action_request, true); // runs the action method
-//                                $w_instances[] = [
-//                                    "assignment" => $action->assignment, //returns the assignment type of the action
-//                                    "submission_id" => $submission->id, // submission id
-//                                    "time" => Carbon::now(), // current date to compare to submission updated date
-//                                    "delay" => $action->assignment->delay, // delay(days) of the action
-//                                    "updated_at" => $submission->updated_at->toDateTimeString(), // submission assignment date
-//                                    "diff" => $submission->updated_at->diffInDays(Carbon::now()), // Day difference between now and the last updated date of the submission - Validating the actions those were run
-//                                    "result" => $this->action($submission, $action_request, true) // runs the action method
-//                                ];
                             }
                         }
                     }
                 }
             }
         }
-//        return $w_instances;
     }
 }
