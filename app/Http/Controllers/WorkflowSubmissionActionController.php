@@ -76,6 +76,15 @@ class WorkflowSubmissionActionController extends Controller {
         }
     }
 
+    public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id) {
+        $current_user = User::where('unique_id',$unique_id)->first();
+        if (is_null($current_user)) {
+            abort(404,'User '.$unique_id.' not found!');
+        }
+        Auth::login($current_user);
+        return $this->create($workflow_instance,$request,'submit');
+    }
+
     private function detect_infinite_loop() {
         if (!isset($GLOBALS['action_stack_depth'])) {
             $GLOBALS['action_stack_depth']=0;
@@ -334,6 +343,15 @@ class WorkflowSubmissionActionController extends Controller {
             $this->send_default_emails($email_state_data);
         }
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
+    }
+
+    public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id) {
+        $current_user = User::where('unique_id',$unique_id)->first();
+        if (is_null($current_user)) {
+            abort(404,'User '.$unique_id.' not found!');
+        }
+        Auth::login($current_user);
+        return $this->action($workflow_submission,$request);
     }
 
     private function determineAssignment() {
