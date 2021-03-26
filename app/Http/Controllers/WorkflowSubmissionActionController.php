@@ -76,6 +76,7 @@ class WorkflowSubmissionActionController extends Controller {
             abort(404,'User '.$unique_id.' not found!');
         }
         Auth::login($current_user);
+        $this->authorize('create_submission', $workflow_instance);
         return $this->create($workflow_instance,$request,'submit');
     }
 
@@ -311,6 +312,7 @@ class WorkflowSubmissionActionController extends Controller {
             abort(404,'User '.$unique_id.' not found!');
         }
         Auth::login($current_user);
+        $this->authorize('take_action',$workflow_submission);
         return $this->action($workflow_submission,$request);
     }
 
