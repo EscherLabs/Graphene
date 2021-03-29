@@ -23,7 +23,11 @@ Route::group(['middleware' => ['public.api.auth', 'no.save.session'], 'prefix' =
     // Return all workflow submissions by instance_id
     Route::get('/workflows/instances/{instance}/submissions','PublicAPIWorkflowController@get_all_instance_submissions');
     // Submit a new workflow submission on behalf of user (unique_id), given a workflow instance_id
-    Route::post('/workflows/instances/{workflow_instance}/user/{unique_id}','WorkflowSubmissionActionController@api_create');
+    Route::post('/workflows/instances/{workflow_instance}/user/{unique_id}','WorkflowSubmissionActionController@api_create')
+        ->middleware('validate.user') // Build User Object from unique_id
+        ->middleware('can:create_submission,workflow_instance'); // Verify User Permissions
     // Update an existing workflow_submission on behalf of user (unique_id), given a workflow sumbission_id
-    Route::put('/workflows/submissions/{workflow_submission}/user/{unique_id}','WorkflowSubmissionActionController@api_action');
+    Route::put('/workflows/submissions/{workflow_submission}/user/{unique_id}','WorkflowSubmissionActionController@api_action')
+        ->middleware('validate.user') // Build User Object from unique_id
+        ->middleware('can:take_action,workflow_submission'); // Verify User Permissions
 });

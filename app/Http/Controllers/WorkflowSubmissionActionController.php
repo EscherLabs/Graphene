@@ -71,12 +71,6 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id) {
-        $current_user = User::where('unique_id',$unique_id)->first();
-        if (is_null($current_user)) {
-            abort(404,'User '.$unique_id.' not found!');
-        }
-        Auth::login($current_user);
-        $this->authorize('create_submission', $workflow_instance);
         return $this->create($workflow_instance,$request,'submit');
     }
 
@@ -307,12 +301,6 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id) {
-        $current_user = User::where('unique_id',$unique_id)->first();
-        if (is_null($current_user)) {
-            abort(404,'User '.$unique_id.' not found!');
-        }
-        Auth::login($current_user);
-        $this->authorize('take_action',$workflow_submission);
         return $this->action($workflow_submission,$request);
     }
 
