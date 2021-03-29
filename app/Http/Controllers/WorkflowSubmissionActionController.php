@@ -314,7 +314,6 @@ class WorkflowSubmissionActionController extends Controller {
         $new_request->setMethod('PUT');
         $new_request->request->add([
             '_state' => $request->has('data')?$request->data:(Object)[],
-            'comment' => $request->has('comment')?$request->comment:'',
             'action' => $action,
             'comment' => $request->has('comment')?$request->comment:null,
             'signature' => $request->has('signature')?$request->signature:null,
