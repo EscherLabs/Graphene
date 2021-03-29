@@ -77,6 +77,8 @@ class WorkflowSubmissionActionController extends Controller {
             '_flowstate' => $start_state,
             '_state' => $request->has('data')?$request->data:(Object)[],
             'action' => $action,
+            'comment' => $request->has('comment')?$request->comment:null,
+            'signature' => $request->has('signature')?$request->signature:null,
         ]);
         return $this->create($workflow_instance,$new_request,'submit');
     }
@@ -314,6 +316,8 @@ class WorkflowSubmissionActionController extends Controller {
             '_state' => $request->has('data')?$request->data:(Object)[],
             'comment' => $request->has('comment')?$request->comment:'',
             'action' => $action,
+            'comment' => $request->has('comment')?$request->comment:null,
+            'signature' => $request->has('signature')?$request->signature:null,
         ]);
         return $this->action($workflow_submission,$new_request);
     }
