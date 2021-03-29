@@ -123,8 +123,8 @@ class WorkflowSubmissionActionController extends Controller {
         });
         $previous_status = $workflow_submission->status;
         // Get Action (Object)
-        $action = Arr::first($previous_state->actions, function ($value, $key) {
-            return $value->name === request()->get('action');
+        $action = Arr::first($previous_state->actions, function ($value, $key) use ($request) {
+            return $value->name === $request->get('action');
         });  
         // Set New State (String)
         $workflow_submission->state = $action->to;   
