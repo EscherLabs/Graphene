@@ -19,6 +19,7 @@ use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
+use Illuminate\Support\Facades\DB;
 
 class AppInstanceController extends Controller
 {
@@ -271,7 +272,11 @@ class AppInstanceController extends Controller
             }
         }
         if (!isset($response)) {
-            // Fetch Data based on Endpoint Type
+            // Disconnect from the database while we wait for the endpoint response.
+            // If we need to cache the data, we will reconnect automatically at that time.
+            // This is to avoid having too many simulataenous connections to the database,
+            // especially when an endpoint is responding very slowly.
+            DB::connection()->disconnect(); 
             $httpHelper = new HTTPHelper();
             if ($endpoint->type == 'http_no_auth') {
                 $response = $httpHelper->http_fetch(['url'=>$url, 'verb'=>$verb, 'data'=>$all_data['request']]);
