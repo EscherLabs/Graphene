@@ -70,8 +70,15 @@ class WorkflowSubmissionActionController extends Controller {
         }
     }
 
-    public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id) {
-        return $this->create($workflow_instance,$request,'submit');
+    public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id, $start_state, $action) {
+        $new_request = new Request();
+        $new_request->setMethod('POST');
+        $new_request->request->add([
+            '_flowstate' => $start_state,
+            '_state' => $request->has('data')?$request->data:(Object)[],
+            'action' => $action,
+        ]);
+        return $this->create($workflow_instance,$new_request,'submit');
     }
 
     private function detect_infinite_loop() {
@@ -300,8 +307,15 @@ class WorkflowSubmissionActionController extends Controller {
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
 
-    public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id) {
-        return $this->action($workflow_submission,$request);
+    public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
+        $new_request = new Request();
+        $new_request->setMethod('PUT');
+        $new_request->request->add([
+            '_state' => $request->has('data')?$request->data:(Object)[],
+            'comment' => $request->has('comment')?$request->comment:'',
+            'action' => $action,
+        ]);
+        return $this->action($workflow_submission,$new_request);
     }
 
     private function determineAssignment() {
