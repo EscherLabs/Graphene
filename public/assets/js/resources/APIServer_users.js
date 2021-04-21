@@ -8,14 +8,8 @@ $.ajax({
 			{label: 'Name', name:'app_name', required: true},
 			{label: 'Password', name:'app_secret', required: true},
 			{label: 'Environment', name:'environment_id', required: true,type:'select',options:'/api/proxy/'+slug+'/environments',format:{"label":'{{name}}',value:function(item){return item.id;}}},		
-			{label: 'IPs','name':'ips',type:"text",array:{min:0, max:10},parse:
-			[
-				{type:"test", "name": "ips", "test": function(e){
-					return (e.value != ""); 
-				}}
-			]
-			
-			},
+			{name:'ipshelptext', type:'output', format:{value: '<div class="alert alert-info">Use the following fields to limit requests to one or more IP Addresses, or part (substring) of an IP Address. (Leave blank to allow from any IP)</div>', parse:false}},
+            {label: 'IPs','name':'ips',type:"text",array:{min:0, max:10}},
 			{name: 'id', type:'hidden'}
 		];
         tableConfig.data = data;
