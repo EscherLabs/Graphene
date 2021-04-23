@@ -39,6 +39,10 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
+        //01/20/2021, AKT - Added the code below to check if the user is authenticated
+        $this->customAuth = new CustomAuth();
+        $this->resourceService = new ResourceService($this->customAuth);
+
         $myWorkflowInstance = WorkflowInstance::with('workflow')
             ->where('id', '=', $workflow_instance->id)->with('workflow')->first();
         if(is_null($myWorkflowInstance)) {
@@ -73,6 +77,10 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id, $start_state, $action) {
+        //04/23/2021, AKT - Added the code below to check if the user is authenticated
+        $this->customAuth = new CustomAuth();
+        $this->resourceService = new ResourceService($this->customAuth);
+
         $new_request = new Request();
         $new_request->setMethod('POST');
         $new_request->request->add([
@@ -342,6 +350,10 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
+        //04/23/2021, AKT - Added the code below to check if the user is authenticated
+        $this->customAuth = new CustomAuth();
+        $this->resourceService = new ResourceService($this->customAuth);
+
         $new_request = new Request();
         $new_request->setMethod('PUT');
         $new_request->request->add([
@@ -645,9 +657,6 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
         $submissions =  WorkflowSubmission::where('status','open')->get();
         //Get all the workflow instances
         $all_instances = WorkflowInstance::get();
-
-        //Creating an array for development purposes
-//        $w_instances=[];
 
         foreach ($submissions as $submission){
             //Find the instance of the submission
