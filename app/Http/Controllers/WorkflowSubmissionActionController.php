@@ -39,10 +39,6 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
-        //01/20/2021, AKT - Added the code below to check if the user is authenticated
-        $this->customAuth = new CustomAuth();
-        $this->resourceService = new ResourceService($this->customAuth);
-
         $myWorkflowInstance = WorkflowInstance::with('workflow')
             ->where('id', '=', $workflow_instance->id)->with('workflow')->first();
         if(is_null($myWorkflowInstance)) {
@@ -76,13 +72,17 @@ class WorkflowSubmissionActionController extends Controller {
         }
     }
 
-    public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id) {
-        $current_user = User::where('unique_id',$unique_id)->first();
-        if (is_null($current_user)) {
-            abort(404,'User '.$unique_id.' not found!');
-        }
-        Auth::login($current_user);
-        return $this->create($workflow_instance,$request,'submit');
+    public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id, $start_state, $action) {
+        $new_request = new Request();
+        $new_request->setMethod('POST');
+        $new_request->request->add([
+            '_flowstate' => $start_state,
+            '_state' => $request->has('data')?$request->data:(Object)[],
+            'action' => $action,
+            'comment' => $request->has('comment')?$request->comment:null,
+            'signature' => $request->has('signature')?$request->signature:null,
+        ]);
+        return $this->create($workflow_instance,$new_request,'submit');
     }
 
     private function detect_infinite_loop() {
@@ -120,7 +120,6 @@ class WorkflowSubmissionActionController extends Controller {
         if ($this->detect_infinite_loop()) {
             return response('Infinite Loop Detected! Quitting!', 508);
         }
-
         $m = new \Mustache_Engine;
         $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
         $myWorkflowInstance->findVersion();
@@ -135,12 +134,9 @@ class WorkflowSubmissionActionController extends Controller {
         });
         $previous_status = $workflow_submission->status;
         // Get Action (Object)
-        // 01/05/2021, AKT - Changed request() to $request in order to be able to use request parameter sent to function
-        //added use($request) in the callback function to able to use the parameter
         $action = Arr::first($previous_state->actions, function ($value, $key) use ($request) {
             return $value->name === $request->get('action');
-        });
-
+        });  
         // Set New State (String)
         $workflow_submission->state = $action->to;   
         // Determine New State (Object) -- State we are entering
@@ -345,13 +341,16 @@ class WorkflowSubmissionActionController extends Controller {
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
 
-    public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id) {
-        $current_user = User::where('unique_id',$unique_id)->first();
-        if (is_null($current_user)) {
-            abort(404,'User '.$unique_id.' not found!');
-        }
-        Auth::login($current_user);
-        return $this->action($workflow_submission,$request);
+    public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
+        $new_request = new Request();
+        $new_request->setMethod('PUT');
+        $new_request->request->add([
+            '_state' => $request->has('data')?$request->data:(Object)[],
+            'action' => $action,
+            'comment' => $request->has('comment')?$request->comment:null,
+            'signature' => $request->has('signature')?$request->signature:null,
+        ]);
+        return $this->action($workflow_submission,$new_request);
     }
 
     private function determineAssignment() {
@@ -492,7 +491,6 @@ class WorkflowSubmissionActionController extends Controller {
                 break;
                 case "purge_files":
                     $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
-
                     foreach($files as $file) {
                         Storage::delete($file->get_file_path());
                         Storage::delete($file->get_file_path().'.encrypted');
@@ -538,7 +536,6 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     private function send_default_emails($state_data) {
-//        dd($state_data);
         $m = new \Mustache_Engine;
         // Email Actor and Owner
         $email_body = '
