@@ -71,6 +71,11 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id, $start_state, $action) {
+        if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
+            // Don't check permissions!
+        } else {
+            $this->authorize('create_submission',WorkflowInstance::class);
+        }
         $new_request = new Request();
         $new_request->setMethod('POST');
         $new_request->request->add([
@@ -310,6 +315,11 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
+        if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
+            // Don't check permissions!
+        } else {
+            $this->authorize('take_action',WorkflowSubmission::class);
+        }
         $new_request = new Request();
         $new_request->setMethod('PUT');
         $new_request->request->add([
