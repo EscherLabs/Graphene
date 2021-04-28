@@ -198,7 +198,6 @@ class WorkflowSubmissionActionController extends Controller {
         if (isset($state->logic)) {
             // No Permission Check for Logic Block
         } else {
-
             if (isset($action->assignment)) {  // This action can be performed by action asignee
                 $action_assignment_type = $m->render($action->assignment->type, $state_data);
                 $action_assignment_id = $m->render($action->assignment->id, $state_data);
@@ -315,11 +314,7 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
-        if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
-            // Don't check permissions!
-        } else {
-            $this->authorize('take_action',$workflow_submission);
-        }
+        $this->authorize('take_action',$workflow_submission);
         $new_request = new Request();
         $new_request->setMethod('PUT');
         $new_request->request->add([
