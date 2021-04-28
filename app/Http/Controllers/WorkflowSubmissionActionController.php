@@ -74,7 +74,7 @@ class WorkflowSubmissionActionController extends Controller {
         if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
             // Don't check permissions!
         } else {
-            $this->authorize('create_submission',WorkflowInstance::class);
+            $this->authorize('create_submission',$workflow_instance);
         }
         $new_request = new Request();
         $new_request->setMethod('POST');
@@ -318,7 +318,7 @@ class WorkflowSubmissionActionController extends Controller {
         if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
             // Don't check permissions!
         } else {
-            $this->authorize('take_action',WorkflowSubmission::class);
+            $this->authorize('take_action',$workflow_submission);
         }
         $new_request = new Request();
         $new_request->setMethod('PUT');
