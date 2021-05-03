@@ -21,6 +21,10 @@ class Initialization
      */
     public function handle($request, Closure $next)
     {
+        // Don't worry about the site if we're just doing a simple health check
+        if ($request->is('health/*')) {
+            return $next($request);
+        }
         $current_site = null;
         try{
             $current_site = Site::select('id','domain','name','auth','auth_config','proxyserver_config')->where('domain','=',$request->server('SERVER_NAME'))->first();
