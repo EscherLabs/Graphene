@@ -184,7 +184,8 @@
     <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
     
     <script src='/assets/js/vendor/summernote.min.js'></script>
-    <script src='/assets/js/vendor/dropzone.min.js'></script>
+    <script src='/assets/js/vendor/dropzone/dropzone.min.js'></script>
+
 		<script src="/assets/js/vendor/sortable.js"></script>
     <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
     <script src='/assets/js/vendor/toastr.min.js'></script> 

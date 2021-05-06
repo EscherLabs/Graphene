@@ -89,19 +89,6 @@ $.ajax({
 				}.bind(model)).on('cancel',function(e) {
                     e.form.trigger('close');
                 })
-			// $().berry({
-			// 	legend:'Config',
-			// 	name:'config',
-			// 	model:model,
-			// 	"flatten": false,
-			// 	fields:fields
-			// 	}).on('saved',function(){
-			// 		// this.set(Berries.config.toJSON())			
-			// 		this.owner.options.edit(this);
-			// 		this.owner.draw();
-			// 	}.bind(model))
-		
-
 
 		})
 	}

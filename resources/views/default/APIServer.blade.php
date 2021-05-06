@@ -123,7 +123,9 @@
     <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
     <script src='/assets/js/vendor/toastr.min.js'></script> 
     
-  <script src='/assets/js/paged.js'></script> 
+  <!-- <script src='/assets/js/paged.js'></script> -->
+  <script src='/assets/js/fileManager.js'></script> 
+
   <script src='/assets/js/vendor/moment.js'></script>
     <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
     <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>

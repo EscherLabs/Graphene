@@ -169,7 +169,7 @@ gform.types['group']= _.extend({}, gform.types['smallcombo'], {
       }
 		}
 	},
-  defaults:{options: '../../../api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
+  defaults:{template:"{{display.group_id}}",options: '/api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
 })
 gform.types['files']= _.extend({}, gform.types['smallcombo'], {
   toString: function(name,display){
@@ -495,7 +495,6 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
       formelement:this,queuecomplete:gform.types.base64_file.updateStatus.bind(this),
       accept: function(file, done) {
 if(this.options.formelement.replaceIndex !== null){
-  debugger;
 
   // if(typeof this.options.formelement.replaceFile !== 'undefined'){
     this.removeFile(this.options.formelement.replaceFile);
@@ -590,92 +589,253 @@ if(this.options.formelement.replaceIndex !== null){
 });
 
 
-  
-  globalevents = new gform.eventBus({owner:"graphene",item:'data',handlers:{}}, this),
 
-$g = {
-  form:gform,
-  forms:gform.instances,
-  render:gform.m,
-  dispatch:globalevents.dispatch,
-  on:globalevents.on,
-  modal:modal,
-  getID:generateUUID,
-  grid:GrapheneDataGrid,
-  collections: new gform.collectionManager(),
-  apps:{},
-  formatDates:function(data){
-    if(data == null) return {};
-    if(typeof data.created_at == 'string'){
-      var cat = moment(data.created_at);
-      data.created_at = {
-        original:data.created_at,
-        time:cat.format('h:mma'),
-        date:cat.format('MM/DD/YY'),
-        fromNow:cat.fromNow()
-      }
 
-      data.date = data.created_at.original;
-    }
-    if(typeof data.updated_at == 'string'){
 
-      var uat = moment(data.updated_at);
-      data.updated_at = {
-        original:data.updated_at,
-        time:uat.format('h:mma'),
-        date:uat.format('MM/DD/YY'),
-        fromNow:uat.fromNow()
-      }
-    }
-    return data;
-  }
-}
-Object.defineProperty($g, "widgets", {
-  get:function(){
-      return _.reduce(cb.collections,function(list,item){
-        return list.concat(item.getItems())
-        // return list;
-      },[])
-      // return cb.collections[0].getItems()[0]
+gform.stencils.upload = `
+<div class="row clearfix form-group {{modifiers}}" data-type="{{type}}">
+  {{>_label}}
+  {{#label}}
+  {{^horizontal}}<div class="col-md-12">{{/horizontal}}
+  {{#horizontal}}<div class="col-md-8">{{/horizontal}}
+  {{/label}}
+  {{^label}}
+  <div class="col-md-12">
+  {{/label}}
+    {{#pre}}<div class="input-group col-xs-12"><span class="input-group-addon">{{{pre}}}</span>{{/pre}}
+    {{^pre}}{{#post}}<div class="input-group">{{/post}}{{/pre}}
+      <div class="dropzone" id="{{id}}">
+      </div>
+    {{#post}}<span class="input-group-addon">{{{post}}}</span></div>{{/post}}
+    {{^post}}{{#pre}}</div>{{/pre}}{{/post}}
 
+    {{>_addons}}
+    {{>_actions}}
+  </div>
+</div>
+`;
+
+gform.types.upload =  _.extend({}, gform.types['input'],{
+  focus: function() {
+},
+defaults:{format:{uri: '{{{name}}}',options:[]}},
+
+
+  set:function(value){
   },
-  enumerable: true
-});
-Object.defineProperty($g, "uuid", {
-  get:function(){
-      return generateUUID();
+  get: function() {
+    return this.value;
+  },edit: function(state) {
+    this.editable = state;
+    this.el.querySelector('[id="'+this.id+'"].dropzone').disabled = !state;
   },
-  enumerable: true
-});
-Object.defineProperty($g, "waiting", {
-  get:function(){
-      return !!this.isWaiting;
-  },
-  set: function(value){
-    if(value){
-      if(!this.el){
-        this.el  = document.createElement("div");
-        this.el.setAttribute("class", "hide_wait");
-
-      this.el.setAttribute("id", "waiting");
-
-        // this.el.setAttribute("style", 'padding: 5px 10px;position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,.1);box-shadow:0 0 2px #888');
-
-        document.body.append(this.el);
-      }
-      this.el.innerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i> <span>'+value+'</span>';
-
-      this.el.setAttribute("class", "");
-
+  toString: function(name, report) {
+    if(!report){
+      return gform.m('<dt>{{label}}</dt> <dd>{{#value.dataURI}}<img height=75px src="{{value.dataURI}}"/>{{/value.dataURI}} {{value.name}}{{^value.name}}<span class="text-muted">(empty)</span>{{/value.name}}</dd><hr>', this)
     }else{
-      if(this.el)this.el.setAttribute("class", "hide_wait");
+      return this.value.dataURI
     }
-    this.isWaiting = value;
+  },      
+  satisfied: function(value) {
+    value = value||this.value;
+    if(_.isArray(value)){return !!value.length;}
+    return (typeof value !== 'undefined' && value !== null && value !== '' && !(typeof value == 'number' && isNaN(value)) && !_.isEmpty(value));            
   },
-  enumerable: true
+  initialize:function(){
+    this.Dropzone = new Dropzone(this.el.querySelector("#"+this.id+'.dropzone'), 
+    { url:this.item.path, method: 'post', paramName: this.name, success: function(message,response){
+				this.trigger('uploaded',this,{response:response});
+    }.bind(this)}
+    
+    );
+  }
 });
 
 
+
+
+  
+
+$g = function(){
+     //new gform.eventBus({owner:"graphene",item:'data',handlers:{}}, this),
+     function eventHub() {
+      let handlers = {};
+      let on = (event, handler, data) => {
+        let guid = false;
+        if(typeof event !== 'undefined'){
+            var events = event.split(' ');
+            guid = api.uuid
+            events.forEach(event => {
+                handlers[event] = handlers[event] ||[];
+                if(typeof handler !== 'function') throw "Event handler must be a function"
+
+                handlers[event].push({handler:handler, id: guid, data:data});
+            });
+        }
+        return guid;
+      };
+  
+      let off = (event, id) => {
+          handlers[event].splice(handlers[event].findIndex(elem => (elem.id == id)),1)
+      };
+  
+      let emit = (e, data) => {
+          let a = data || {};
+          let pd = true;
+          let propagate = true;
+          a.preventDefault = () => { pd = true; }
+          a.stopPropagation = () => { propagate = false; }
+  
+          // let events = [];
+          if(typeof e == 'string'){
+              e = e.split(' ');
+          }
+          if(typeof e !== 'object' || !Array.isArray(e)) throw 'Event must be a string or array'
+          // events = events.concat(e)
+  
+          e.forEach(event => {
+              a.event = event;
+              let f = (handler) => {
+                  if(typeof handler.handler == 'function'){
+                      handler.handler(a);
+                  }
+                  return propagate;
+              }
+              if(event in handlers)handlers[event].every(f);
+              if('*' in handlers)handlers['*'].every(f);
+          })
+          return a;
+      }
+      return {
+        emit: emit,
+        on: on,
+        off: off
+      }
+  }
+  let globalevents = new eventHub();
+  let actionBuffer =[]
+  
+  let api =  {
+    worker: new Worker('/assets/js/grapheneWorker.js'),
+    // elapsedSeconds:0,
+    // timer:setInterval(function() {
+    //  $g.emit('cron',++$g.elapsedSeconds);
+    // }, 1000),
+    form:gform,
+    forms:gform.instances,
+    render:gform.m,
+    emit:globalevents.emit,
+    on:globalevents.on,
+    off:globalevents.off,
+    schedule: (method, interval) => {
+      return api.on('schedule',(e) => {
+          if(!(e.ticks%(interval||1))) method.call(null,e);
+      })
+    },
+    intervalTask:(actions, opts) =>{
+      let options = _.extend({period:1000},opts);
+      actionBuffer = actionBuffer.concat(actions||[]);
+      if(timer == null) {
+        timer = setInterval(function() {
+          if(actionBuffer.length) {
+            if(typeof actionBuffer[0] == "function") {
+              actionBuffer.shift().call(this)
+            } else {
+              actionBuffer.shift()
+            }
+          }
+          if(!actionBuffer.length) {
+            clearInterval(timer);
+            timer = null;
+          }
+        }, options.period)
+      }
+      return timer;
+    },
+    modal:modal,
+    // getID:generateUUID,
+    grid:GrapheneDataGrid,
+    collections: gform.collections,
+    apps:{},
+    engines:{},
+    formatDates:function(data){
+      if(data == null) return {};
+      if(typeof data.created_at == 'string'){
+        var cat = moment(data.created_at);
+        data.created_at = {
+          original:data.created_at,
+          time:cat.format('h:mma'),
+          date:cat.format('MM/DD/YY'),
+          fromNow:cat.fromNow()
+        }
+
+        data.date = data.created_at.original;
+      }
+      if(typeof data.updated_at == 'string'){
+
+        var uat = moment(data.updated_at);
+        data.updated_at = {
+          original:data.updated_at,
+          time:uat.format('h:mma'),
+          date:uat.format('MM/DD/YY'),
+          fromNow:uat.fromNow()
+        }
+      }
+      return data;
+    }
+  }
+
+  api.worker.onmessage = (message)=>{
+    api.emit('schedule', {timeStamp:message.timeStamp,ticks: message.data.ticks})
+  }
+  Object.defineProperty(api, "widgets", {
+    get:function(){
+        return _.reduce(cb.collections, function(list,item){
+          return list.concat(item.getItems())
+          // return list;
+        },[])
+        // return cb.collections[0].getItems()[0]
+
+    },
+    enumerable: true
+  });
+  Object.defineProperty(api, "uuid", {
+    get:function(){
+        return generateUUID();
+    },
+    enumerable: true
+  });
+  Object.defineProperty(api, "waiting", {
+    get:function(){
+        return !!this.isWaiting;
+    },
+    set: function(value){
+      if(value){
+        if(!this.el){
+          this.el  = document.createElement("div");
+          this.el.setAttribute("class", "hide_wait");
+
+        this.el.setAttribute("id", "waiting");
+
+          // this.el.setAttribute("style", 'padding: 5px 10px;position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,.1);box-shadow:0 0 2px #888');
+
+          document.body.append(this.el);
+        }
+        this.el.innerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i> <span>'+value+'</span>';
+
+        this.el.setAttribute("class", "");
+
+      }else{
+        if(this.el)this.el.setAttribute("class", "hide_wait");
+      }
+      this.isWaiting = value;
+    },
+    enumerable: true
+  });
+
+  return api;
+
+}()
 
 if(typeof Berry !== 'undefined'){
 Berry.validations.is_https = {
@@ -793,7 +953,7 @@ Object.defineProperty(window,'help',{
 
 Object.defineProperty(debug,'app',{
   get: function(){
-    return cb.collections[0].getItems()[0]
+    return cb.collections[0].getItems()[0].appEngine
   },
   configurable: false,
 });
@@ -817,4 +977,10 @@ focus:function(timeout) {
      
     //   this.el.querySelector('[name="'+this.name+'"]').select();
   }
+});
+Object.defineProperty(debug,'state',{
+  get: function(){
+    return window.localStorage.getItem("debug") == 'true'
+  },
+  configurable: false,
 });

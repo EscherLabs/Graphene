@@ -58,7 +58,7 @@ renderBuilder = function(){
     
     var temp = $.extend(true, {}, form);
     _.each(temp.fields,function(field){
-      field.widgetType = gform.types[field.type].base||'input'
+      field.widgetType = gform.types[field.type]||{}.base||'input'
     })
     // for(var i in temp.fields){
       // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
@@ -480,7 +480,8 @@ function load(workflow_version) {
 
   setSize();
 
-  templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  templatePage = new fileManager('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
   methodPage = new fileManager('.methods',{name:'methods', items:attributes.code.methods, label:'Method',mode:'ace/mode/javascript'});
 
   // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});

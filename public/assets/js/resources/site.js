@@ -111,7 +111,8 @@ $.ajax({
 		}
 		// data.partials.unshift({name:'main',content:data.templates.main, disabled: true})
 
-	templatePage = new paged('#templates',{items:data.templates.partials||[]});
+	// templatePage = new paged('#templates',{items:data.templates.partials||[]});
+	templatePage = new fileManager('#templates',{name:'templates', items:data.templates.partials||[], label:'Template'});
 
 
 

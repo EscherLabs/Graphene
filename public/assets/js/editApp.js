@@ -115,10 +115,13 @@ function load(app_version) {
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
 
-  templatePage = new paged('.templates', {name:'templates', items:attributes.code.templates, label:'Template'});
-  scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
+  // templatePage = new paged('.templates', {name:'templates', items:attributes.code.templates, label:'Template'});
+  // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
-
+  templatePage = new fileManager('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  scriptPage = new fileManager('.scripts',{name:'scripts', items:attributes.code.scripts, label:'Script',mode:'ace/mode/javascript'});
+  
+  
   //   item.content = this.berry.fields[this.active].toJSON();
   //   if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
   //     modalForm(item.content, item.name, function() {

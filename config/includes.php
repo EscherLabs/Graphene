@@ -27,7 +27,7 @@ return [
         'src' => [
             'head' => [],
             'body' => [
-                ['file'=>'/assets/js/grapheneAppEngine.js'],
+                ['file'=>'https://unpkg.com/vue@next'],
                 ['file'=>'/assets/js/vendor/moment.js'],
                 ['file'=>'/assets/js/vendor/math.min.js'],
                 ['file'=>'/assets/js/vendor/popper.min.js'],
@@ -67,6 +67,10 @@ return [
                 ['file'=>'/assets/js/cob/links.cob.js'],
                 ['file'=>'/assets/js/templates/widget.js'],
                 ['file'=>'/assets/js/lib.js'],
+
+                ['file'=>'/assets/js/appEngines/grapheneAppEngine.js'],
+                ['file'=>'/assets/js/appEngines/gAE_0001.js'],
+                ['file'=>'/assets/js/appEngines/vue_0001.js'],
                 ['file'=>'/assets/js/resources/creators.js'],
             ],
         ],

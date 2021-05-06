@@ -215,7 +215,8 @@
 @section('end_body_scripts_top')
   <script src='/assets/js/vendor/ractive.min.js'></script>    
 
-  <script src='/assets/js/paged.js'></script> 
+  <!-- <script src='/assets/js/paged.js'></script>  -->
+
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <!-- <script type='text/javascript' src='/assets/js/templates/admin.js'></script> -->
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>

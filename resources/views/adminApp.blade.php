@@ -146,7 +146,8 @@
   <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
   <script src='/assets/js/vendor/ractive.min.js'></script>    
 
-  <script src='/assets/js/paged.js'></script> 
+  <!-- <script src='/assets/js/paged.js'></script> -->
+
   <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
   <!-- <script type='text/javascript' src='/assets/js/templates/admin.js'></script> -->
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
@@ -182,7 +183,8 @@
   <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
   <script type='text/javascript' src='/assets/js/vendor/popper.min.js'></script>
   <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
-  
+  <script src='/assets/js/fileManager.js'></script> 
+
   <script type='text/javascript' src='/assets/js/editApp.js'></script>
   <script type='text/javascript' src='/assets/js/workflow.cob.js'></script>
   <!-- <script type='text/javascript' src='/assets/js/vendor/sass.js'></script> -->

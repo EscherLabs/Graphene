@@ -16,11 +16,11 @@ class EndpointController extends Controller
     
     public function list_all_endpoints(Request $request) {
         if (Auth::user()->site_admin) {
-            $endpoints = Endpoint::select('id','group_id','name','type')->whereHas('group', function($q){
+            $endpoints = Endpoint::select('id','group_id','name','type','config')->whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id);
             })->with('group')->orderBy('group_id','desc')->orderBy('name','desc')->get();
         } else {
-            $endpoints = Endpoint::select('id','group_id','name','type')->whereHas('group', function($q){
+            $endpoints = Endpoint::select('id','group_id','name','type','config')->whereHas('group', function($q){
                 $q->where('site_id','=',config('app.site')->id)->whereIn('id',Auth::user()->apps_admin_groups);
             })->with('group')->orderBy('group_id','desc')->orderBy('name','desc')->get();
         }

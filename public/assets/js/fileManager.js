@@ -130,7 +130,6 @@ var fileManager = function(selector, options){
   this.options = $.extend(true,{editable: true},options);
   this.active = this.options.items[0].key;
   $(selector).html(templates.pages.render(this.options,templates));
-  // this.gform = $(selector+' .dummyTarget').berry(this.options);
   this.gform = new gform(this.options,selector);
   this.render = function(){
     $(selector+' .list-group').empty().html(templates.pages_listgroupitem.render(this.options));
