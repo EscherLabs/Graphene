@@ -261,12 +261,12 @@ Cobler.types.Workflow = function(container){
 		get: get,
 		set: function (newItem) {
       $.extend(item, newItem);
-      $g.dispatch('workflow_summary',{current:item.current})
+      $g.emit('workflow_summary',{current:item.current})
     },
     updateRequired:function(){
 
 
-      $g.dispatch('workflow_summary',{required:
+      $g.emit('workflow_summary',{required:
         
           _.uniq(_.compact(_.map(_.filter(
             gform.instances.workflow.find({name:"_state"}).filter({visible:true,required:true}),function(item){
@@ -577,14 +577,14 @@ Cobler.types.Workflow = function(container){
                 }
                 return true;
               })
-              $g.dispatch('workflow_summary',{errors:_.compact(_.map(invalid_fields,function(e){
+              $g.emit('workflow_summary',{errors:_.compact(_.map(invalid_fields,function(e){
                 debugger;
                 return !e.valid?{label:e.label,id:e.id,errors:e.errors.split('<br>')}:null}))})
 
                 invalid_fields[0].focus();
           })      
           this.form.on('valid',function(e){
-            $g.dispatch('workflow_summary',{errors:[]})
+            $g.emit('workflow_summary',{errors:[]})
 
         })
             this.initialstate = this.initialstate||gform.instances['workflow'].get();

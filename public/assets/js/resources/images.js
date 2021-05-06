@@ -1,18 +1,9 @@
 $('.navbar-header .nav a h4').html('Images');
 $('[href="/admin/groups"]').parent().addClass('active');
-/* ATS - not done */
-// $.ajax({
-// 	url: url,
-// 	success: function(data){
-// 		tableConfig.schema = [
-// 			{label: 'Group', name:'group_id', required: true,enabled:false, type:'select', choices: '/api/groups?limit=true'},
-// 			{label: 'Image', name:'filename',show:false, parse:false, required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}"/></div>'},
-//             {label: 'Name', name:'name', required: true},
-// 			{label: 'Public', name:'public', type:'checkbox'},
-// 			{name: 'id', type:'hidden'}
-// 		];
 
 getData([url,'/api/groups'], (images, groups) => {
+	// images = images.map(image => {return {...image, group_id:image.group_id+''}})
+
 	new GrapheneDataGrid({...tableConfig, schema: [
 		fieldLibrary.group,
 		{label: 'Image', name:'filename',show:false, parse:false, required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}"/></div>'},

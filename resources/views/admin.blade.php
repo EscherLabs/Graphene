@@ -20,15 +20,22 @@
   <script>
 function getData(urls,callback){
   if(typeof urls == 'string')urls = [urls];
-  Promise.all(_.map(urls,function(url){
-  return new Promise(function(resolve,reject){
-		gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
-	})
-})).then(function(data){
-    callback.apply(null,data);
+  Promise.all(_.map(urls, url =>{
+    return new Promise((resolve,reject) => {
+      gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
+    })
+  })).then(data => {
+    let ss = callback.toString().split('=>')[0].split('(');
+    ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
+      //assumes no more parameters are expected in the callback than the number of urls requested
+      $g.collections.add(item.trim(), data[index])
+      return data;
+    },data)
+
+    callback.apply(null, data);
   }).catch(function(data){
-  debugger;
-})
+    debugger;
+  })
 }
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
@@ -131,6 +138,47 @@ function getData(urls,callback){
 
 @verbatim
 
+const fieldLibrary = {
+      group: {label: 'Group', name:'group_id',strict:true, type: 'smallcombo', required: true, value: parseInt(resource_id), edit: [{type: 'not_matches',name: "_method", value: "edit"},{type: 'test', test: () => (resource_id == '') }],options:'groups',format: {title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}", value:(group => group.id)}},
+      icon: {label: 'Icon', name:'icon', type:'smallcombo', template: '<i class="{{attributes.icon}}"></i>', 
+          format:{
+            title: 'Icon <span class="pull-right"><i class="{{value}}"></i></span>',
+            label: i => i.name.replace(/(\r\n|\s)/gm, ""), 
+            value: "{{value}}",template:'<i class="fa fa-{{value}}"></i>',
+            display: '<span style = "text-transform:capitalize;"><i class="{{value}}"></i> {{{label}}}'
+          }, 
+          options: 'icons',
+          required: false
+        },
+      content: [
+        {label: 'Name', name:'name', required: true},
+        {label: 'Slug', name:'slug', required: true},
+        {label: 'Icon', name:'icon', type:'smallcombo', template: '<i class="{{attributes.icon}}"></i>', 
+          format:{
+            title: 'Icon <span class="pull-right"><i class="{{value}}"></i></span>',
+            label: i => i.name.replace(/(\r\n|\s)/gm, ""), 
+            value: "{{value}}",template:'<i class="fa fa-{{value}}"></i>',
+            display: '<span style = "text-transform:capitalize;"><i class="{{value}}"></i> {{{label}}}'
+          }, 
+          options: 'icons',
+          required: false
+        },
+        {label: 'List in page menu', name:'unlisted',value:0, type: 'checkbox',options:[{label:'No',value:true},{label:'Yes',value:false}]},				
+        {label: 'Limit Device', name: 'device',type:"select", format:{value:"{{index}}"},value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+        {label: 'Public', name:'public', type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}], edit:  [{type:'matches',name:'limit', value: false}]},    
+        {label: 'Limit Composite Groups', name: 'limit',value: function(e){
+            if(typeof e.form !== 'undefined' && !e.form.isActive){
+              return (typeof e.form.options.data.groups !== 'undefined' && _.compact(e.form.options.data.groups).length>0);
+            }else{
+              return e.initial.value;
+            }
+          }, type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}],template:"{{#attributes.groups.length}}Yes{{/attributes.groups.length}}{{^attributes.groups.length}}No{{/attributes.groups.length}}", show:  [{type:'matches',name:'public', value: false},{type:'test',test: () => (composites.length >0)} ]
+        },
+		    {label: 'Composites',get: ()=> (this.visible)?gform.types[this.type].get.call(this):null,legend: 'Composites',parse:true,array: {min:1,max:composites.length,duplicate:{copy:true}}, name: 'groups', type: 'smallcombo', options: composites,format:{label:"{{name}}",value:function(i){return i.id}},'show': [{type:"matches",name: 'limit',value: true}],validate:[{type:'unique',message:"Duplicate group"}]},
+        {name: 'order', type:'hidden'}
+      ]
+
+    }
 var routes={
       create: api,
       update: api+"/{{id}}",

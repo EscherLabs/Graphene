@@ -720,8 +720,6 @@ if(this.options.formelement.replaceIndex !== null){
 
 
 
-
-
 gform.stencils.upload = `
 <div class="row clearfix form-group {{modifiers}}" data-type="{{type}}">
   {{>_label}}
@@ -871,12 +869,6 @@ gform.types['currency']= _.extend({}, gform.types['input'],{
     return (typeof value !== 'undefined' && value !== null && value !== '' && !(typeof value == 'number' && isNaN(value)));            
   }
 });
-
-
-
-
-
-  
 
 $g = function(){
      //new gform.eventBus({owner:"graphene",item:'data',handlers:{}}, this),

@@ -1,4 +1,3 @@
-
 $('.navbar-header .nav a h4').html('Workflow Instances');
 $('[href="/admin/groups"]').parent().addClass('active');
 
