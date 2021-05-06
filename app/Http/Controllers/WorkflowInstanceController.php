@@ -74,7 +74,11 @@ class WorkflowInstanceController extends Controller
     }
     
     public function admin(WorkflowInstance $workflow_instance) {
-        $workflow_instance->load(array('group'=>function($query){}));
+        $workflow_instance->load(array('group'=>function($query){
+            $query->with(array('composites'=>function($query){
+                $query->with('group')->get();
+            }));
+        }));
         return view('admin', ['resource'=>'workflow_instance','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
     }
 

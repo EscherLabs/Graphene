@@ -189,6 +189,35 @@ gform.types['files']= _.extend({}, gform.types['smallcombo'], {
 
   }},format:{title:'<i class="fa fa-paperclip"></i> {{{label}}}{{^label}}Attachement{{/label}}',label:"{{name}}",value:"{{id}}",display:'<div style="height:50px;padding-left:60px;position:relative" href="{{path}}" target="_blank"><div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url({{path}});background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:0px;left:5px">{{{icon}}}</div> {{name}} <span class="pull-right">{{date}}</span></div>'}}
 })
+gform.types['endpoint'] = {...gform.types['smallcombo'],
+  defaults:{label:true,strict:true, options: 'endpoints',format:{label:'{{name}}',value:"{{id}}",display:'<dl class="dl-horizontal" style="margin-bottom:0"><dt>Name:</dt><dd>{{name}}</dd><dt>URL:</dt><dd>{{config.url}}</dd><dt>User:</dt><dd>{{config.username}}</dd></dl>'}},
+  setLabel (){
+    gform.toggleClass(this.labelEl,'required',this.required)
+    this.labelEl.innerHTML = this.owner.options.data.resources[this.parent.index].name+this.suffix;
+    
+  },  
+  render: function(){
+    if(typeof this.mapOptions == 'undefined'){
+      this.mapOptions = new gform.mapOptions(this, this.value,0,this.owner.collections)
+      this.mapOptions.on('change', function(){
+        this.options = this.mapOptions.getoptions()
+        if(this.shown){
+          this.renderMenu();
+        }
+        if(typeof this.value !== 'undefined'){
+          gform.types[this.type].set.call(this, this.value);
+        }
+        }.bind(this))
+    }
+    this.options = this.mapOptions.getoptions();
+    this.value = this.value || "";
+    this.help = ($g.collections.get('endpoints').find(endpoint=>endpoint.id == this.value)||{config:{url:''}}).config.url
+    + (this.owner.options.data.resources.find(resource=>resource.name = this.owner.options.data.resources[this.parent.index].name)||{path:''}).path	
+    
+    return gform.render('smallcombo', this);				
+  }
+}
+
 
 gform.stencils.signaturePad = `
 	<div class="">
