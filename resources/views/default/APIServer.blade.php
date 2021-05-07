@@ -141,7 +141,6 @@
     }
     </style>
     @yield('end_body_scripts_top')
-
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
   </body>
