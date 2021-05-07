@@ -142,7 +142,7 @@
     @yield('end_body_scripts_top')
     <script src='/assets/js/vendor/berry.full.js'></script> 
     <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
-    <script src='/assets/js/vendor/berrytables.full.js'></script> 
+    <!-- <script src='/assets/js/vendor/berrytables.full.js'></script>  -->
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
   </body>

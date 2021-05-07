@@ -55,7 +55,7 @@
   <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
   <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
+  <!-- <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script> -->
   <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
 
   <!-- <script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 

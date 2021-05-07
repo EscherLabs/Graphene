@@ -3,7 +3,6 @@ $('[href="/admin/workflowinstances"]').parent().addClass('active');
 root = '/api/workflowinstances/'+resource_id;
 
 getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (workflowinstance, icons, endpoints) => {
-
 	$('.navbar-header .nav a h4').append(' - '+workflowinstance.workflow.name+'');
 	const {configuration={}, workflow={},version={}} = workflowinstance;
 	const {map=[], resources=[]} = workflow.code;
@@ -57,7 +56,7 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 						{name:'group_id', required: true, type:'hidden'},
 						{label: 'Version', name:'app_version_id', edit: false, options: [
 							{id:-1,label:'Latest (Working or Published)'},
-							...(versions.length)?[{id:0,label:'Latest Published'}]:[],
+							...(versions.length)?[{id: 0, label: 'Latest Published'}]:[],
 							...versions
 						], type: 'select', format:{ value: version => version.id, label: "{{label}}"} ,post:'<i class="fa fa-pencil" id="version"></i>'},
 						...fieldLibrary['content'],
@@ -71,6 +70,8 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 
 
 				var valueField = {columns:8,name:'value',label:"Value",title:'Value <span class="text-success pull-right">{{value}}</span>'}
+				var flagField =  {columns:6,type:"switch",options:[{label:"Off",value:false},{label:"On",value:true}]};
+
 				r_options = {name:"map",data:{suppress_emails:configuration.suppress_emails,suppress_email_tasks:configuration.suppress_email_tasks,encrypted:configuration.encrypted,initial:configuration.initial,title:configuration.title,map:_.map(map,function(resource){
 					var r = _.find(configuration.map,{name:resource.name});
 					if(typeof r !== 'undefined' && r.type == resource.type){
@@ -80,20 +81,38 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				})}, actions:[],fields:[
 					{columns:6,name:"initial",label:"Initial State", options:_.pluck(version.code.flow,'name'), type:"smallcombo"},
 					{columns:6,name:"title",label:"Title",placeholder:workflow.name},
-                    {columns:6,name:"suppress_emails",title:'Suppress Default Emails{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}',type:"switch",inline:false},
-                    {columns:6,name:"suppress_email_tasks",title:'Suppress Email Tasks{{#value}}<div class="text-danger">Custom emails (from email "Tasks") will not be sent</div>{{/value}}{{^value}}<div class="text-success">Custom emails (from email "Tasks") will be sent</div>{{/value}}',type:"switch",inline:false},
-                    {name:"encrypted",title:'Encrypt Data at Rest{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}',type:"switch",inline:false},
+                    {...flagField, 
+						name: "suppress_emails", 
+						title: `Suppress Default Emails
+							{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}
+							{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}`
+					},
+                    {...flagField, 
+						name: "suppress_email_tasks", 
+						title: `Suppress Email Tasks
+							{{#value}}<div class="text-danger">Custom emails (from email "Tasks") will not be sent</div>{{/value}}
+							{{^value}}<div class="text-success">Custom emails (from email "Tasks") will be sent</div>{{/value}}`
+					},
+                    {...flagField, 
+						name: "encrypted", 
+						title: `Encrypt Data at Rest
+							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
+							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`
+					},
 
 					
-					{name:"map",label:false,array:{min:map.length,max:map.length},type:"fieldset",fields:[
+					{name:"map",label:false,edit:!!map.length,array:{min:map.length,max:map.length},type:"fieldset",fields:[
+						
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
 
 						{columns:0,name:"type",label:false,edit:false},
-						_.extend({show:[{type:"matches",name:"type",value:"string"}]},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"user"}],type:"user"},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"email"}],type:"user_email"},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"group"}],type:"group"},valueField),
-						_.extend({show:[{type:"matches",name:"type",value:"endpoint"}],type:"select",options:'endpoints',format:{label:"{{name}}",value:"{{id}}"}},valueField),
+
+						{...valueField, show:[{value:"string", type:"matches",name:"type"}]},
+						{...valueField, show:[{value:"user", type:"matches",name:"type"}],type:"user"},
+						{...valueField, show:[{value:"email", type:"matches",name:"type"}],type:"user_email"},
+						{...valueField, show:[{value:"group", type:"matches",name:"type"}],type:"group"},
+						{...valueField, show:[{value:"endpoint", type:"matches",name:"type"}],type:"select",options:'endpoints',format:{label:"{{name}}",value:"{{id}}"}},
+
 					]}
 				]}
 				new gform(r_options,'#map .col-sm-9');
@@ -116,21 +135,20 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 						}
 					},'#resources .col-sm-9')
 					.on('input:endpoint', function(e){
-							let endpoint = $g.collections.get('endpoints').find(endpoint=>endpoint.id == e.field.value);
-							let help = (typeof endpoint !== 'undefined')?endpoint.config.url:"";
-							let resource = resources.find(resource=>resource.name = e.field.parent.get('name'));
-								
-							help+=(typeof resource !== 'undefined')?resource.path:"";
-								
-							if(e.field.help !== help ) {						
-								e.field.update({help:help}, true)
-								e.field.focus();
-							}
+						let endpoint = $g.collections.get('endpoints').find(endpoint=>endpoint.id == e.field.value);
+						let help = (typeof endpoint !== 'undefined')? endpoint.config.url : "";
+						let resource = resources.find(resource=>resource.name = e.field.parent.get('name'));
+							
+						help+=(typeof resource !== 'undefined')? resource.path : "";
+							
+						if(e.field.help !== help ) {						
+							e.field.update({help:help}, true)
+							e.field.focus();
+						}
 					})
 				}
 
 				$('#save').on('click',function(){
-					var item = $g.forms.main.get();
 					var item = {...$g.forms.main.get(),
 						configuration: $g.forms.map.get()};
 					if(typeof $g.forms.resources !== 'undefined') {

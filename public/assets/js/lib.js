@@ -35,35 +35,44 @@ function render(template, data){
     return gform.m(template,_.extend({},data||{},templates_partials))
   }
 }
-function modal(options) {
-  $('#myModal').remove();
-  this.ref = $(render('modal', options));
 
-  options.legendTarget = this.ref.find('.modal-title');
-  options.actionTarget = this.ref.find('.modal-footer');
+modal = (options, data) => {
 
-  $(this.ref).appendTo('body');
-
-  if(options.content) {
-    $('.modal-body').html(options.content);
-    options.legendTarget.html(options.legend);
-  }else{
-    options.autoDestroy = true;
-    var myform = this.ref.find('.modal-body').berry(options).on('destroy', $.proxy(function(){
-      this.ref.modal('hide');
-    },this));
-
-    this.ref.on('shown.bs.modal', $.proxy(function () {
-      this.$el.find('.form-control:first').focus();
-    },myform));
+  if(typeof options == 'string'){
+    options = {content:options};
   }
-  if(options.onshow){
-    this.ref.on('shown.bs.modal', options.onshow);
-  }  
-  this.ref.modal();
-  return this;
-};
+  var hClass = ''
+  switch(options.status){
+    case 'error':
+      hClass = 'bg-danger';
+      break;
+    case 'success':
+    case 'primary':
+    case 'info':
+    case 'warning':
+      hClass = 'bg-'+options.status;
+      break;
+  }
+  return new gform({
+    modal:{ header_class: hClass},
+    ...options,
+    data:{...data,...options.data},
+    fields:[
+      {
+        type:'output',
+        name:'modal',
+        label:false,
+        format:{},
+        value:$g.render(options.content,_.extend({}, options.partials, data))
+      },
+      ...options.fields],
+    actions:(!!options.footer)?[]:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}],
 
+  }).modal().on('cancel', e => {
+    e.form.dispatch('close');
+    e.form.destroy();
+  });
+}
 
 function processFilter(options){
   options = options || {};

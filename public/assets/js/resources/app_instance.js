@@ -65,21 +65,21 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 			},'#main .col-sm-9')
 			
 			$('#save').on('click',function(){
-				debugger;
-				var item = {...$g.forms.main.get(),options:{},user_options_default:{},resources:[]};
-				if(typeof $g.forms.options !== 'undefined') {
-					item.options = gform.instances.options.toJSON();
-				}
-				if(typeof $g.forms.user_options_default !== 'undefined') {
-					item.user_options_default = gform.instances.user_options_default.toJSON();
-				}
-				if(typeof $g.forms.resources !== 'undefined') {
-					item.resources = $g.forms.resources.get().resources;
-				}
-				$.ajax({url: root, type: 'PUT', dataType : 'json',contentType: 'application/json', data: JSON.stringify(item), success:function(){
+				$.ajax({
+						url: root, 
+						type: 'PUT', 
+						dataType : 'json',
+						contentType: 'application/json', 
+						data: JSON.stringify({
+							...$g.forms.main.get(),
+							options: (typeof $g.forms.options !== 'undefined')?$g.forms.options.get(): {},
+							user_options_default: (typeof $g.forms.user_options_default !== 'undefined')?$g.forms.user_options_default.get(): {},
+							resources: (typeof $g.forms.resources !== 'undefined')? $g.forms.resources.get().resources: []
+						}), 
+					success: () => {
 						toastr.success('', 'Successfully updated App Instance')
-					}.bind(this),
-					error:function(e) {
+					},
+					error: e => {
 						toastr.error(e.statusText, 'ERROR');
 					}
 				});
@@ -102,8 +102,8 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 					actions: []
 				},'#user_options_default .col-sm-9')
 				$('#useroptionstab').toggle(!!$g.forms.user_options_default.fields.length);
-
 			}
+			debugger;
 			if(resources.length && resources[0].name !== '') {	
 				$('#resourcestab').show();
 				new gform({
@@ -122,16 +122,16 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 					}
 				},'#resources .col-sm-9')
 				.on('input:endpoint', function(e){
-						let endpoint = $g.collections.get('endpoints').find(endpoint=>endpoint.id == e.field.value);
-						let help = (typeof endpoint !== 'undefined')?endpoint.config.url:"";
-						let resource = resources.find(resource=>resource.name = e.field.parent.get('name'));
-							
-						help+=(typeof resource !== 'undefined')?resource.path:"";
-							
-						if(e.field.help !== help ) {						
-							e.field.update({help:help}, true)
-							e.field.focus();
-						}
+					let endpoint = $g.collections.get('endpoints').find(endpoint=>endpoint.id == e.field.value);
+					let help = (typeof endpoint !== 'undefined')? endpoint.config.url : "";
+					let resource = resources.find(resource=>resource.name = e.field.parent.get('name'));
+						
+					help+=(typeof resource !== 'undefined')? resource.path : "";
+					
+					if(e.field.help !== help ) {						
+						e.field.update({help:help}, true)
+						e.field.focus();
+					}
 				})
 			}
 	
