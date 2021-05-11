@@ -33,7 +33,7 @@ use Storage;
 class WorkflowSubmissionActionController extends Controller {
     public function __construct() {
         // 01/19/2020, AKT - Authentication checks were moved to the public methods
-        // Reason: Internal function call from Kernel could not be able to have an authenticated user
+        // Reason: Internal function call from Kernel cannot have an authenticated user
 //        $this->customAuth = new CustomAuth();
 //        $this->resourceService = new ResourceService($this->customAuth);
     }
@@ -77,9 +77,6 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_create(WorkflowInstance $workflow_instance, Request $request, $unique_id, $start_state, $action) {
-        //04/23/2021, AKT - Added the code below to check if the user is authenticated
-        $this->customAuth = new CustomAuth();
-        $this->resourceService = new ResourceService($this->customAuth);
 
         if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
             // Don't check permissions!
@@ -172,8 +169,7 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['owner']['is'] = [];
 
         // 01/05/2021, AKT - Added $is_internal the actor of the workflow
-        if (isset($previous_state->logic) || $is_internal
-        ) {
+        if (isset($previous_state->logic) || $is_internal) {
             $state_data['actor'] = null;
             $state_data['owner']['is']['actor'] = false;
         } else {
@@ -356,9 +352,6 @@ class WorkflowSubmissionActionController extends Controller {
 
     public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
         $this->authorize('take_action',$workflow_submission);
-        //04/23/2021, AKT - Added the code below to check if the user is authenticated
-        $this->customAuth = new CustomAuth();
-        $this->resourceService = new ResourceService($this->customAuth);
 
         $new_request = new Request();
         $new_request->setMethod('PUT');
@@ -663,7 +656,6 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
         $submissions =  WorkflowSubmission::where('status','open')->get();
         //Get all the workflow instances
         $all_instances = WorkflowInstance::get();
-
         foreach ($submissions as $submission){
             //Find the instance of the submission
             $instance = $all_instances->where('id',$submission->workflow_instance_id)->first();
@@ -696,7 +688,13 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
                                     "comment" => "Automated ".$action->label." action was taken due to inactivity for ".$action->assignment->delay." days"
                                 ]);
                                 $submission->assignment_type = $action->assignment->type; // Setting the assignment type of the action
-                                $this->action($submission, $action_request, true); // runs the action method
+                                try {
+                                    $GLOBALS['action_stack_depth']=0; //To reset the global variable before every task. This is necessary for internal automated operations
+                                    $this->action($submission, $action_request, true); // runs the action method
+                                    }
+                                    catch(\Exception $e){
+                                        //Do nothing
+                                    }
                             }
                         }
                     }
