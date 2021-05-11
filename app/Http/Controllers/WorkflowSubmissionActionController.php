@@ -81,6 +81,11 @@ class WorkflowSubmissionActionController extends Controller {
         $this->customAuth = new CustomAuth();
         $this->resourceService = new ResourceService($this->customAuth);
 
+        if ($request->has('enforce_permissions') && $request->enforce_permissions === 'false') {
+            // Don't check permissions!
+        } else {
+            $this->authorize('create_submission',$workflow_instance);
+        }
         $new_request = new Request();
         $new_request->setMethod('POST');
         $new_request->request->add([
@@ -350,6 +355,7 @@ class WorkflowSubmissionActionController extends Controller {
     }
 
     public function api_action(WorkflowSubmission $workflow_submission, Request $request, $unique_id, $action) {
+        $this->authorize('take_action',$workflow_submission);
         //04/23/2021, AKT - Added the code below to check if the user is authenticated
         $this->customAuth = new CustomAuth();
         $this->resourceService = new ResourceService($this->customAuth);

@@ -197,7 +197,7 @@ class AppController extends Controller
             ->with('user')->where('app_id','=',$app->id)->where('stable','=',1)
             ->orderBy('created_at', 'desc')->get();
         foreach($app_versions as $i => $app_version) {
-            $last_name = ($app_version->toArray()['user']['last_name'] != '')?'('.$app_version->toArray()['user']['last_name'].')':'';
+            $last_name = !is_null($app_version->toArray()['user'])?'('.$app_version->toArray()['user']['last_name'].')':'';
             $app_versions[$i]->label = $app_version->updated_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
         }
         return $app_versions;
