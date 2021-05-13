@@ -53,7 +53,7 @@ modal = (options, data) => {
       hClass = 'bg-'+options.status;
       break;
   }
-  return new gform({
+  let mm =  new gform({
     modal:{ header_class: hClass},
     ...options,
     data:{...data,...options.data},
@@ -65,13 +65,15 @@ modal = (options, data) => {
         format:{},
         value:$g.render(options.content,_.extend({}, options.partials, data))
       },
-      ...options.fields],
+      ...(options.fields||[])],
     actions:(!!options.footer)?[]:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}],
 
   }).modal().on('cancel', e => {
     e.form.dispatch('close');
     e.form.destroy();
   });
+  mm.ref = $(mm.el);
+  return mm;
 }
 
 function processFilter(options){
@@ -1022,3 +1024,51 @@ Object.defineProperty(debug,'state',{
   },
   configurable: false,
 });
+
+
+
+const fieldLibrary = (function(){
+  let collection = {
+      group: {label: 'Group', name:'group_id',strict:true, type: 'smallcombo', required: true, value: parseInt(resource_id), edit: [{type: 'not_matches',name: "_method", value: "edit"},{type: 'test', test: () => (resource_id == '') }],options:'groups',format: {title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}", value:(group => group.id)}},
+      icon: {label: 'Icon', name:'icon', type:'smallcombo', template: '<i class="{{attributes.icon}}"></i>', 
+          format:{
+            title: 'Icon <span class="pull-right"><i class="{{value}}"></i></span>',
+            label: i => i.name.replace(/(\r\n|\s)/gm, ""), 
+            value: "{{value}}",template:'<i class="fa fa-{{value}}"></i>',
+            display: '<span style = "text-transform:capitalize;"><i class="{{value}}"></i> {{{label}}}'
+          }, 
+          options: 'icons',
+          required: false
+        },
+      name:[
+        {label: 'Name', name:'name', required: true},
+        {label: 'Slug', name:'slug', required: true},
+      ],
+      _limits: [
+        {label: 'List in page menu', name:'unlisted',value:0, type: 'checkbox',options:[{label:'No',value:true},{label:'Yes',value:false}]},				
+        {label: 'Limit Device', name: 'device',type:"select", format:{value:"{{index}}"},value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+        {label: 'Public', name:'public', type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}], edit:  [{type:'matches',name:'limit', value: false}]},    
+        {label: 'Limit Composite Groups', name: 'limit',value: function(e){
+            if(typeof e.form !== 'undefined' && !e.form.isActive){
+              return (typeof e.form.options.data.groups !== 'undefined' && _.compact(e.form.options.data.groups).length>0);
+            }else{
+              return e.initial.value;
+            }
+          }, type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}],template:"{{#attributes.groups.length}}Yes{{/attributes.groups.length}}{{^attributes.groups.length}}No{{/attributes.groups.length}}", show:  [{type:'matches',name:'public', value: false},{type:'test',test: () => (composites.length >0)} ]
+        },
+		    {label: 'Composites',get: ()=> (this.visible)?gform.types[this.type].get.call(this):null,legend: 'Composites',parse:true,array: {min:1,max:composites.length,duplicate:{copy:true}}, name: 'groups', type: 'smallcombo', options: composites,format:{label:"{{name}}",value:function(i){return i.id}},'show': [{type:"matches",name: 'limit',value: true}],validate:[{type:'unique',message:"Duplicate group"}]},
+        {name: 'order', type:'hidden'}
+      ]
+
+    }
+    Object.defineProperty(collection,'content',{
+      get: ()=>{
+        const {name, icon, _limits} = collection;
+        return [...name, icon, ..._limits];
+      },
+      configurable: false,
+    });
+    
+return collection;
+    
+  }())

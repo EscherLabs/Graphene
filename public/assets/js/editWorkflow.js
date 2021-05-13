@@ -425,11 +425,11 @@ function load(workflow_version) {
     var temp = new gform(myform);
     gform.collections.update('form_users', temp.filter({type:"user"},20));
     gform.collections.update('form_groups', temp.filter({type:"group"},20));
-    gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
+    gform.collections.update('resources', _.pluck(_.map(resource_grid.models,function(model){return model.attributes;}), 'name'))
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
     }));
-    bt.fixStyle()
+    resource_grid.fixStyle()
   })
   // wf_form = "{}";
   // if(typeof workflow_version.form !== 'undefined'){
@@ -457,24 +457,22 @@ function load(workflow_version) {
 		entries: [25, 50, 100],
 		count: 25,
 		autoSize: -20,
-		container: '.resources',
-    edit:true,delete:true,add:true
+		el: '.resources',
 	}
-
 
   tableConfig.schema = [
     {label: 'Name',name: 'name'},
     {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}, {label: 'Include as Script', value: 'script'}, {label: 'Include as CSS', value: 'css'}]},
     {label: 'Path',name:'path'},
-    {label: 'Fetch', type: 'checkbox',name:'fetch'},
-    {label: 'Cache', type: 'checkbox',name:'cache'}
+    {label: 'Fetch', type: 'checkbox',name:'fetch',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]},
+    {label: 'Cache', type: 'checkbox',name:'cache',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]}
   ];
   tableConfig.data = attributes.code.resources;
-  if(typeof bt !== 'undefined'){
-    bt.destroy();
-  }
-  bt = new berryTable(tableConfig)
 
+  if(typeof resource_grid !== 'undefined'){
+    resource_grid.destroy();
+  }
+  resource_grid = new $g.grid(tableConfig)
 
 
 
@@ -1135,7 +1133,7 @@ $('#save').on('click',function() {
     template_errors = templatePage.errors();
     data.code.templates = templatePage.toJSON();
     data.code.methods = methodPage.toJSON();
-    data.code.resources = _.map(bt.models,'attributes');
+    data.code.resources = resource_grid.toJSON();//_.map(bt.models,'attributes');
     $.ajax({
       url: root+attributes.workflow_id+'/code',
       method: 'put',
@@ -1173,48 +1171,60 @@ $('#save').on('click',function() {
   }
 })
 
-$('#import').on('click', function() {
-    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Workflow',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
-    var descriptor = JSON.parse(this.toJSON()['descriptor']);
-    descriptor.code.form = JSON.stringify(descriptor.code.form);
 
-      $.ajax({
-        url: root+attributes.workflow_id+'/code',
-        contentType: 'application/json',
-        data: JSON.stringify($.extend({force: true, updated_at:''}, descriptor )),
-        method: 'PUT',
-        success: function(){
-          Berries.update.trigger('close');
-          window.location.reload();
-        },
-        error: function(e){
-          toastr.error(e.statusText, 'ERROR');
-        }
-      })
-  });
+$('#import').on('click', function() {
+  new gform({
+    name: 'update', 
+    legend: '<i class="fa fa-cube"></i> Update Workflow',
+    fields: [	
+      {label: 'Descriptor', type: 'textarea'}
+    ]
+  }).on('save', e => {
+// debugger;
+  var descriptor = JSON.parse(e.form.get()['descriptor']);
+  descriptor.code.form = JSON.stringify(descriptor.code.form);
+    $.ajax({
+      url: root+attributes.workflow_id+'/code',
+      method: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify({force: true, updated_at:'', ...descriptor}),
+      success: () => {
+        e.form.trigger('close');
+        window.location.reload()
+      },
+      error: e =>{
+        toastr.error(e.statusText, 'ERROR');
+      }
+
+    })
+}).modal();
 });
 
+
 $('#publish').on('click', function() {
-    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Workflow',fields: [	
-        {label: 'Summary', required: true},
-        {label: 'Description', type: 'textarea'}
-      ]}).on('save', function() {
-        if(Berries.publish.validate()){
-          $.ajax({
-            url: root + attributes.workflow_id + '/publish',
-            contentType: 'application/json',
-            data: JSON.stringify(this.toJSON()),
-            method: 'PUT',
-            success: function() {
-              Berries.publish.trigger('close');
-              toastr.success('', 'Successfully Published')
-            },
-            error: function(e){
-              toastr.error(e.responseJSON.message, 'ERROR');
-            }
-          })
-        }
-  });
+  new gform({
+    name: 'publish',
+    legend: '<i class="fa fa-cube"></i> Publish Workflow',
+    fields: [	
+      {label: 'Summary', required: true},
+      {label: 'Description', type: 'textarea'}
+    ]}).on('save', e => {
+      if(e.form.validate()){
+        $.ajax({
+          url: root + attributes.workflow_id + '/publish',
+          contentType: 'application/json',
+          data: JSON.stringify(e.form.get()),
+          method: 'PUT',
+          success: () => {
+            e.form.trigger('close');
+            toastr.success('', 'Successfully Published')
+          },
+          error: e =>{
+            toastr.error(e.responseJSON.message, 'ERROR');
+          }
+        })
+      }
+  }).modal();
 });
 
 // $.get('/api/workflowinstances?workflow_id=' + loaded.app_id, function(data) {
@@ -1522,35 +1532,41 @@ $('#versions').on('click', function() {
       if(!orig.stable) {
         data.unshift({id:orig.id,label:'Working Version'})
       }
-      Berry.btn.switch={
-        label: 'Switch',
-        icon:'reply',
-        id: 'berry-submit',
-        modifier: 'success pull-right',
-        click: function() {
-          if(this.options.autoDestroy) {
-            this.on('saved', this.destroy);
-          }
-          this.trigger('save');
-        }
-      }
 
-      $().berry({actions:['cancel','switch'],name:'modal',attributes:{workflow_version_id:loaded.id},legend:'Select Version',fields:[
-        {label: 'Version', name:'workflow_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
-      ]}).on('save', function() {
-        //switch version
+      new gform({
+        actions:[{type:'cancel'},{type:'save',label: 'Switch'}],
+        name:'modal',
+        data:{workflow_version_id:loaded.id},
+        legend:'Select Version',
+        fields:[
+          {
+            label: 'Version', 
+            name:'workflow_version_id', 
+            options:data,
+            type:'select',
+            format:{
+              label:"{{label}}",
+              value:version=>version.id
+            }
+          },
+      ]}).on('save', e => {
+        // switch version
+        e.form.trigger('close');
+
         $.ajax({
-          url: root+attributes.workflow_id+'/versions/'+this.toJSON().workflow_version_id,
+          url: root+attributes.workflow_id+'/versions/'+e.form.get('workflow_version_id'),
           method: 'get',
-          data: data,
-          success:function(data) {
-            data.workflow = loaded.workflow;
-            loaded = data;
+          success:function(version) {
+            version.workflow = loaded.workflow;
+            loaded = version;
             load(loaded.code);
-            Berries.modal.trigger('close');
           }
         })
       })
+      .on('cancel', e => {
+        e.form.trigger('close');
+      }).modal()
+
     }
   })
 })

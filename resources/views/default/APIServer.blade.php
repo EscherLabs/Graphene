@@ -124,10 +124,11 @@
     <script src='/assets/js/vendor/toastr.min.js'></script> 
     
   <!-- <script src='/assets/js/paged.js'></script> -->
-  <script src='/assets/js/fileManager.js'></script> 
 
   <script src='/assets/js/vendor/moment.js'></script>
     <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
+    <script src='/assets/js/fileManager.js'></script> 
+
     <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>
     <script src='/assets/js/lib.js'></script> 
     <script src='/assets/js/vendor/htmldiff.js'></script> 
@@ -140,9 +141,7 @@
     }
     </style>
     @yield('end_body_scripts_top')
-    <script src='/assets/js/vendor/berry.full.js'></script> 
-    <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
-    <!-- <script src='/assets/js/vendor/berrytables.full.js'></script>  -->
+
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
   </body>

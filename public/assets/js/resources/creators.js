@@ -5,19 +5,33 @@ var reset = function(){
   mymodal.ref.find('.modal-body').html('<center style="height:300px"><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>');
 }
 var selectGroup = function(e){
-  mymodal.ref.find('.modal-body').berry({
-    attributes:instanceData,
-      name:"modal", fields:[
-        {label: 'Group', name:'group_id', required: true, type:'select',satisfied:function(value){
-          return (this.toJSON() !== "")
-        },value:instanceData.group_id, choices: '/api/groups?limit=true', default:{"label":"Choose One","value":""}},
-      ],actions:false
-    })
-  // myForm = new gform({name:"modal", attributes: instanceData, fields:[
-  //   {label: 'Group', name:'group_id', required: true, type:'select',format:{label:"{{name}}",value:"id"},satisfied:function(value){
-  //     return (this.toJSON() !== "")
-  //   },value:instanceData.group_id, options: '/api/groups?limit=true', placeholder:{"name":"Choose One","id":""}}
-  // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+  // mymodal.ref.find('.modal-body').berry({
+  //   attributes:instanceData,
+  //     name:"modal", fields:[
+  //       {label: 'Group', name:'group_id', required: true, type:'select',satisfied:function(value){
+  //         return (this.toJSON() !== "")
+  //       },value:instanceData.group_id, choices: '/api/groups?limit=true', default:{"label":"Choose One","value":""}},
+  //     ],actions:false
+  //   })
+    // mymodal.ref.find('.modal-body').berry
+
+    new $g.form({
+      data:instanceData,
+      name:"modal", 
+      fields:[
+        {label: 'Group', name:'group_id', required: true, type:'select',
+        value:instanceData.group_id, 
+        options: [
+          {"name":"Choose One","value":null},
+          {type:'optgroup',options:'/api/groups?limit=true'}
+        ],
+        format:{label: "{{name}}",value: group=>group.id}},
+      ],
+      actions:[]
+    },mymodal.el.querySelector('.modal-body'))
+
+
+
 }
 var selectComposite = function(){
   $.ajax({
@@ -25,9 +39,31 @@ var selectComposite = function(){
     success: function(data) {
       if(data.length){
         composites = data;
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
+
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
+        //     {label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
+        //         matches: {
+        //           name: 'limit',
+        //           value: true
+        //         }
+        //       },fields:[
+        //         {label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
+        //           {label: false, name: 'groups', type: 'select', options: composites}
+        //         ]}
+        //       ],
+        //       template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
+        //     }
+        //   ],actions:false
+        // })
+
+
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
             {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
             {label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
                 matches: {
@@ -41,8 +77,11 @@ var selectComposite = function(){
               ],
               template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
             }
-          ],actions:false
-        })
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
+
+
       }else{
         mymodal.ref.find('.modal-body').html('There are no Composites for this group. This step is complete.');
 
@@ -152,15 +191,26 @@ var createEngine = function(e){
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
 
         options.url = '/api/apps';
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {label: 'Name', name:'name', required: true},
+        //     {label: 'Description', name:'description', required: false, type:'textarea'},
+        //     {label: 'Tags', name:'tags', required: false},
+        //     {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
+        //       ],actions:false
+        // })
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
             {label: 'Name', name:'name', required: true},
             {label: 'Description', name:'description', required: false, type:'textarea'},
             {label: 'Tags', name:'tags', required: false},
-            {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
-              ],actions:false
-        })
+            {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'}
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
         
       },    
       onWorkflowCreate: function(){
