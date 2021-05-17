@@ -32,12 +32,15 @@ class UserController extends Controller
         return $users;
     }
 
-    public function search($search_string='') {
+    public function search(Request $request, $search_string='') {
+        if ($search_string === '') {
+            return [];
+        }
         $search_elements_parsed = preg_split('/[\s,]+/',strtolower($search_string));
         $search = []; $users = [];
         if (count($search_elements_parsed) === 1 && $search_elements_parsed[0]!='') {
             $search[0] = $search_elements_parsed[0];
-            $users = User::select('id','unique_id','first_name','last_name','email','params')
+            $query = User::select('id','unique_id','first_name','last_name','email','params')
                 ->where(function ($query) use ($search) {
                     $query->where('unique_id','=',$search[0])
                         ->orWhere('first_name','like',$search[0].'%')
@@ -45,12 +48,11 @@ class UserController extends Controller
                         ->orWhere('email','like',$search[0].'%');
                 })->whereHas('site_members', function($query) {
                     $query->where('site_id','=',config('app.site')->id);
-                })->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')
-                    ->limit(25)->get()->toArray();
+                })->orderBy('first_name', 'asc')->orderBy('last_name', 'asc');
         } else if (count($search_elements_parsed) > 1) {
             $search[0] = $search_elements_parsed[0];
             $search[1] = $search_elements_parsed[count($search_elements_parsed)-1];
-            $users = User::select('id','unique_id','first_name','last_name','email','params')
+            $query = User::select('id','unique_id','first_name','last_name','email','params')
                 ->where(function ($query) use ($search) {
                     $query->where(function ($query) use ($search) {
                         $query->where('first_name','like',$search[0].'%')
@@ -61,9 +63,19 @@ class UserController extends Controller
                     });
                 })->whereHas('site_members', function($query) {
                     $query->where('site_id','=',config('app.site')->id);
-                })->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')
-                    ->limit(25)->get()->toArray();
+                })->orderBy('first_name', 'asc')->orderBy('last_name', 'asc');
         }
+        if ($request->has('groups')) {
+            if (is_array($request->groups)) {
+                $groups = $request->groups;
+            } else if (is_string($request->groups)) {
+                $groups = explode(',',$request->groups);
+            }
+            $query->whereHas('group_members', function($query) use ($groups) {
+                $query->whereIn('group_id',$groups);
+            });
+        }
+        $users = $query->limit(25)->get()->toArray();
         foreach($users as $index => $user) {
             $users[$index] = array_intersect_key($user, array_flip(['id','unique_id','first_name','last_name','email','params']));
         }

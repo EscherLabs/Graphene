@@ -122,7 +122,7 @@ class AppInstanceController extends Controller
         }
     }
 
-    public function save_user_options(AppInstance $app_instance, Request $request)
+    public function save_user_options(Request $request, AppInstance $app_instance)
     {
         // if (Auth::check()) {
         //     $this->authorize('modify_user_options', $app_instance);
@@ -133,11 +133,11 @@ class AppInstanceController extends Controller
         //     return $user_option;
         // }
     }
-    public function run($group, $slug = null, Request $request) {
-        return $this->render("main", $group, $slug, $request);
+    public function run(Request $request, $group, $slug = null) {
+        return $this->render($request, "main", $group, $slug);
     }
 
-    public function render($template = "main", $group, $slug, Request $request) {
+    public function render(Request $request, $template = "main", $group, $slug) {
         if(!is_numeric($group)) {
             $groupObj = Group::with('composites')->where('slug','=',$group)->first();
 			$group = $groupObj->id;
@@ -207,7 +207,7 @@ class AppInstanceController extends Controller
         abort(404,'App not found');
     }
 
-    public function fetch($ai_id, Request $request) {
+    public function fetch(Request $request, $ai_id) {
     //    session_write_close();
        if (Auth::check()) { /* User is Authenticated */
             $current_user = Auth::user();
@@ -246,7 +246,7 @@ class AppInstanceController extends Controller
             if($myApp->app->code && isset($myApp->app->code->resources) ){
                 foreach($myApp->app->code->resources as $source){
                     if ($source->fetch === 'true' || $source->fetch === true) {
-                        $response = $this->get_data_int($myApp, $source->name, $request);
+                        $response = $this->get_data_int($request, $myApp, $source->name);
                         $data[$source->name] = $response['content'];
                     }
                 }
@@ -366,7 +366,7 @@ class AppInstanceController extends Controller
         return $values;
     }
 
-    public function get_data_int(AppInstance $app_instance, $endpoint_name, Request $request) {
+    public function get_data_int(Request $request, AppInstance $app_instance, $endpoint_name) {
         // session_write_close(); // Don't keep waiting
         if(!isset($app_instance->app->code)){
             $app_instance->findVersion();
@@ -452,8 +452,8 @@ class AppInstanceController extends Controller
         return $response;
     }
 
-    public function get_data(AppInstance $app_instance, $endpoint_name, Request $request) {
-        $data = self::get_data_int($app_instance, $endpoint_name, $request);
+    public function get_data(Request $request, AppInstance $app_instance, $endpoint_name) {
+        $data = self::get_data_int($request, $app_instance, $endpoint_name);
         if (is_array($data['content']) || is_object($data['content'])) {
             $content_type = 'application/json';
             $data['content'] = json_encode($data['content']);
