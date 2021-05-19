@@ -30,8 +30,8 @@ class Kernel extends ConsoleKernel
     {
         //Calls workflow_automated_inactivity function for inactivity based actions
         $schedule->call('App\Http\Controllers\WorkflowSubmissionActionController@workflow_automated_inactivity')
-            ->name('scheduled_inactivity_action')
-            ->dailyAt(config('app.scheduled_inactivity'))
+            ->name('workflow_scheduled_inactivity_action')
+            ->dailyAt(config('app.workflow_inactivity_time'))
             ->timezone('America/New_York')
             ->onOneServer();
 //

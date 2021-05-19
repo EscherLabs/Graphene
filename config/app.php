@@ -19,7 +19,7 @@ return [
     'workflow_max_loop' => env('WORKFLOW_MAX_LOOP',10),
     'node_path' => env('NODE_PATH','node'),
     'cache_bust_id' => env('CACHE_BUST_ID',1),
-    'scheduled_inactivity'=>env('AUTOMATED_ACTION','2:30'),
+    'workflow_inactivity_time'=>env('WORKFLOW_INACTIVITY_TIME','2:30'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

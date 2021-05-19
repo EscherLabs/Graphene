@@ -34,8 +34,6 @@ class WorkflowSubmissionActionController extends Controller {
     public function __construct() {
         // 01/19/2020, AKT - Authentication checks were moved to the public methods
         // Reason: Internal function call from Kernel cannot have an authenticated user
-//        $this->customAuth = new CustomAuth();
-//        $this->resourceService = new ResourceService($this->customAuth);
     }
 
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
@@ -122,6 +120,8 @@ class WorkflowSubmissionActionController extends Controller {
     public function action(WorkflowSubmission $workflow_submission, Request $request,$is_internal=false){
         //01/20/2021, AKT - Added the code below to check if the actions is taken internally
         //If not, then check for authentication
+        // This will be called multiple times when calling in logic blocks
+        // Please fix
         if(!$is_internal){
             $this->customAuth = new CustomAuth();
             $this->resourceService = new ResourceService($this->customAuth);
@@ -195,9 +195,6 @@ class WorkflowSubmissionActionController extends Controller {
         if (!isset($state->actions)) { $state->actions = []; }
         //01/20/2021, AKT - Replaced array_map with a foreach to avoid returned null values when nothing matches
         // This change was necessary in order to avoid internal or not actionable actions in the emails
-//        $state_data['actions'] = array_map(function ($ar) {
-//            return Arr::only((array)$ar,['label','name','type']);
-//        }, $state->actions);
         $state_data['actions']=[];
         foreach($state->actions as $ar){
             if(!isset($ar->assignment) || // See if an assignment is made for the action. If not, then add it to the list of actions
@@ -664,6 +661,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
             if(isset($instance)){
                 //Calling findVersion function to get the related version information/ data
                 $instance->findVersion();
+                config(["app.site"=>$instance->group->site]);
 
                 //Getting the current state of the workflow
                 $state = Arr::first($instance->workflow->code->flow,function($value,$key) use ($submission){
@@ -680,7 +678,6 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
                                 $submission->updated_at->diffInDays(Carbon::now()) >= $action->assignment->delay && // Checks if the days past is equal to or bigger than the delay defined in the workflow
                                 isset($action->name) && !is_null($action->name)// Checks if the action's name is set
                             ) {
-
                                 $action_request = new Request();// Creating a new request
                                 $action_request->setMethod('PUT'); //Setting the request type to PUT
                                 $action_request->request->add([// Setting the request parameters
