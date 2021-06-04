@@ -75,6 +75,25 @@ class UserController extends Controller
                 $query->whereIn('group_id',$groups);
             });
         }
+        if ($request->has('exclude_groups')) {
+            if (is_array($request->exclude_groups)) {
+                $exclude_groups = $request->exclude_groups;
+            } else if (is_string($request->exclude_groups)) {
+                $exclude_groups = explode(',',$request->exclude_groups);
+            }
+            $query->whereHas('group_members', function($query) use ($groups) {
+                $query->whereNotIn('group_id',$exclude_groups);
+            });
+        }
+        if ($request->has('exclude_users')) {
+            if (is_array($request->exclude_users)) {
+                $exclude_users = $request->exclude_users;
+            } else if (is_string($request->exclude_users)) {
+                $exclude_users = explode(',',$request->exclude_users);
+            }
+            $query->whereNotIn('unique_id',$exclude_users);
+        }
+
         $users = $query->limit(25)->get()->toArray();
         foreach($users as $index => $user) {
             $users[$index] = array_intersect_key($user, array_flip(['id','unique_id','first_name','last_name','email','params']));
