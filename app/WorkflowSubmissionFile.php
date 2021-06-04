@@ -17,13 +17,13 @@ class WorkflowSubmissionFile extends Model
     public $path = '';
 
     public function workflowSubmission() {
-      return $this->belongsTo(WorkflowSubmission::class);
+        return $this->belongsTo(WorkflowSubmission::class);
     }
     public function user() {
-      return $this->belongsTo(BulkUser::class,'user_id_created');
+        return $this->belongsTo(BulkUser::class,'user_id_created');
     }
     public function deleted_by() {
-      return $this->belongsTo(BulkUser::class,'user_id_deleted');
+        return $this->belongsTo(BulkUser::class,'user_id_deleted');
     }
     public function getPathAttribute() {
         return url('/api/workflowsubmissions/'.$this->workflow_submission_id.'/files/'.$this->id);

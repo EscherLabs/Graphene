@@ -72,6 +72,12 @@ class UserDashboardController extends Controller
             ->header('Cache-Control','max-age='.$max_age);
     }
 
+    // This should probably be updated to do something a bit more robust
+    // but this is sufficient for the time being.
+    public function health_check(Request $request) {
+        return response('OK',200)->header('Content-Type', 'text/plain');
+    }
+
     public function heartbeat(Request $request) {
         return ['status'=>true];
     }
