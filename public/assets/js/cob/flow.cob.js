@@ -1057,7 +1057,7 @@ Cobler.types.Workflows = function(container){
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
-  }
+  }}}
   
   Cobler.types.WorkflowStatus = function(container){
       function get() {
