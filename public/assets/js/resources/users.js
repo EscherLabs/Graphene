@@ -41,10 +41,10 @@
 				strict:false,
 				fields:[
 				
-					{name:'unique_id',label:'Unique ID',enabled:false},
-					{name:'first_name',label:'First Name',enabled:false},
-					{name:'last_name',label:'Last Name',enabled:false},
-					{name:'email',label:'Email', enabled:false},
+					{name:'unique_id',label:'Unique ID',edit:false},
+					{name:'first_name',label:'First Name',edit:false},
+					{name:'last_name',label:'Last Name',edit:false},
+					{name:'email',label:'Email', edit:false},
 					{name:'id',label:false,inline:true, type:'output',format:{value:'<div><a class="btn btn-warning pull-right" href="/api/users/{{value}}/impersonate/">Impersonate this user</a></div>'}},
 					{name:'site_members',label:false, type:'fieldset',array: {duplicate: false},fields:[
 						{name:'site_admin',label:'Site Admin',type:'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}]},
