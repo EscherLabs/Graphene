@@ -1,3 +1,4 @@
+gform.types['contenteditable']=gform.types['contentEditable']
 Cobler.types.Content = function(container){
 	function render() {
 		return templates['widgets_content'].render(get(), templates);
@@ -26,7 +27,7 @@ Cobler.types.Content = function(container){
 		fields: fields,
 		render: render,
 		toJSON: get,
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		get: get,
 		set: set,
 		initialize: function(el){

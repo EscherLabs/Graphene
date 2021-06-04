@@ -7,7 +7,7 @@ if(resource_id !== ''){
 getData([url,'/api/groups','/assets/data/icons.json'], (links, groups, icons) => {
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
-			fieldLibrary['group'],
+			fieldLibrary.group,
 			{label: 'Title', name:'title', required: true},
 			{label: 'Link', name:'link', required: true, template:'<a href="{{value}}">{{value}}</a>'},
 			{label: 'Image', name:'image', required: false,template:'<img src="{{value}}" style="height:18px;">',showColumn: false},

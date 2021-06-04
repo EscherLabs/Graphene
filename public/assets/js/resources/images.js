@@ -6,7 +6,7 @@ getData([url,'/api/groups'], (images, groups) => {
 	images = images.map(image => {return {...image, group_id:image.group_id+''}})
 
 	new GrapheneDataGrid({...tableConfig, schema: [
-		fieldLibrary['group'],
+		fieldLibrary.group,
 		{label: 'Image', name:'filename',show:false, parse:false, required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}"/></div>'},
 		{label: 'Name', name:'name', required: true},
 		{label: 'Public', name:'public', type:'checkbox'},
@@ -28,7 +28,7 @@ getData([url,'/api/groups'], (images, groups) => {
 		e.stopPropagation();
 
 		new gform({name:'newimage',actions:[{type:'cancel'}],legend: 'Add Image(s)', fields:[
-			fieldLibrary['group'],
+			fieldLibrary.group,
 			{label: false, name: 'image_filename', type: 'upload', show: [{type: "not_matches", name: "group_id", value: ""}], path: '/api/images?group_id='+resource_id}
 		]})
 		.on('change:group_id', e => e.form.find('image_filename').update({path: '/api/images?group_id='+e.field.get() }, true))

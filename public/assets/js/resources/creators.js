@@ -14,6 +14,7 @@ var selectGroup = function(e){
   //     ],actions:false
   //   })
     // mymodal.ref.find('.modal-body').berry
+   getData(['/api/groups?limit=true'], (groups) => {
 
     new $g.form({
       data:instanceData,
@@ -23,22 +24,26 @@ var selectGroup = function(e){
         value:instanceData.group_id, 
         options: [
           {"name":"Choose One","value":null},
-          {type:'optgroup',options:'/api/groups?limit=true'}
+          {type:'optgroup',options:'groups'}
         ],
         format:{label: "{{name}}",value: group=>group.id}},
       ],
       actions:[]
     },mymodal.el.querySelector('.modal-body'))
+  })
 
 
 
 }
+
 var selectComposite = function(){
-  $.ajax({
-    url: '/api/groups/'+instanceData.group_id+'/composites',
-    success: function(data) {
-      if(data.length){
-        composites = data;
+  getData(['/api/groups/'+instanceData.group_id+'/composites'], (composites) => {
+
+  // $.ajax({
+  //   url: '/api/groups/'+instanceData.group_id+'/composites',
+  //   success: function(data) {
+      if(composites.length){
+        // composites = data;
 
         // mymodal.ref.find('.modal-body').berry({
         //   attributes:instanceData,
@@ -59,25 +64,11 @@ var selectComposite = function(){
         //   ],actions:false
         // })
 
-
+        // $g.forms.modal.destroy();
         new $g.form({
           data:instanceData,
           name:"modal", 
-          fields:[
-            {label: 'Limit Composite Groups', name: 'limit', type: 'checkbox', show:  {matches:{name:'public', value: 0},test: function(form){return composites.length >0;}} },
-            {label: 'Composites', legend: 'Composites', name:'composites', type:'fieldset', 'show': {
-                matches: {
-                  name: 'limit',
-                  value: true
-                }
-              },fields:[
-                {label: false, multiple:{duplicate:true}, type:'fieldset', toArray:true, name: 'composite', fields:[
-                  {label: false, name: 'groups', type: 'select', options: composites}
-                ]}
-              ],
-              template:'{{#attributes.composites.composite}}{{groups}} {{/attributes.composites.composite}}'
-            }
-          ],
+          fields:[...fieldLibrary._display,...fieldLibrary.composites],
           actions:[]
         },mymodal.el.querySelector('.modal-body'))
 
@@ -86,7 +77,7 @@ var selectComposite = function(){
         mymodal.ref.find('.modal-body').html('There are no Composites for this group. This step is complete.');
 
       }
-    }
+   // }
   })
 }
 instanceData = {};
@@ -221,15 +212,27 @@ var createEngine = function(e){
         //     {label: 'Tags', name:'tags', required: false},
         //     {label: 'Lead Developer', name:'user_id', type:'select', options: '/api/apps/developers', required: false, format:{label:'{{first_name}} {{last_name}}',value:'{{id}}'}},
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);        options.url = '/api/workflows';
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {label: 'Name', name:'name', required: true},
+        //     {label: 'Description', name:'description', required: false, type:'textarea'},
+        //     {label: 'Tags', name:'tags', required: false},
+        //     {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
+        //       ],actions:false
+        // })
+
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
             {label: 'Name', name:'name', required: true},
             {label: 'Description', name:'description', required: false, type:'textarea'},
             {label: 'Tags', name:'tags', required: false},
-            {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'},
-              ],actions:false
-        })
+            {label: 'Lead Developer', name:'user_id', type:'select', choices: '/api/apps/developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false, value_key:'id',label_key:'email'}
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
         
       },  
       onGroupCreate: function(){
@@ -241,28 +244,41 @@ var createEngine = function(e){
         //     {label: 'Slug', name:'slug', required: true}
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
 
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {label: 'Name', name:'name', required: true},        
+        //     {label: 'Slug', name:'slug', required: true}
+        //   ],actions:false
+        // })
+
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
             {label: 'Name', name:'name', required: true},        
             {label: 'Slug', name:'slug', required: true}
-          ],actions:false
-        })
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
+
+
       },
       onUserCreate: function(){
         options.url = '/api/users';
         options.complete = "Successfully Created a user!";
 
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
-            {name:'first_name',label:"First Name"},
-            {name:'last_name',label:"Last Name"},
-            {name:'email',label:"Email",required:true,type:'email'},
-            {name:'password',label:"Password",type:"password"},
-            {name:'unique_id',label:"Unique ID",required:true}
-          ],actions:false
-        })
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {name:'first_name',label:"First Name"},
+        //     {name:'last_name',label:"Last Name"},
+        //     {name:'email',label:"Email",required:true,type:'email'},
+        //     {name:'password',label:"Password",type:"password"},
+        //     {name:'unique_id',label:"Unique ID",required:true}
+        //   ],actions:false
+        // })
+
         // myForm = new gform({name:"modal", attributes: instanceData, fields:[
         //   {name:'first_name',label:"First Name"},
         //   {name:'last_name',label:"Last Name"},
@@ -271,23 +287,36 @@ var createEngine = function(e){
         //   {name:'unique_id',label:"Unique ID",required:true}
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
 
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
+            {name:'first_name',label:"First Name"},
+            {name:'last_name',label:"Last Name"},
+            {name:'email',label:"Email",required:true,type:'email'},
+            {name:'password',label:"Password",type:"password"},
+            {name:'unique_id',label:"Unique ID",required:true}
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
+
 
       },
       onPage: function(){
         options.url = '/api/pages';
         options.complete = "Successfully Created a Page!<br><br> Here are some next steps you may want to take:"
 
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
-            {label: 'Name', name:'name', required: true},
-            {label: 'Slug', name:'slug', required: true},
-            {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-            {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },				
-            {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
-            {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
-          ],actions:false
-        })
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {label: 'Name', name:'name', required: true},
+        //     {label: 'Slug', name:'slug', required: true},
+        //     {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+        //     {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },				
+        //     {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+        //     {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
+        //   ],actions:false
+        // })
         // myForm = new gform({name:"modal", attributes: instanceData, fields:[
         //   {label: 'Name', name:'name', required: true},
         //   {label: 'Slug', name:'slug', required: true},
@@ -297,65 +326,97 @@ var createEngine = function(e){
         //   {label: 'Public', name:'public', type: 'checkbox', options:[0,1], enabled:  {matches:{name:'limit', value: false}}}
 
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
-
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[...fieldLibrary.content
+            // {label: 'Name', name:'name', required: true},
+            // {label: 'Slug', name:'slug', required: true},
+            // {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+            // {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },				
+            // {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+            // {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
       },   
       onImage: function(){
         options.url = '/api/images';
         options.complete = "Successfully Created an Image!"
 
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-          name:"modal", fields:[
-            {type: 'upload', label: false, path: '/api/images?group_id='+instanceData.group_id, name: 'image_filename'}
-          ],actions:false
-        })
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //   name:"modal", fields:[
+        //     {type: 'upload', label: false, path: '/api/images?group_id='+instanceData.group_id, name: 'image_filename'}
+        //   ],actions:false
+        // })
         // myForm = new gform({name:"modal", attributes: instanceData, fields:[
         //   {type: 'upload', label: false, path: '/api/images?group_id='+instanceData.group_id, name: 'image_filename'}
         // ], actions: false},mymodal.ref.find('.modal-body')[0]);
-
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
+            {type: 'upload', label: false, path: '/api/images?group_id='+instanceData.group_id, name: 'image_filename'}
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
       },      
       onEndpoint: function(){
         options.url = '/api/endpoints';
         options.complete = "Successfully Created an Endpoint!"
 
-        mymodal.ref.find('.modal-body').berry({
-          flatten:false,
-          attributes:instanceData,
-          name:"modal", fields:[
+    //     mymodal.ref.find('.modal-body').berry({
+    //       flatten:false,
+    //       attributes:instanceData,
+    //       name:"modal", fields:[
+    //         {label: 'Name', name:'name', required: true},
+    //         {label: 'Auth Type', name:'type', type: 'select', choices:[
+    //           {label:'HTTP No Auth', value:'http_no_auth'}, 
+    //           {label:'HTTP Basic Auth', value:'http_basic_auth'}, 
+    //         ], required: true},
+    //         {label: 'Configuration', name:'config', showColumn:false, fields:[
+    //           {label:'URL', required: false,parsable:'show', validate: {is_https:true}, show:{matches:{name:'type',value:'http_basic_auth'}}},
+    //           {label:'URL', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
+    //           {label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+    //           {label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
+    //           {label:'Content Type', 'name':'content_type', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show',type:"select",options:[
+    //             {label:"Form Data (application/x-www-form-urlencoded)",value:'application/x-www-form-urlencoded'},
+    //             {label:"JSON (application/json)",value:'application/json'},
+    //             {label:"XML (application/xml)",value:'application/xml'},
+    //             {label:"Plain Text (text/plain)",value:'text/plain'},
+    //         ],'help':'Please specify the Content Type / Data Encoding your endpoint is expecting for POST / PUT / DELETE actions.  '+
+    //         '<div><i>Note this only applies to data which is <b>sent to</b> the endpoint, not data which is received from the endpoint.</i></div>'},  
+    // ]}
+    //       ],actions:false
+    //     })
+
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
             {label: 'Name', name:'name', required: true},
-            {label: 'Auth Type', name:'type', type: 'select', choices:[
+            {label: 'Auth Type', name:'type', type: 'select', options:[
               {label:'HTTP No Auth', value:'http_no_auth'}, 
-              {label:'HTTP Basic Auth', value:'http_basic_auth'}, 
+              {label:'HTTP Basic Auth', value:'http_basic_auth'}
             ], required: true},
             {label: 'Configuration', name:'config', showColumn:false, fields:[
-              {label:'URL', required: false,parsable:'show', validate: {is_https:true}, show:{matches:{name:'type',value:'http_basic_auth'}}},
-              {label:'URL', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
-              {label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-              {label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-              {label:'Content Type', 'name':'content_type', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show',type:"select",options:[
-                {label:"Form Data (application/x-www-form-urlencoded)",value:'application/x-www-form-urlencoded'},
-                {label:"JSON (application/json)",value:'application/json'},
-                {label:"XML (application/xml)",value:'application/xml'},
-                {label:"Plain Text (text/plain)",value:'text/plain'},
-            ],'help':'Please specify the Content Type / Data Encoding your endpoint is expecting for POST / PUT / DELETE actions.  '+
+              {label:'URL', required: false, validate: [{type:'is_https'}], show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
+              {label:'URL', required: false, show:[{type:'matches',name:'type',value:'http_no_auth'}]},
+              {label:'Username', required: true, show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
+              {label:'Password', 'name':'secret', required: true,show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
+              {label:'Content Type', 'name':'content_type', required: true,show:[{type:'matches',name:'type',value:'http_basic_auth'}],type:"select",options:[
+                  {label:"Form Data (application/x-www-form-urlencoded)",value:'application/x-www-form-urlencoded'},
+                  {label:"JSON (application/json)",value:'application/json'},
+                  {label:"XML (application/xml)",value:'application/xml'},
+                  {label:"Plain Text (text/plain)",value:'text/plain'}
+                ],'help':'Please specify the Content Type / Data Encoding your endpoint is expecting for POST / PUT / DELETE actions.  '+
             '<div><i>Note this only applies to data which is <b>sent to</b> the endpoint, not data which is received from the endpoint.</i></div>'},  
-    ]}
-          ],actions:false
-        })
+            ]}
+            ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
 
-        // myForm = new gform({name:"modal", attributes: instanceData, fields:[
-        //   {label: 'Name', name:'name', required: true},
-        //   {label: 'Auth Type', name:'type', type: 'select', choices:[
-        //     {label:'HTTP No Auth', value:'http_no_auth'}, 
-        //     {label:'HTTP Basic Auth', value:'http_basic_auth'}, 
-        //   ], required: true},
-        //   {label: 'Configuration', name:'config', showColumn:false, fields:[
-        //     {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_basic_auth'}}},
-        //     {label:'Url', required: false,parsable:'show', show:{matches:{name:'type',value:'http_no_auth'}}},
-        //     {label:'Username', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-        //     {label:'Password', 'name':'secret', required: true,show:{matches:{name:'type',value:'http_basic_auth'}},parsable:'show'},
-        //   ]}
-        // ], actions: false},mymodal.ref.find('.modal-body')[0]);
       },
       onAppinstance: function(){
         options.url = '/api/appinstances';
@@ -363,32 +424,36 @@ var createEngine = function(e){
 
         $.ajax({
               url: '/api/apps/'+instanceData.app_id+'/versions',
-              success: function(data) {
-                console.log(data);
-                data.unshift({id:0,label:'Latest Stable'})
-                data.unshift({id:-1,label:'Latest (working or stable)'})
-                mymodal.ref.find('.modal-body').berry({
-                    attributes:instanceData,
-                    name:"modal", fields:[
-                    {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
-                    {label: 'Name', name:'name', required: true},
-                    {label: 'Slug', name:'slug', required: true},
-                    {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-                    {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-                    {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
-                    {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
-                  ],actions:false
-                })
+              success: function(versions) {
+                // console.log(data);
+                // data.unshift({id:0,label:'Latest Stable'})
+                // data.unshift({id:-1,label:'Latest (working or stable)'})
+                // mymodal.ref.find('.modal-body').berry({
+                //     attributes:instanceData,
+                //     name:"modal", fields:[
+                //     {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
+                //     {label: 'Name', name:'name', required: true},
+                //     {label: 'Slug', name:'slug', required: true},
+                //     {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+                //     {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+                //     {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
+                //     {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
+                //   ],actions:false
+                // })
 
-                // myForm = new gform({name:"modal", attributes: instanceData, fields:[
-                //   {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
-                //   {label: 'Name', name:'name', required: true},
-                //   {label: 'Slug', name:'slug', required: true},
-                //   {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-                //   {label: 'Unlisted', name:'unlisted', type: 'checkbox', options:[0,1]},
-                //   {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
-                //   {label: 'Public', name:'public', type: 'checkbox', options:[0,1], enabled:  {matches:{name:'limit', value: false}}}
-                // ], actions: false},mymodal.ref.find('.modal-body')[0]);
+                new $g.form({
+                  data:instanceData,
+                  name:"modal", 
+                  fields:[{label: 'Version', name:'app_version_id', edit: false, options: [
+                    {id:-1,label:'Latest (Working or Published)'},
+                    ...(versions.length)?[{id: 0, label: 'Latest Published'}]:[],
+                    ...versions
+                  ], type: 'select', format:{ value: version => version.id, label: "{{label}}"} ,post:'<i class="fa fa-pencil" id="version"></i>'},
+                  ...fieldLibrary.content,
+                  {name:'app_id', required: true, type:'hidden'},
+                  {name: 'id', type:'hidden'}],
+                  actions:[]
+                },mymodal.el.querySelector('.modal-body'))
       
               }
             })
@@ -399,22 +464,36 @@ var createEngine = function(e){
 
         $.ajax({
               url: '/api/workflows/'+instanceData.workflow_id+'/versions',
-              success: function(data) {
-                console.log(data);
-                data.unshift({id:0,label:'Latest Stable'})
-                data.unshift({id:-1,label:'Latest (working or stable)'})
-                mymodal.ref.find('.modal-body').berry({
-                    attributes:instanceData,
-                    name:"modal", fields:[
-                    {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
-                    {label: 'Name', name:'name', required: true},
-                    {label: 'Slug', name:'slug', required: true},
-                    {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
-                    {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
-                    {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
-                    {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
-                  ],actions:false
-                })
+              success: function(versions) {
+                // console.log(data);
+                // data.unshift({id:0,label:'Latest Stable'})
+                // data.unshift({id:-1,label:'Latest (working or stable)'})
+                // mymodal.ref.find('.modal-body').berry({
+                //     attributes:instanceData,
+                //     name:"modal", fields:[
+                //     {label: 'Version', name:'app_version_id', required:true, options:data,type:'select', value_key:'id',label_key:'label'},
+                //     {label: 'Name', name:'name', required: true},
+                //     {label: 'Slug', name:'slug', required: true},
+                //     {label: 'Icon', name:'icon', required: false,template:'<i class="fa fa-{{value}}"></i>'},
+                //     {label: 'Unlisted', name:'unlisted', type: 'checkbox',truestate:1,falsestate:0 },
+                //     {label: 'Limit Device', name: 'device', value_key:'index', value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},				
+                //     {label: 'Public', name:'public', type: 'checkbox',truestate:1,falsestate:0, enabled:  {matches:{name:'limit', value: false}}}
+                //   ],actions:false
+                // })
+
+                new $g.form({
+                  data:instanceData,
+                  name:"modal", 
+                  fields:[{label: 'Version', name:'workflow_version_id', edit: false, options: [
+                    {id:-1,label:'Latest (Working or Published)'},
+                    ...(versions.length)?[{id: 0, label: 'Latest Published'}]:[],
+                    ...versions
+                  ], type: 'select', format:{ value: version => version.id, label: "{{label}}"} ,post:'<i class="fa fa-pencil" id="version"></i>'},
+                  ...fieldLibrary.content,
+                  {name:'workflow_id', required: true, type:'hidden'},
+                  {name: 'id', type:'hidden'}],
+                  actions:[]
+                },mymodal.el.querySelector('.modal-body'))
               }
             })
       },
@@ -427,42 +506,78 @@ var createEngine = function(e){
       onWorkflowinstancegroup: selectGroup,
       
       onApp: function(){
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-            name:"modal", fields:[
-              {label: 'App', name:'app_id', type:'select',satisfied:function(value){
-                return (this.toJSON() !== "")
-              },required:true, choices:'/api/apps', default:{"label":"Choose One","value":""}},
-            ],actions:false
-          })
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //     name:"modal", fields:[
+        //       {label: 'App', name:'app_id', type:'select',satisfied:function(value){
+        //         return (this.toJSON() !== "")
+        //       },required:true, choices:'/api/apps', default:{"label":"Choose One","value":""}},
+        //     ],actions:false
+        //   })
+
+          new $g.form({
+            data:instanceData,
+            name:"modal", 
+            fields:[
+              {
+                label: 'App', name:'app_id', type:'select',satisfied:function(value){
+                  return (this.toJSON() !== "")
+                },required:true, options:[{"label":"Choose One","value":""},{type:'optgroup',options:'/api/apps'}]
+              }
+            ],
+            actions:[]
+          },mymodal.el.querySelector('.modal-body'))
       },     
       onWorkflow: function(){
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-            name:"modal", fields:[
-              {label: 'Workflow', name:'workflow_id', type:'select',satisfied:function(value){
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //     name:"modal", fields:[
+        //       {label: 'Workflow', name:'workflow_id', type:'select',satisfied:function(value){
+        //         return (this.toJSON() !== "")
+        //       },required:true, choices:'/api/workflows', default:{"label":"Choose One","value":""}},
+        //     ],actions:false
+        //   })
+        new $g.form({
+          data:instanceData,
+          name:"modal", 
+          fields:[
+            {
+              label: 'Workflow', name:'workflow_id', type:'select',satisfied:function(value){
                 return (this.toJSON() !== "")
-              },required:true, choices:'/api/workflows', default:{"label":"Choose One","value":""}},
-            ],actions:false
-          })
+              },required:true, options:[{"label":"Choose One","value":""},{type:'optgroup',options:'/api/apps'}]
+            }
+          ],
+          actions:[]
+        },mymodal.el.querySelector('.modal-body'))
       },     
       onAppinstancecomposite: selectComposite,
       onWorkflowinstancecomposite: selectComposite,
       onPagecomposite: selectComposite,
       onLink:function(){
         options.url = '/api/links';    
-        mymodal.ref.find('.modal-body').berry({
-          attributes:instanceData,
-            name:"modal", fields:[
+        // mymodal.ref.find('.modal-body').berry({
+        //   attributes:instanceData,
+        //     name:"modal", fields:[
+        //       {label: 'Title', name:'title', required: true},
+        //       {label: 'Link', name:'link', required: true},
+        //       {label: 'Image', name:'image'},
+        //       {label: 'Icon', name:'icon', 
+        //       type:'select', choices:'/assets/data/icons.json'},
+        //       {label: 'Color', name:'color'},
+        //     ],actions:false
+        //   })
+          new $g.form({
+            data:instanceData,
+            name:"modal", 
+            fields:[
               {label: 'Title', name:'title', required: true},
               {label: 'Link', name:'link', required: true},
               {label: 'Image', name:'image'},
-              {label: 'Icon', name:'icon', 
-              type:'select', choices:'/assets/data/icons.json'},
-              {label: 'Color', name:'color'},
-            ],actions:false
-          })
-
+              fieldLibrary.icon,
+              {label: 'Color', name:'color'}
+            ],
+            actions:[]
+          },mymodal.el.querySelector('.modal-body'))
       } ,
       onComplete:function(){
         location.reload();

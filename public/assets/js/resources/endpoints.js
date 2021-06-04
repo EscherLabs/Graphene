@@ -6,7 +6,7 @@ if(resource_id !== ''){
 getData([url, '/api/groups'], function(endpoints, groups){
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
-			fieldLibrary['group'],
+			fieldLibrary.group,
 			{label: 'Name', name:'name', required: true},
 			{label: 'Auth Type', name:'type', type: 'select', options:[
 				{label:'HTTP No Auth', value:'http_no_auth'}, 

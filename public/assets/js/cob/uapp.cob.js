@@ -7,7 +7,7 @@ Cobler.types.uApp = function(container){
 		guid: generateUUID()}
 	var fields = {
 		Title: {},
-		'App ID': {type: 'select', choices: '/api/groups/'+group_id+'/appinstances'},
+		'App ID': {type: 'select', options: '/api/groups/'+group_id+'/appinstances',format:{label:"{{name}}",value:function(i){return i.id;}}},
     'User Options':{name:'user_edit',type:'checkbox'},
 		// 'Template': {}
 	}
@@ -19,13 +19,15 @@ Cobler.types.uApp = function(container){
       temp.uapp_admin = group_admin;
 			return templates['widgets_microapp'].render(temp, templates);
 		},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {
 			$.extend(item, newItem);
 		},
 		initialize: function(el){
+      debugger;
+
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -33,7 +35,7 @@ Cobler.types.uApp = function(container){
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
-
+debugger;
       $.ajax({
           url: '/api/fetch/'+this.get().app_id,
           dataType : 'json',

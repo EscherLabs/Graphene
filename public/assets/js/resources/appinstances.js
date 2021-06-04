@@ -5,10 +5,10 @@ $('[href="/admin/groups"]').parent().addClass('active');
 getData([url,'/assets/data/icons.json', '/api/groups', '/api/apps'+((resource_id !== '')?'/group/'+resource_id:'')], (appinstances, icons, groups, apps) => {
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema:[
-			fieldLibrary['group'],
+			fieldLibrary.group,
 			{label: 'App', name:'app_id', type:'select', options: 'apps', format:{label:"{{name}}",value:function(e){return e.id}}},
 			{label: 'Version', name:'app_version_id', type:'hidden'},
-			...fieldLibrary['content'],
+			...fieldLibrary.content,
 			{name: 'app', type:'hidden'},
 			{name: 'id', type:'hidden'}
 		],actions: [

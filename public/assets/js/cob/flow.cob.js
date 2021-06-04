@@ -256,7 +256,7 @@ Cobler.types.Workflow = function(container){
       
       return gform.renderString(workflow_report.workflow, temp);
 		},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {
@@ -872,7 +872,7 @@ Cobler.types.WorkflowSummary = function(container){
 		render: function() {
       return gform.renderString(workflow_report.workflow_summary_container, get());
     },
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
     get: get,
     redraw:function(newItem){
@@ -1044,7 +1044,7 @@ Cobler.types.Workflows = function(container){
       return gform.renderString(workflow_report.workflows,temp);
 
 		},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {
@@ -1086,7 +1086,7 @@ Cobler.types.WorkflowStatus = function(container){
       temp.workflow_admin = group_admin;
       return gform.renderString(workflow_report.status, temp);
 		},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {
@@ -1156,7 +1156,7 @@ Cobler.types.WorkflowAssignments = function(container){
       temp.workflow_admin = group_admin;
       return gform.renderString(workflow_report.status, temp);
 		},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {
@@ -1336,7 +1336,7 @@ Cobler.types.WorkflowHistory = function(container){
       temp.workflow_admin = group_admin;
       return gform.renderString(workflow_report.status, temp);
 		},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
 		set: function (newItem) {

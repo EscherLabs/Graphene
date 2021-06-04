@@ -54,7 +54,7 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 						...(versions.length)?[{id:0,label:'Latest Published'}]:[],
 						...versions
 					], type: 'select', format:{ value: version => version.id, label: "{{label}}"} ,post:'<i class="fa fa-pencil" id="version"></i>'},
-					...fieldLibrary['content'],
+					...fieldLibrary.content,
 					{name:'app_id', required: true, type:'hidden'},
 					// {name: 'app', type:'hidden'},
 					{name: 'id', type:'hidden'}

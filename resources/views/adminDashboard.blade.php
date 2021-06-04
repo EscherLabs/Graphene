@@ -361,41 +361,17 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
   $('#content').html(templates.admin_dashboard.render(loaded));
   $('.navbar-header .nav a h4').html('My Dashboard');
 
-  $('#search').berry({
+      new gform({
 				name:'user_search',
-				actions:false,
-				inline:true,
+				actions:[],
+				horizontal:false,
 				label:false,
 				fields:[
 					{name:'query',label:false,placeholder:'Search', pre:'<i class="fa fa-filter"></i>'},
-					{type:'raw',value:'',name:'results',label:false}
-				]}).on('change',function(){
-
-					// if(typeof Berries.user !== 'undefined'){
-					// 	Berries.user.destroy();
-					// }
-				}).delay('change:query',function(){
-          processFilter({currentTarget:this.find('query').$el});
-          // msnry.layout()
-          // msnry.
-					// $.ajax({
-					// 	url: '/api/users/search/'+this.toJSON().query,
-					// 	success: function(data) {
-					// 		this.fields.results.update({value:templates['user_list'].render({users:data})})
-					// 	}.bind(this)
-					// })
+					{type:'output',value:'',name:'results',label:false}
+				]},'#search').on('change:query',function(e){
+          processFilter({currentTarget:e.field.el.querySelector('input')});
 				})
-
-// var msnry = new Masonry( '.masonry-grid', {
-//         itemSelector: '.grid-item',
-//         columnWidth: '.grid-sizer',
-//         gutter: '.gutter-sizer',
-//         percentPosition: true,
-//         // columnWidth: 80,
-//         columnWidth: 200,
-//         transitionDuration: 0,
-//         isFitWidth: true
-//     });
     $("time.timeago").timeago();
     $(function () {
   $('[data-toggle="tooltip"]').tooltip()

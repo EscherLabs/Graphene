@@ -5,10 +5,10 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 	
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema: [
-			fieldLibrary['group'],
+			fieldLibrary.group,
 			{label: 'Workflow', name:'workflow_id',type:"select", options:workflows, format:{label:"{{name}}",value:function(e){return e.id}}},
 			{label: 'Version', name:'workflow_version_id', type:'hidden'},
-			...fieldLibrary['content'],
+			...fieldLibrary.content,
 			{name: 'workflow', type:'hidden'},
 			{name: 'id', type:'hidden'}
 		],
@@ -49,7 +49,7 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 			url: '/api/apps/'+e.model.attributes.app_id+'/versions',
 			success: function(e, data) {
 				new gform({name:"version",data:e.model.attributes,legend:'Select Version',fields:[
-					{label: 'Version', name:'app_version_id', required:true, options:[{type:'optgroup',options:[{id:null,label:'Latest (working or stable)'},{id:0,label:'Latest Stable'}]},{type:'optgroup',options:data}],type:'select', format:{value:function(e){return e.id;}}},
+					{label: 'Version', name:'workflow_version_id', required:true, options:[{type:'optgroup',options:[{id:null,label:'Latest (working or stable)'},{id:0,label:'Latest Stable'}]},{type:'optgroup',options:data}],type:'select', format:{value:function(e){return e.id;}}},
 				]}).on('save',function(e,g){
 					e.model.update(g.form.toJSON());
 					e.model.owner.eventBus.dispatch('model:edited', e.model)

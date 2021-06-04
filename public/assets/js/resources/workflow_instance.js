@@ -54,12 +54,12 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				new gform({
 					fields: [
 						{name:'group_id', required: true, type:'hidden'},
-						{label: 'Version', name:'app_version_id', edit: false, options: [
+						{label: 'Version', name:'workflow_version_id', edit: false, options: [
 							{id:-1,label:'Latest (Working or Published)'},
 							...(versions.length)?[{id: 0, label: 'Latest Published'}]:[],
 							...versions
 						], type: 'select', format:{ value: version => version.id, label: "{{label}}"} ,post:'<i class="fa fa-pencil" id="version"></i>'},
-						...fieldLibrary['content'],
+						...fieldLibrary.content,
 						{name:'workflow_id', required: true, type:'hidden'},
 						{name: 'id', type:'hidden'}
 					],

@@ -47,7 +47,7 @@ Cobler.types.Image = function(container){
 		fields: fields,
 		render: render,
 		toJSON: toJSON,
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		get: get,
 		set: set,
 		initialize: function(el){
