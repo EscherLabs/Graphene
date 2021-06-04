@@ -81,8 +81,8 @@ class UserController extends Controller
             } else if (is_string($request->exclude_groups)) {
                 $exclude_groups = explode(',',$request->exclude_groups);
             }
-            $query->whereHas('group_members', function($query) use ($groups) {
-                $query->whereNotIn('group_id',$exclude_groups);
+            $query->whereDoesntHave('group_members', function($query) use ($exclude_groups) {
+                $query->whereIn('group_id',$exclude_groups);
             });
         }
         if ($request->has('exclude_users')) {
