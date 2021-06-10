@@ -337,7 +337,6 @@ define("ace/keyboard/vim",["require","exports","module","ace/range","ace/lib/eve
       var pos = this.ace.session.screenToDocumentPosition(screenPos.row, screenPos.column);
       return toCmPos(pos);
     } else {
-      debugger;
     }
   };
   this.charCoords = function(pos, mode) {

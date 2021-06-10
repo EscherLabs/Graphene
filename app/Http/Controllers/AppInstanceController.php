@@ -405,10 +405,11 @@ class AppInstanceController extends Controller
             //     $user_prefs = ['options'=>session('ai_'.$app_instance->id)];
             // }
         }
-
         $all_data = ['options'=>$options,
                      'user'=>$current_user->toArray(),
-                     'request'=>$request->has('request')?$request->input('request'):[]];
+                     'request'=>$request->has('request')?$request->input('request'):[],
+                     'app'=>array('instance_id'=>$app_instance->id)
+                    ];
 
         if(isset($user_prefs) && isset($user_prefs['options'])){
             $all_data['user']['options'] = $user_prefs['options'];

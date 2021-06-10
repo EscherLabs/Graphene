@@ -107,7 +107,6 @@ $.ajax({
 
 		var arr = [];
 		for (var key in data.auth_config.cas_data_map.additional) {
-			debugger;
 			arr.push({name:key, value:data.auth_config.cas_data_map.additional[key]});
 		}
 

@@ -1271,7 +1271,6 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
-// debugger;
 // instance.configuration.initial
 instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||

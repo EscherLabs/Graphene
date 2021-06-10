@@ -241,13 +241,12 @@ Cobler.types.Workflow = function(container){
 		guid: generateUUID()}
 	var fields = {
 		Title: {},
-		'Workflow ID': {type: 'select', choices: '/api/groups/'+group_id+'/workflowinstances'},
+		'Workflow ID': {type: 'select', options: '/api/groups/'+group_id+'/workflowinstances',format:{label:"{{name}}",value:"{{id}}"}},
 	}
 	return {
     container:container,
 		fields: fields,
 		render: function() {
-      
       var temp = get();
       temp.workflow_admin = group_admin;
       if(typeof temp.workflow !== 'undefined'){
@@ -263,7 +262,7 @@ Cobler.types.Workflow = function(container){
       $.extend(item, newItem);
       $g.emit('workflow_summary',{current:item.current})
     },
-    updateRequired:function(){
+    updateRequired:function() {
 
 
       $g.emit('workflow_summary',{required:
@@ -281,7 +280,7 @@ Cobler.types.Workflow = function(container){
 
       // document.body.querySelector('.workflow-required').innerHTML = gform.renderString('{{#required.length}}<hr class="thin"><h5>Required information</h5>{{/required.length}}<div>{{#required}}<div class="label label-primary">{{.}}</div>{{/required}}</div>', )
     },
-    saveFlow:function(e,data){
+    saveFlow:function(e, data) {
       $.ajax({
         url:'/api/workflowsubmissions/'+this.get().workflow_id,
         dataType : 'json',
@@ -301,7 +300,6 @@ Cobler.types.Workflow = function(container){
       })
     },
 		initialize: function(el) {
-
       if(typeof this.get().workflow_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -310,9 +308,9 @@ Cobler.types.Workflow = function(container){
         $(el).find('.widget').toggleClass('cob-collapsed', collapsed)
       }
       var instance = this.get().workflow;
-      
+      // return;
 
-       load = function(){
+       this.load = function(){
         this.container.elementOf(this).querySelector('.flow-title').innerHTML = instance.workflow.name+'<span class="label label-default pull-right status"></span>';
         
         mappedData = {actor:this.get().user,form:{},owner:null,state:instance.configuration.initial,history:[]};
@@ -323,7 +321,7 @@ Cobler.types.Workflow = function(container){
         })
 
         /* problem here  */
-        gform.options.rootpath = '/workflows/fetch/'+this.get().workflow_id+'/'
+        // gform.options.rootpath = '/workflows/fetch/'+this.get().workflow_id+'/'
         _.each(this.get().resources,function(item,name){
           gform.collections.add(name, _.isArray(item)?item:[])
         })
@@ -339,8 +337,10 @@ Cobler.types.Workflow = function(container){
           data:mappedData
         }
         let myPromise = new Promise(function(myResolve, myReject) {
-
           if(
+            (!this.container.owner.options.disabled) ||
+            (resource_type !== 'workflow') ||
+
             //nothing started - we can assume starting a new one
             (this.get().current == null) ||
 
@@ -435,7 +435,6 @@ Cobler.types.Workflow = function(container){
                   })
                 
               }else if(e.event == 'discard'){
-                debugger;
                 $.ajax({
                   url:'/api/workflowsubmissions/'+this.get().current.id
       ,
@@ -578,7 +577,6 @@ Cobler.types.Workflow = function(container){
                 return true;
               })
               $g.emit('workflow_summary',{errors:_.compact(_.map(invalid_fields,function(e){
-                debugger;
                 return !e.valid?{label:e.label,id:e.id,errors:e.errors.split('<br>')}:null}))})
 
                 invalid_fields[0].focus();
@@ -663,12 +661,12 @@ Cobler.types.Workflow = function(container){
 
             }.bind(this)
             if(this.id && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
-              $('#myId').html('');
-
-              this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
-                this.on("success", update);
-              }});
-              
+              if($('#myId').length){
+                $('#myId').html('');
+                this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
+                  this.on("success", update);
+                }});
+              }
               update();
             }
             $('.f_'+get().guid).on('click','[data-id]',function(e){
@@ -797,10 +795,13 @@ Cobler.types.Workflow = function(container){
                     $g.waiting = false
                     this.id = data.id;
                     if(typeof this.Dropzone == "undefined" && this.get().workflow.version.code.form.files && _.find(this.get().workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads){
-                      $('#myId').html('');
-                      this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
-                        this.on("success", update);
-                      }});
+                      if($('#myId').length){
+                        $('#myId').html('');
+                        this.Dropzone = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+this.id+"/files", init: function() {
+                          this.on("success", update);
+                        }});
+                      }
+
                     }
                     this.initialstate = data.data;
                     data.data.files = this.form.collections.get('files')
@@ -835,7 +836,8 @@ Cobler.types.Workflow = function(container){
         );
       }.bind(this);
       if(typeof instance !== 'undefined'){
-        load()
+
+        this.load()
       }else{
         $.ajax({
           url:'/api/workflowinstances/'+this.get().workflow_id,
@@ -843,8 +845,7 @@ Cobler.types.Workflow = function(container){
           success  : function(workflow){
             this.set({workflow:workflow})
             instance = this.get().workflow;
-
-            load();
+            this.load();
           }.bind(this),
           error:function(){
           }
@@ -914,7 +915,6 @@ Cobler.types.WorkflowSummary = function(container){
   this.ractive = new Ractive({el: this.container.elementOf(this), template: workflow_report.workflow_summary, data:  this.get(), partials: {}});
 
   $('.current-panel').on('click','.error-field, .missing-field',function(e){
-    debugger;
     gform.instances.workflow.find({id:e.currentTarget.dataset.id}).focus()
   })
 
@@ -968,7 +968,6 @@ Cobler.types.WorkflowSummary = function(container){
             data: JSON.stringify(_.extend(e.form.options.data,{comment:e.form.get('comment')})),
             type: 'POST',
             success  : function(form,result){
-              debugger;
               form.trigger('close')
 
               this.get().all[_.findIndex(this.get().all,{id:result.id})] = result
