@@ -58,7 +58,7 @@ renderBuilder = function(){
     
     var temp = $.extend(true, {}, form);
     _.each(temp.fields,function(field){
-      field.widgetType = gform.types[field.type]||{}.base||'input'
+      field.widgetType = (gform.types[field.type]||{}).base||'input'
     })
     // for(var i in temp.fields){
       // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
@@ -1180,7 +1180,6 @@ $('#import').on('click', function() {
       {label: 'Descriptor', type: 'textarea'}
     ]
   }).on('save', e => {
-// debugger;
   var descriptor = JSON.parse(e.form.get()['descriptor']);
   descriptor.code.form = JSON.stringify(descriptor.code.form);
     $.ajax({
@@ -1261,7 +1260,6 @@ loadInstances = function(){
               instance.version_summary = instance.version.summary||'Working Version';
               
               instance.version_id =  (instance.workflow_version_id!==null ? (instance.workflow_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.workflow_version_id+')') : "Latest Saved");
-// debugger;
 // instance.configuration.initial
 instance.error = !(_.pluck(instance.version.code.flow,'name').indexOf(instance.configuration.initial)+1) ||
 !!_.difference(_.pluck(instance.version.code.map ,'name'),_.pluck(instance.configuration.map,'name')).length ||

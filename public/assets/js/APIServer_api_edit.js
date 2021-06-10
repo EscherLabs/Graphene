@@ -106,7 +106,7 @@ function load(app_version) {
         }
       }}], help:'i.e. /example/route or /my-example_2'},
       {label: 'Function Name', name:'function_name', required:true, validate:[{type:'custom',test:e =>{
-        (!/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/.test(evalue)) {
+        if(!/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/.test(evalue)) {
           return  'API name must be a valid php function name';
         }
       }}]},

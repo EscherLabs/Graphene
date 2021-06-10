@@ -18,25 +18,25 @@
 <script src='/assets/js/vendor/bluebird.min.js'></script>    
 
   <script>
-function getData(urls,callback){
-  if(typeof urls == 'string')urls = [urls];
-  Promise.all(_.map(urls, url =>{
-    return new Promise((resolve,reject) => {
-      gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
-    })
-  })).then(data => {
-    let ss = callback.toString().split('=>')[0].split('(');
-    ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
-      //assumes no more parameters are expected in the callback than the number of urls requested
-      $g.collections.add(item.trim(), data[index])
-      return data;
-    },data)
+// function getData(urls,callback){
+//   if(typeof urls == 'string')urls = [urls];
+//   Promise.all(_.map(urls, url =>{
+//     return new Promise((resolve,reject) => {
+//       gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
+//     })
+//   })).then(data => {
+//     let ss = callback.toString().split('=>')[0].split('(');
+//     ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
+//       //assumes no more parameters are expected in the callback than the number of urls requested
+//       $g.collections.add(item.trim(), data[index])
+//       return data;
+//     },data)
 
-    callback.apply(null, data);
-  }).catch(function(data){
-    debugger;
-  })
-}
+//     callback.apply(null, data);
+//   }).catch(function(data){
+//     // debugger;
+//   })
+// }
     var route = '{{ $resource }}';
     var resource_id = '{{ $id }}';
     var group = {!! $group ?? "{}" !!};

@@ -70,7 +70,6 @@
     }],
     'model:edited':[
       e => {
-        debugger;
         let model = e.model;
         new gform ({
           legend:'Update Comment', 

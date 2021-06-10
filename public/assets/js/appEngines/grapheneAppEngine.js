@@ -296,7 +296,6 @@ function App() {
 	})
 	return returnable;
 }
- debugger;
 $g.engines['graphene'] = {'v1': 
 function(options){
 

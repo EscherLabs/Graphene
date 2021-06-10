@@ -14,7 +14,6 @@ getData([url, '/api/workflows/developers'], (workflows, developers) => {
 		name: 'workflows'
 	})
 	.on('click', e =>{
-		debugger;
 		window.location = '/admin/'+route+'/'+e.model.attributes.id
 	})
 	.on('model:developers', e => {

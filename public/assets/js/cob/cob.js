@@ -331,7 +331,6 @@ defaultCobEditor = function(container, renderer){
 			renderer: renderer || 'base', 
 			data: this.get(), 
 			fields: _.map(this.fields,function(field,key){
-				debugger;
 				if(!('label' in field))field.label = key;
 				if(!('name' in field))field.name = key.toLocaleLowerCase().split(' ').join('_');
 				// field.label = 

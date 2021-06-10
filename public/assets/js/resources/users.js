@@ -25,10 +25,9 @@
 
 
 		$('body').on('click','.list-group-item.user', function(e){
-			debugger;
-			if(typeof Berries.user !== 'undefined'){
-				Berries.user.destroy();
-			}
+			// if(typeof Berries.user !== 'undefined'){
+			// 	Berries.user.destroy();
+			// }
 			$.ajax({
 				// url: '/api/users/search/'+this.toJSON().query,
 				url: '/api/users/'+e.currentTarget.dataset.id+'/info',
