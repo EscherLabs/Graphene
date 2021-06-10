@@ -2,6 +2,7 @@ $('.navbar-header .nav a h4').html('App Instance');
 $('[href="/admin/appinstances"]').parent().addClass('active');
 root = '/api/appinstances/'+resource_id;
 getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (appinstance, icons, endpoints) => {
+	$g.collections.add('composites',group.composites);
 	$('.navbar-header .nav a h4').append(' - '+appinstance.app.name+'');
 	const {forms=[], resources=[]} = appinstance.app.code;
 	$.ajax({
@@ -103,7 +104,6 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				},'#user_options_default .col-sm-9')
 				$('#useroptionstab').toggle(!!$g.forms.user_options_default.fields.length);
 			}
-			debugger;
 			if(resources.length && resources[0].name !== '') {	
 				$('#resourcestab').show();
 				new gform({

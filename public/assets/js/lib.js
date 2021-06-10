@@ -223,7 +223,7 @@ gform.types['endpoint'] = {...gform.types['smallcombo'],
     this.options = this.mapOptions.getoptions();
     this.value = this.value || "";
     this.help = ($g.collections.get('endpoints').find(endpoint=>endpoint.id == this.value)||{config:{url:''}}).config.url
-    + (this.owner.options.data.resources.find(resource=>resource.name = this.owner.options.data.resources[this.parent.index].name)||{path:''}).path	
+    + (this.owner.options.data.resources.find(resource=>resource.name == this.owner.options.data.resources[this.parent.index].name)||{path:''}).path	
     
     return gform.render('smallcombo', this);				
   }
