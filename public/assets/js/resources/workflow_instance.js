@@ -4,8 +4,10 @@ root = '/api/workflowinstances/'+resource_id;
 
 getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (workflowinstance, icons, endpoints) => {
 	$('.navbar-header .nav a h4').append(' - '+workflowinstance.workflow.name+'');
+	workflowinstance.configuration = workflowinstance.configuration||{};
 	const {configuration={}, workflow={},version={}} = workflowinstance;
 	const {map=[], resources=[]} = workflow.code;
+	// debugger;
 
 	$.ajax({
 		url: '/api/workflows/'+workflowinstance.workflow_id+'/versions',

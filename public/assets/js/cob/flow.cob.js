@@ -250,7 +250,8 @@ Cobler.types.Workflow = function(container){
       var temp = get();
       temp.workflow_admin = group_admin;
       if(typeof temp.workflow !== 'undefined'){
-        temp.allowFiles = temp.workflow.version.code.form.files && _.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads
+        debugger;
+        temp.allowFiles = temp.workflow.version.code.form.files && (_.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial})||temp.workflow.version.code.flow[0]).uploads
       }
       
       return gform.renderString(workflow_report.workflow, temp);
