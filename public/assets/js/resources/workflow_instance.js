@@ -7,6 +7,7 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 	workflowinstance.configuration = workflowinstance.configuration||{};
 	const {configuration={}, workflow={},version={}} = workflowinstance;
 	const {map=[], resources=[]} = workflow.code;
+	// debugger;
 
 	$.ajax({
 		url: '/api/workflows/'+workflowinstance.workflow_id+'/versions',
