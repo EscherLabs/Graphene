@@ -2,7 +2,6 @@ $('.navbar-header .nav a h4').html('Workflow Instances');
 $('[href="/admin/groups"]').parent().addClass('active');
 
 getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+resource_id], (workflowinstances, groups, icons, workflows) => {
-	
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,
@@ -31,7 +30,7 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 		sortBy: 'order'
 	})
 	.on('click', e => {
-		window.location = '/admin/appinstances/'+e.model.attributes.id;
+		window.location = '/admin/workflowinstances/'+e.model.attributes.id;
 	})
 	.on('model:report', e => {
 		document.location = "/admin/workflowinstances/"+e.model.attributes.id+"/report";

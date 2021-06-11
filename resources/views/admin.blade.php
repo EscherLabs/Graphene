@@ -173,6 +173,6 @@ ractive = new Ractive({el: "admin-content-target",template:`
 
   <script src='/assets/js/vendor/moment.js'></script>
   <script src='/assets/js/vendor/moment_datepicker.js'></script>
-
+  <script>$g.collections.add('composites',composites);</script>
   <script src='/assets/js/resources/{{ $resource }}.js'></script> 
 @endsection
