@@ -199,7 +199,7 @@
     <script src="/assets/js/templates/admin.js"></script>
 
     <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>
-        <script src='/assets/js/lib.js'></script> 
+    <script src='/assets/js/lib.js'></script> 
  
     @yield('end_body_scripts_bottom')
 

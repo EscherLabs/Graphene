@@ -223,7 +223,7 @@ gform.types['endpoint'] = {...gform.types['smallcombo'],
     this.options = this.mapOptions.getoptions();
     this.value = this.value || "";
     this.help = ($g.collections.get('endpoints').find(endpoint=>endpoint.id == this.value)||{config:{url:''}}).config.url
-    + (this.owner.options.data.resources.find(resource=>resource.name = this.owner.options.data.resources[this.parent.index].name)||{path:''}).path	
+    + (this.owner.options.data.resources.find(resource=>resource.name == this.owner.options.data.resources[this.parent.index].name)||{path:''}).path	
     
     return gform.render('smallcombo', this);				
   }
@@ -1171,9 +1171,10 @@ const fieldLibrary = (function(){
           }else{
             return e.initial.value;
           }
-        }, type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}],template:"{{#attributes.groups.length}}Yes{{/attributes.groups.length}}{{^attributes.groups.length}}No{{/attributes.groups.length}}", show:  [{type:'matches',name:'public', value: false},{type:'test',test: () => $g.collections.get('composites').length >0 } ]
+        }, type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}],strict:true,template:"{{#attributes.groups.length}}Yes{{/attributes.groups.length}}{{^attributes.groups.length}}No{{/attributes.groups.length}}", show:  [{type:'matches',name:'public', value: false},{type:'test',test: () => $g.collections.get('composites').length >0 } ]
       },
-      {label: 'Composites',get: ()=> (this.visible)?gform.types[this.type].get.call(this):null,legend: 'Composites',parse:true,array: {min:1,max:100,duplicate:{copy:true}}, name: 'groups', type: 'smallcombo', options: 'composites',format:{label:"{{name}}",value:function(i){return i.id}},'show': [{type:"matches",name: 'limit',value: true}],validate:[{type:'unique',message:"Duplicate group"}]}
+      {label: 'Composites',get: function(){
+        return (this.visible)?gform.types[this.type].get.call(this):null},legend: 'Composites',parse:true,array: {min:1,max:100,duplicate:{copy:true}}, name: 'groups', type: 'smallcombo', options: 'composites',format:{label:"{{name}}",value:function(i){return i.id}},'show': [{type:"matches",name: 'limit',value: true}],validate:[{type:'unique',message:"Duplicate group"}]}
       ],
       _display: [
         {label: 'List in page menu', name:'unlisted',value:0, type: 'checkbox',options:[{label:'No',value:true},{label:'Yes',value:false}]},				
