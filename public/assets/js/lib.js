@@ -485,7 +485,8 @@ gform.stencils.signaturePad = `
 		{{>_actions}}
 	</div>
 </div>`;
-    gform.types['signaturePad'] = _.extend({}, gform.types['input'], gform.types['collection'], {
+gform.types['signature']=gform.types['signaturePad'] = _.extend({}, gform.types['input']/*, gform.types['collection']*/, {
+    // base:'input',
     set: function(value) {
         if(typeof value == 'undefined' || value == null){
             this.signaturePad.clear();
