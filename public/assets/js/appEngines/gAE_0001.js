@@ -298,7 +298,6 @@ function App() {
 }
  
 gAE_v0001 = options => {
-	debugger;
 		partials = _.reduce(options.config.templates,(partials,_partial)=>{
 			partials[_partial.name] = _partial.content;
 			return partials

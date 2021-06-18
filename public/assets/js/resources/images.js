@@ -2,9 +2,6 @@ $('.navbar-header .nav a h4').html('Images');
 $('[href="/admin/groups"]').parent().addClass('active');
 
 getData([url,'/api/groups'], (images, groups) => {
-
-	images = images.map(image => {return {...image, group_id:image.group_id+''}})
-
 	new GrapheneDataGrid({...tableConfig, schema: [
 		fieldLibrary.group,
 		{label: 'Image', name:'filename',show:false, parse:false, required: true, template: '<div style="width:150px;margin:0 auto;"><img style="max-width:150px;max-height:50px" src="/image/{{attributes.id}}"/></div>'},
@@ -17,7 +14,7 @@ getData([url,'/api/groups'], (images, groups) => {
 	})
 	.on('click', e => {
 		const link = '/image/'+e.model.attributes.id+'.'+e.model.attributes.ext
-		new modal({
+		modal({
 			legend: e.model.attributes.name, 
 			content: '<div style="text-align:center"><a target="_blank" href="'+link+'"><img style="max-width:100%" src="'+link+'"/></a></div>',
 			footer: $g.render`<h3><a target="_blank" href="'+link+'">'+window.location.protocol+'//'+window.location.host+link+'</a></h3>`
@@ -26,13 +23,14 @@ getData([url,'/api/groups'], (images, groups) => {
 	.on('create', e => {
 		e.preventDefault();
 		e.stopPropagation();
-
+		let grid = e.grid;
 		new gform({name:'newimage',actions:[{type:'cancel'}],legend: 'Add Image(s)', fields:[
 			fieldLibrary.group,
 			{label: false, name: 'image_filename', type: 'upload', show: [{type: "not_matches", name: "group_id", value: ""}], path: '/api/images?group_id='+resource_id}
 		]})
 		.on('change:group_id', e => e.form.find('image_filename').update({path: '/api/images?group_id='+e.field.get() }, true))
 		.on('uploaded', e => {
+			debugger;
 			grid.add(e.response, { validate: false, silent: true});
 			e.form.trigger('close');
 		})

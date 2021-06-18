@@ -127,8 +127,6 @@ class WorkflowInstanceController extends Controller
 
     public function update(Request $request, WorkflowInstance $workflow_instance) {
         $data = $request->all();
-        if($request->workflow_version_id == -1 || $request->workflow_version_id == ''){$data['workflow_version_id'] = null;}
-
         if(isset($data['groups'])){
             $data['groups'] = array_filter($data['groups']);
         }

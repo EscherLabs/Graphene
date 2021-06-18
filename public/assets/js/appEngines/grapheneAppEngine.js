@@ -296,7 +296,6 @@ function App() {
 	})
 	return returnable;
 }
- debugger;
 $g.engines['graphene'] = {'v1': 
 function(options){
 
@@ -350,10 +349,10 @@ function(options){
 			this.app = App.call(this)
 			app = this.app;
 			
-			Object.defineProperty(app,'debugger',{
-				get: ()=>{if(debug.state)debugger;},
-				configurable: false,
-			  });
+			// Object.defineProperty(app,'debugger',{
+			// 	get: ()=>{if(debug.state)debugger;},
+			// 	configurable: false,
+			//   });
     }
 		this.draw()
 		if(typeof this.options.onLoad == 'function'){

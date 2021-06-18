@@ -398,6 +398,7 @@ Cobler.types.input = function(container) {
 		{label: 'Email', value: 'email'},
 		{label: 'Date', value: 'date'},
 		{label: 'Number', value: 'number'},
+		{label: 'Currency', value: 'currency'},
 		{label: 'Password', value: 'password'},
 		{label: 'Color', value: 'color'},
 		{label: 'Output', value: 'output'},
@@ -438,7 +439,6 @@ Cobler.types.collection = function(container) {
 		// if(typeof temp !== 'undefined') {
 		// 	temp.selected = true;
 		// }
-		// debugger;
 		return gform.render(item.type, _.extend({},myform.default,options));
 	}
 	function get() {		

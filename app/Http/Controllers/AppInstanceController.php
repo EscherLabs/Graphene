@@ -110,8 +110,6 @@ class AppInstanceController extends Controller
 
     public function update(Request $request, AppInstance $app_instance) {
         $data = $request->all();
-        if($request->app_version_id == -1 || $request->app_version_id == ''){$data['app_version_id'] = null;}
-
         if(isset($data['groups'])){
             $data['groups'] = array_filter($data['groups']);
         }

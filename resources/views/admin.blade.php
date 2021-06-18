@@ -34,7 +34,7 @@ function getData(urls,callback){
 
     callback.apply(null, data);
   }).catch(function(data){
-    debugger;
+    // debugger;
   })
 }
     var route = '{{ $resource }}';
@@ -86,6 +86,7 @@ function getData(urls,callback){
       {
         event:"model:edited",
         handler: e => {
+          debugger;
           $.ajax({
             url: $g.render(routes.update, {...e.model.attributes, resource_id: resource_id}),
             type: verbs.update,
@@ -118,7 +119,7 @@ function getData(urls,callback){
     $('[href="/admin/'+route+'"]').parent().addClass('active');
     $('body').on('click','.save-sort',() => {
       $.ajax({
-        url: routes.sort,
+        url: $g.render(routes.sort, {resource_id: resource_id}),
         type: 'POST',
         data: {order:_.map($('#sorter').children(), (item,index) => {return {id:item.dataset.id,index:index}})},
         success: response => {

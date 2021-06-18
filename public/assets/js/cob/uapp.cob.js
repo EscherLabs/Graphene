@@ -26,7 +26,6 @@ Cobler.types.uApp = function(container){
 			$.extend(item, newItem);
 		},
 		initialize: function(el){
-      debugger;
 
     if(typeof this.get().app_id == 'undefined'){return false;};
       this.fields['App ID'].enabled = false;
@@ -35,7 +34,6 @@ Cobler.types.uApp = function(container){
           this.set({collapsed:collapsed});
           $(el).find('.widget').toggleClass('cob-collapsed',collapsed)
       }
-debugger;
       $.ajax({
           url: '/api/fetch/'+this.get().app_id,
           dataType : 'json',
@@ -122,7 +120,6 @@ debugger;
                 break;
               default:
                 // this.appEngine = vue_v0001(opts);
-debugger;
                 // this.appEngine = grapheneAppEngine(opts);
                 this.appEngine = $g.engines['graphene']['v1'](opts)
 

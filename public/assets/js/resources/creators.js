@@ -1,7 +1,8 @@
 var reset = function(){
-  if(typeof Berries.modal !== 'undefined'){
-    Berries.modal.destroy();
-  }
+
+  if(typeof gform.instances.modal !== 'undefined'){
+    gform.instances.modal.destroy();
+}
   mymodal.ref.find('.modal-body').html('<center style="height:300px"><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:20px auto;color:#d8d8d8"></i></center>');
 }
 var selectGroup = function(e){
@@ -95,8 +96,8 @@ if(typeof loaded !== 'undefined' && typeof loaded.workflow !== 'undefined' ){
 }
 var createEngine = function(e){
   // $('.btn-new').click();
-  if(typeof Berries.modal !== 'undefined'){
-      Berries.modal.destroy();
+  if(typeof gform.instances.modal !== 'undefined'){
+      gform.instances.modal.destroy();
   }
 
 
@@ -400,9 +401,10 @@ var createEngine = function(e){
               {label:'HTTP No Auth', value:'http_no_auth'}, 
               {label:'HTTP Basic Auth', value:'http_basic_auth'}
             ], required: true},
-            {label: 'Configuration', name:'config', showColumn:false, fields:[
-              {label:'URL', required: false, validate: [{type:'is_https'}], show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
-              {label:'URL', required: false, show:[{type:'matches',name:'type',value:'http_no_auth'}]},
+            {label: 'Configuration',type:"fieldset", name:'config', showColumn:false, fields:[
+              {label:'URL', required: false, validate: [{type:'is_https',"conditions": [
+                {type:'matches',name:'type',value:'http_basic_auth'}
+              ]}], show:[]},
               {label:'Username', required: true, show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
               {label:'Password', 'name':'secret', required: true,show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
               {label:'Content Type', 'name':'content_type', required: true,show:[{type:'matches',name:'type',value:'http_basic_auth'}],type:"select",options:[
@@ -595,9 +597,9 @@ var createEngine = function(e){
 
       },
       onBeforeSubmit: function(e){
-        if(typeof Berries.modal !== 'undefined'){
-          if(Berries.modal.validate()){
-            $.extend(instanceData,Berries.modal.toJSON())
+        if(typeof gform.instances.modal !== 'undefined'){
+          if(gform.instances.modal.validate()){
+            $.extend(instanceData,gform.instances.modal.toJSON())
           }else{
             return false;
           }
@@ -674,11 +676,11 @@ var createEngine = function(e){
         )
       },
       onBeforeNext: function(){
-        if(typeof Berries.modal !== 'undefined'){
-          if(!Berries.modal.validate()){
+        if(typeof gform.instances.modal !== 'undefined'){
+          if(!gform.instances.modal.validate()){
             return false
           }else{
-            $.extend(instanceData,Berries.modal.toJSON())
+            $.extend(instanceData,gform.instances.modal.toJSON())
           }
         }else if(typeof gform.instances.modal != 'undefined'){
           if(!gform.instances.modal.validate()){
