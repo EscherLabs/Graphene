@@ -5,7 +5,7 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,
-			{label: 'Workflow', name:'workflow_id',type:"select", options:workflows, format:{label:"{{name}}",value:function(e){return e.id}}},
+			{label: 'Workflow', name:'workflow_id',type:"select", options:'workflows', format:{label:"{{name}}",value:function(e){return e.id}}},
 			{label: 'Version', name:'workflow_version_id', type:'hidden'},
 			...fieldLibrary.content,
 			{name: 'workflow', type:'hidden'},
@@ -45,8 +45,9 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 	})
 	.on('model:version', e => {
 		$.ajax({
-			url: '/api/apps/'+e.model.attributes.app_id+'/versions',
+			url: '/api/workflows/'+e.model.attributes.workflow_id+'/versions',
 			success: function(e, data) {
+				debugger;
 				new gform({name:"version",data:e.model.attributes,legend:'Select Version',fields:[
 					{label: 'Version', name:'workflow_version_id', required:true, options:[{type:'optgroup',options:[{id:null,label:'Latest (working or stable)'},{id:0,label:'Latest Stable'}]},{type:'optgroup',options:data}],type:'select', format:{value:function(e){return e.id;}}},
 				]}).on('save',function(e,g){

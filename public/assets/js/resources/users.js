@@ -9,9 +9,10 @@
 			{type:'output',name:'results',label:false}
 		]
 	},'#search')
-	.on('change',function(){
-		if(typeof Berries.user !== 'undefined'){
-			Berries.user.destroy();
+	.on('change:query',function(){
+		debugger;
+		if(typeof gform.instances.user !== 'undefined'){
+			gform.instances.user.destroy();
 		}
 	})
 	.on('change:query',_.debounce(function(e){
@@ -25,9 +26,9 @@
 
 
 		$('body').on('click','.list-group-item.user', function(e){
-			// if(typeof Berries.user !== 'undefined'){
-			// 	Berries.user.destroy();
-			// }
+			if(typeof gform.instances.user !== 'undefined'){
+				gform.instances.user.destroy();
+			}
 			$.ajax({
 				// url: '/api/users/search/'+this.toJSON().query,
 				url: '/api/users/'+e.currentTarget.dataset.id+'/info',
