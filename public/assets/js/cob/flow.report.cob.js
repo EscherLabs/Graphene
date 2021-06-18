@@ -338,7 +338,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 //     _.merge(form.data._state,form.methods[mappedData.workflow.instance.version.code.form.resource]({},data));
                 //   }
                 // }
-                  // debugger;
 
                 if(e.currentTarget.dataset.current){
                   var states =  _.map(mappedData.history,function(item){return item.state;})

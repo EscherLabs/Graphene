@@ -250,7 +250,6 @@ Cobler.types.Workflow = function(container){
       var temp = get();
       temp.workflow_admin = group_admin;
       if(typeof temp.workflow !== 'undefined'){
-        debugger;
         temp.allowFiles = temp.workflow.version.code.form.files && (_.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial})||temp.workflow.version.code.flow[0]).uploads
       }
       
@@ -461,7 +460,6 @@ Cobler.types.Workflow = function(container){
             //   myResolve()
             // }.bind(this,myResolve))
             // .on('use',function(myResolve,e){
-            //   debugger;
 
             //   e.form.dispatch('close');
             //   e.form.destroy();
@@ -883,7 +881,6 @@ Cobler.types.WorkflowSummary = function(container){
       this.ractive.set(item);
     },
 		set: function (newItem) {
-      // debugger;
       // if(typeof newItem.current == 'undefined' || !_.isEqual(_.pick(newItem.current,'created_at','updated_at','title','comment'),_.pick(item.current,'created_at','updated_at','title','comment'))){
         $.extend(item, newItem);
         item.current = $g.formatDates(item.current)
@@ -943,7 +940,6 @@ Cobler.types.WorkflowSummary = function(container){
         label:"New Comment",name:"comment"
       }]}).on('discard',function(e){
         if(confirm('Are you sure you want to discard this submission? This can not be undone')){
-          // debugger;
           $.ajax({
             url:'/api/workflowsubmissions/'+e.form.options.data.id
 ,
