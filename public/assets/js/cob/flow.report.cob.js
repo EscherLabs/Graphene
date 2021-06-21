@@ -320,7 +320,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                     {
                       "type": "hidden",
                       "name": "_flowstate",
-                      "value": log.start_state||mappedData.workflow.instance.configuration.initial
+                      "value": log.state||mappedData.workflow.instance.configuration.initial
                     },{
                       "type": "hidden",
                       "name": "_flowstate_history",

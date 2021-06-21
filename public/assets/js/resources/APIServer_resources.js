@@ -86,7 +86,9 @@ $.ajax({
 					this.update(e.form.get());
 					this.dispatch('edited')
 					this.draw();
-				}.bind(model))
+				}.bind(model)).on('cancel',function(e) {
+                    e.form.trigger('close');
+                })
 			// $().berry({
 			// 	legend:'Config',
 			// 	name:'config',

@@ -147,6 +147,17 @@ class PublicAPIWorkflowController extends Controller
             } else if ($row->assignment_type === 'group') {
                 $submission->asignee = Arr::only((Array)$row,['name','slug']);
             }
+            // Build History
+            $history = $query = DB::table('workflow_activity_log')
+                ->select('unique_id','first_name','last_name','email','action','start_state','end_state','comment','workflow_activity_log.created_at')
+                ->leftJoin('users','workflow_activity_log.user_id','=','users.id')
+                ->where('workflow_submission_id','=',$submission->id)->get();
+            $submission->history = [];
+            foreach($history as $history_action) {
+                $history_log_entry = Arr::except((Array)$history_action,['first_name','last_name','email','unique_id']);
+                $history_log_entry['user'] = Arr::only((Array)$history_action,['first_name','last_name','email','unique_id']);
+                $submission->history[] = $history_log_entry;
+            }
             $submissions[] = $submission;
         }
         if ($paginate) {
