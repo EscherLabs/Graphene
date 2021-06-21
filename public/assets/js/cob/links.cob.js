@@ -28,7 +28,7 @@ Cobler.types.Links = function(container){
 		fields: fields,
 		render: render,
 		toJSON: get,
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		get: get,
 		set: set,
 		initialize: function(el){

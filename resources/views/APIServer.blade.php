@@ -32,7 +32,6 @@
       count: 25,
       autoSize: -20,
       el: '#table', 
-      berry: {flatten: false},
       actions:[{name:'delete',max:1 },
       '|',
       {name:'edit',max:1},
@@ -40,56 +39,70 @@
       {name:'create'}],
       events:{
       "created":[
-        function(e){
-			var model = e.model;
-			$().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-				model.attributes.comment = this.toJSON().comment;
-
-				$.ajax({url: api, type: 'POST', data: model.attributes,
-					success:function(data) {
-						model.set(data);
-						toastr.success('', 'Successfully Added')
-					}.bind(model),
-					error:function(e) {
-						toastr.error(e.statusText, 'ERROR');
-					}
-				});
-
-				this.trigger('close')
-			}).on('cancel',function(){
-				model.delete();
-				model.owner.draw();
-			})
+        e => {
+          let model = e.model;
+          new gform({
+              legend:'Comment',
+              fields:[{name:'comment',label:'Comment',required:true}]
+          })
+          .on('save', e =>{
+            model.attributes.comment = e.form.get('comment');
+            $.ajax({
+              url: api, 
+              type: 'POST', 
+              data: model.attributes,
+              success: data => {
+                model.set(data);
+                toastr.success('', 'Successfully Added')
+              },
+              error: () => {
+                toastr.error(e.statusText, 'ERROR');
+              }
+            });
+            e.form.trigger('close')
+          })
+          .on('cancel', e =>{
+            e.form.trigger('close');
+            if(typeof e.field !== 'undefined' && e.field.type == "cancel") model.delete();
+            model.owner.draw();
+          }).modal()
 
     }],
-    'model:edited':[function(e){
-      var model = e.model;
-
-        $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-            model.attributes.comment = this.toJSON().comment;
-
-            $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
-            success:function(data) {
+    'model:edited':[
+      e => {
+        let model = e.model;
+        new gform ({
+          legend:'Update Comment', 
+          fields:[{name:'comment',label:'Comment',required:true}]
+        })
+        .on('save', e =>{
+          model.attributes.comment = e.form.get('comment');
+          $.ajax({
+            url: api+'/'+model.attributes.id, 
+            type: 'PUT', 
+            data: model.attributes,
+            success: data => {
               model.set(data);
               toastr.success('', 'Successfully Updated')
             },
-            error:function(e) {
+            error: () => {
               toastr.error(e.statusText, 'ERROR');
             }
-
-            
           });
-          this.trigger('close')
-        }).on('cancel',function(){
-          model.undo();
-          model.owner.draw()
-          
+          e.form.trigger('close')
         })
+        .on('cancel',function(){
+          model.undo();
+          if(typeof e.field !== 'undefined' && e.field.type == "cancel") model.undo();
+          model.owner.draw()
+        }).modal();
     }],
     'model:deleted':[function(e){
-      var model = e.model;
+      let model = e.model;
 
-      $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
+      $.ajax({
+        url: api+'/'+model.attributes.id, 
+        type: 'DELETE',
         success:function() {
           toastr.success('', 'Successfully Deleted')
         },
@@ -99,66 +112,13 @@
       });
     }]
     
-  },
-    //   add: function(model){
-    //     $().berry({legend:'Comment',fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-    //       model.attributes.comment = this.toJSON().comment;
-
-    //       $.ajax({url: api, type: 'POST', data: model.attributes,
-    //         success:function(data) {
-    //           model.set(data);
-    //           // Berries.modal.trigger('close')
-    //           toastr.success('', 'Successfully Added')
-    //         }.bind(model),
-    //         error:function(e) {
-    //           toastr.error(e.statusText, 'ERROR');
-    //         }
-    //       });
-
-    //       this.trigger('close')
-    //     }).on('cancel',function(){
-    //       model.delete();
-    //       model.owner.draw();
-    //     })
-    // },
-    //   edit: function(model){
-    //     $().berry({legend:'Update Comment', fields:[{name:'comment',label:'Comment',required:true}]}).on('save',function(){
-    //         model.attributes.comment = this.toJSON().comment;
-
-    //         $.ajax({url: api+'/'+model.attributes.id, type: 'PUT', data: model.attributes,
-    //         success:function(data) {
-    //           model.set(data);
-    //           toastr.success('', 'Successfully Updated')
-    //         },
-    //         error:function(e) {
-    //           toastr.error(e.statusText, 'ERROR');
-    //         }
-
-            
-    //       });
-    //       this.trigger('close')
-    //     }).on('cancel',function(){
-    //       model.undo();
-    //       model.owner.draw()
-          
-    //     })
-    // },
-      // delete: function(model){ 
-      //   $.ajax({url: api+'/'+model.attributes.id, type: 'DELETE',
-      //   success:function() {
-      //     toastr.success('', 'Successfully Deleted')
-      //   },
-      //   error:function(e) {
-      //     toastr.error(e.statusText, 'ERROR');
-      //   }
-      // });}
-    }
+  }
+}
 
     $('[href="/admin/'+route+'"]').parent().addClass('active');
   </script>
 @endsection
 
 @section('end_body_scripts_bottom')
-
-  <script src='/assets/js/resources/{{ $resource }}.js'></script> 
+  <script src='/assets/js/resources/{{ $resource }}.js?cb={{ config("app.cache_bust_id") }}'></script> 
 @endsection

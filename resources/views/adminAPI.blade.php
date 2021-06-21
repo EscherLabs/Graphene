@@ -43,45 +43,26 @@
   </div>
 
 </div>
-<!--<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>-->
 @endsection
 
 @section('end_body_scripts_top')
-  <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
-  <script src='/assets/js/vendor/ractive.min.js'></script>    
-
-  <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-  <script type='text/javascript' src='/assets/js/templates/admin.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
-  <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
-
-  <!-- <script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
-  <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>  -->
-  <script src='/assets/js/fileManager.js'></script> 
-
+  <script type="text/javascript" src='/assets/js/vendor/ractive.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
+  <script type="text/javascript" src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/templates/admin.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/cob/cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/cob/content.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/cob/image.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type="text/javascript" src='/assets/js/fileManager.js?cb={{ config("app.cache_bust_id") }}'></script> 
 @endsection
 
 @section('end_body_scripts_bottom')
-  <!--<script>
-    var editor = monaco.editor.create(document.getElementById('container'), {
-      value: [
-        'function x() {',
-        '\tconsole.log("Hello world!");',
-        '}'
-      ].join('\n'),
-      language: 'javascript'
-    });
-  </script>-->
   <script>var loaded = {!! $api_version !!};
           var api = {!! $api !!};
           var slug = "{!! $slug !!}";
           var server = "{{ $config->server }}";
 
           </script>
-  <script type='text/javascript' src='/assets/js/APIServer_api_edit.js'></script>
+  <script type='text/javascript' src='/assets/js/APIServer_api_edit.js?cb={{ config("app.cache_bust_id") }}'></script>
 @endsection
 
 @section('bottom_page_styles')

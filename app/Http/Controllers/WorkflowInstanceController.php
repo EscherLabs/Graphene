@@ -74,7 +74,11 @@ class WorkflowInstanceController extends Controller
     }
     
     public function admin(WorkflowInstance $workflow_instance) {
-        $workflow_instance->load(array('group'=>function($query){}));
+        $workflow_instance->load(array('group'=>function($query){
+            $query->with(array('composites'=>function($query){
+                $query->with('group')->get();
+            }));
+        }));
         return view('admin', ['resource'=>'workflow_instance','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
     }
 
@@ -114,16 +118,17 @@ class WorkflowInstanceController extends Controller
         $workflow_instance->workflow_version_id = null;
         $workflow_instance->workflow_id = $request->get('workflow_id');
         $workflow_instance->group_id = $request->get('group_id');
+        if(isset($request['groups'])){
+            $workflow_instance['groups'] = array_filter($request['groups']);
+        }
         $workflow_instance->save();
         return $workflow_instance;
     }
 
     public function update(Request $request, WorkflowInstance $workflow_instance) {
         $data = $request->all();
-        if($request->workflow_version_id == -1 || $request->workflow_version_id == ''){$data['workflow_version_id'] = null;}
-
         if(isset($data['groups'])){
-            $data['groups'] = json_decode($data['groups']);
+            $data['groups'] = array_filter($data['groups']);
         }
 
         $workflow_instance->update($data);
@@ -175,24 +180,39 @@ class WorkflowInstanceController extends Controller
 
 
         $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
+        if($request->has('saved')){
+            $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new','saved'])->where('id','=',$request->get('saved'))->with('files')->first();
+        }
+        $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['saved'])->get();
         if($myWorkflow != null) {
             $renderer = new PageRenderer();
             return $renderer->render([
                 'group'=>$groupObj,
                 'config'=>[
-                    "sections"=>[[],
+                    "sections"=>[
                         [[
                             "title"=>$myWorkflow->name,
                             "user"=>Auth::user(),
                             "current"=>$current,
+                            "all"=>$saved,
                             "workflow"=>$myWorkflow,
                             "workflow_id"=>$myWorkflow->id,
                             "widgetType"=>"Workflow",
                             "resources"=>$this->fetch($myWorkflow,$request,$current),
                             "container"=>true
                         ]],
-                    []],
-                    "layout"=>'<div class="col-lg-offset-2 col-md-offset-1 col-lg-8 col-md-10 col-sm-12 cobler_container"></div></div>'
+                    [[
+                        "title"=>$myWorkflow->name,
+                        "user"=>Auth::user(),
+                        "current"=>$current,
+                        "all"=>$saved,
+                        "workflow"=>$myWorkflow,
+                        "workflow_id"=>$myWorkflow->id,
+                        "widgetType"=>"WorkflowSummary",
+                        "resources"=>$this->fetch($myWorkflow,$request,$current),
+                        "container"=>true
+                    ]]],
+                    "layout"=>'<div class="col-lg-offset-2 col-lg-6 col-md-12 col-sm-12 cobler_container"></div><div class="col-lg-2 col-md-12 col-sm-12 cobler_container workflow_sidebar" style="position:sticky"></div></div>'
                 ],
                 'id'=>$myWorkflow->id,
                 'resource'=>'workflow',

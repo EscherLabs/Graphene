@@ -49,7 +49,8 @@ class AppController extends Controller
         $app_version = new AppVersion($request->all());
         $app_version->app_id = $app->id;
         $app_version->save();
-        return $app;
+        
+        return App::with('user')->where('id',$app->id)->first();
     }
 
     public function code(Request $request, App $app) { 
@@ -210,7 +211,7 @@ class AppController extends Controller
     public function update(Request $request, App $app) {  
         $app->update($request->all());
         $app->save();
-        return $app;
+        return App::with('user')->where('id',$app->id)->first();
     }
 
     public function destroy(App $app) {

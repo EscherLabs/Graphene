@@ -228,25 +228,6 @@ class ResourceService
         return $response;
     }
 
-    private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
-        $googleClient = new \PulkitJalan\Google\Client(config('google'));
-        $client = $googleClient->getClient();
-        $client->setAccessToken($endpoint->getSecret());
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $endpoint->config->secret = $client->getAccessToken();
-            $endpoint->save();
-        }
-        $service = new \Google_Service_Sheets($client);
-        $sheets = new \GoogleSheets\Sheets();
-        $sheets->setService($service);
-        if ($resource_info->path == '' ) {
-            abort(505,'The path endpoint must specifiy a valid worksheet name');
-        }
-        $values = $sheets->spreadsheet($endpoint->config->sheet_id)->sheet($resource_info->path)->all();
-        return $values;
-    }
-
     public function get_data_int($workflow_instance, $workflow_submission, $endpoint_name, $request) {
         
         // session_write_close(); // Don't keep waiting
@@ -328,9 +309,6 @@ class ResourceService
         if ($endpoint->type == 'http_no_auth' || $endpoint->type == 'http_basic_auth') {
             $response = $this->http_endpoint($endpoint, $resource_app, $verb, $all_data, $workflow_instance->id);
         }
-        // else if ($endpoint->type == 'google_sheets') {
-        //     $data = $this->google_endpoint($endpoint, $resource_app, $verb, $all_data);
-        // }
         return $response;
     }
 

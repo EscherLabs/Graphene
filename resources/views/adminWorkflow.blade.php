@@ -17,10 +17,8 @@
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
-    <!-- <li><a href="#" id="instances">Instances</a></li> -->
     <li role="separator" class="divider"></li>
     <li><a href="#" id="publish">Publish (new version)</a></li>
-    <!-- <li><a href="#">Visit</a></li> -->
   </ul>
 </div>
   <span class="label label-default" style="float:right;margin-right:15px;" id="version"></span>
@@ -28,14 +26,12 @@
   <ul class="nav nav-tabs" role="tablist">
 
     <li role="presentation" class="active"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Form<span></a></li>
-    <!-- <li role="presentation"><a href="#flow" aria-controls="flow" role="tab" data-toggle="tab"><i class="fa fa-code-fork fa-flip-vertical"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li> -->
     <li role="presentation"><a href="#flowchart" aria-controls="flowchart" role="tab" data-toggle="tab"><i class="fa fa-sitemap"></i> <span class="hidden-xs hidden-sm">Flow</span></a></li>
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
     <li role="presentation"><a href="#methods" aria-controls="methods" role="tab" data-toggle="tab"><i class="fa fa-bolt"></i> <span class="hidden-xs hidden-sm">Methods<span></a></li>
 
     <li role="presentation"><a href="#resources" aria-controls="resources" role="tab" data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs hidden-sm">Resources<span></a></li>
     <li role="presentation"><a href="#map" aria-controls="map" role="tab" data-toggle="tab"><i class="fa fa-table"></i> <span class="hidden-xs hidden-sm">Data Map<span></a></li>
-    <!-- <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li> -->
   </ul>
 
   <!-- Tab panes -->
@@ -51,7 +47,6 @@
             <div class="btn-group pull-right" role="group" style="margin-bottom:20px" aria-label="...">
                   <a class="btn btn-default" onclick="new gform(_.extend(myform,{name:'modal'}) ).modal().on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-eye"></i><span class="visible-lg"> View</span></a>
                   <a class="btn btn-danger" onclick="new gform({legend:'Descriptor',fields:[{type:'textarea',name:'descriptor',label:false,size:25 }],data:{descriptor:JSON.stringify(myform,null,'\t')}}).modal().on('save',function(e){myform  = JSON.parse(e.form.get('descriptor')); e.form.trigger('close');renderBuilder(); }).on('cancel',function(e){e.form.trigger('close')})"><i class="fa fa-pencil"></i><span class="visible-lg"> Edit</span></a>
-                  <!-- <a class="btn btn-info" href="examples/">Examples</a> -->
                 </div>
             <ul id="sortableList" class="form-types-group">
                     <li style="color:#22aa10" data-type="input"><i class="fa fa-font"></i> Input</li>
@@ -134,7 +129,6 @@
 
     <div role="tabpanel" class="tab-pane " id="resources">
       <div class="row"><div class="col-md-12 resources "></div></div></div>
-    <!-- <div role="tabpanel" class="tab-pane scripts" id="scripts"></div> -->
     <div role="tabpanel" class="tab-pane" id="flow" style="padding-top: 15px">
         <div class="row">
           <div class="col-sm-3">
@@ -213,16 +207,10 @@
 @endsection
 
 @section('end_body_scripts_top')
-  <script src='/assets/js/vendor/ractive.min.js'></script>    
-
-  <script src='/assets/js/paged.js'></script> 
-  <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-  <!-- <script type='text/javascript' src='/assets/js/templates/admin.js'></script> -->
-  <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-  <!-- <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script> -->
-  <script type="text/javascript" src="/assets/js/vendor/mermaid.min.js"></script>
+  <script type="text/javascript" src='/assets/js/vendor/ractive.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
+  <script type="text/javascript" src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/cob/cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type="text/javascript" src='/assets/js/vendor/mermaid.min.js?cb={{ config("app.cache_bust_id") }}'></script>
   <script>
     mermaid.initialize({
         startOnLoad:false,
@@ -237,32 +225,18 @@
  
     }
 </script>
-  <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
 @endsection
 
 @section('end_body_scripts_bottom')
-  <!--<script>
-    var editor = monaco.editor.create(document.getElementById('container'), {
-      value: [
-        'function x() {',
-        '\tconsole.log("Hello world!");',
-        '}'
-      ].join('\n'),
-      language: 'javascript'
-    });
-  </script>-->
-  <script src='/assets/js/fileManager.js'></script> 
-
+  <script type='text/javascript' src='/assets/js/fileManager.js?cb={{ config("app.cache_bust_id") }}'></script> 
   <script>var loaded = {!! $workflow !!};</script>
-  <script src='/assets/js/vendor/moment.js'></script>
-  <script src='/assets/js/vendor/moment_datepicker.js'></script>
-
-  <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
-  <script type='text/javascript' src='/assets/js/vendor/popper.min.js'></script>
-  <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
-  
-  <script type='text/javascript' src='/assets/js/editWorkflow.js'></script>
-  <script type='text/javascript' src='/assets/js/workflow.cob.js'></script>
+  <script type='text/javascript' src='/assets/js/vendor/moment.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/moment_datepicker.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/math.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/popper.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/editWorkflow.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/workflow.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
 @endsection
 
 @section('bottom_page_styles')

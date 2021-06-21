@@ -61,7 +61,7 @@ class PageController extends Controller
             $data['mobile_order'] = json_decode($data['mobile_order']);
         }       
         if(isset($data['groups'])){
-            $data['groups'] = json_decode($data['groups']);
+            $data['groups'] = array_filter($data['groups']);
         }
         $page->update($data);
         return $page;

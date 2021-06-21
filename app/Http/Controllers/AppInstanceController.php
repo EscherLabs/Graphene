@@ -52,14 +52,13 @@ class AppInstanceController extends Controller
     }
 
     public function admin(AppInstance $app_instance) {
-        //
         $app_instance->load(array('group'=>function($query){
-            // $query->with(array('group'=>function($query){
-            //     $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            // }))->select('group_id','user_id');
+            $query->with(array('composites'=>function($query){
+                $query->with('group')->get();
+            }));
         }));
-        // return $app_instance;
-     return view('admin', ['resource'=>'app_instance','id'=>$app_instance->id, 'group'=>$app_instance->group]);
+
+        return view('admin', ['resource'=>'app_instance','id'=>$app_instance->id, 'group'=>$app_instance->group]);
     }
 
     public function show(AppInstance $app_instance) {
@@ -100,16 +99,19 @@ class AppInstanceController extends Controller
         $app_instance->app_version_id = null;
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
+
+        if(isset($request['groups'])){
+            $app_instance['groups'] = array_filter($request['groups']);
+        }
+
         $app_instance->save();
         return $app_instance;
     }
 
     public function update(Request $request, AppInstance $app_instance) {
         $data = $request->all();
-        if($request->app_version_id == -1 || $request->app_version_id == ''){$data['app_version_id'] = null;}
-
         if(isset($data['groups'])){
-            $data['groups'] = json_decode($data['groups']);
+            $data['groups'] = array_filter($data['groups']);
         }
 
         $app_instance->update($data);
@@ -345,25 +347,6 @@ class AppInstanceController extends Controller
             }catch(Exception $e){}
         }
         return $response;
-    }
-
-    private function google_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data) {
-        $googleClient = new \PulkitJalan\Google\Client(config('google'));
-        $client = $googleClient->getClient();
-        $client->setAccessToken($endpoint->getSecret());
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $endpoint->config->secret = $client->getAccessToken();
-            $endpoint->save();
-        }
-        $service = new \Google_Service_Sheets($client);
-        $sheets = new \GoogleSheets\Sheets();
-        $sheets->setService($service);
-        if ($resource_info->path == '' ) {
-            abort(505,'The path endpoint must specifiy a valid worksheet name');
-        }
-        $values = $sheets->spreadsheet($endpoint->config->sheet_id)->sheet($resource_info->path)->all();
-        return $values;
     }
 
     public function get_data_int(Request $request, AppInstance $app_instance, $endpoint_name) {

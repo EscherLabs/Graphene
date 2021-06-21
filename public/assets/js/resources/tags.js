@@ -1,17 +1,15 @@
 $('.navbar-header .nav a h4').html('Tags');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-$.ajax({
-	url: url,
-	success: function(data){
-		tableConfig.schema = [
-			{label: 'Group', name:'group_id', required: true, type:'select', choices: '/api/groups?limit=true'},
+getData([url, '/api/groups'], function(tags, groups){
+	new GrapheneDataGrid({...tableConfig,
+		schema: [
+			fieldLibrary.group,
 			{label: 'Name', name:'name', required: true},
 			{label: 'Value', name:'value', required: true},
 			{name: 'id', type:'hidden'}
-		];
-		tableConfig.data = data;
-		tableConfig.name = "tags";
-		bt = new berryTable(tableConfig)
-	}
+		],
+		data: tags,
+		name: 'tags'
+	})
 });

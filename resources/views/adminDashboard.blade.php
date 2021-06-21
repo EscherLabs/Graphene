@@ -2,42 +2,11 @@
 @section('content')
 
 <div id="content">
-  <!-- <div class="app_name"></div> -->
-<!-- Split button -->
-<!-- <div class="btn-group pull-right">
-  <button type="button" class="btn btn-primary" id="save">Save</button>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="#" id="import">Import</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#" id="versions">Versions</a></li>
-    <li><a href="#" id="instances">Instances</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#" id="publish">Publish (new version)</a></li>
-  </ul>
 </div>
-  <span class="label label-default" style="float:right;margin-right:15px;" id="version"></span> -->
-
-</div>
-<!--<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>-->
 @endsection
 
 @section('end_body_scripts_top')
-  <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
-  <script src='/assets/js/vendor/ractive.min.js'></script>    
-
-  <!-- <script src='/assets/js/paged.js'></script>  -->
-
-  <!-- <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-  <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
-
+  <script src='/assets/js/vendor/ractive.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
 @endsection
 
 @section('end_body_scripts_bottom')
@@ -361,41 +330,17 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
   $('#content').html(templates.admin_dashboard.render(loaded));
   $('.navbar-header .nav a h4').html('My Dashboard');
 
-  $('#search').berry({
+      new gform({
 				name:'user_search',
-				actions:false,
-				inline:true,
+				actions:[],
+				horizontal:false,
 				label:false,
 				fields:[
 					{name:'query',label:false,placeholder:'Search', pre:'<i class="fa fa-filter"></i>'},
-					{type:'raw',value:'',name:'results',label:false}
-				]}).on('change',function(){
-
-					// if(typeof Berries.user !== 'undefined'){
-					// 	Berries.user.destroy();
-					// }
-				}).delay('change:query',function(){
-          processFilter({currentTarget:this.find('query').$el});
-          // msnry.layout()
-          // msnry.
-					// $.ajax({
-					// 	url: '/api/users/search/'+this.toJSON().query,
-					// 	success: function(data) {
-					// 		this.fields.results.update({value:templates['user_list'].render({users:data})})
-					// 	}.bind(this)
-					// })
+					{type:'output',value:'',name:'results',label:false}
+				]},'#search').on('change:query',function(e){
+          processFilter({currentTarget:e.field.el.querySelector('input')});
 				})
-
-// var msnry = new Masonry( '.masonry-grid', {
-//         itemSelector: '.grid-item',
-//         columnWidth: '.grid-sizer',
-//         gutter: '.gutter-sizer',
-//         percentPosition: true,
-//         // columnWidth: 80,
-//         columnWidth: 200,
-//         transitionDuration: 0,
-//         isFitWidth: true
-//     });
     $("time.timeago").timeago();
     $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -421,32 +366,6 @@ loaded.app_developers = _.map(loaded.app_developers.reverse(), function(loaded, 
 @section('bottom_page_styles')
 
   <style>
-
-
-/* .grid-sizer,.grid-item { width: 32%;}
-.gutter-sizer { width: 0%; }
-
-@media (min-width: 480px) {
-    .grid-sizer,.grid-item { width: 32%;}
-    .gutter-sizer { width: 2%; }
-}
-
-@media (min-width: 768px) {
-    .grid-sizer,.grid-item { width: 32%;}
-    .gutter-sizer { width: 2%; }
-}
-
-@media (min-width: 992px) {
-    .grid-sizer,.grid-item { width: 23.5%;}
-    .gutter-sizer { width: 2%; }
-}
-
-@media (min-width: 1200px) {
-    .grid-sizer,.grid-item { width: 18.25%;}
-    .gutter-sizer { width: 2%; }
-} */
-
-
 div.masonry-grid { 
   display: flex; 
   flex-direction: row; 

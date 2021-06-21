@@ -2,6 +2,14 @@
 
 return [
 
+    /* If you want to disable sending ANY emails, set the following in your .env file:
+    /* MAIL_LIMIT_SEND=true */
+    'limit_send' => env('MAIL_LIMIT_SEND',false),
+    /* If you want to only send emails to certain people, set the following in your .env file:
+    /* MAIL_LIMIT_SEND=true */
+    /* MAIL_LIMIT_ALLOW=email1@gmail.com,email2@gmail.com */
+    'limit_allow' => explode(',',env('MAIL_LIMIT_ALLOW','')),
+
     /*
     |--------------------------------------------------------------------------
     | Mail Driver

@@ -64,6 +64,7 @@ function App() {
 			this.inline.set(this.data.user.options)
 		}
 		this.ractive.set(this.data);
+		
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
@@ -136,8 +137,7 @@ function App() {
 			// return gform.m(this.partials[template],_.extend({}, this.partials, data));
 			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
-
-		version: function(){return '1.2.1'},
+		version: function(){return '1.2.0'},
 		findForm:function(name){
 			var form = _.find(this.options.config.forms,{name:name})
 			if(typeof form !== 'undefined'){
@@ -296,8 +296,7 @@ function App() {
 	})
 	return returnable;
 }
- 
-grapheneAppEngine = 
+$g.engines['graphene'] = {'v1': 
 function(options){
 
   var temp = function(options) {
@@ -306,28 +305,27 @@ function(options){
 		for(var i in this.config.templates) {
 			this.partials[this.config.templates[i].name] = this.config.templates[i].content;
 		}
-		
-		this.partials['Main'] =  this.partials['Main'] || this.partials['main'] || '<div id="app_'+this.config.app_instance_id+'"></div>';
+
 		if(typeof this.config.scripts == 'object') {
 
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
 				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
 			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app.data = app.data||data;\n/*- Custom Code starts Here -*/');
-			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
+			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return function(){return this;}.bind(this);}'
 
 		}
 
-		var mountResult = (function(data, script) {
+		var mountFunc = (function(data, script) {
 			// try{
+				// eval((debug.state)?script:script.split('debugger').join(''));
 				eval(script);
 				return mount.call({data:data,app:app});	
 			// }catch(e){
 			// }		
 		})(this.options.data || {}, this.config.script)
-
+		mountResult = mountFunc();
 		if(typeof mountResult !== 'undefined') {
 			this.data= mountResult.data;
-			// app.data = this.data;
 			this.methods = {};
 			for(var i in mountResult) {
 				if(typeof mountResult[i] == 'function') {
@@ -350,6 +348,11 @@ function(options){
     if(typeof this.app == 'undefined'){
 			this.app = App.call(this)
 			app = this.app;
+			
+			// Object.defineProperty(app,'debugger',{
+			// 	get: ()=>{if(debug.state)debugger;},
+			// 	configurable: false,
+			//   });
     }
 		this.draw()
 		if(typeof this.options.onLoad == 'function'){
@@ -361,10 +364,10 @@ function(options){
 		this.options.defaultHtml = this.$el.html();
 		if(typeof this.component == 'undefined'){
 			this.component = Ractive.extend(
-				{data:this.methods,css:this.options.config.css, template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], partials: this.partials}
+				{data: this.methods,css:this.options.config.css, template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], partials: this.partials}
 			)
 		}
-		this.ractive = this.component({data: this.data,el: this.$el[0]});
+		this.ractive = this.component({data: this.data, el: this.$el[0], on: this.methods});
 	    // this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
 
 		this.$el.find('[data-toggle="tooltip"]').tooltip();
@@ -397,7 +400,6 @@ function(options){
 			// 	}
 
 			}.bind(this));
-						// this.inline = this.$el.berry({attributes: this.options.data.user.options, renderer: 'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type})
 
 
 			this.$el.find('form').on('submit', function(e){
@@ -474,4 +476,4 @@ function(options){
 var newtemp =  new temp(options);
 var app = {};
 return newtemp;
-}
+}}

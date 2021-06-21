@@ -7,7 +7,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     container:container,
 		fields: fields,
 		render: function() {return workflow_report.container;},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
     set: function (newItem) {$.extend(item, newItem);},
@@ -27,7 +27,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         default:
           
           // var icon = ;
-          file.icon = '<i class="fa '+(mime_type_icon_map[file.mime_type] || mime_type_icon_map[file.mime_type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o")+' fa-3x" style="padding-top: 4px;"></i>';
+          file.icon = '<i class="fa '+mime_type_icon_map[file.mime_type] || mime_type_icon_map[file.mime_type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o"+' fa-3x" style="padding-top: 4px;"></i>';
           file.preview = "";
         }
 
@@ -134,7 +134,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }
               }
               mappedData.history = _.map(data, function(event){
-                var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','signature','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+                var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
                 newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
                 newEvent.state = event.end_state;
                 newEvent.actor = _.pick(event.deleted_by||event.user,'first_name','last_name','email','unique_id','id','params')
@@ -190,6 +190,9 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               },{})
         
     
+              // if(mappedData.allowFiles){
+                mappedData.hasFiles = (_.filter(mappedData.history,function(item){if(item.file && (item.deleted_at == null)){return item;} }).length>0)
+              // }
               if(typeof this.history !== 'undefined'){
                 this.history.teardown();
               }
@@ -245,8 +248,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
               }.bind(this))
               this.methods = [];
-              update = function (file, response){
-
+              update = function (dummy, response){
                 if(typeof response !== 'undefined'){
                   var event = this.processFile.call(this,response);
                   if(typeof event.user == 'undefined' && event.user_id_created == this.get().user.id){
@@ -255,7 +257,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   if(event.deleted_at && typeof event.deleted_by == 'undefined' && event.user_id_deleted == this.get().user.id){
                     event.deleted_by = this.get().user;
                   }
-                  var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','signature','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
+                  var newEvent = _.pick(event,'user','deleted_by','id','data','comment','action','status','created_at','updated_at','file','log','mime_type','path','name','icon','preview','date','deleted_at','deleted_by');
     
                   newEvent.assignemnt = {type:event.assignment_type,id:event.assignment_id};
                   newEvent.state = event.end_state;
@@ -279,15 +281,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                   }
               
-                  if(typeof file == 'object'){
-                    gform.collections.update('files',_.where(mappedData.history,{file:true}));
-                    var field = gform.instances.modal.find({shown:true,type:'files'});
-                    if(field){
-                      field.set(response.name)
-                      field.renderMenu();
-                      $('[href="'+_.find(field.options,{id:response.id}).path+'"]').click()
-                    }
-                  }
                   this.history.update(mappedData)
                   this.ractive.update(mappedData)
                 }
@@ -453,7 +446,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               $('.report').on('click','[data-event]',function(e){
                 var formStructure = {
                   "legend":this.get().options.workflow_instance.name,
-                  "name":'modal',
                   "events":this.get().options.workflow_version.code.form.events||{},
                   "data":{user:this.get().user,data:mappedData,_flowstate:this.get().options.state,_flowaction:e.currentTarget.dataset.event,_id:this.get().options.id},
                   "actions": [
@@ -504,7 +496,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                   formStructure.fields.splice(0,0,{"name":"_state","label":false,"type":"fieldset","fields": this.get().options.workflow_version.code.form.fields})
                 }
     
-                
                 var states =  _.map(mappedData.history,function(item){
                   return item.state;
                 })
@@ -522,28 +513,13 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 new gform(formStructure).on('save',function(e){
                   document.querySelector('.report').innerHTML = '<center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>';
     
-
-                  //check if validation required first
-                  var currentAction = _.find(_.find(this.get().options.workflow_version.code.flow,{name:mappedData.state}).actions,{name:e.form.get('_flowaction')});
-
-                  if(currentAction.validate !== false && !e.form.validate(true)){  
-                    if(currentAction.invalid_submission !== true || typeof e.form.errors.signature !== "undefined" || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?",{errors:_.values(e.form.errors)}) )){
-                      toastr.error("Form invalid, please check for errors!", 'ERROR');
-                      return;
-                    }
-                  }
-
-
-                  // if(!e.form.validate(true))return;
+                  if(!e.form.validate(true))return;
     
                   e.form.trigger('close')
                   formData = {comment:e.form.get('comment'),action:e.form.get('_flowaction')}
     
                   if(typeof e.form.find('_state') !== 'undefined'){
                     formData._state =e.form.get('_state')
-                  }
-                  if(typeof e.form.find('signature') !== 'undefined'){
-                    formData.signature =e.form.get('signature')
                   }
 
                   // formData.data._state = formData.data._state ||{};
@@ -570,10 +546,6 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }.bind(this)).on('canceled',function(e){
                   e.form.trigger('close')
                 }).modal();
-                if(_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature){
-                  gform.instances.modal.fields.push(gform.instances.modal.add({type:'signaturePad',required:true,label:"Signature",help:_.find(_.find(mappedData.workflow.instance.version.code.flow,{name:mappedData.state}).actions,{name:e.currentTarget.dataset.event}).signature_text||"Please Sign Above",name:"signature",target:".gform-footer",columns:8}))
-                }
-
               }.bind(this))
     
             }.bind(this,resources)
