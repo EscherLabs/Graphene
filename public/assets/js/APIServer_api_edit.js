@@ -343,7 +343,7 @@ function load(app_version) {
         {
           "name":"required",
           "label": false,
-          "array":true,
+          "array":{min:1,max:100},
           "type":"fieldset",
           fields:[
             {'name':'name','label':'Name',"inline":true,columns:6},
@@ -369,7 +369,7 @@ function load(app_version) {
         {
           "name":"optional",
           "label": false,
-          "array":true,
+          "array":{min:1,max:100},
           "type":"fieldset",
           fields:[
             {'name':'name','label':'Name',"inline":true,columns:6},
@@ -611,7 +611,7 @@ $('#publish').on('click', function() {
 });
 
 $('#instances').on('click', function() {
-  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="'+server+'/{{slug}}" target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/api_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
+  viewTemplate = Hogan.compile('<div class="list-group">{{#items}}<div class="list-group-item"><a href="https://{{environment.domain}}/{{slug}}" target="_blank">{{name}} ({{environment.name}})</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/apiserver/'+slug+'/api_instance/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>');
   $.get('/api/proxy/'+slug+'/api_instances', function(data) {
     data = _.where(data, {api_id:api.id})
     if(data.length > 0){

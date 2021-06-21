@@ -43,6 +43,14 @@ class PublicAPIAuth
             $headers = ['WWW-Authenticate' => 'Basic'];
             return response()->make('Invalid credentials.', 401, $headers);
         } else {
+            // If unique_id was passed as part of the API, attempt to authenticate as that user.
+            if (!is_null($request->route('unique_id'))) {
+                $current_user = User::where('unique_id',$request->route('unique_id'))->first();
+                if (is_null($current_user)) {
+                    return response()->make('User '.$unique_id.' not found!', 404, $headers);
+                }
+                Auth::login($current_user);
+            }
             return $next($request);
         }    
     }

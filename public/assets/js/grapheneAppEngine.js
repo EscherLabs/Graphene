@@ -128,7 +128,7 @@ function App() {
 		render:function(template, data){
 			var local_ractive = Ractive({
 			template: this.partials[template],
-			partials: this.partial,
+			partials: this.partials,
 			data: data
 			});
 			return local_ractive.toHTML();

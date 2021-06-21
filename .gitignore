@@ -15,6 +15,6 @@ Homestead.json
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-#Idea files and .DS_Store
+# Don't Include .idea and DS_Store
 .idea
 .DS_Store
