@@ -178,41 +178,25 @@ class WorkflowInstanceController extends Controller
 
         $myWorkflow->findVersion();
 
-
         $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
-        if($request->has('saved')){
-            $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new','saved'])->where('id','=',$request->get('saved'))->with('files')->first();
-        }
-        $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['saved'])->get();
         if($myWorkflow != null) {
             $renderer = new PageRenderer();
             return $renderer->render([
                 'group'=>$groupObj,
                 'config'=>[
-                    "sections"=>[
+                    "sections"=>[[],
                         [[
                             "title"=>$myWorkflow->name,
                             "user"=>Auth::user(),
                             "current"=>$current,
-                            "all"=>$saved,
                             "workflow"=>$myWorkflow,
                             "workflow_id"=>$myWorkflow->id,
                             "widgetType"=>"Workflow",
                             "resources"=>$this->fetch($myWorkflow,$request,$current),
                             "container"=>true
                         ]],
-                    [[
-                        "title"=>$myWorkflow->name,
-                        "user"=>Auth::user(),
-                        "current"=>$current,
-                        "all"=>$saved,
-                        "workflow"=>$myWorkflow,
-                        "workflow_id"=>$myWorkflow->id,
-                        "widgetType"=>"WorkflowSummary",
-                        "resources"=>$this->fetch($myWorkflow,$request,$current),
-                        "container"=>true
-                    ]]],
-                    "layout"=>'<div class="col-lg-offset-2 col-lg-6 col-md-12 col-sm-12 cobler_container"></div><div class="col-lg-2 col-md-12 col-sm-12 cobler_container workflow_sidebar" style="position:sticky"></div></div>'
+                    []],
+                    "layout"=>'<div class="col-lg-offset-2 col-md-offset-1 col-lg-8 col-md-10 col-sm-12 cobler_container"></div></div>'
                 ],
                 'id'=>$myWorkflow->id,
                 'resource'=>'workflow',

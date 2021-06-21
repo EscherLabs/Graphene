@@ -513,6 +513,7 @@ Cobler.types.collection = function(container) {
 		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 		// 	// {name:"Title",label:"title"}
 		// ] },
+        {name:"strict",label:"Strict",type:"switch",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
 		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},
@@ -693,7 +694,7 @@ Cobler.types.section = function(container) {
 			// {label: 'Scale', value: 'scale'},
 			// {label: 'Grid', value: 'grid'},
 		]},
-		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Section Label', name: 'label'},
+		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Section Label', name: 'label',data:{section:true}},
 		{target: "#collapseBasic .panel-body", type: 'text', required: true, label: 'Name', name: 'name'},
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'/type',value:"template"}],parse:[{type:"requires"}], fields:[
 			{name:"display",type:"textarea",columns:12,label:"Display",show:[{type:"matches",value:["template"],name:"/type"}]}

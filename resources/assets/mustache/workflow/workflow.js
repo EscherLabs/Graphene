@@ -1,17 +1,16 @@
 workflow_report.workflow = `
+
       <div class="btn-group pull-right slice-actions parent-hover">
 	    {{#enable_min}}<span class="btn btn-default btn-sm min-item fa fa-toggle" data-event="min" title="Minimize"></span>{{/enable_min}}
       </div>
       {{#container}}
-      <div class="row">
-      <div class="col-md-12">
+
       <div class="panel panel-default">
         <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
           <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
         </div>
         <div class="collapsible panel-body">
-        <h3 class="flow-title"></h3>
-        <h4 class="submission-title"></h4>
+          <h3 class="flow-title"></h3>
           <div>
           <!-- Nav tabs -->
           {{#allowFiles}}
@@ -45,7 +44,6 @@ workflow_report.workflow = `
       </div>
 
 
-</div>
 
       {{/container}}
       {{^container}}
@@ -55,6 +53,4 @@ workflow_report.workflow = `
         <div class="g_{{guid}}"></div>
         </div>
       {{/container}}
-
       `;
-      
