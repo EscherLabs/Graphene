@@ -58,7 +58,7 @@ renderBuilder = function(){
     
     var temp = $.extend(true, {}, form);
     _.each(temp.fields,function(field){
-      field.widgetType = gform.types[field.type]||{}.base||'input'
+      field.widgetType = (gform.types[field.type]||{}).base||'input'
     })
     // for(var i in temp.fields){
       // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
