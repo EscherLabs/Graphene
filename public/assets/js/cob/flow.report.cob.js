@@ -7,7 +7,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     container:container,
 		fields: fields,
 		render: function() {return workflow_report.container;},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
     set: function (newItem) {$.extend(item, newItem);},

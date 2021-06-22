@@ -252,7 +252,7 @@
         temp.allowFiles = temp.workflow.version.code.form.files && _.find(temp.workflow.version.code.flow,{name:this.get().workflow.configuration.initial}).uploads
         return gform.renderString(workflow_report.workflow, temp);
           },
-          edit: berryEditor.call(this, container),
+          edit: defaultCobEditor.call(this, container),
           toJSON: get,
           get: get,
           set: function (newItem) {
@@ -657,7 +657,7 @@
         return gform.renderString(workflow_report.workflows,temp);
   
           },
-          edit: berryEditor.call(this, container),
+          edit: defaultCobEditor.call(this, container),
           toJSON: get,
           get: get,
           set: function (newItem) {
@@ -699,7 +699,7 @@
         temp.workflow_admin = group_admin;
         return gform.renderString(workflow_report.status, temp);
           },
-          edit: berryEditor.call(this, container),
+          edit: defaultCobEditor.call(this, container),
           toJSON: get,
           get: get,
           set: function (newItem) {
@@ -769,7 +769,7 @@
         temp.workflow_admin = group_admin;
         return gform.renderString(workflow_report.status, temp);
           },
-          edit: berryEditor.call(this, container),
+          edit: defaultCobEditor.call(this, container),
           toJSON: get,
           get: get,
           set: function (newItem) {
@@ -949,7 +949,7 @@
         temp.workflow_admin = group_admin;
         return gform.renderString(workflow_report.status, temp);
           },
-          edit: berryEditor.call(this, container),
+          edit: defaultCobEditor.call(this, container),
           toJSON: get,
           get: get,
           set: function (newItem) {
