@@ -10,7 +10,7 @@ If you are interested in piloting Graphene at your campus, please contact [graph
  - MySQL 5.7.8+ or MariaDB 10.2+
  - PHP 8.0+
  - Node.js 10+
- - Composer
+ - Composer 2+
 
 ## Installation Instructions / Tutorials / Documentation
 All documentation (including installation instructions and video tutorials) is available in the [Graphene Wiki](https://github.com/EscherLabs/Graphene/wiki)
