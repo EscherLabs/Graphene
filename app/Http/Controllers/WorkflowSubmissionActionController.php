@@ -559,7 +559,7 @@ You may view the current status as well as the complete history of this workflow
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content_rendered]);
+            $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
         }
         // Send Email to Actor (if different person than actor)
         if (!$state_data['owner']['is']['actor']) {
@@ -567,7 +567,7 @@ You may view the current status as well as the complete history of this workflow
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content_rendered]);
+            $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
         }
 
         // Email Asignee(s)
@@ -670,13 +670,13 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
     // Note that "to" expects either an email address (string) or an array of email addresses
     private function send_email($email) {
         $to = isset($email['to'])?$email['to']:[];
-        if (is_array($email['to'])) { 
-            $to = array_unique($to); 
-        } else {
+        if (!is_array($email['to'])) { 
             $to = [$to];
         }
+        $to = array_unique($to);
+
         $subject = isset($email['subject'])?$email['subject']:'No Subject';
-        $content = isset($email['content'])?$email['subject']:'No Body';
+        $content = isset($email['content'])?$email['content']:'No Body';
 
         // If MAIL_LIMIT_SEND is true, only send emails to those who are 
         // specified in MAIL_LIMIT_ALLOW
