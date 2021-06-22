@@ -232,6 +232,18 @@ gform.types['endpoint'] = {...gform.types['smallcombo'],
 
 
 gform.stencils.signaturePad = `
+<style>.signaturePad-canvas{border:solid 1px #bbb;} 
+.has-error .signaturePad-canvas{border-color:red;}</style>
+<div class="row clearfix form-group {{modifiers}} data-type="{{type}}">
+	{{>_label}}
+	{{#label}}
+	{{^horizontal}}<div class="col-md-12">{{/horizontal}}
+	{{#horizontal}}<div class="col-md-8">{{/horizontal}}
+	{{/label}}
+	{{^label}}
+	<div class="col-md-12">
+    {{/label}}
+    <canvas class="signaturePad-canvas" width="567" height="200"></canvas>
 	<div class="">
 		<div class="input-group" style="width:100%" contentEditable="false"> 
         </div>
