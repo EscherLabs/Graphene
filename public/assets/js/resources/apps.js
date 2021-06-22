@@ -5,7 +5,7 @@ getData([url, '/api/apps/developers'], (apps, developers) => {
 			{label: 'Name', name:'name', required: true, enabled:(resource_id == ''),value: resource_id},
 			{label: 'Description', name:'description', required: false, type:'textarea'},
 			{label: 'Tags', name:'tags', required: false},
-			{label: 'Lead Developer', name:'user_id', type:'select', options: developers, template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}', required: false,format:{label:"{{email}}",value:"{{id}}"}},
+            {label: 'Lead Developer',type:"user_id", name:'user_id', search:'/api/users/search/{{search}}{{value}}?app_developers', template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'},
 			{name: 'id', type:'hidden'}
 		],
 		actions:[

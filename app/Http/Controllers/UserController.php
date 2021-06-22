@@ -94,7 +94,40 @@ class UserController extends Controller
             }
             $query->whereNotIn('unique_id',$exclude_users);
         }
-
+        if ($request->has('app_developers')) {
+            $query->where(function($query) use ($request) {
+                if (is_array($request->app_developers)) {
+                    $filter_ids = $request->app_developers;
+                } else if (is_string($request->app_developers)) {
+                    $filter_ids = explode(',',$request->app_developers);
+                }
+                $filter_ids = array_filter($filter_ids, function($a) {return $a !== "";});
+                $query->whereHas('app_developers', function($query) use ($filter_ids) {
+                    if (!empty($filter_ids)) {
+                        $query->whereIn('app_id',$filter_ids);
+                    }
+                })->orWhereHas('site_members', function($query) {
+                    $query->where('site_developer','=',1)->where('site_id','=',config('app.site')->id);
+                });    
+            });
+        }
+        if ($request->has('workflow_developers')) {
+            $query->where(function($query) use ($request) {
+                if (is_array($request->workflow_developers)) {
+                    $filter_ids = $request->workflow_developers;
+                } else if (is_string($request->workflow_developers)) {
+                    $filter_ids = explode(',',$request->workflow_developers);
+                }
+                $filter_ids = array_filter($filter_ids, function($a) {return $a !== "";});
+                $query->whereHas('workflow_developers', function($query) use ($filter_ids) {
+                    if (!empty($workflow_id)) {
+                        $query->whereIn('workflow_id',$filter_ids);
+                    }
+                })->orWhereHas('site_members', function($query) {
+                    $query->where('site_developer','=',1)->where('site_id','=',config('app.site')->id);
+                });
+            });
+        }
         $users = $query->limit(25)->get()->toArray();
         foreach($users as $index => $user) {
             $users[$index] = array_intersect_key($user, array_flip(['id','unique_id','first_name','last_name','email','params']));
