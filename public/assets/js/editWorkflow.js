@@ -837,7 +837,7 @@ function drawForm(name){
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
     name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
       {name: "label", label: "Label", columns: 6},
-      {name: "name", label: "Name", columns: 6, show: [{type: "not_matches", name: "label", value: ""}]},
+      {name: "name", label: "Name", columns: 6,required:true},
       {name: "type", label: "Type", type: "select", columns: 6, options:[
         {value: "success", label: "Success"},
         {value: "danger", label: "Danger"},
