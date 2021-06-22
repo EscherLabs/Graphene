@@ -40,7 +40,10 @@ class WorkflowSubmission extends Model
 
     public function getAssignment() {
         if($this->assignment_type == "user"){
-            $this->assignee = User::where("id", '=', $this->assignment_id)->first()->only('first_name','last_name','email','unique_id','params');
+            $this->assignee = User::where("id", '=', $this->assignment_id)->first();
+             if($this->assignee !== null){
+                $this->assignee = $this->assignee->only('first_name','last_name','email','unique_id','params');
+             }
         }else{
             $this->assignee = Group::where("id",'=',$this->assignment_id)->where('site_id',config('app.site')->id)->select('name','slug','id')->first();
         }
