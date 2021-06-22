@@ -429,6 +429,9 @@ function load(workflow_version) {
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
     }));
+    gform.collections.update('templates', _.map(_.pluck(templatePage.toJSON(),'name'),function(item,i){
+      return {value:"template_"+i,label:item}
+    }));
     resource_grid.fixStyle()
   })
   // wf_form = "{}";
