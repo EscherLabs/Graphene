@@ -1255,12 +1255,14 @@ const fieldLibrary = (function(){
         type:'smallcombo'
       },
       group: {label: 'Group', name:'group_id',strict:true, type: 'smallcombo', required: true, value: parseInt(group_id), edit: [{type: 'not_matches',name: "_method", value: "edit"},{type: 'test', test: () => (resource_id == '') }],options:'groups',format: {title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}", value:(group => group.id)}},
-      icon: {label: 'Icon', name:'icon', type:'smallcombo', template: '<i class="{{attributes.icon}}"></i>', 
+      icon: {label: 'Icon', name:'icon', type:'smallcombo', template: '<i class="fa fa-{{attributes.icon}}"></i>', 
           format:{
-            title: 'Icon <span class="pull-right"><i class="{{value}}"></i></span>',
+            title: 'Icon <span class="pull-right"><i class="fa fa-{{value}}"></i></span>',
             label: i => i.name.replace(/(\r\n|\s)/gm, ""), 
-            value: "{{value}}",template:'<i class="fa fa-{{value}}"></i>',
-            display: '<span style = "text-transform:capitalize;"><i class="{{value}}"></i> {{{label}}}'
+            value: function(item){
+              debugger;
+              return (item.value||"").split('-')[1]},template:'<i class="fa fa-{{value}}"></i>',
+            display: '<span style="text-transform:capitalize;"><i class="{{value}}"></i> {{{label}}}'
           }, 
           options: 'icons',
           required: false
