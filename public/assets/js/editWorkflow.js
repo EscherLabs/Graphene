@@ -663,7 +663,8 @@ function createFlow() {
         }
 
         if(state.status == "closed"){
-          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', {name:state.name.split(' ').join('_')});
+          graph = gform.renderString('\n{{graph}}({{name}})\nclass {{graph}} closedClass', {graph:state.name.split(' ').join('_'), name:state.name});
+          // graph = graph+= gform.renderString('\nclass {{name}} closedClass', {name:state.name.split(' ').join('_')});
         }
 
         var stuff = _.map(state.actions,function(action){
@@ -710,7 +711,6 @@ createFlow();
 
 
 function drawForm(name){
-
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -1541,7 +1541,6 @@ $('#versions').on('click', function() {
   $.ajax({
     url: root + loaded.workflow_id + '/versions',
     success: function(data) {
-      console.log(data);
       if(!orig.stable) {
         data.unshift({id:orig.id,label:'Working Version'})
       }

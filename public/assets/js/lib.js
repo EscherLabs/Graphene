@@ -725,7 +725,6 @@ gform.types['currency']= _.extend({}, gform.types['input'],{
     }
   },
   display: function(){
-    debugger;
     var val = this.value;
     if(typeof this.cleave !== 'undefined'){
       val = this.cleave.getFormattedValue()
