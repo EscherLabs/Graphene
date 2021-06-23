@@ -329,7 +329,7 @@
         }
         this.methods = [];
         _.each(this.get().workflow.workflow.code.methods,function(item,index){
-          eval('this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(data,data.data)');
+          eval('this.methods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(data,data.data)');
         }.bind(this))
         var formSetup = {
           "data":data,

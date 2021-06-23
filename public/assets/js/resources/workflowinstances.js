@@ -6,7 +6,7 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 		schema: [
 			fieldLibrary.group,
 			{label: 'Workflow', name:'workflow_id',type:"select", options:'workflows', format:{label:"{{name}}",value:function(e){return e.id}}},
-			{label: 'Version', name:'workflow_version_id', type:'hidden'},
+			// {label: 'Version', name:'workflow_version_id', type:'hidden'},
 			...fieldLibrary.content,
 			{name: 'workflow', type:'hidden'},
 			{name: 'id', type:'hidden'}
