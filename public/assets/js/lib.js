@@ -205,6 +205,7 @@ gform.types['endpoint'] = {...gform.types['smallcombo'],
   defaults:{label:true,strict:true, options: 'endpoints',format:{label:'{{name}}',value:"{{id}}",display:'<dl class="dl-horizontal" style="margin-bottom:0"><dt>Name:</dt><dd>{{name}}</dd><dt>URL:</dt><dd>{{config.url}}</dd><dt>User:</dt><dd>{{config.username}}</dd></dl>'}},
   setLabel (){
     gform.toggleClass(this.labelEl,'required',this.required)
+    this.label = this.owner.options.data.resources[this.parent.index].name;
     this.labelEl.innerHTML = this.owner.options.data.resources[this.parent.index].name+this.suffix;
     
   },  
@@ -869,6 +870,12 @@ $g = function(){
     form:gform,
     forms:gform.instances,
     render:gform.m,
+    alert:function(options,data){
+			if(typeof options == 'string'){
+				options = {content:options};
+			}
+			toastr[options.status||'info'](gform.m(options.content||'',_.extend({},/* this.partials,*/ data)),options.title )
+		},
     emit:globalevents.emit,
     on:globalevents.on,
     off:globalevents.off,

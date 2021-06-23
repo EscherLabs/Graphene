@@ -67,6 +67,14 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 			},'#main .col-sm-9')
 			
 			$('#save').on('click',function(){
+				if(!$g.forms.main.validate()){$g.alert({status:'error',content:'Check Configuration'});return;}
+				if(typeof $g.forms.options !== 'undefined'){
+					if(!$g.forms.options.validate()){$g.alert({status:'error',content:'Check Options'});return;}
+				}
+				if(typeof $g.forms.resources !== 'undefined'){
+					if(!$g.forms.resources.validate()){$g.alert({status:'error',content:'Check Resources'});return;}
+				}
+
 				$.ajax({
 						url: root, 
 						type: 'PUT', 

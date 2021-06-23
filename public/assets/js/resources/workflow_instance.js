@@ -152,9 +152,12 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				}
 
 				$('#save').on('click',function(){
+					if(!$g.forms.main.validate()){$g.alert({status:'error',content:'Check Configuration'});return;}
+
 					var item = {...$g.forms.main.get(),
 						configuration: $g.forms.map.get()};
 					if(typeof $g.forms.resources !== 'undefined') {
+						if(!$g.forms.resources.validate()){$g.alert({status:'error',content:'Check Resources'});return;}
 						item.configuration.resources = $g.forms.resources.get().resources;
 					}
 					$.ajax({url: root, type: 'PUT', 
