@@ -511,8 +511,8 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
       return gform.renderString(`<dt>{{label}}</dt> <dd>
       {{#value}}
       <hr>
-      <!--span class="btn btn-default pull-right">{{name}} <i class="fa fa-download text-primary txt-primary"></i></span>{{^name}}<span class="text-muted">(empty)</span>{{/name}}-->
-      <span class="badge pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</span>
+      <a href="{{dataURI}}" download="{{name}}" class="btn btn-default pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}} <i class="fa fa-download text-primary txt-primary"></i></a>
+      <!--span class="badge pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</span>-->
       {{#dataURI}}<div style="margin:15px 0;background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">
         {{#icon}}<i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>{{/icon}}
         {{^icon}}<img height="{{height}}" width="{{width}}" style="position:relative;top:{{top}}px;left:{{left}}px;" src="{{dataURI}}"/></div>{{/icon}}
