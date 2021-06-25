@@ -350,16 +350,15 @@ gform.stencils.base64_file = `
   </div>
 </div>
 `;
-
 gform.stencils.base64_file_preview = `<li class="list-group-item ">
-  <div><div class="btn-group pull-right" role="group" aria-label="...">
+  <div><div class="btn-group pull-right hidden-print" role="group" aria-label="...">
         <button type="button" class="btn btn-danger gform-remove" title="Remove"><i class="fa fa-times"></i></button>
         <button type="button" class="btn btn-info gform-replace" title="Replace"><i class="fa fa-refresh"></i></button>
       </div></div>
       <span class="badge">{{name}}</span>
-  <div style="background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">{{#icon}}
-    <i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>
-    {{/icon}}{{^icon}}<img data-dz-thumbnail /></div>\n {{/icon}} </div></li>`,
+      <div style="background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">{{#icon}}
+      <i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>
+      {{/icon}}{{^icon}}<img data-dz-thumbnail /></div>\n {{/icon}} </div></li>`,
 
 Dropzone.autoDiscover = false;
 gform.types.base64_file = _.extend({}, gform.types['input'], gform.types['collection'],{
@@ -367,6 +366,16 @@ gform.types.base64_file = _.extend({}, gform.types['input'], gform.types['collec
     // var e = this.name;
     // this.multiple && (e += "[]"),
     // this.el.querySelector('[name="' + e + '"]').focus()
+},      
+setup:function(){
+
+    if(this.multiple && typeof this.limit !== 'undefinded'){
+      gform.types.base64_file.updateStatus.call(this,true)
+    }
+
+    this.labelEl = this.el.querySelector('label');
+    gform.types[this.type].setLabel.call(this)
+    this.infoEl = this.el.querySelector('.gform-info');
 },
 defaults:{format:{uri: '{{{name}}}',options:[]}},
   dataURItoBlob:function(dataURI) {
@@ -394,7 +403,9 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
     if(this.multiple)this.el.querySelector('.gform-clear-all').disabled = !this.Dropzone.files.length;
 
     if(this.Dropzone.files.length>=(this.multiple?this.limit:1)){
-      this.Dropzone.disable();
+      setTimeout(()=>{
+        this.Dropzone.disable();
+      },50)
       gform.addClass(this.el.querySelector('.dropzone'),'hidden')
     }else{
       this.Dropzone.enable();
@@ -461,11 +472,57 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
     }
     return this.value;
   },
+  assignIcon:file => {
+    if(typeof file.type !== 'undefined'){
+      switch(file.type){
+      case "image/jpeg":
+      case "image/png":
+      case "image/jpg":
+      case "image/gif":
+          if(typeof file.dataURI !== 'undefined'){
+            var memoryImg = document.createElement('img');
+            memoryImg.src = file.dataURI;
+            if(memoryImg.width<memoryImg.height){
+              file.width=120;
+              file.top= ((120/memoryImg.width)*memoryImg.height-120)*(-.5);
+            }else{
+              file.height=120
+              file.left= ((120/memoryImg.height)*memoryImg.width-120)*(-.5);
+            }
+          }
+        break;
+      default:
+        
+        // var icon = ;
+        file.icon = (mime_type_icon_map[file.type] || mime_type_icon_map[file.type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o");
+      }
+
+      // if(file.ext == "pdf"){
+      //   file.preview = '<iframe width="100%" height="'+($( document ).height()-$('.report').position().top-100)+'px" src="'+file.path+'"></iframe>';
+      // }
+    }
+    return file;
+  },
   toString: function(name, report) {
+    this.value = this.get();
     if(!report){
-      return gform.m('<dt>{{label}}</dt> <dd>{{#value.dataURI}}<img height=75px src="{{value.dataURI}}"/>{{/value.dataURI}} {{value.name}}{{^value.name}}<span class="text-muted">(empty)</span>{{/value.name}}</dd><hr>', this)
+      this.value = (this.multiple)?_.map(this.value,gform.types.base64_file.assignIcon):gform.types.base64_file.assignIcon(this.value);
+
+      return gform.renderString(`<dt>{{label}}</dt> <dd>
+      {{#value}}
+      <hr>
+      <!--span class="btn btn-default pull-right">{{name}} <i class="fa fa-download text-primary txt-primary"></i></span>{{^name}}<span class="text-muted">(empty)</span>{{/name}}-->
+      <span class="badge pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</span>
+      {{#dataURI}}<div style="margin:15px 0;background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">
+        {{#icon}}<i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>{{/icon}}
+        {{^icon}}<img height="{{height}}" width="{{width}}" style="position:relative;top:{{top}}px;left:{{left}}px;" src="{{dataURI}}"/></div>{{/icon}}
+      {{/dataURI}} 
+      {{/value}}
+      </dd><hr>`, this)
     }else{
-      return this.value.dataURI
+      // return gform.m('<dt>{{label}}</dt> <dd>{{#value}}<div>{{#dataURI}}<img height=75px src="{{dataURI}}"/>{{/dataURI}} {{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</div>{{/value}}</dd><hr>', this)
+
+      return this.value
     }
   },      
   satisfied: function(value) {
@@ -989,18 +1046,9 @@ $g = function(){
 
 }()
 
-if(typeof Berry !== 'undefined'){
-Berry.validations.is_https = {
-    method: function(value) {
-        return value.startsWith("https://");
-    },
-    message: 'Basic Auth Routes must start with "https://"'
-}}
-
 gform.validations.is_https = function(value) {
   return ( value.startsWith("https://")) ? false : 'Basic Auth Routes must start with "https://"';
 }
-
 
 var mime_type_icon_map = {
   // Media
@@ -1267,7 +1315,6 @@ const fieldLibrary = (function(){
             title: 'Icon <span class="pull-right"><i class="fa fa-{{value}}"></i></span>',
             label: i => i.name.replace(/(\r\n|\s)/gm, ""), 
             value: function(item){
-              debugger;
               return (item.value||"").split('-')[1]},template:'<i class="fa fa-{{value}}"></i>',
             display: '<span style="text-transform:capitalize;"><i class="{{value}}"></i> {{{label}}}'
           }, 
@@ -1308,3 +1355,23 @@ const fieldLibrary = (function(){
 return collection;
     
   }())
+
+  function getData(urls,callback){
+    if(typeof urls == 'string')urls = [urls];
+    Promise.all(_.map(urls, url =>{
+      return new Promise((resolve,reject) => {
+        gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
+      })
+    })).then(data => {
+      let ss = callback.toString().split('=>')[0].split('(');
+      ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
+        //assumes no more parameters are expected in the callback than the number of urls requested
+        $g.collections.add(item.trim(), data[index])
+        return data;
+      },data)
+  
+      callback.apply(null, data);
+    }).catch(function(data){
+      // debugger;
+    })
+  }

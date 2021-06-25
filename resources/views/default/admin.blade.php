@@ -127,7 +127,7 @@
       </div>
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
-    <div style="margin-top:15px;width: 120px;" class="btn btn-lg btn-new" id="graphene-quick-create"><i class="fa fa-plus fa-lg"></i> New</div>
+    <!-- <div style="margin-top:15px;width: 120px;" class="btn btn-lg btn-new" id="graphene-quick-create"><i class="fa fa-plus fa-lg"></i> New</div> -->
 
       <ul class="nav nav-sidebar">
         @can('view_in_admin','App\Group')
