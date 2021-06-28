@@ -13,6 +13,10 @@ class WorkflowSubmission extends Model
     protected $appends = ['history'];
     protected $hidden = ['history']; // Don't share the full history
 
+    protected function serializeDate(\DateTimeInterface $date) {
+        return $date->format('Y-m-d H:i:s');
+    }
+
     public function workflow() {
         return $this->belongsTo(Workflow::class);
     }
