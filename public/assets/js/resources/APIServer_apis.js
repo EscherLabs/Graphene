@@ -15,7 +15,7 @@ $.ajax({
 	url: url,		
 	success: function(data){
 		tableConfig.schema = [
-			{label: 'Name', name:'name', validate:{required:true,phpclassname:true}},
+			{label: 'Name', name:'name', required:true, validate:[{type:"phpclassname"}]},
 			{label: 'Description', name:'description', required: true, type:"textarea"},
 			{label: 'Tags', name:'tags',type:'text'},
 			{name: 'id', type:'hidden'}
