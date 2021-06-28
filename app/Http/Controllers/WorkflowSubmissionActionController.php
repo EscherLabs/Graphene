@@ -338,6 +338,7 @@ class WorkflowSubmissionActionController extends Controller {
             if ($first_action_state_data !== false) {
                 $email_state_data['was'] = $first_action_state_data['was'];
                 $email_state_data['actor'] = $first_action_state_data['actor'];
+                $email_state_data['owner'] = $first_action_state_data['owner'];
                 $email_state_data['action'] = $first_action_state_data['action'];
                 $email_state_data['comment'] = $first_action_state_data['comment'];
                 $email_state_data['previous'] = $first_action_state_data['previous'];
