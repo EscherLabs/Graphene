@@ -190,9 +190,7 @@
     <script src='/assets/js/vendor/ace/ace.js?cb={{ config("app.cache_bust_id") }}' charset="utf-8"></script>
     <script src='/assets/js/vendor/toastr.min.js?cb={{ config("app.cache_bust_id") }}'></script> 
     @yield('end_body_scripts_top')
-    <script src='/assets/js/vendor/berry.full.js?cb={{ config("app.cache_bust_id") }}'></script> 
     <script src='/assets/js/vendor/bootstrap.full.berry.js?cb={{ config("app.cache_bust_id") }}'></script> 
-    <script src='/assets/js/vendor/berrytables.full.js?cb={{ config("app.cache_bust_id") }}'></script> 
     <script src='/assets/js/vendor/state-machine.js?cb={{ config("app.cache_bust_id") }}'></script>
 
     <script src='/assets/js/vendor/gform_bootstrap.min.js?cb={{ config("app.cache_bust_id") }}'></script>
