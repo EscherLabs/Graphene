@@ -331,17 +331,16 @@ class WorkflowSubmissionActionController extends Controller {
         }
         else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
                 !$myWorkflowInstance->configuration->suppress_emails){
-
             // Reset Email State Data to info for last "human" action. (Non-logic)
             $first_action_state_data = $this->get_first_action_state($state_data);
-            $email_state_data = $state_data;
             if ($first_action_state_data !== false) {
-                $email_state_data['was'] = $first_action_state_data['was'];
-                $email_state_data['actor'] = $first_action_state_data['actor'];
-                $email_state_data['owner'] = $first_action_state_data['owner'];
-                $email_state_data['action'] = $first_action_state_data['action'];
-                $email_state_data['comment'] = $first_action_state_data['comment'];
-                $email_state_data['previous'] = $first_action_state_data['previous'];
+                // Overwrite certain parts of the state data with previous human state data.
+                $email_state_data = array_merge(
+                    $state_data,
+                    Arr::only($first_action_state_data,['was','actor','owner','action','comment','previous']),
+                );
+            } else {
+                $email_state_data = $state_data;
             }
             $this->send_default_emails($email_state_data);
         }
