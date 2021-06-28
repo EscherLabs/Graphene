@@ -91,10 +91,12 @@
           });
           e.form.trigger('close')
         })
-        .on('cancel',function(){
-          model.undo();
-          if(typeof e.field !== 'undefined' && e.field.type == "cancel") model.undo();
+        .on('cancel',function(e){
+          if(typeof e.field !== 'undefined' && e.field.type == "cancel") {
+            model.undo();
+          }
           model.owner.draw()
+          e.form.trigger('close');
         }).modal();
     }],
     'model:deleted':[function(e){
