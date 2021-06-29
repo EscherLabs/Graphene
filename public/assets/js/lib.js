@@ -368,8 +368,7 @@ gform.types.base64_file = _.extend({}, gform.types['input'], gform.types['collec
     // this.el.querySelector('[name="' + e + '"]').focus()
 },      
 setup:function(){
-
-    if(this.multiple && typeof this.limit !== 'undefinded'){
+    if(this.multiple && typeof this.limit !== 'undefinded' && this.limit>1){
       gform.types.base64_file.updateStatus.call(this,true)
     }
 
@@ -507,17 +506,37 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
     this.value = this.get();
     if(!report){
       this.value = (this.multiple)?_.map(this.value,gform.types.base64_file.assignIcon):gform.types.base64_file.assignIcon(this.value);
-
-      return gform.renderString(`<dt>{{label}}</dt> <dd>
+return gform.renderString((this.limit>1)?`
+      <dt>{{label}}</dt> <dd style="min-height:30px">
       {{#value}}
       <hr>
-      <a href="{{dataURI}}" download="{{name}}" class="btn btn-default pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}} <i class="fa fa-download text-primary txt-primary"></i></a>
+      <a href="{{dataURI}}" download="{{name}}" class="btn btn-default pull-right">{{name}} <i class="fa fa-download text-primary txt-primary"></i></a>
       <!--span class="badge pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</span>-->
-      {{#dataURI}}<div style="margin:15px 0;background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">
+      {{#dataURI}}
+      <div style="margin:15px 0;background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">
         {{#icon}}<i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>{{/icon}}
         {{^icon}}<img height="{{height}}" width="{{width}}" style="position:relative;top:{{top}}px;left:{{left}}px;" src="{{dataURI}}"/></div>{{/icon}}
       {{/dataURI}} 
       {{/value}}
+      {{^value.length}}
+      <span class="text-muted">(empty)</span>
+      {{/value.length}}
+      </dd><hr>`:`<dt>{{label}}</dt> <dd style="min-height:30px">
+      {{#value.name}}
+      {{#value}}
+      <hr>
+      {{#dataURI}}
+      <a href="{{dataURI}}" download="{{name}}" class="btn btn-default pull-right">{{name}} <i class="fa fa-download text-primary txt-primary"></i></a>
+      <!--span class="badge pull-right">{{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</span>-->
+      <div style="margin:15px 0;background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">
+        {{#icon}}<i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>{{/icon}}
+        {{^icon}}<img height="{{height}}" width="{{width}}" style="position:relative;top:{{top}}px;left:{{left}}px;" src="{{dataURI}}"/></div>{{/icon}}
+      {{/dataURI}} 
+      {{/value}}
+      {{/value.name}}
+      {{^value.name}}
+      <span class="text-muted">(empty)</span>
+      {{/value.name}}
       </dd><hr>`, this)
     }else{
       // return gform.m('<dt>{{label}}</dt> <dd>{{#value}}<div>{{#dataURI}}<img height=75px src="{{dataURI}}"/>{{/dataURI}} {{name}}{{^name}}<span class="text-muted">(empty)</span>{{/name}}</div>{{/value}}</dd><hr>', this)
