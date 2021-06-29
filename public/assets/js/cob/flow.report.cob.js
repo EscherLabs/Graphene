@@ -294,7 +294,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }
               }.bind(this)
               _.each(this.get().options.workflow_version.code.methods,function(item,index){
-                eval('this.methods["'+item.name+'"] = this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(null,mappedData)');
+                eval('this.methods["'+item.name+'"] = this.methods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(null,mappedData)');
               }.bind(this))
     
               $('.row .list').on('click','.filterable.submission', function(e){
@@ -515,7 +515,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                 formStructure.methods = [];
                 _.each(this.get().options.workflow_version.code.methods,function(item,index){
-                  eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(formStructure.data)');
+                  eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'\n}.bind(formStructure.data)');
                 }.bind(this))
     
                 // formStructure.methods = this.methods;
