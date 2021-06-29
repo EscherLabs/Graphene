@@ -337,7 +337,7 @@ class WorkflowSubmissionActionController extends Controller {
                 // Overwrite certain parts of the state data with previous human state data.
                 $email_state_data = array_merge(
                     $state_data,
-                    Arr::only($first_action_state_data,['was','actor','owner','action','comment','previous']),
+                    Arr::only($first_action_state_data,['was','actor','owner','action','comment','previous'])
                 );
             } else {
                 $email_state_data = $state_data;
