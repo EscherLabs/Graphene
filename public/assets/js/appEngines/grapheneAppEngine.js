@@ -311,7 +311,7 @@ function(options){
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
 				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
 			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app.data = app.data||data;\n/*- Custom Code starts Here -*/');
-			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return function(){return this;}.bind(this);}'
+			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
 
 		}
 
