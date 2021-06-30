@@ -197,7 +197,7 @@ class ResourceService
                         'content' => serialize($response),
                         'created_at' => Carbon::now(),
                     ]);
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     // Move along
                 }
                 // Delete Other Stale Cache

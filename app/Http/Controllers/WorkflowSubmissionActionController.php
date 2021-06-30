@@ -655,7 +655,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
                                     $GLOBALS['action_stack_depth']=0; //To reset the global variable before every task. This is necessary for internal automated operations
                                     $this->action($submission, $action_request, true); // runs the action method
                                     }
-                                    catch(\Exception $e){
+                                    catch(\Throwable $e){
                                         //Do nothing
                                     }
                             }
@@ -695,7 +695,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
                 $message->to($to);
                 $message->subject($subject); 
             });
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Failed to Send Email... Continue Anyway.
         }
     }

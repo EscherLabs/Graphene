@@ -318,7 +318,7 @@ class AppInstanceController extends Controller
                         'content' => serialize($response),
                         'created_at' => Carbon::now(),
                     ]);
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     // Move along
                 }
                 // Delete Other Stale Cache
@@ -332,7 +332,7 @@ class AppInstanceController extends Controller
             // UTF-8 Encode Data to prevent any errors during XML Parsing
             try {
                 $xml_data = simplexml_load_string($response['content'],'SimpleXMLElement',LIBXML_NOCDATA);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $xml_data = simplexml_load_string(utf8_encode($response['content']),'SimpleXMLElement',LIBXML_NOCDATA);
             }
             $response['content'] = json_decode(json_encode($xml_data),true);
@@ -344,7 +344,7 @@ class AppInstanceController extends Controller
                         $response['content'] = $try_decode;
                     }
                 }
-            }catch(Exception $e){}
+            }catch(\Throwable $e){}
         }
         return $response;
     }
