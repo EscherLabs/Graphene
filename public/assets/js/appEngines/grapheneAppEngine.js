@@ -311,7 +311,7 @@ function(options){
 			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
 				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
 			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app.data = app.data||data;\n/*- Custom Code starts Here -*/');
-			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
+			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return function(){return this;}.bind(this);}'
 
 		}
 
@@ -323,22 +323,27 @@ function(options){
 			// }catch(e){
 			// }		
 		})(this.options.data || {}, this.config.script)
-		mountResult = mountFunc();
-		if(typeof mountResult !== 'undefined') {
-			this.data= mountResult.data;
-			this.methods = {};
-			for(var i in mountResult) {
-				if(typeof mountResult[i] == 'function') {
-					this.methods[i] = mountResult[i].bind(this);
+		if(typeof mountFunc !== 'undefined') {
+			mountResult = mountFunc();
+			
+			if(typeof mountResult !== 'undefined') {
+				this.data= mountResult.data;
+				this.methods = {};
+				for(var i in mountResult) {
+					if(typeof mountResult[i] == 'function') {
+						this.methods[i] = mountResult[i].bind(this);
+					}
 				}
-			}
-			for(var i in mountResult.app) {
-				if(typeof mountResult.app[i] == 'function') {
-					this.methods[i] = mountResult.app[i].bind(this);
+				for(var i in mountResult.app) {
+					if(typeof mountResult.app[i] == 'function') {
+						this.methods[i] = mountResult.app[i].bind(this);
+					}
 				}
-			}
-		} else {
+			} else {
 			this.data = this.options.data;
+			}
+		}else{
+				this.data = this.options.data;
 		}
 
 		this.data.options = $.extend({}, this.data.options);
