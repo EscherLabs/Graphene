@@ -27,7 +27,8 @@ return [
         'src' => [
             'head' => [],
             'body' => [
-                ['file'=>'https://unpkg.com/vue@next'],
+                // Use of CDNs is not compatible with code minifier.  Removing VUE
+                // ['file'=>'https://unpkg.com/vue@next'], 
                 ['file'=>'/assets/js/vendor/moment.js'],
                 ['file'=>'/assets/js/vendor/math.min.js'],
                 ['file'=>'/assets/js/vendor/popper.min.js'],
@@ -44,7 +45,6 @@ return [
                 ['file'=>'/assets/js/vendor/lodash.min.js'],
                 ['file'=>'/assets/js/lodash.shim.js'],
                 ['file'=>'/assets/js/vendor/dropzone/dropzone.min.js'],
-
                 ['file'=>'/assets/js/vendor/gform_bootstrap.min.js'],
                 ['file'=>'/assets/js/vendor/GrapheneDataGrid.min.js'],
                 ['file'=>'/assets/js/vendor/ractive.min.js'],
@@ -67,10 +67,10 @@ return [
                 ['file'=>'/assets/js/cob/links.cob.js'],
                 ['file'=>'/assets/js/templates/widget.js'],
                 ['file'=>'/assets/js/lib.js'],
-
                 ['file'=>'/assets/js/appEngines/grapheneAppEngine.js'],
                 ['file'=>'/assets/js/appEngines/gAE_0001.js'],
-                ['file'=>'/assets/js/appEngines/vue_0001.js'],
+                // Remove Vue.js App Engine (Since Vue.js is removed above)
+                // ['file'=>'/assets/js/appEngines/vue_0001.js'],
                 ['file'=>'/assets/js/resources/creators.js'],
             ],
         ],
