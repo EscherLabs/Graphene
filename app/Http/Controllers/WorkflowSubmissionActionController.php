@@ -149,7 +149,7 @@ class WorkflowSubmissionActionController extends Controller {
         });
         // Check if action is valid for current state
         if (is_null($action)) {
-            throw new \Exception('Invalid action ('.$request->get('action').') does not exist in state: '.$previous_state->name);
+            throw new \Exception('Workflow Submission ('.$workflow_submission->id.'): Invalid Action ('.$request->get('action').') does not exist in state: '.$previous_state->name);
         }
         // Set New State (String)
         $workflow_submission->state = $action->to;   
