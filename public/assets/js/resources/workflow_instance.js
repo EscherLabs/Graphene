@@ -124,7 +124,7 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 					$('#resourcestab').show();
 					new gform({
 						fields: [
-							{name:'resources',label:false,type:"fieldset",array:{min:0,max:3,duplicate:false},fields:[
+							{name:'resources',label:false,type:"fieldset",array:{min:0,max:3,duplicate:false,remove:false},fields:[
 								{label:false, name: 'name',columns:0, type:'hidden'},
 								{name: 'endpoint', type: 'endpoint',required:true},
 							]}
