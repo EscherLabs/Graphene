@@ -796,18 +796,18 @@ gform.types['currency']= _.extend({}, gform.types['input'],{
   toString: function(name,report){
 
     if(!report){
-      return '<dt>'+this.label+'</dt> <dd>'+((this.item.pre||"")+((typeof this.cleave !== 'undefined')?this.cleave.getFormattedValue():this.value)+(this.item.post||"")||'<span class="text-muted">(empty)</span>')+'</dd><hr>'
+      return '<dt>'+this.label+'</dt> <dd>'+((this.item.pre||"")+((typeof this.cleave !== 'undefined' && this.cleave instanceof Cleave)?this.cleave.getFormattedValue():this.value)+(this.item.post||"")||'<span class="text-muted">(empty)</span>')+'</dd><hr>'
     }else{
         return this.value
     }
   },
   display: function(){
     var val = this.value;
-    if(typeof this.cleave !== 'undefined'){
+    if(typeof this.cleave !== 'undefined' && this.cleave instanceof Cleave){
       val = this.cleave.getFormattedValue()
     }
 
-    return (typeof this.value !== 'undefined' && this.value !== '')?(this.item.pre||"")+((typeof this.cleave !== 'undefined')?this.cleave.getFormattedValue():this.value)+(this.item.post||""):'(empty)';
+    return (typeof this.value !== 'undefined' && this.value !== '')?(this.item.pre||"")+((typeof this.cleave !== 'undefined' && this.cleave instanceof Cleave)?this.cleave.getFormattedValue():this.value)+(this.item.post||""):'(empty)';
   },
   initialize: function(){
     //   this.iel = this.el.querySelector('input[name="' + this.name + '"]')
