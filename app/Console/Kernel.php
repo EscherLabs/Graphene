@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\CompileJavaScript::class,
         \App\Console\Commands\CompileCSS::class,
         \App\Console\Commands\EnvSet::class,
+        \App\Console\Commands\UpgradeGrapheneForms::class,
     ];
 
     /**

@@ -45,8 +45,6 @@ return [
                 ['file'=>'/assets/js/vendor/lodash.min.js'],
                 ['file'=>'/assets/js/lodash.shim.js'],
                 ['file'=>'/assets/js/vendor/dropzone/dropzone.min.js'],
-                ['file'=>'/assets/js/vendor/gform_bootstrap.min.js'],
-                ['file'=>'/assets/js/vendor/GrapheneDataGrid.min.js'],
                 ['file'=>'/assets/js/vendor/ractive.min.js'],
                 ['file'=>'/assets/js/vendor/lockr.min.js'],
                 ['file'=>'/assets/js/vendor/toastr.min.js'],
@@ -56,6 +54,20 @@ return [
                 // ['file'=>'/assets/js/vendor/ace/ace.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
                 ['file'=>'/assets/js/vendor/jquery.nivo.slider.min.js','attributes'=>[['name'=>'charset','value'=>'utf-8']]],
                 ['file'=>'/assets/js/vendor/sortable.js'],
+
+                // Include all of the GrapheneForms Files
+                ['file'=>'/assets/js/gform/gform.js'],
+                ['file'=>'/assets/js/gform/types.js'],
+                ['file'=>'/assets/js/gform/conditions.js'],
+                ['file'=>'/assets/js/gform/validate.js'],
+                ['file'=>'/assets/js/gform/bootstrap.js'],
+                ['file'=>'/assets/js/gform/smallcombo.js'],
+                ['file'=>'/assets/js/gform/summernote.js'],
+                // ['file'=>'/assets/js/vendor/gform_bootstrap.min.js'],
+
+                // Include all of the GrapheneDataGrid Files
+                ['file'=>'/assets/js/vendor/GrapheneDataGrid.min.js'],
+
                 ['file'=>'/assets/js/cob/cob.js'],
                 ['file'=>'/assets/js/cob/content.cob.js'],
                 ['file'=>'/assets/js/cob/image.cob.js'],
