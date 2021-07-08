@@ -60,7 +60,7 @@ function load(app_version) {
 
 	$('.nav-tabs').stickyTabs();
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    bt.fixStyle()
+    resource_grid.fixStyle()
   })
 
   loaded.code = $.extend(true, {scripts:[{name:'Main',content:'', disabled: true}],templates:[{name:'Main',content:'', disabled: true}],
@@ -72,29 +72,24 @@ function load(app_version) {
 
   $('#version').html((attributes.summary || 'Working Version'));
 
-  if(typeof Berries.style !== 'undefined'){
-    Berries.style.destroy();
-  }
-  $('.styles').berry({
-    actions:false,
+  new gform({
+    actions:[],
     name: 'style',
-    attributes:attributes,
-    inline:true,
-    flatten:false,
+    data:attributes,
     fields:[
       {name:'code', label: false,  type: 'fieldset', fields:[
         {label:false, name:'css', type:'ace', mode:'ace/mode/scss'},
       ]}
     ]
-  })
+  },'.styles')
   
 
   var tableConfig = {
 		entries: [25, 50, 100],
 		count: 25,
 		autoSize: -20,
-		container: '.resources',
-    edit:true,delete:true,add:true
+		el: '.resources',
+    // edit:true,delete:true,add:true
 	}
 
 
@@ -102,23 +97,26 @@ function load(app_version) {
     {label: 'Name',name: 'name'},
     {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}, {label: 'Include as Script', value: 'script'}, {label: 'Include as CSS', value: 'css'}]},
     {label: 'Path',name:'path'},
-    {label: 'Fetch', type: 'checkbox',name:'fetch'},
-    {label: 'Cache', type: 'checkbox',name:'cache'}
+    {label: 'Fetch', type: 'checkbox',name:'fetch',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]},
+    {label: 'Cache', type: 'checkbox',name:'cache',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]}
   ];
   tableConfig.data = attributes.code.resources;
-  if(typeof bt !== 'undefined'){
-    bt.destroy();
+  if(typeof resource_grid !== 'undefined'){
+    resource_grid.destroy();
   }
-  bt = new berryTable(tableConfig)
+  resource_grid = new $g.grid(tableConfig)
 
   var temp = $(window).height() - $('.nav-tabs').offset().top -77;
 
   $('body').append('<style>.ace_editor { height: '+temp+'px; }</style>')
 
-  templatePage = new paged('.templates', {name:'templates', items:attributes.code.templates, label:'Template'});
-  scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
+  // templatePage = new paged('.templates', {name:'templates', items:attributes.code.templates, label:'Template'});
+  // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
   // formPage = new paged('.forms',{name:'forms', items:attributes.code.forms, mode:'ace/mode/javascript', label:'Form',extra: function(item){
-
+  templatePage = new fileManager('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  scriptPage = new fileManager('.scripts',{name:'scripts', items:attributes.code.scripts, label:'Script',mode:'ace/mode/javascript'});
+  
+  
   //   item.content = this.berry.fields[this.active].toJSON();
   //   if (!_.some(JSON.parse(item.content||'{}').fields, function(o) { return _.has(o, "fields"); })) {
   //     modalForm(item.content, item.name, function() {
@@ -233,14 +231,9 @@ $('#save').on('click',function() {
   template_errors = templatePage.errors();
   script_errors =scriptPage.errors();
   var data = {code:{}};
-  data.code.css = Berries.style.toJSON().code.css;
-  // var sass = new Sass();
-  // sass.compile(Berries.style.toJSON().code.css, function(result) {
-  // $().berry({attributes:{content:result.text},fields:[{name:"content",type:"ace",label:false}]})
-  //   console.log(result);
-  // });
+  data.code.css = $g.forms.style.get().code.css;
 
-  data.code.resources = _.map(bt.models,'attributes');
+  data.code.resources = resource_grid.toJSON();//_.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
 
   try{
@@ -313,43 +306,60 @@ $('#save').on('click',function() {
 })
 
 $('#import').on('click', function() {
-    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
-      $.ajax({
-        url: root+attributes.app_id+'/code',
-        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
-        method: 'PUT',
-        success: function(){
-          Berries.update.trigger('close');
-          window.location.reload();
-        },
-        error: function(e){
-          toastr.error(e.statusText, 'ERROR');
-        }
-      })
-  });
+  new gform({
+    name: 'update', 
+    legend: '<i class="fa fa-cube"></i> Update Microapp',
+    fields: [	
+      {label: 'Descriptor', type: 'textarea'}
+    ]
+  }).on('save', e => {
+    $.ajax({
+      url: root+attributes.app_id+'/code',
+      method: 'PUT',
+      data: {force: true, updated_at:'', ...JSON.parse(e.form.get('descriptor'))},
+      success: () => {
+        e.form.trigger('close');
+        window.location.reload()
+      },
+      error: e =>{
+        toastr.error(e.statusText, 'ERROR');
+      }
+
+    })
+}).on('cancel',function(e){e.form.dispatch('close')}).modal();
 });
 
+
 $('#publish').on('click', function() {
-    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Microapp',fields: [	
-        {label: 'Summary', required: true},
-        {label: 'Description', type: 'textarea'}
-      ]}).on('save', function() {
-        if(Berries.publish.validate()){
-          $.ajax({
-            url: root + attributes.app_id + '/publish',
-            data: this.toJSON(),
-            method: 'PUT',
-            success: function() {
-              Berries.publish.trigger('close');
-              toastr.success('', 'Successfully Published')
-            },
-            error: function(e){
-              toastr.error(e.responseJSON.message, 'ERROR');
-            }
-          })
-        }
-  });
+  new gform({
+    name: 'publish',
+    legend: '<i class="fa fa-cube"></i> Publish Microapp',
+    fields: [	
+      {label: 'Summary', required: true},
+      {label: 'Description', type: 'textarea'}
+    ]}).on('save', e => {
+      if(e.form.validate()){
+        $.ajax({
+          url: root + attributes.app_id + '/publish',
+          data: e.form.get(),
+          method: 'PUT',
+          success: () => {
+            e.form.trigger('close');
+            toastr.success('', 'Successfully Published')
+          },
+          error: e =>{
+            toastr.error(e.responseJSON.message, 'ERROR');
+          }
+        })
+      }
+  }).on('cancel', e => {
+    e.form.trigger('close');
+  }).modal();
 });
+
+
+
+
 loadInstances = function(){
   $.get('/api/appinstances?app_id=' + loaded.app_id, function(app_instances) {
     if(app_instances.length > 0){
@@ -376,11 +386,11 @@ loadInstances = function(){
               return resource;
             }.bind(null, instance))
           }
-          instance.version_summary = (instance.version !== null )?instance.version.summary||'Working Version':"Please configure version";
+          instance.version_summary = instance.version.summary||'Working Version';
           
           instance.version_id =  (instance.app_version_id!==null ? (instance.app_version_id==0 ? "Latest Published" : instance.version.summary+' ('+instance.app_version_id+')') : "Latest Saved");
 
-          instance.error = (instance.version === null )||!!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length ||!!_.difference(_.pluck(instance.resources ,'name'),_.pluck(instance.version.resources,'name')).length
+          instance.error = !!_.difference(_.pluck(instance.version.resources ,'name'),_.pluck(instance.resources,'name')).length ||!!_.difference(_.pluck(instance.resources ,'name'),_.pluck(instance.version.resources,'name')).length
           return instance;
         })
       }
@@ -617,45 +627,47 @@ loadInstances();
 $('#versions').on('click', function() {
   $.ajax({
     url: root + loaded.app_id + '/versions',
-    success: function(data) {
-      console.log(data);
+    success: function(versions) {
       if(!orig.stable) {
-        data.unshift({id:orig.id,label:'Working Version'})
-      }
-      Berry.btn.switch={
-        label: 'Switch',
-        icon:'reply',
-        id: 'berry-submit',
-        modifier: 'success pull-right',
-        click: function() {
-          if(this.options.autoDestroy) {
-            this.on('saved', this.destroy);
-          }
-          this.trigger('save');
-        }
+        versions.unshift({id:orig.id,label:'Working Version'})
       }
 
-      $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
-        {label: 'Version', name:'app_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
-      ]}).on('save', function() {
-        //switch version
+      new gform({
+        actions:[{type:'cancel'},{type:'save',label: 'Switch'}],
+        name:'modal',
+        data:{app_version_id:loaded.id},
+        legend:'Select Version',
+        fields:[
+          {
+            label: 'Version', 
+            name:'app_version_id', 
+            options:versions,
+            type:'select',
+            format:{
+              label:"{{label}}",
+              value:version=>version.id
+            }
+          },
+      ]}).on('save', e => {
+        // switch version
+        e.form.trigger('close');
+
         $.ajax({
-          url: root+attributes.app_id+'/versions/'+this.toJSON().app_version_id,
+          url: root+attributes.app_id+'/versions/'+e.form.get('app_version_id'),
           method: 'get',
-          data: data,
-          success:function(data) {
-            data.app = loaded.app;
-            loaded = data;
+          success:function(version) {
+            version.app = loaded.app;
+            loaded = version;
             load(loaded.code);
-            Berries.modal.trigger('close');
           }
         })
       })
+      .on('cancel', e => {
+        e.form.trigger('close');
+      }).modal()
     }
   })
 })
-
-
 
 
 

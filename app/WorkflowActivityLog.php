@@ -10,6 +10,10 @@ class WorkflowActivityLog extends Model
     protected $fillable = ['workflow_instance_id','workflow_submission_id','user_id','start_state','action','end_state','comment','data','signature','status'];
     protected $casts = ['data'=>'array'];
 
+    protected function serializeDate(\DateTimeInterface $date) {
+        return $date->format('Y-m-d H:i:s');
+    }
+   
     public function workflowInstance() {
         return $this->belongsTo(WorkflowInstance::class);
     }

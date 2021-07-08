@@ -49,29 +49,6 @@
 };
 }( jQuery ));
 
-Berry.validations['validurlpath'] = {
-	method: function(value, args) {
-		if (!/^[\/][a-zA-Z0-9_\/-]*[a-zA-Z0-9]$/.test(value)) {
-			return false;
-		}
-		return true;
-	},
-	message: 'Must be a valid url path begining with a / and ending in a number or letter. Please see examples in help text'
-}
-
-Berry.validations['phpclassname'] = {
-	method: function(value, args) {
-		if (!/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/.test(value)) {
-			return false;
-		}
-		return true;
-	},
-	message: 'API name must be a valid php function name'
-}
-
-
-
-
 
 attributes = {};
 var root = '/api/apps/';
@@ -100,14 +77,7 @@ function load(app_version) {
       // {type:'output',name:'test',format:{value:'<div></div>'},label:false},
       {
         "name":"resources",
-        "array": {
-            "min": 0,
-            "max": 50,
-            "duplicate": {
-                "enable": "auto",
-                "clone": false
-            }
-        },
+        "array":true,
         "type":"fieldset",
         "fields": [
           // "database": {}
@@ -125,195 +95,21 @@ function load(app_version) {
     ]
   },'.resources')
 
-
-
-
-
-
-
-
-
-
-  // var tableConfig = {
-	// 	entries: [25, 50, 100],
-	// 	count: 25,
-	// 	autoSize: -20,
-	// 	container: '.routes',
-  //   edit:function(model){
-  //     var temp = model.attributes;
-  //     temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
-  //     temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
-  //     model.set(temp)
-  //     model.owner.draw();
-  //   },delete:true, add:function(model){
-  //     var temp = model.attributes;
-  //     temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
-  //     temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
-  //     model.set(temp)
-  //     model.owner.draw();    }
-	// }
-
-
-  // tableConfig.schema = [
-  //   {label: 'Description',name: 'description'},
-  //   {label: 'Path', name:'path', validate:{required:true,validurlpath:true}, help:'i.e. /example/route or /my-example_2'},
-  //   {label: 'Function Name', name:'function_name', validate:{required:true,phpclassname:true}},
-  //   // {label: 'Path',name:'path'},
-  //   {label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
-  //   {
-  //     "show":false,
-  //     "name": "parameters",
-  //     "label": "Parameters",
-  //     "template":'{{#attributes.required}}<b>{{name}}</b><br> {{/attributes.required}}{{#attributes.optional}}{{#name}}{{name}}<br>{{/name}} {{/attributes.optional}}',
-  //     "fields": {
-  //       "required": {
-  //         "label": false,
-  //         "multiple": {
-  //           "duplicate": true
-  //         },
-  //         fields:[
-  //           {'name':'name','label':'Name',"inline":true},
-  //           {'name':'description','label':'Description','type':'textarea',"inline":true},
-  //           {'name':'example','label':'Example',"inline":true}
-  //           // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
-  //         ]
-  //       },
-  //       "optional": {
-  //         "label": false,
-  //         "multiple": {
-  //           "duplicate": true
-  //         },
-  //         fields:[
-  //           {'name':'name','label':'Name',"inline":true},
-  //           {'name':'description','label':'Description','type':'textarea',"inline":true},
-  //           {'name':'example','label':'Example',"inline":true}
-  //           // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
-  //         ]
-  //       }
-  //     }
-  //   }
-  // ];
-  // tableConfig.data = attributes.routes;
-
-
-  // tableConfig.events=[
-  //   {'name': 'required', 'label': '<i class="fa fa-lock"></i> Required Parameters', callback: function(model){
-  //     $().berry({
-  //       // model:model,
-  //       attributes:model.attributes,
-  //       legend:'Required Parameters',
-  //       name:'required',
-  //       fields:[
-  //         {label: 'Description',name: 'description',type:'hidden'},
-  //         {label: 'Path', name:'path', type:'hidden'},
-  //         {label: 'Function Name', name:'function_name',type:'hidden'},
-  //         {label: 'Verb',name:'verb',type:'hidden',options:["ALL", "GET", "POST", "PUT", "DELETE"]},
-  //         {
-  //           "name": "params",
-  //           "label": false,
-  //           "fields": {
-  //             "required": {
-  //               "label": false,
-  //               "multiple": {
-  //                 "duplicate": true
-  //               },
-  //               fields:[
-  //                 {'name':'name','label':'Name',"inline":true,columns:6},
-  //                 {'name':'example','label':'Example',"inline":true, columns:6},
-  //                 {'name':'description','label':'Description','type':'textarea',"inline":true}
-  //                 // {'name':'required','label':'Required?','type':'checkbox',falsestate:0,"inline":true,columns:4},
-  //               ]
-  //             },
-  //             "optional": {
-  //               "show":false,
-  //               "label": false,
-  //               "multiple": {
-  //                 "duplicate": true
-  //               },
-  //               fields:[
-  //                 {'name':'name','label':'Name',"inline":true},
-  //                 {'name':'description','label':'Description','type':'textarea',"inline":true},
-  //                 {'name':'example','label':'Example',"inline":true}
-  //                 // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
-  //               ]
-  //             }
-  //           }
-  //         }
-  //       ]
-  //       }).on('save',function(){
-  //         var temp = Berries.required.toJSON();
-  //         temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
-  //         temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
-  //         this.set(temp)
-  //         this.owner.draw();
-  //         Berries.required.trigger('close')
-  //       },model)
-  //   }, multiEdit: false},    
-  //   {'name': 'optional', 'label': '<i class="fa fa-info"></i> Optional Parameters', callback: function(model){
-  //     $().berry({
-  //       // model:model,
-  //       attributes:model.attributes,
-  //       legend:'Optional Parameters',
-  //       name:'optional',
-  //       fields:[
-  //         {label: 'Description',name: 'description',type:'hidden'},
-  //         {label: 'Path', name:'path', type:'hidden'},
-  //         {label: 'Function Name', name:'function_name',type:'hidden'},
-  //         {label: 'Verb',name:'verb',type:'hidden',options:["ALL", "GET", "POST", "PUT", "DELETE"]},
-  //         {
-  //           "name": "params",
-  //           "label": false,
-  //           "fields": {
-  //             "required": {
-  //               "show":false,
-  //               "label": false,
-  //               "multiple": {
-  //                 "duplicate": true
-  //               },
-  //               fields:[
-  //                 {'name':'name','label':'Name',"inline":true},
-  //                 {'name':'description','label':'Description','type':'textarea',"inline":true},
-  //                 {'name':'example','label':'Example',"inline":true}
-  //                 // {'name':'required','label':'Required?','type':'checkbox',falsestate:0,"inline":true,columns:4},
-  //               ]
-  //             },
-  //             "optional": {
-  //               "label": false,
-  //               "multiple": {
-  //                 "duplicate": true
-  //               },
-  //               fields:[
-  //                 {'name':'name','label':'Name',"inline":true,columns:6},
-  //                 {'name':'example','label':'Example',"inline":true, columns:6},
-  //                 {'name':'description','label':'Description','type':'textarea',"inline":true}
-  //                 // {'name':'required','label':'Required?','type':'checkbox',falsestate:'',"inline":true,columns:4},
-  //               ]
-  //             }
-  //           }
-  //         }
-  //       ]
-  //       }).on('save',function(){
-  //         var temp = Berries.optional.toJSON();
-  //         temp.required = _.filter(temp.required, function(o) { return o.name !== ''; });
-  //         temp.optional = _.filter(temp.optional, function(o) { return o.name !== ''; });
-  //         this.set(temp)
-  //         this.owner.draw();
-
-  //         Berries.optional.trigger('close')
-  //       },model)
-  //   }, multiEdit: false}
-
-  // ]
-  // bt = new berryTable(tableConfig)
-
-
   var options = {
     data: attributes.routes,
 		el: '.routes',
     schema:[
       {label: 'Description',name: 'description'},
-      {label: 'Path', name:'path', validate:{required:true,validurlpath:true}, help:'i.e. /example/route or /my-example_2'},
-      {label: 'Function Name', name:'function_name', validate:{required:true,phpclassname:true}},
+      {label: 'Path', name:'path',required:true, validate:[{type:'custom',test:e =>{
+        if (!/^[\/][a-zA-Z0-9_\/-]*[a-zA-Z0-9]$/.test(e.value)) {
+          return  'Must be a valid url path begining with a / and ending in a number or letter. Please see examples in help text';
+        }
+      }}], help:'i.e. /example/route or /my-example_2'},
+      {label: 'Function Name', name:'function_name', required:true, validate:[{type:'custom',test:e =>{
+        if(!/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/.test(e.value)) {
+          return  'API name must be a valid php function name';
+        }
+      }}]},
       {label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
       {
             "show":false,
@@ -429,92 +225,6 @@ $(document).keydown(function(e) {
 
 
 
-function modalForm(form, name, onSave) {
-
-  if(typeof cb === 'undefined'){
-    if(typeof form === 'string'){
-      form = JSON.parse(form || '{}');
-    }
-    form = form || {};
-    $('#myModal').remove();
-    this.onSave = onSave;
-    this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-    $(this.ref).appendTo('body');
-    this.ref.find('.modal-body').html(templates.formEditor.render());
-    this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-    this.ref.on('hide.bs.modal', function(){
-      cb.destroy();
-      delete cb;
-    });
-    this.ref.find('#saveForm').on('click', function(){
-      this.onSave.call(this)
-      this.ref.modal('hide');
-      
-    }.bind(this))
-    this.ref.modal({backdrop: 'static'});
-
-    cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-    $('.modal #form').keydown(function(event) {
-      switch(event.keyCode) {
-        case 27://escape
-            event.stopPropagation();
-            cb.deactivate();
-            return false;
-          break;
-      }
-    });
-    list = document.getElementById('sortableList');
-    cb.addSource(list);
-    cb.on('activate', function(){
-      if(list.className.indexOf('hidden') == -1){
-        list.className += ' hidden';
-      }
-      $('#form').removeClass('hidden');
-    })
-    cb.on('deactivate', function(){
-      list.className = list.className.replace('hidden', '');
-      $('#form').addClass('hidden');
-    })
-    document.getElementById('sortableList').addEventListener('click', function(e) {
-      cb.collections[0].addItem(e.target.dataset.type);
-    })
-  }
-
-  if(typeof form !== 'undefined'){
-    var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
-
-      temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-          temp.fields[i].widgetType = 'select';
-          break;
-        case "checkbox":
-          temp.fields[i].widgetType = 'checkbox';
-          break;
-        default:
-          temp.fields[i].widgetType = 'textbox';
-      }
-
-    }
-
-    list.className = list.className.replace('hidden', '');
-    cb.collections[0].load(temp.fields);
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
 $('#save').on('click',function() {
   script_errors =filepage.errors();
   script_errors +=functionpage.errors();
@@ -571,43 +281,52 @@ $('#save').on('click',function() {
 })
 
 $('#import').on('click', function() {
-    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Microapp',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
+    new gform({
+      name: 'update', 
+      legend: '<i class="fa fa-cube"></i> Update API',
+      fields: [	
+        {label: 'Descriptor', type: 'textarea'}
+      ]
+    }).on('save', e => {
       $.ajax({
         url: '/api/proxy/'+slug+'/apis/'+attributes.api_id+'/code',
         method: 'PUT',
-        data: $.extend({force: true, updated_at:''}, JSON.parse(this.toJSON().descriptor)),
-        success:function(e) {
-          Berries.update.trigger('close');
+        data: {force: true, updated_at:'', ...JSON.parse(e.form.get('descriptor'))},
+        success: () => {
+          e.form.trigger('close');
           window.location.reload()
         },
-        error:function(e) {
+        error: e =>{
           toastr.error(e.statusText, 'ERROR');
         }
 
       })
-  });
+  }).on('cancel',function(e){e.form.dispatch('close')}).modal();
 });
 
 $('#publish').on('click', function() {
-    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish API',fields: [	
+    new gform({
+      name: 'publish',
+      legend: '<i class="fa fa-cube"></i> Publish API',
+      fields: [	
         {label: 'Summary', required: true},
         {label: 'Description', type: 'textarea'}
-      ]}).on('save', function() {
-        if(Berries.publish.validate()){
+      ]}).on('save', e => {
+        if(e.form.validate()){
           $.ajax({
             url: '/api/proxy/'+slug+'/apis/'+attributes.api_id+'/publish',
-            data: this.toJSON(),
+            data: e.form.get(),
             method: 'PUT',
-            success: function() {
-              Berries.publish.trigger('close');
+            success: () => {
+              e.form.trigger('close');
               toastr.success('', 'Successfully Published')
             },
-            error: function(e){
+            error: e =>{
               toastr.error(e.responseJSON.message, 'ERROR');
             }
           })
         }
-  });
+    }).on('cancel',function(e){e.form.dispatch('close')}).modal();
 });
 
 $('#instances').on('click', function() {
@@ -631,33 +350,39 @@ $('#versions').on('click', function() {
       if(!orig.stable) {
         data.unshift({id:orig.id,summary:'Working Version'})
       }
-      Berry.btn.switch={
-        label: 'Switch',
-        icon:'reply',
-        id: 'berry-submit',
-        modifier: 'success pull-right',
-        click: function() {
-          if(this.options.autoDestroy) {
-            this.on('saved', this.destroy);
-          }
-          this.trigger('save');
-        }
-      }
-      $().berry({actions:['cancel','switch'],name:'modal',attributes:{app_version_id:loaded.id},legend:'Select Version',fields:[
-        {label: 'Version', name:'api_version_id', options:data,type:'select', value_key:'id',label_key:'summary'},
-      ]}).on('save', function() {
+
+      new gform({
+        actions:[{type:'cancel'},{type:'save',label: 'Switch'}],
+        name:'modal',
+        data:{api_version_id:loaded.id},
+        legend:'Select Version',
+        fields:[
+          {
+            label: 'Version', 
+            name:'api_version_id', 
+            options:data,
+            type:'select',
+            format:{
+              label:"{{summary}}",
+              value:versions=>versions.id
+            }
+          },
+      ]}).on('save', e => {
         // switch version
+        e.form.trigger('close');
+
         $.ajax({
-          url: '/api/proxy/'+slug+'/api_versions/'+this.toJSON().api_version_id,
+          url: '/api/proxy/'+slug+'/api_versions/'+e.form.get('api_version_id'),
           method: 'get',
-          // data: data,
           success:function(data) {
             loaded = data;
             load(loaded);
-            Berries.modal.trigger('close');
           }
         })
       })
+      .on('cancel', e => {
+        e.form.trigger('close');
+      }).modal()
     }
   })
 })

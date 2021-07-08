@@ -64,6 +64,7 @@ function App() {
 			this.inline.set(this.data.user.options)
 		}
 		this.ractive.set(this.data);
+		
 		this.app.trigger('updated')
 	}
 	function click(selector, callback){
@@ -136,8 +137,7 @@ function App() {
 			// return gform.m(this.partials[template],_.extend({}, this.partials, data));
 			// return Hogan.compile(this.partials[template]).render(data || this.data);
 		}.bind(this),
-
-		version: function(){return '1.2.1'},
+		version: function(){return '1.2.0'},
 		findForm:function(name){
 			var form = _.find(this.options.config.forms,{name:name})
 			if(typeof form !== 'undefined'){
@@ -297,181 +297,21 @@ function App() {
 	return returnable;
 }
  
-grapheneAppEngine = 
-function(options){
+gAE_v0001 = options => {
+		partials = _.reduce(options.config.templates,(partials,_partial)=>{
+			partials[_partial.name] = _partial.content;
+			return partials
+		},{})
 
-  var temp = function(options) {
-  this.load = function() {
-		this.partials = {};
-		for(var i in this.config.templates) {
-			this.partials[this.config.templates[i].name] = this.config.templates[i].content;
-		}
-		
-		this.partials['Main'] =  this.partials['Main'] || this.partials['main'] || '<div id="app_'+this.config.app_instance_id+'"></div>';
-		if(typeof this.config.scripts == 'object') {
-
-			this.config.script = _.reduce(this.config.scripts, function(sum, n) {
-				return sum+';\n\n\n/*-- New File - ' + n.name+' --*/\n\n' + n.content;
-			}, '//'+this.config.title+' ('+this.config.app_instance_id+')\nfunction mount(){var context = this;app.data = app.data||data;\n/*- Custom Code starts Here -*/');
-			this.config.script+='\n\n/*- Custom Code Ends Here -*/;return this;}'
-
-		}
-
-		var mountResult = (function(data, script) {
-			// try{
-				eval(script);
-				return mount.call({data:data,app:app});	
-			// }catch(e){
-			// }		
-		})(this.options.data || {}, this.config.script)
-
-		if(typeof mountResult !== 'undefined') {
-			this.data= mountResult.data;
-			// app.data = this.data;
-			this.methods = {};
-			for(var i in mountResult) {
-				if(typeof mountResult[i] == 'function') {
-					this.methods[i] = mountResult[i].bind(this);
-				}
-			}
-			for(var i in mountResult.app) {
-				if(typeof mountResult.app[i] == 'function') {
-					this.methods[i] = mountResult.app[i].bind(this);
-				}
-			}
-		} else {
-			this.data = this.options.data;
-		}
-
-		this.data.options = $.extend({}, this.data.options);
-
-		this.$el = this.options.$el;
-		
-    if(typeof this.app == 'undefined'){
-			this.app = App.call(this)
-			app = this.app;
-    }
-		this.draw()
-		if(typeof this.options.onLoad == 'function'){
-			this.options.onLoad.call(this);
-		}
-  }
-
-  this.draw = function() {
-		this.options.defaultHtml = this.$el.html();
-		if(typeof this.component == 'undefined'){
-			this.component = Ractive.extend(
-				{data:this.methods,css:this.options.config.css, template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], partials: this.partials}
-			)
-		}
-		this.ractive = this.component({data: this.data,el: this.$el[0]});
-	    // this.ractive = new Ractive({el: this.$el[0], template: this.partials[this.options.template || 'Main']|| this.partials['Main'] || this.partials['main'], data: this.data, partials: this.partials});
-
-		this.$el.find('[data-toggle="tooltip"]').tooltip();
-		this.$el.find('[data-toggle="popover"]').popover();
-
-		if(this.$el.find('[data-inline]').length && this.options.config.forms[1].content.length) {//} > 0 && this.userEdit.length > 0){
-			this.inline = new gform({actions:JSON.parse(this.options.config.forms[1].content).actions||[],default:{hideLabel:true,type:'text',format:{label: '{{label}}', value: '{{value}}'},target:function(){
-                return '[data-inline="'+this.name+'"]'
-            }},clear:false,data:this.options.data.user.options,fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type},this.$el[0])
-			.on('save', function(e) {
-				this.app.options(e.form.get())
-			// this.app.update( { user: $.extend(true,{},this.data.user,{ options: this.inline.toJSON() }  )});
-			// 	var url = '/api/apps/instances/' + this.config.app_instance_id + '/user_options';
-			// 	if(typeof this.data.user.id !== 'undefined') {
-			// 		$.ajax({
-			// 			type: 'POST',
-			// 			url:url,
-			// 			data: {'options': this.inline.toJSON()},
-			// 			success:function(data){
-			// 				this.app.update( { user: $.extend(true,{},this.data.user,{ options: data.options}  )});
-			// 				this.optionsupdated();
-			// 			}.bind(this),
-			// 			error:function(data) {
-			// 				toastr.error(data.statusText, 'An error occured updating options')
-			// 			}
-			// 		})
-			// 	}else{
-			// 		Lockr.set(url, {'options': this.data.user.options})
-			// 		this.optionsupdated();
-			// 	}
-
-			}.bind(this));
-						// this.inline = this.$el.berry({attributes: this.options.data.user.options, renderer: 'inline', fields: JSON.parse(this.options.config.forms[1].content).fields, legend: 'Edit ' + this.type})
-
-
-			this.$el.find('form').on('submit', function(e){
-				e.preventDefault();
-				this.inline.trigger('save');
-			}.bind(this) );
-
-			this.$el.find('[data-inline="submit"]').on('click', function(){
-				this.inline.trigger('save');
-			}.bind(this) );
-			
-
-			this.$el.find('[data-form]').each(function(index, form){
-				this.app.form(form.dataset.form,form)
-			}.bind(this))
-
-			// _.each(this.forms,function(form, name){
-			// 	var selector = form.options.selector;
-			// 	form.destroy();
-			// 	delete this.forms[name];
-			// 	this.app.form(name,selector);
-			// }.bind(this))
-		}
-
-
-		// _.each(this.forms,function(form, name){
-		// }.bind(this))
-
-		if(typeof this.methods !== 'undefined' && typeof this.methods[this.options.initializer] !== 'undefined') {
-	
-      this.methods[this.options.initializer].call(this,this);
-      this.app.on('call', function(name, args) {
-        if(typeof this.methods[name] !== 'undefined'){ this.methods[name].call(this, args.args) }
-      })
-      this.app.on('apply', function(name, args) {
-        if(typeof this.methods[name] !== 'undefined'){ this.methods[name].apply(this, args.args) }
-      })
-    }
-  }
-  this.call = function(method, args) {
-    this.app.trigger('call', method, args);
-  }
-	this.destroy = function() {
-		this.$el.off('click');
-		// this.handlers = {initialize: [],refetch:[this.handlers.refetch[0]]};
-			//
-			this.eventBus.handlers = {};
-	// this.eventBus.handlers = {initialize: [],refetch:[this.eventBus.handlers.refetch[0]]};// = new gform.eventBus({owner:'app',item:'resource',handlers:{initialize: [],refetch:[this.eventBus.handlers.refetch[0]]}}, this);
-		if(typeof this.inline == 'object' && this.inline instanceof gform) {
-			this.inline.destroy();
-		}
-		_.each(this.forms,function(form, name){
-			form.destroy();
-			delete this.forms[name];
-		}.bind(this))
-
-		_.each(this.grids,function(grid, name){
-			grid.destroy();
-			delete this.grids[name];
-		}.bind(this))
-		this.app.trigger('destroy')
-		this.ractive.teardown();
+	if(typeof component == 'undefined'){
+		component = Ractive.extend(
+			{data: options.methods,css:options.config.css, template: partials[options.template || 'Main']|| partials['Main'] || partials['main'], partials: partials}
+		)
 	}
-	this.options = $.extend(true, {}, options);
-	this.options.initializer = this.options.initializer || 'callback'
-	this.config = this.options.config;
+	ractive = component({data: options.data, el: options.$el[0], on: options.methods});
 
-	this.get = function() {
-		return this.data;
-	}
-	setTimeout(this.load.bind(this), 0)
+//return {...this};
+return ()=>{
+	return {...this};
 }
-
-var newtemp =  new temp(options);
-var app = {};
-return newtemp;
 }

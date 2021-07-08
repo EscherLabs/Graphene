@@ -1,52 +1,42 @@
 $('.navbar-header .nav a h4').html('Groups');
-$.ajax({
-	url: url,
-	success: function(data) {
-		tableConfig.schema = [
+getData(url, groups => {
+	grid = new GrapheneDataGrid({...tableConfig,
+		schema: [
 			{label: 'Name', name:'name', required: true},        
 			{label: 'Slug', name:'slug', required: true},
+			{name: 'order', type:'hidden'},
 			{name: 'id', type:'hidden'}
-		];
-		tableConfig.events = [
-			{'name': 'config', 'label': '<i class="fa fa-lock"></i> Admins', callback: function(model){
-				window.location.href = '/admin/groups/'+model.attributes.id+'/admins'
-			}},
-			{'name': 'resources', 'label': '<i class="fa fa-users"></i> Members', callback: function(model){
-				window.location.href = '/admin/groups/'+model.attributes.id+'/members'
-			}},
-			{'name': 'composites', 'label': '<i class="fa fa-puzzle-piece"></i> Composites', callback: function(model){
-				window.location.href = '/admin/groups/'+model.attributes.id+'/composites'
-			}},
-			{'name': 'sort', 'label': '<i class="fa fa-sort"></i> Sort', callback: function(collection){
-
-				var tempdata = _.map(collection, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
-
-				// tempdata = _.sortBy(tempdata, 'order');
-				mymodal = modal({title: "Sort Groups", content: templates.sortlist.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
-
-				Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
-
-			}, global: true}
-		]
-		tableConfig.defaultSort = 'order';
-
-		$('body').on('click','.save-sort',function(){
-			// console.log(_.map($('#sorter').children(),function(item,index){return {key:item.dataset.id,index:index}}))
-		$.ajax({
-			url: '/api/groups/order',
-			type: 'POST',
-			data:{order:_.map($('#sorter').children(),function(item,index){return {id:item.dataset.id,index:index}})},
-			success: function(data) {
-				toastr.success('', 'Order successfully updated')
-				mymodal.ref.modal('hide')
-			}
-		})
-		})
-		tableConfig.data = data;
-		tableConfig.click = function(model){window.location.href = '/admin/groups/'+model.attributes.id};
-
-		tableConfig.name = "groups";
-
-		bt = new berryTable(tableConfig)
-	}
-});
+		],
+		actions: [
+			{'name':'delete'},'|',
+			{'name':'edit',max:1},
+			{'name': 'admins',max:1,min:1, 'label': '<i class="fa fa-lock"></i> Admins'},
+			{'name': 'members',max:1,min:1, 'label': '<i class="fa fa-users"></i> Members'},
+			{'name': 'composites',max:1,min:1, 'label': '<i class="fa fa-puzzle-piece"></i> Composites'},
+			'|',
+			{'name':'create'},
+			{'name': 'sort',max:1, 'label': '<i class="fa fa-sort"></i> Sort'}
+		],
+		data: groups,
+		name: 'groups',
+		sortBy: 'order'
+	})
+	.on('click', e => {
+		window.location.href = '/admin/groups/'+e.model.attributes.id;
+	})
+	.on('model:admins', e => {
+		window.location.href = '/admin/groups/'+e.model.attributes.id+'/admins';
+	})
+	.on('model:members', e => {
+		window.location.href = '/admin/groups/'+e.model.attributes.id+'/members';
+	})
+	.on('model:composites', e => {
+		window.location.href = '/admin/groups/'+e.model.attributes.id+'/composites';
+	})
+	.on('sort', e => {
+		var tempdata = _.map(e.grid.models, function(item){return item.attributes}).reverse();//[].concat.apply([],pageData)
+		mymodal = modal({title: "Sort Groups", content: templates.sortlist.render({items:tempdata},templates ), footer: '<div class="btn btn-success save-sort">Save</div>'});
+		Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'});
+	});
+	
+  })

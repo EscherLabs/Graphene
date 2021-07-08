@@ -325,14 +325,19 @@ function Cobler(options) {
 Cobler.types = {};
 
 
-berryEditor = function(container, renderer){
+defaultCobEditor = function(container, renderer){
 	return function(){
 		var formConfig = $.extend(true, {}, {
 			renderer: renderer || 'base', 
-			attributes: this.get(), 
-			fields: this.fields,
+			data: this.get(), 
+			fields: _.map(this.fields,function(field,key){
+				if(!('label' in field))field.label = key;
+				if(!('name' in field))field.name = key.toLocaleLowerCase().split(' ').join('_');
+				// field.label = 
+				return field;
+			}),
 			autoDestroy: true,
-			inline:true
+			horizotal:false
 		}, this.formOptions || {});
 
 		var opts = container.owner.options;
@@ -341,18 +346,32 @@ berryEditor = function(container, renderer){
 			formConfig.actions = false;
 			events = 'change';
 		}	
-		var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)));
-		myBerry.on(events, function(){
-			if(myBerry.validate()){
-		 	container.update(myBerry.toJSON(), this);
-		 	container.deactivate();
-		 	myBerry.trigger('saved');
+		// var myBerry = new Berry(formConfig, opts.formTarget || $(container.elementOf(this)));
+		// myBerry.on(events, function(){
+		// 	if(myBerry.validate()){
+		//  	container.update(myBerry.toJSON(), this);
+		//  	container.deactivate();
+		//  	myBerry.trigger('saved');
+		// 	}
+		// }, this);
+		// myBerry.on('cancel',function(){
+		//  	container.update(this.get(), this)
+		//  	container.deactivate();
+		// }, this)
+		// return myBerry;
+
+		return new gform(formConfig, opts.formTarget || $(container.elementOf(this))[0]).on(events,function(e){
+			if(e.form.validate()){
+				container.update(e.form.get(), this);
+				container.deactivate();
+				e.form.trigger('saved');
 			}
-		}, this);
-		myBerry.on('cancel',function(){
+		}.bind(this)).on('cancel',function(e){
 		 	container.update(this.get(), this)
 		 	container.deactivate();
-		}, this)
-		return myBerry;
+		}.bind(this))
+
+
+
 	}
 }

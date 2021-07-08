@@ -134,8 +134,6 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::put('/endpoints/{endpoint}','EndpointController@update')->middleware('can:update,endpoint');
     // Delete an existing endpoint by endpoint_id
     Route::delete('/endpoints/{endpoint}','EndpointController@destroy')->middleware('can:delete,endpoint');
-    // Perform Google Callback for Endpoint
-    Route::get('/endpoints/google_callback','EndpointController@google_callback');
 
     /***** Links *****/
     // List all links

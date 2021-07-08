@@ -68,7 +68,7 @@ class WorkflowController extends Controller
         $workflow_version->code = [];
         $workflow_version->workflow_id = $workflow->id;
         $workflow_version->save();
-        return $workflow;
+        return Workflow::with('user')->where('id',$workflow->id)->first();
     }
 
     public function code(Request $request, Workflow $workflow) { 
@@ -127,7 +127,8 @@ class WorkflowController extends Controller
     public function update(Request $request, Workflow $workflow) {  
         $workflow->update($request->all());
         $workflow->save();
-        return $workflow;
+        return Workflow::with('user')->where('id',$workflow->id)->first();
+
     }
 
     public function destroy(Workflow $workflow) {

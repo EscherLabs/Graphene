@@ -1,8 +1,10 @@
 workflow = true;
 gform.collections.add('files',[])
-renderNav = function(form){
+renderBuilder = function(){
+
   var target = document.querySelector('.target');
   $(target).html('<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>')
+  var form = myform;
   var map = "";
   _.each(path,function(p){
     form = _.find(form.fields,{name:p})
@@ -13,10 +15,7 @@ renderNav = function(form){
 
   
   $(target).append('<hr>')
-  return form;
-}
-renderBuilder = function(){
-   var form = renderNav(myform);
+
   
   if(typeof cb === 'undefined'){
     cb = new Cobler({formTarget:$('#form'),sortSelected:true,disabled: false, targets: [document.getElementById('editor')],items:[[]]})
@@ -56,38 +55,44 @@ renderBuilder = function(){
   }
 
   if(typeof form !== 'undefined'){
+    
     var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
+    _.each(temp.fields,function(field){
+      field.widgetType = (gform.types[field.type]||{}).base||'input'
+    })
+    // for(var i in temp.fields){
       // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
       // temp.fields[i].options = mapOptions.getobject()
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-        case "scale":
-        case "range":
-        // case "grid":
-        case "user":
-        case "user_email":
-        case "group":
-        case "groups":
-        case "smallcombo":
-        case "files":
-          temp.fields[i].widgetType = 'collection';
-          break;
-        case "checkbox":
-        case "switch":
-          temp.fields[i].widgetType = 'bool';
-          break;
-        case "fieldset":
-        case "table":
-        case "template":
-        case "grid":
-          temp.fields[i].widgetType = 'section';
-          break;
-        default:
-          temp.fields[i].widgetType = 'input';
-      }
-    }
+
+      // switch(temp.fields[i].type) {
+      //   case "select":
+      //   case "radio":
+      //   case "scale":
+      //   case "range":
+      //   // case "grid":
+      //   case "user":
+      //   case "user_email":
+      //   case "group":
+      //   case "groups":
+      //   case "smallcombo":
+      //   case "files":
+      //   case "base64_file":
+      //     temp.fields[i].widgetType = 'collection';
+      //     break;
+      //   case "checkbox":
+      //   case "switch":
+      //     temp.fields[i].widgetType = 'bool';
+      //     break;
+      //   case "fieldset":
+      //   case "table":
+      //   case "template":
+      //   case "grid":
+      //     temp.fields[i].widgetType = 'section';
+      //     break;
+      //   default:
+      //     temp.fields[i].widgetType = 'input';
+      // }
+    // }
     
     list.className = list.className.replace('hidden', '');
     cb.collections[0].load(temp.fields);
@@ -118,7 +123,7 @@ mainForm = function(){
         ]},
         {name:"files",label:"Allow File uploads",type:"switch",horizontal:true,format:{label:""}},
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
-        {name:"resource",label:"Initial Data Source",type:"select",options:["None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',label:"Method",options:'methods',format:{label:"{{label}}"}},{type:"optgroup",label:"Resource",options:'resources'}]},
+        {name:"resource",label:"Initial Data Source",type:"select",options:["None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',label:"Methods",options:'methods',format:{label:"{{label}}"}},{type:"optgroup",label:"Resources",options:'resources'}]},
         {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
         {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
@@ -163,12 +168,7 @@ mainForm = function(){
       renderBuilder();
     })
   }else{
-    var workingForm = myform;
-    _.each(path,function(p){
-      workingForm = _.find(workingForm.fields,{name:p})
-    })
-
-    var formConfig = new Cobler.types[gform.types[workingForm.type].base]();
+    var formConfig = new Cobler.types[gform.types[form.type].base]();
     $("#mainform").html(gform.renderString(accordion))
 
     $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
@@ -188,15 +188,16 @@ mainForm = function(){
       fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
+      // form = _.extend(form,e.form.get())
       var workingForm = myform;
         _.each(path,function(p){
           workingForm = _.find(workingForm.fields,{name:p})
         })
-        if(typeof e.field.data !== 'undefined' && e.field.data.section){
-          if(e.form.get().name == workingForm.name && e.field.name =="label"){workingForm.label =e.form.get().label}
-          if(e.form.get().label == workingForm.label&& e.field.name =="name"){workingForm.name =e.form.get().name}
-        }
-        renderNav(myform);
+        
+      // workingForm = 
+      _.extend(workingForm,e.form.get())
+      
+
     })
 
   }
@@ -219,7 +220,7 @@ renderBuilder()
 
 document.addEventListener('DOMContentLoaded', function(){
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  myform = _.extend({},loaded.code.form)
+  myform = loaded.code.form || {};
   // $('#cobler').click();
   path = [];
   // $(e.target).siblings().removeClass('active');
@@ -424,15 +425,14 @@ function load(workflow_version) {
     var temp = new gform(myform);
     gform.collections.update('form_users', temp.filter({type:"user"},20));
     gform.collections.update('form_groups', temp.filter({type:"group"},20));
-    gform.collections.update('resources', _.pluck(_.map(bt.models,function(model){return model.attributes;}), 'name'))
+    gform.collections.update('resources', _.pluck(_.map(resource_grid.models,function(model){return model.attributes;}), 'name'))
     gform.collections.update('methods', _.map(_.pluck(methodPage.toJSON(),'name'),function(item,i){
       return {value:"method_"+i,label:item}
     }));
-
     gform.collections.update('templates', _.map(_.pluck(templatePage.toJSON(),'name'),function(item,i){
       return {value:"template_"+i,label:item}
     }));
-    bt.fixStyle()
+    resource_grid.fixStyle()
   })
   // wf_form = "{}";
   // if(typeof workflow_version.form !== 'undefined'){
@@ -460,30 +460,29 @@ function load(workflow_version) {
 		entries: [25, 50, 100],
 		count: 25,
 		autoSize: -20,
-		container: '.resources',
-    edit:true,delete:true,add:true
+		el: '.resources',
 	}
-
 
   tableConfig.schema = [
     {label: 'Name',name: 'name'},
     {label: 'Modifier',name: 'modifier', type: 'select', options:[{label: 'None', value: 'none'},{label: 'XML', value: 'xml'}, {label: 'CSV', value: 'csv'}, {label: 'Include as Script', value: 'script'}, {label: 'Include as CSS', value: 'css'}]},
     {label: 'Path',name:'path'},
-    {label: 'Fetch', type: 'checkbox',name:'fetch'},
-    {label: 'Cache', type: 'checkbox',name:'cache'}
+    {label: 'Fetch', type: 'checkbox',name:'fetch',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]},
+    {label: 'Cache', type: 'checkbox',name:'cache',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]}
   ];
   tableConfig.data = attributes.code.resources;
-  if(typeof bt !== 'undefined'){
-    bt.destroy();
-  }
-  bt = new berryTable(tableConfig)
 
+  if(typeof resource_grid !== 'undefined'){
+    resource_grid.destroy();
+  }
+  resource_grid = new $g.grid(tableConfig)
 
 
 
   setSize();
 
-  templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  // templatePage = new paged('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
+  templatePage = new fileManager('.templates',{name:'templates', items:attributes.code.templates, label:'Template'});
   methodPage = new fileManager('.methods',{name:'methods', items:attributes.code.methods, label:'Method',mode:'ace/mode/javascript'});
 
   // scriptPage = new paged('.scripts',{name:'scripts', items:attributes.code.scripts, mode:'ace/mode/javascript', label:'Script'});
@@ -664,7 +663,8 @@ function createFlow() {
         }
 
         if(state.status == "closed"){
-          graph = gform.renderString('\n{{name}}({{name}})\nclass {{name}} closedClass', {name:state.name.split(' ').join('_')});
+          graph = gform.renderString('\n{{graph}}({{name}})\nclass {{graph}} closedClass', {graph:state.name.split(' ').join('_'), name:state.name});
+          // graph = graph+= gform.renderString('\nclass {{name}} closedClass', {name:state.name.split(' ').join('_')});
         }
 
         var stuff = _.map(state.actions,function(action){
@@ -711,7 +711,6 @@ createFlow();
 
 
 function drawForm(name){
-
   if(typeof flowForm !== 'undefined'){flowForm.destroy();}  
   gform.collections.update('flowstates', _.pluck(flow_states, 'name'))
 
@@ -779,7 +778,15 @@ function drawForm(name){
             path = search.parent.name+'.'+path;
             search = search.parent;
           }
-          return "{{form."+path+"}}"},label:"{{label}}{{^label}}{{name}}{{/label}}"}
+          // var temp = new gform(myform)
+          // temp.find(path).array
+          if(option.array){
+            return "{{#form."+path+"}}{{.}},{{/form."+path+"}}";
+          }else{
+            return "{{form."+path+"}}";
+          }
+        },label:"{{label}}{{^label}}{{name}}{{/label}}"}
+          
       }
       ]},
       {type:"group",label:"ID",show: [{type: "matches", name: "type", value: "group"}],options:[       
@@ -844,8 +851,8 @@ function drawForm(name){
     {name: "assignment",type:"fieldset",parse:[{type:"requires"}],label:false,fields:[
 
       {name: "type",inline:false, label: "Actor(s)",parse:[{type:"requires"}], type: "smallcombo", options: [
-        {value: "", label: "Assignee"},
         {value: "internal", label: "Inactivity Based"},
+        {value: "", label: "Assignee"},
         {value: "user", label: "User"},
         {value: "group", label: "Group"}
       ]},
@@ -853,7 +860,7 @@ function drawForm(name){
       // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
       //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
       // })
-      {type:"number",name:"delay",label:"Days of Inactivity",show: [{type: "matches", name: "type", value: "internal"}]},
+      {type:"number",min:1, name:"delay",label:"Days of Inactivity",show: [{type: "matches", name: "type", value: "internal"}]},
       {type:"user",label:"ID",show: [{type: "matches", name: "type", value: "user"}],options:[{first_name:"Owner", unique_id:"{{owner.unique_id}}",email:"User that initiated workflow"},{first_name:"Actor", unique_id:"{{actor.unique_id}}",email:"User that is taking an action"},  
       {
         "type": "optgroup",
@@ -908,7 +915,7 @@ function drawForm(name){
     {name: "signature", label: "Require Signature",type:"switch",format:{label:""}, columns: 6},
     {name: "signature_text", label: "Signature Text",placeholder:"Sign Above",help:"This text will show up below the signature box <br>(default text is 'Please Sign Above')",type:"text", columns: 12,show:[{name:"signature",value:true,type:"matches"}]},
     {name: "validate", label: "Validate",value:true,type:"switch",format:{label:""}, columns: 6},
-    {name: "invalid_submission", label: "Allow Invalid Submission",value:false,type:"switch",format:{label:""}, columns: 6,show:[{name:"validate",value:true,type:"matches"}]},
+    {name: "invalid_submission", label: "Allow Invalid Submission",value:false,type:"switch",format:{label:""}, columns: 6,show:[{name:"validate",value:true,type:"matches"}]},    
     {type: 'select',other:true, columns:12, label:'Show Action', value: true, name:"show",parse:[{type:"not_matches",name:"show",value:true}],options:		
     [{type:"optgroup",options:[{label:'Always',value:true},{label:'Never',value:false},{label:'Use same settings as "Enable"',value:'edit'}, {label:"Conditionally",value:"other"}]}]
   },
@@ -921,7 +928,7 @@ function drawForm(name){
 
       {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
-      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
+      {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: {min:1,max:10}}
     ], array: {max:100}
   } : {target:"#collapseLogic .panel-body", 
   name: "actions",show:[{name:"hasLogic",value:true,type:"matches"}], label: false, type: "fieldset", fields: [
@@ -931,7 +938,7 @@ function drawForm(name){
   {name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/},
     {name: "task_label", label: "<h4>Tasks</h4>", type: "output",parse:false},
 
-    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array:{min:1,max:10}}
+    {name: "tasks", label: false, type: "fieldset", fields: taskForm, array: {min:1,max:10}}
   ], array: {min:3,max:3}
 })
 
@@ -1023,13 +1030,12 @@ gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
 var temp = new gform(attributes.code.form);
 gform.collections.add('form_users', temp.filter({type:"user"},20));
 gform.collections.add('form_groups', temp.filter({type:"group"},20));
-
-gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i){
+gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
   return {value:"method_"+i,label:item}
 }));
 gform.collections.add('templates', _.map(_.pluck(attributes.code.templates,'name'),function(item,i){
-  return {value:"template_"+i,label:item}
-}));
+    return {value:"template_"+i,label:item}
+}));  
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
   
@@ -1075,7 +1081,6 @@ var taskForm = [
         ]},
         /* End Email Field */
     ]},
-
 
   {name: "subject", type: "text", label: "Subject", show: [{type: "matches", name: "task", value: 'email'}]},
   {name: "template", type: "smallcombo", value:"",
@@ -1141,7 +1146,7 @@ $('#save').on('click',function() {
     template_errors = templatePage.errors();
     data.code.templates = templatePage.toJSON();
     data.code.methods = methodPage.toJSON();
-    data.code.resources = _.map(bt.models,'attributes');
+    data.code.resources = resource_grid.toJSON();//_.map(bt.models,'attributes');
     $.ajax({
       url: root+attributes.workflow_id+'/code',
       method: 'put',
@@ -1179,48 +1184,61 @@ $('#save').on('click',function() {
   }
 })
 
-$('#import').on('click', function() {
-    $().berry({name: 'update', inline: true, legend: '<i class="fa fa-cube"></i> Update Workflow',fields: [	{label: 'Descriptor', type: 'textarea'}]}).on('save', function(){
-    var descriptor = JSON.parse(this.toJSON()['descriptor']);
-    descriptor.code.form = JSON.stringify(descriptor.code.form);
 
-      $.ajax({
-        url: root+attributes.workflow_id+'/code',
-        contentType: 'application/json',
-        data: JSON.stringify($.extend({force: true, updated_at:''}, descriptor )),
-        method: 'PUT',
-        success: function(){
-          Berries.update.trigger('close');
-          window.location.reload();
-        },
-        error: function(e){
-          toastr.error(e.statusText, 'ERROR');
-        }
-      })
-  });
+$('#import').on('click', function() {
+  new gform({
+    name: 'update', 
+    legend: '<i class="fa fa-cube"></i> Update Workflow',
+    fields: [	
+      {label: 'Descriptor', type: 'textarea'}
+    ]
+  }).on('save', e => {
+  var descriptor = JSON.parse(e.form.get()['descriptor']);
+  descriptor.code.form = JSON.stringify(descriptor.code.form);
+    $.ajax({
+      url: root+attributes.workflow_id+'/code',
+      method: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify({force: true, updated_at:'', ...descriptor}),
+      success: () => {
+        e.form.trigger('close');
+        window.location.reload()
+      },
+      error: e =>{
+        toastr.error(e.statusText, 'ERROR');
+      }
+
+    })
+}).on('cancel',function(e){e.form.dispatch('close')}).modal();
 });
 
+
 $('#publish').on('click', function() {
-    $().berry({name: 'publish', inline: true, legend: '<i class="fa fa-cube"></i> Publish Workflow',fields: [	
-        {label: 'Summary', required: true},
-        {label: 'Description', type: 'textarea'}
-      ]}).on('save', function() {
-        if(Berries.publish.validate()){
-          $.ajax({
-            url: root + attributes.workflow_id + '/publish',
-            contentType: 'application/json',
-            data: JSON.stringify(this.toJSON()),
-            method: 'PUT',
-            success: function() {
-              Berries.publish.trigger('close');
-              toastr.success('', 'Successfully Published')
-            },
-            error: function(e){
-              toastr.error(e.responseJSON.message, 'ERROR');
-            }
-          })
-        }
-  });
+  new gform({
+    name: 'publish',
+    legend: '<i class="fa fa-cube"></i> Publish Workflow',
+    fields: [	
+      {label: 'Summary', required: true},
+      {label: 'Description', type: 'textarea'}
+    ]}).on('save', e => {
+      if(e.form.validate()){
+        $.ajax({
+          url: root + attributes.workflow_id + '/publish',
+          contentType: 'application/json',
+          data: JSON.stringify(e.form.get()),
+          method: 'PUT',
+          success: () => {
+            e.form.trigger('close');
+            toastr.success('', 'Successfully Published')
+          },
+          error: e =>{
+            toastr.error(e.responseJSON.message, 'ERROR');
+          }
+        })
+      }
+  }).on('cancel', e => {
+    e.form.trigger('close');
+  }).modal();
 });
 
 // $.get('/api/workflowinstances?workflow_id=' + loaded.app_id, function(data) {
@@ -1523,39 +1541,44 @@ $('#versions').on('click', function() {
   $.ajax({
     url: root + loaded.workflow_id + '/versions',
     success: function(data) {
-      console.log(data);
       if(!orig.stable) {
         data.unshift({id:orig.id,label:'Working Version'})
       }
-      Berry.btn.switch={
-        label: 'Switch',
-        icon:'reply',
-        id: 'berry-submit',
-        modifier: 'success pull-right',
-        click: function() {
-          if(this.options.autoDestroy) {
-            this.on('saved', this.destroy);
-          }
-          this.trigger('save');
-        }
-      }
 
-      $().berry({actions:['cancel','switch'],name:'modal',attributes:{workflow_version_id:loaded.id},legend:'Select Version',fields:[
-        {label: 'Version', name:'workflow_version_id', options:data,type:'select', value_key:'id',label_key:'label'},
-      ]}).on('save', function() {
-        //switch version
+      new gform({
+        actions:[{type:'cancel'},{type:'save',label: 'Switch'}],
+        name:'modal',
+        data:{workflow_version_id:loaded.id},
+        legend:'Select Version',
+        fields:[
+          {
+            label: 'Version', 
+            name:'workflow_version_id', 
+            options:data,
+            type:'select',
+            format:{
+              label:"{{label}}",
+              value:version=>version.id
+            }
+          },
+      ]}).on('save', e => {
+        // switch version
+        e.form.trigger('close');
+
         $.ajax({
-          url: root+attributes.workflow_id+'/versions/'+this.toJSON().workflow_version_id,
+          url: root+attributes.workflow_id+'/versions/'+e.form.get('workflow_version_id'),
           method: 'get',
-          data: data,
-          success:function(data) {
-            data.workflow = loaded.workflow;
-            loaded = data;
+          success:function(version) {
+            version.workflow = loaded.workflow;
+            loaded = version;
             load(loaded.code);
-            Berries.modal.trigger('close');
           }
         })
       })
+      .on('cancel', e => {
+        e.form.trigger('close');
+      }).modal()
+
     }
   })
 })

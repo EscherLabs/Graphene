@@ -110,25 +110,28 @@
       </div>
     </div>
 
-    <script src='/assets/js/vendor/jquery.min.js'></script>
-    <script src="/assets/js/vendor/bootstrap.min.js"></script>
-    <script src='/assets/js/vendor/hogan.min.js'></script>
-    <script src='/assets/js/vendor/lodash.min.js'></script>		
+    <script src='/assets/js/vendor/jquery.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/bootstrap.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/hogan.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/lodash.min.js?cb={{ config("app.cache_bust_id") }}'></script>		
     <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
     
-    <script src='/assets/js/vendor/summernote.min.js'></script>
-    <script src='/assets/js/vendor/dropzone.min.js'></script>
-		<script src="/assets/js/vendor/sortable.js"></script>
-		<script src="/assets/js/templates/admin.js"></script>
-    <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
-    <script src='/assets/js/vendor/toastr.min.js'></script> 
+    <script src='/assets/js/vendor/summernote.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/dropzone.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+		<script src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
+		<script src='/assets/js/templates/admin.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/ace/ace.js?cb={{ config("app.cache_bust_id") }}' charset="utf-8"></script>
+    <script src='/assets/js/vendor/toastr.min.js?cb={{ config("app.cache_bust_id") }}'></script> 
     
-  <script src='/assets/js/paged.js'></script> 
-  <script src='/assets/js/vendor/moment.js'></script>
-    <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
-    <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>
-    <script src='/assets/js/lib.js'></script> 
-    <script src='/assets/js/vendor/htmldiff.js'></script> 
+  <!-- <script src='/assets/js/paged.js'></script> -->
+
+  <script src='/assets/js/vendor/moment.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/gform_bootstrap.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/fileManager.js?cb={{ config("app.cache_bust_id") }}'></script> 
+
+    <script src='/assets/js/vendor/GrapheneDataGrid.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/lib.js?cb={{ config("app.cache_bust_id") }}'></script> 
+    <script src='/assets/js/vendor/htmldiff.js?cb={{ config("app.cache_bust_id") }}'></script> 
     <style>
     ins {
       text-decoration: none; background-color: #d4fcbc;
@@ -138,9 +141,7 @@
     }
     </style>
     @yield('end_body_scripts_top')
-    <script src='/assets/js/vendor/berry.full.js'></script> 
-    <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
-    <script src='/assets/js/vendor/berrytables.full.js'></script> 
+
     @yield('end_body_scripts_bottom')
     @yield('bottom_page_styles')
   </body>

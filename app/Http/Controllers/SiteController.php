@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Site;
-use App\SiteMember;
 use Illuminate\Http\Request;
-use Leafo\ScssPhp\Compiler;
 
 class SiteController extends Controller
 {
@@ -46,10 +44,6 @@ class SiteController extends Controller
         if($request->has('templates') && $request->get('templates') == 'false'){
             $site_config['templates'] = ['partials'=>[]];
         }
-
-        // $scss = new Compiler();
-        // return $scss->compile( $site_config['theme']['css']);
-
 
         $site->update($site_config);
         return $site;

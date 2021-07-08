@@ -398,9 +398,11 @@ Cobler.types.input = function(container) {
 		{label: 'Email', value: 'email'},
 		{label: 'Date', value: 'date'},
 		{label: 'Number', value: 'number'},
+		{label: 'Currency', value: 'currency'},
 		{label: 'Password', value: 'password'},
 		{label: 'Color', value: 'color'},
 		{label: 'Output', value: 'output'},
+		{label: 'File', value: 'base64'},
 		{label: 'Hidden', value: 'hidden'}
 	]}].concat(baseFields, baseConditions,[
 		{target:"#collapseDisplay .panel-body",type: 'fieldset', label: false,columns:12, name: 'format',show:[{type:"matches",name:'type',value:["date",'template','output']}],parse:[{type:"requires"}], fields:[
@@ -496,9 +498,11 @@ Cobler.types.collection = function(container) {
 			{label: 'User', value: 'user'},
 			// {label: 'User Email', value: 'user_email'},
 			// {label: 'Groups', value: 'Groups'},
-			{label: 'Group', value: 'group'},
+			{label: 'Groups', value: 'groups'},
 
-			{label: 'File', value: 'files'},
+			{label: 'File Selector', value: 'files'},
+
+		{label: 'File (base64)', value: 'base64_file'},
 			// {label: 'Grid', value: 'grid'},
 		]}
 
@@ -509,8 +513,7 @@ Cobler.types.collection = function(container) {
 		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 		// 	// {name:"Title",label:"title"}
 		// ] },
-
-		{name:"strict",label:"Strict",type:"switch",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
+        {name:"strict",label:"Strict",type:"switch",show:[{type:"matches",value:["smallcombo"],name:"/type"},]},
 		{type: 'fieldset', label: false, array: {min:1,max:100},columns:12,parse:[{type:"requires"},{type:"not_matches",name:"type",value:["user","groups","files"]}],show:[{type:"not_matches",name:"type",value:["user","groups","files"]}], name: 'options', 
 			fields: [
 				{label: 'Section Label (optional)', name:"label"},

@@ -18,3 +18,7 @@ Homestead.json
 # Don't Include .idea and DS_Store
 .idea
 .DS_Store
+
+Procfile
+_config.yml
+build.sh

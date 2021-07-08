@@ -16,10 +16,11 @@ class APIServerController extends Controller
     }
     
     public function index($slug, $resource = null,$resource_id = '') {
-       $mysite = config('app.site')->select('proxyserver_config')->first();
-
-       $api_config = $mysite->get_proxyserver_by_slug($slug);
-
+        $mysite = config('app.site')->select('proxyserver_config')->first();
+        $api_config = $mysite->get_proxyserver_by_slug($slug);
+        if (is_null($api_config)) {
+            abort(404);
+        }
        return view('APIServer', ['resource'=>'APIServer_'.$resource,'id'=>$resource_id,'slug'=>$slug,'config'=>$api_config]);
     }    
 
