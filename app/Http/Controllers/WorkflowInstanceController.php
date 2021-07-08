@@ -74,7 +74,11 @@ class WorkflowInstanceController extends Controller
     }
     
     public function admin(WorkflowInstance $workflow_instance) {
-        $workflow_instance->load(array('group'=>function($query){}));
+        $workflow_instance->load(array('group'=>function($query){
+            $query->with(array('composites'=>function($query){
+                $query->with('group')->get();
+            }));
+        }));
         return view('admin', ['resource'=>'workflow_instance','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
     }
 
@@ -114,16 +118,17 @@ class WorkflowInstanceController extends Controller
         $workflow_instance->workflow_version_id = null;
         $workflow_instance->workflow_id = $request->get('workflow_id');
         $workflow_instance->group_id = $request->get('group_id');
+        if(isset($request['groups'])){
+            $workflow_instance['groups'] = array_filter($request['groups']);
+        }
         $workflow_instance->save();
         return $workflow_instance;
     }
 
     public function update(Request $request, WorkflowInstance $workflow_instance) {
         $data = $request->all();
-        if($request->workflow_version_id == -1 || $request->workflow_version_id == ''){$data['workflow_version_id'] = null;}
-
         if(isset($data['groups'])){
-            $data['groups'] = json_decode($data['groups']);
+            $data['groups'] = array_filter($data['groups']);
         }
 
         $workflow_instance->update($data);
@@ -172,7 +177,6 @@ class WorkflowInstanceController extends Controller
         }
 
         $myWorkflow->findVersion();
-
 
         $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
         if($myWorkflow != null) {

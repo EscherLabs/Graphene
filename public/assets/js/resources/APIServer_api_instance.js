@@ -143,43 +143,6 @@ $.ajax({
 					// model.update
 				}.bind(e.model)).on('cancel',function(e){e.form.dispatch('close')}).modal();
 		})
-		// $('.permissions').berry({
-		// 	// legend:'Permissions',
-		// 	name:'permissions',
-		// 	attributes:api,
-		// 	"flatten": false,
-		// 	actions:false,
-		// 	fields:[
-		// 		{name:'container', label: false,  type: 'fieldset', fields:[
-		// 			{"multiple": {"duplicate": true},label: '', name: 'route_user_map', type: 'fieldset', fields:[
-		// 				{name: 'api_user',label:'Auth User', type: 'select', choices: '/api/proxy/'+slug+'/api_users',label_key:'app_name'},
-		// 				{label:'Path', name: 'route', options:_.uniq(routes_partials)},
-		// 				{label: 'Verb',name:'verb',type:'select',options:["ALL", "GET", "POST", "PUT", "DELETE"], required:true},
-		// 				{
-		// 					columns:6,
-		// 					offset:4,
-		// 					"name": "parameters",
-		// 					"label": "Parameters",
-		// 					"template":'{{#attributes.params}}{{#required}}<b>{{/required}}{{name}}{{#required}}</b>{{/required}}<br> {{/attributes.params}}',
-		// 					"fields": {
-		// 						"params": {
-		// 							"label": false,
-		// 							"flatten": true,
-									
-		// 							"multiple": {
-		// 								"duplicate": true
-		// 							},
-		// 							fields:[
-		// 								{'name':'name','label':'Name',"inline":true,columns:6},
-		// 								{'name':'value','label':'Value',"inline":true,columns:6},
-		// 							]
-		// 						}
-		// 					}
-		// 				}
-		// 			]}
-		// 		]},			
-		// 	]
-		// 	})
 
 			$('body').on('click','#version', function(){
 				new gform({name:'versionForm',data:api,legend:'Select Version',fields:[

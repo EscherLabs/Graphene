@@ -30,23 +30,17 @@
 
 
 @section('bottom_page_scripts')
-<script src="/assets/js/vendor/lodash.min.js"></script>
-
-<script src='/assets/js/vendor/gform_bootstrap.min.js'></script> 
-
-<script src='/assets/js/grapheneAppEngine.js'></script> 
-
-		<link rel='stylesheet' type='text/css' href='/assets/css/graphene.css'>
-		<script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-		<script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-		<script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
-		<script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-
-		<script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script>
-		<!-- <script type='text/javascript' src='/assets/js/cob/flow.cob.js'></script> -->
-		<!-- // <script type='text/javascript' src='assets/js/form.cob.js'></script>		 -->
-		<script type='text/javascript' src='/assets/js/templates/widget.js'></script>
-	    <script src='/assets/js/lib.js'></script> 
+    <script src='/assets/js/vendor/lodash.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/gform_bootstrap.min.js?cb={{ config("app.cache_bust_id") }}'></script> 
+    <script src='/assets/js/grapheneAppEngine.js?cb={{ config("app.cache_bust_id") }}'></script> 
+    <link rel='stylesheet' type='text/css' href='/assets/css/graphene.css'>
+    <script type="text/javascript" src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script type='text/javascript' src='/assets/js/cob/cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script type='text/javascript' src='/assets/js/cob/content.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script type='text/javascript' src='/assets/js/cob/image.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script type='text/javascript' src='/assets/js/cob/uapp.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script type='text/javascript' src='/assets/js/templates/widget.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script type='text/javascript' src='/assets/js/lib.js?cb={{ config("app.cache_bust_id") }}'></script> 
 
 		<script type='text/template' name="itemContainer">
 			<div class="cobler-li-content"></div>

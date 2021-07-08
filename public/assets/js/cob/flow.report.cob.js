@@ -7,7 +7,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     container:container,
 		fields: fields,
 		render: function() {return workflow_report.container;},
-		edit: berryEditor.call(this, container),
+		edit: defaultCobEditor.call(this, container),
 		toJSON: get,
 		get: get,
     set: function (newItem) {$.extend(item, newItem);},
@@ -188,7 +188,8 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 resources[name] = item;
                 return resources;
               },{})
-        
+
+              mappedData.hasFiles = (_.filter(mappedData.history,function(item){if(item.file && (item.deleted_at == null)){return item;} }).length>0)
     
               if(typeof this.history !== 'undefined'){
                 this.history.teardown();
@@ -293,7 +294,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 }
               }.bind(this)
               _.each(this.get().options.workflow_version.code.methods,function(item,index){
-                eval('this.methods["'+item.name+'"] = this.methods["method_'+index+'"] = function(data,e){'+item.content+'}.bind(null,mappedData)');
+                eval('this.methods["'+item.name+'"] = this.methods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(null,mappedData)');
               }.bind(this))
     
               $('.row .list').on('click','.filterable.submission', function(e){
@@ -514,7 +515,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
     
                 formStructure.methods = [];
                 _.each(this.get().options.workflow_version.code.methods,function(item,index){
-                  eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'}.bind(formStructure.data)');
+                  eval('formStructure.methods["method_'+index+'"] = function(e){'+item.content+'\n}.bind(formStructure.data)');
                 }.bind(this))
     
                 // formStructure.methods = this.methods;

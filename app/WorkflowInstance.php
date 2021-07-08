@@ -68,4 +68,19 @@ class WorkflowInstance extends Model
         $this->workflow->code = $myWorkflowVersion->code;
         $this->workflow->version = $myWorkflowVersion->id;
     }
+    private function iterate($fields,$afunc,&$data){
+        foreach($fields as $field){
+            // $stuff[]= $field->name;
+            if(isset($data->{$field->name}) && !is_null($data->{$field->name})){
+                $afunc($field,$data);
+            
+                if(isset($field->fields)){
+                    $this->iterate($field->fields,$afunc,$data->{$field->name});
+                }
+            }
+        }
+    }
+    public function reduceFields($afunc, &$data) {
+        $this->iterate($this->version->code->form->fields, $afunc,$data);
+    }
 }

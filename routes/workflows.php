@@ -28,8 +28,8 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
     Route::get('/workflows/{workflow}', 'WorkflowController@admin')->middleware('can:get,workflow');
     Route::get('/groups/{group}/workflowinstances', 'AdminController@workflowinstances')->middleware('can:list_components,group');
     Route::get('/workflows/{workflow}/developers', 'AdminController@workflowdevelopers')->middleware('can:list_developers,workflow');
-    Route::get('/workflowinstances/{workflow_instance}/report', 'WorkflowInstanceController@report');  
-    Route::get('/workflowinstances/{workflow_instance}/raw', 'WorkflowInstanceController@raw');  
+    Route::get('/workflowinstances/{workflow_instance}/report', 'WorkflowInstanceController@report')->middleware('can:update,workflow_instance'); 
+    Route::get('/workflowinstances/{workflow_instance}/raw', 'WorkflowInstanceController@raw')->middleware('can:update,workflow_instance');  
     Route::get('/workflowinstances/{workflow_instance}', 'WorkflowInstanceController@admin')->middleware('can:get,workflow_instance');
 });
   
@@ -100,9 +100,9 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     // Update an existing workflow instance by workflow_instance_id
     Route::put('/workflowinstances/{workflow_instance}','WorkflowInstanceController@update')->middleware('can:update,workflow_instance');
     Route::get('/workflowinstances/{workflow_instance}/pages','WorkflowInstanceController@pages')->middleware('can:update,workflow_instance');
-    Route::get('/workflowinstances/{workflow_instance}/submissions','WorkflowSubmissionController@list_instance_workflow_submissions');
-    Route::get('/workflowinstances/{workflow_instance}/csv','WorkflowInstanceController@getcsv');
-    Route::get('/workflowinstances/{workflow_instance}/raw','WorkflowInstanceController@getraw');
+    Route::get('/workflowinstances/{workflow_instance}/submissions','WorkflowSubmissionController@list_instance_workflow_submissions')->middleware('can:update,workflow_instance');
+    Route::get('/workflowinstances/{workflow_instance}/csv','WorkflowInstanceController@getcsv')->middleware('can:update,workflow_instance');
+    Route::get('/workflowinstances/{workflow_instance}/raw','WorkflowInstanceController@getraw')->middleware('can:update,workflow_instance');
     Route::get('/workflowinstances/{workflow_instance}/user/submissions','WorkflowSubmissionController@list_my_instance_workflow_submissions');
     // Delete an existing workflow instance by workflow_instance_id
     Route::delete('/workflowinstances/{workflow_instance}','WorkflowInstanceController@destroy')->middleware('can:delete,workflow_instance');

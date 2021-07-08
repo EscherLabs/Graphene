@@ -168,7 +168,7 @@ class CASAuth
                         ob_end_clean();
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $cas_errors = ob_get_contents();
                 if ($cas_errors) {
                     ob_end_clean();

@@ -67,7 +67,7 @@
 	{{/app_mode}}
 
 
-		$('.'+resource_type+resource_id).addClass('active');
+	$('.'+resource_type+resource_id).addClass('active');
 
 	$('#group'+group_id).addClass('in');
 
@@ -131,32 +131,29 @@
 		];
 
 
+$g.collections.add('layouts',layouts)
 
 	function layout() {
-		var berry = $().berry({
+		new gform({
 			legend: 'Change Layout', 
-			inline:false,
+			horizontal: true,
+			data:config,
 			fields:[
-				{
-					label:'Layout',
-					name:'layout',
-					label_key:'title',
-					classes: layouts[config.layout||0].classes, 
-					choices: layouts, 
-					value: config.layout
-				}
+				fieldLibrary.layout
 			]
-		}).on('save',function(){
+		}).on('save',function(e){
 			$.ajax({
 				url:'/api/pages/{{id}}',
-				data:{"content": JSON.stringify($.extend({}, config,{layout:parseInt(this.toJSON().layout)}))} ,
+				data:{"content": JSON.stringify($.extend({}, config,{layout:parseInt(e.form.get().layout)}))} ,
 				method:'PUT',
 				success: function(data) {
 					config = data.content;
 					location.reload()
 				}
 			})
-		});
+		}).on('cancel',function(e){
+			e.form.trigger('close');
+		}).modal();
 	}
 
 	function manage(){
@@ -234,29 +231,30 @@
 			cb.on('remove', save);
 			cb.on('change',save);
 			cb.on('manage',function(item){
-				$().berry({name: 'modal', attributes: item.get(), legend: 'Display Settings',flatten:true, fields:[
-					{label: 'Device', name: 'device', type: 'select', value:'widget', choices: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
+
+				new gform({name: 'modal', data: item.get(), legend: 'Display Settings',fields:[
+					{label: 'Device', name: 'device', type: 'select', value:'widget', options: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
 					{label: 'Enclose in a Container?', name:'container', type: 'checkbox'},
-					{label: 'Display Title Bar?', name:'titlebar', type: 'checkbox', show:{matches:{name:'container',value:true}}},
-					{label: 'Allow Minimization?', name: 'enable_min', type: 'checkbox', show:{matches:{name:'container',value:true}}}, //show:!item.get().no_minimize},
-					{label:' Start Minimized?', name:'collapsed',type:'checkbox', show:{matches:{name:'enable_min',value:true}},parse:'show'},
-					{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  {test: function(){return group_composites.length >0;}} },
-						{legend: 'Groups', 'show': {
-									matches: {
-										name: 'limit',
-										value: true
-									}
-								},fields:[
-							{label: false, multiple:{duplicate:true}, toArray:true, name: 'group', fields:[
-									{label: false, name: 'ids', type: 'select', options: group_composites}
+					{label: 'Display Title Bar?', name:'titlebar', type: 'checkbox', show:[{type:'matches',name:'container',value:true}]},
+					{label: 'Allow Minimization?', name: 'enable_min', type: 'checkbox', show:[{type:'matches',name:'container',value:true}]}, //show:!item.get().no_minimize},
+					{label:' Start Minimized?', name:'collapsed',type:'checkbox', show:[{type:'matches',name:'enable_min',value:true}],parse:'show'},
+					{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  [{type:'test',test: function(){return group_composites.length >0;}}] },
+						{legend: 'Groups',name:"group", 'show': [{type:'matches', name: 'limit',value: true}],type:'fieldset',fields:[
+							//{label: false, multiple:{duplicate:true}, toArray:true, name: 'group', fields:[
+									{label: false, name: 'ids',array:true, type: 'select', options: group_composites}
 								]
-							}]},
-				]})
-				.on('save',function(){
-					this.container.update(Berries.modal.toJSON(),this)
-					Berries.modal.trigger('saved');
+							//}]
+							},
+				]}
+
+				).on('save',function(e){
+
+					this.container.update(e.form.get(),this)
+					e.form.trigger('close');
 					save();
-				},item)
+					e.form.destroy();
+				}.bind(item)).on('cancel',function(e){e.form.trigger('close');e.form.destroy()}).modal();
+
 			})
 
 			// cb.on('min', function(item){
@@ -321,11 +319,11 @@ function editMobileOrder(){
 
 
 	function editUserOptions(item){
-		if(typeof item.bae !== 'undefined'){
-			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.bae.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.bae.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
+		if(typeof item.appEngine !== 'undefined'){
+			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.appEngine.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.appEngine.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
 				if(!e.form.validate()){toastr.error("Please check form for errors","Invalid Options");return false;}
-				var url = '/api/apps/instances/'+item.bae.config.app_instance_id+'/user_options';
-				if(typeof item.bae.data.user.id !== 'undefined') {
+				var url = '/api/apps/instances/'+item.appEngine.config.app_instance_id+'/user_options';
+				if(typeof item.appEngine.data.user.id !== 'undefined') {
 					$.ajax({
 						type: 'POST',
 						dataType : 'json',
@@ -337,19 +335,17 @@ function editMobileOrder(){
 							this.trigger('close');
 							app.trigger('options');
 							app.alert({title:'Options Updated Successfully'})
-						}.bind(e.form,item.bae.app),
+						}.bind(e.form,item.appEngine.app),
 						error:function(data){
 								toastr.error(data.statusText, 'An error occured updating options')
 						}
 					})
 				}else{
-					item.bae.app.update({user:{options:e.form.get()}});
+					item.appEngine.app.update({user:{options:e.form.get()}});
 					Lockr.set(url, {'options': e.form.get()})
 					e.form.trigger('close');
 					toastr.success('', 'Options Updated Successfully');
 				}
-
-				
 			}).on('cancel',function(e){
 				e.form.trigger('close')
 			})
@@ -429,7 +425,7 @@ function editMobileOrder(){
 			var group_composites =[];
 
 			{{#group.composites}}
-			group_composites.push({"id": {{group.id}},'name': "{{group.name}}"  });
+			group_composites.push({"id": {{group.id}},'name': "{{group.name}}","value": "{{group.id}}",'label': "{{group.name}}"  });
 			{{/group.composites}}
 
 
@@ -499,7 +495,7 @@ function editMobileOrder(){
 					success: function(){}
 			});
 			function inspect(row,element){
-				formatter = new JSONFormatter(cb.collections[0].getItems()[0].bae.data,1, {hoverPreviewEnabled: true})
-				mymodal = modal({title: "Widget Summary", content: formatter.render() });//templates.widgets_summary.render(cb.collections[row||0].getItems()[element||0].bae.data)});
+				formatter = new JSONFormatter(cb.collections[0].getItems()[0].appEngine.data,1, {hoverPreviewEnabled: true})
+				mymodal = modal({title: "Widget Summary", content: formatter.render() });//templates.widgets_summary.render(cb.collections[row||0].getItems()[element||0].appEngine.data)});
 			}
 		</script>

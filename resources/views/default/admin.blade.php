@@ -127,7 +127,7 @@
       </div>
     </nav>
     <div class="col-sm-3 col-md-2 sidebar">
-    <div style="margin-top:15px;width: 120px;" class="btn btn-lg btn-new" id="graphene-quick-create"><i class="fa fa-plus fa-lg"></i> New</div>
+    <!-- <div style="margin-top:15px;width: 120px;" class="btn btn-lg btn-new" id="graphene-quick-create"><i class="fa fa-plus fa-lg"></i> New</div> -->
 
       <ul class="nav nav-sidebar">
         @can('view_in_admin','App\Group')
@@ -177,28 +177,26 @@
       </div>
     </div>
 
-    <script src='/assets/js/vendor/jquery.min.js'></script>
-    <script src="/assets/js/vendor/bootstrap.min.js"></script>
-    <script src='/assets/js/vendor/hogan.min.js'></script>
-    <script src='/assets/js/vendor/lodash.min.js'></script>		
+    <script src='/assets/js/vendor/jquery.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/bootstrap.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/hogan.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/lodash.min.js?cb={{ config("app.cache_bust_id") }}'></script>		
     <script>_.findWhere = _.find; _.where = _.filter;_.pluck = _.map;_.contains = _.includes;</script>
     
-    <script src='/assets/js/vendor/summernote.min.js'></script>
-    <script src='/assets/js/vendor/dropzone.min.js'></script>
-		<script src="/assets/js/vendor/sortable.js"></script>
-    <script src="/assets/js/vendor/ace/ace.js" charset="utf-8"></script>
-    <script src='/assets/js/vendor/toastr.min.js'></script> 
+    <script src='/assets/js/vendor/summernote.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/dropzone/dropzone.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+
+		<script src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/ace/ace.js?cb={{ config("app.cache_bust_id") }}' charset="utf-8"></script>
+    <script src='/assets/js/vendor/toastr.min.js?cb={{ config("app.cache_bust_id") }}'></script> 
     @yield('end_body_scripts_top')
-    <script src='/assets/js/vendor/berry.full.js'></script> 
-    <script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
-    <script src='/assets/js/vendor/berrytables.full.js'></script> 
-    <script src='/assets/js/vendor/state-machine.js'></script>
+    <script src='/assets/js/vendor/state-machine.js?cb={{ config("app.cache_bust_id") }}'></script>
 
-    <script src='/assets/js/vendor/gform_bootstrap.min.js'></script>
-    <script src="/assets/js/templates/admin.js"></script>
+    <script src='/assets/js/vendor/gform_bootstrap.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/templates/admin.js?cb={{ config("app.cache_bust_id") }}'></script>
 
-    <script src='/assets/js/vendor/GrapheneDataGrid.min.js'></script>
-        <script src='/assets/js/lib.js'></script> 
+    <script src='/assets/js/vendor/GrapheneDataGrid.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/lib.js?cb={{ config("app.cache_bust_id") }}'></script> 
  
     @yield('end_body_scripts_bottom')
 
@@ -244,7 +242,7 @@
 
       "</div>";
     </script>
-    <script src='/assets/js/resources/creators.js'></script>
+    <script src='/assets/js/resources/creators.js?cb={{ config("app.cache_bust_id") }}'></script>
 
     @yield('bottom_page_styles')
   </body>

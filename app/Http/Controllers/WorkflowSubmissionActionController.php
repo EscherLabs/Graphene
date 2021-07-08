@@ -146,7 +146,11 @@ class WorkflowSubmissionActionController extends Controller {
         // Get Action (Object)
         $action = Arr::first($previous_state->actions, function ($value, $key) use ($request) {
             return $value->name === $request->get('action');
-        });  
+        });
+        // Check if action is valid for current state
+        if (is_null($action)) {
+            throw new \Exception('Workflow Submission ('.$workflow_submission->id.'): Invalid Action ('.$request->get('action').') does not exist in state: '.$previous_state->name);
+        }
         // Set New State (String)
         $workflow_submission->state = $action->to;   
         // Determine New State (Object) -- State we are entering
@@ -331,16 +335,16 @@ class WorkflowSubmissionActionController extends Controller {
         }
         else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
                 !$myWorkflowInstance->configuration->suppress_emails){
-
             // Reset Email State Data to info for last "human" action. (Non-logic)
             $first_action_state_data = $this->get_first_action_state($state_data);
-            $email_state_data = $state_data;
             if ($first_action_state_data !== false) {
-                $email_state_data['was'] = $first_action_state_data['was'];
-                $email_state_data['actor'] = $first_action_state_data['actor'];
-                $email_state_data['action'] = $first_action_state_data['action'];
-                $email_state_data['comment'] = $first_action_state_data['comment'];
-                $email_state_data['previous'] = $first_action_state_data['previous'];
+                // Overwrite certain parts of the state data with previous human state data.
+                $email_state_data = array_merge(
+                    $state_data,
+                    Arr::only($first_action_state_data,['was','actor','owner','action','comment','previous'])
+                );
+            } else {
+                $email_state_data = $state_data;
             }
             $this->send_default_emails($email_state_data);
         }
@@ -427,7 +431,7 @@ class WorkflowSubmissionActionController extends Controller {
                 case "email":
                     if(!isset($workflow_instance->configuration->suppress_email_tasks) || !$workflow_instance->configuration->suppress_email_tasks){ 
                         $content = "Workflow Notification Email";
-                        if(!is_null($task->template)){
+                        if(isset($task->template) && !is_null($task->template)){
                             $template_name = $task->template;
 
                             $template = Arr::first($workflow_instance->version->code->templates, function ($value, $key) use ($template_name) {
@@ -485,16 +489,7 @@ class WorkflowSubmissionActionController extends Controller {
                                 }
                             }
                         }
-                        try {
-                            $to = array_unique($to);
-                            Mail::raw( $content, function($message) use($to, $subject) { 
-                                $m = new \Mustache_Engine;
-                                $message->to($to);
-                                $message->subject($subject); 
-                            });
-                        } catch (\Exception $e) {
-                            // Failed to Send Email... Continue Anyway.
-                        }
+                        $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content]);
                     }
                 break;
                 case "purge_files":
@@ -568,16 +563,7 @@ You may view the current status as well as the complete history of this workflow
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            try {
-                Mail::raw( $content_rendered, function($message) use($to, $subject) {
-                    $message->to($to['email']);
-                    $message->subject($subject); 
-                });    
-            } catch (\Exception $e) {
-                // Failed to Send Email... 
-                // Continue Anyway.
-            }
-
+            $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
         }
         // Send Email to Actor (if different person than actor)
         if (!$state_data['owner']['is']['actor']) {
@@ -585,15 +571,7 @@ You may view the current status as well as the complete history of this workflow
             $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
             // Clean up whitespaces and carriage returns
             $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            try {
-                Mail::raw( $content_rendered, function($message) use($to, $subject) { 
-                    $message->to($to['email']);
-                    $message->subject($subject); 
-                });
-            } catch (\Exception $e) {
-                // Failed to Send Email... 
-                // Continue Anyway.
-            }
+            $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
         }
 
         // Email Asignee(s)
@@ -636,15 +614,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
         $content_rendered = $m->render($email_body, $state_data);
         // Clean up whitespaces and carriage returns
         $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-        try {
-            Mail::raw( $content_rendered, function($message) use($to, $subject) {
-                $message->to($to);
-                $message->subject($subject); 
-            });
-        } catch (\Exception $e) {
-            // Failed to Send Email... 
-            // Continue Anyway.
-        }
+        $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content_rendered]);
     }
 
     // 01/12/2021, AKT - Implemented inactivity related
@@ -689,7 +659,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
                                     $GLOBALS['action_stack_depth']=0; //To reset the global variable before every task. This is necessary for internal automated operations
                                     $this->action($submission, $action_request, true); // runs the action method
                                     }
-                                    catch(\Exception $e){
+                                    catch(\Throwable $e){
                                         //Do nothing
                                     }
                             }
@@ -699,4 +669,39 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
             }
         }
     }
+
+    // Expected fields: send_email(['to'=>'','subject'=>'','content'=>''])
+    // Note that "to" expects either an email address (string) or an array of email addresses
+    private function send_email($email) {
+        $to = isset($email['to'])?$email['to']:[];
+        if (!is_array($email['to'])) { 
+            $to = [$to];
+        }
+        $to = array_unique($to);
+
+        $subject = isset($email['subject'])?$email['subject']:'No Subject';
+        $content = isset($email['content'])?$email['content']:'No Body';
+
+        // If MAIL_LIMIT_SEND is true, only send emails to those who are 
+        // specified in MAIL_LIMIT_ALLOW
+        if (config('mail.limit_send') !== false) {
+            $to = array_intersect($to,config('mail.limit_allow'));
+        }
+
+        // If we're not sending an email to anyone, just return
+        if (empty($to)) {
+            return false;
+        }
+
+        try {
+            Mail::raw( $content, function($message) use($to, $subject) { 
+                $m = new \Mustache_Engine;
+                $message->to($to);
+                $message->subject($subject); 
+            });
+        } catch (\Throwable $e) {
+            // Failed to Send Email... Continue Anyway.
+        }
+    }
+
 }

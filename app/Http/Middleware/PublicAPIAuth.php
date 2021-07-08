@@ -10,7 +10,6 @@ use App\Site;
 use App\App;
 use App\AppDeveloper;
 use App\GroupMember;
-use App\SiteMember;
 use App\GroupAdmin;
 use App\Group;
 use App\GroupComposite;

@@ -93,7 +93,9 @@ class WorkflowSubmissionController extends Controller {
                 $submission->assignee = $submission->assignment_group;
             }
             unset($submission->assignment_user); unset($submission->assignment_group);
-            $submission->submitted_at=$submission->logs[0]->created_at->format('Y-m-d H:i:s');
+            if(count($submission->logs)){
+                $submission->submitted_at=$submission->logs[0]->created_at->format('Y-m-d H:i:s');
+            }
             unset($submission->logs);
         }
         return $submissions;

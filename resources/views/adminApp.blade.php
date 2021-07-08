@@ -143,50 +143,22 @@
 @endsection
 
 @section('end_body_scripts_top')
-  <!-- <script src='//unpkg.com/ractive/ractive.min.js'></script>     -->
-  <script src='/assets/js/vendor/ractive.min.js'></script>    
-
-  <script src='/assets/js/paged.js'></script> 
-  <script type="text/javascript" src="/assets/js/vendor/sortable.js"></script>
-  <!-- <script type='text/javascript' src='/assets/js/templates/admin.js'></script> -->
-  <script type='text/javascript' src='/assets/js/cob/cob.js'></script>
-  <!-- <script type='text/javascript' src='/assets/js/cob/content.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/image.cob.js'></script>
-  <script type='text/javascript' src='/assets/js/cob/form.cob.js'></script> -->
-
-  <!-- <script type='text/javascript' src='/assets/js/cob/uapp.cob.js'></script> -->
-  <!-- TJC 4/22/18 Monaco Test -->
-  <!--<script>var require = { paths: { 'vs': '/assets/js/vendor/vs' } };</script>
-  <script src="/assets/js/vendor/vs/loader.js"></script>
-  <script src="/assets/js/vendor/vs/editor/editor.main.nls.js"></script>
-  <script src="/assets/js/vendor/vs/editor/editor.main.js"></script> -->
-  <!-- END TJC 4/22/18 Monaco Test -->
+  <script type="text/javascript" src='/assets/js/vendor/ractive.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
+  <script type="text/javascript" src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/cob/cob.js?cb={{ config("app.cache_bust_id") }}'></script>
 @endsection
 
 @section('end_body_scripts_bottom')
-  <!--<script>
-    var editor = monaco.editor.create(document.getElementById('container'), {
-      value: [
-        'function x() {',
-        '\tconsole.log("Hello world!");',
-        '}'
-      ].join('\n'),
-      language: 'javascript'
-    });
-  </script>-->
   <script>var loaded = {!! $app !!};</script>
 
-  <script src='/assets/js/vendor/moment.js'></script>
-  <script src='/assets/js/vendor/moment_datepicker.js'></script>
-  
-  <script type='text/javascript' src='/assets/js/vendor/math.min.js'></script>
-  <script type='text/javascript' src='/assets/js/vendor/popper.min.js'></script>
-  <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js'></script>
-  
-  <script type='text/javascript' src='/assets/js/editApp.js'></script>
-  <script type='text/javascript' src='/assets/js/workflow.cob.js'></script>
-  <!-- <script type='text/javascript' src='/assets/js/vendor/sass.js'></script> -->
-
+  <script type='text/javascript' src='/assets/js/vendor/moment.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/moment_datepicker.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/math.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/popper.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/fileManager.js?cb={{ config("app.cache_bust_id") }}'></script> 
+  <script type='text/javascript' src='/assets/js/editApp.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/workflow.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
 @endsection
 
 @section('bottom_page_styles')

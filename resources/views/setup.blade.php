@@ -82,13 +82,10 @@ Guest
 @endsection
 
 @section('bottom_page_scripts')
-
-    <script src='/assets/js/vendor/hogan.min.js'></script>
-    <script src='/assets/js/vendor/lodash.min.js'></script>	
-
-<script src='/assets/js/vendor/berry.full.js'></script> 
-<script src='/assets/js/vendor/bootstrap.full.berry.js'></script> 
-    <!-- <script src='/assets/js/vendor/berrytables.full.js'></script>  -->
+    <script src='/assets/js/vendor/hogan.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+    <script src='/assets/js/vendor/lodash.min.js?cb={{ config("app.cache_bust_id") }}'></script>	
+    <script src='/assets/js/vendor/berry.full.js?cb={{ config("app.cache_bust_id") }}'></script> 
+    <script src='/assets/js/vendor/bootstrap.full.berry.js?cb={{ config("app.cache_bust_id") }}'></script> 
     <script>
     _.findWhere = _.find;
       @if($mode == 'site')

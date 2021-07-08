@@ -33,7 +33,6 @@ class SitePolicy
             (!is_null(SiteMember::where('site_id','=',$site->id)->where('user_id','=',$user->id)->where('site_admin','=',1)->first()))) {
             return true;
         }
-        
     }
 
     public function create(User $user)
