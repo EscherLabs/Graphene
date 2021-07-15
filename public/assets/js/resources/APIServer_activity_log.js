@@ -12,7 +12,7 @@ $.ajax({
 		tableConfig.upload = false,
 		tableConfig.schema = [
 			{label: 'Event Type', name:'event'},			
-			{label: 'Event', name:'event_id', template:'{{event}}'},
+			{label: 'Event ID', name:'event_id'},
 			{label: 'Type', name:'type',type:'select', options:['dev','test','prod']},			
 			{label: 'User', name:'user_id',type:'select', options:'/api/sites/1/admins',format:{value:'{{unique_id}}',label:'{{last_name}}'}},
 			{label: 'Comment', name: 'comment'},
