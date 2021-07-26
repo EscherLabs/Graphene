@@ -67,4 +67,14 @@ class WorkflowSubmissionPolicy
         }
     }
 
+    public function upgrade_version(User $user, WorkflowSubmission $workflow_submission)
+    {
+        // User is Admin of Group that Submission Instance belongs to AND
+        // User is a site developer OR a site admin OR a developer of at least one workflow.
+        if ($user->group_admin($workflow_submission->workflowInstance->group_id) && 
+            ($user->site_developer || $user->site_admin || $user->workflow_developer())) {
+            return true;
+        }
+    }
+
 }
