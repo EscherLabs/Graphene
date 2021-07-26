@@ -302,7 +302,6 @@ class WorkflowInstanceController extends Controller
             ->orderBy('created_at')->get();
         $all_submissions = [];
         $all_keys = [];
-        $csv = '';
         foreach($submissions as $submission) {
             $flat = [];
             $this->flatten($submission->data,$flat);

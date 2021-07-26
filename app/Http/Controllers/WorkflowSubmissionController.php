@@ -135,24 +135,30 @@ class WorkflowSubmissionController extends Controller {
                 });
             })->count();
         return ['count'=>$submissions];
-    }
+    } 
+
     public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions = WorkflowSubmission::
-            select('assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id')
-            ->with(['user'=>function($query){
-                $query->select('id','email','first_name','last_name');
-            }])
+        $submissions_raw = WorkflowSubmission::select('assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','workflow_version_id')
+            ->with('user')
+            ->with('assignment_user')
+            ->with('assignment_group')
             ->where('workflow_instance_id','=',$workflow_instance->id)
             ->where('status',"!=",'new')
-            ->orderBy('updated_at','asc')
-            ->get();
-        foreach ($submissions as $submission) {
-            $submission->getAssignment();
-            $submission->getSubmittedAt();
-        }
+            ->orderBy('created_at')->get();
+            $submissions = [];
+            foreach($submissions_raw as $submission_raw) {
+                $submission = $submission_raw->only(['assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','user','workflow_version_id']);
+                if ($submission_raw->assignment_type === 'user') {
+                    $submission['assignee'] = $submission_raw->assignment_user;
+                } else if ($submission_raw->assignment_type === 'group') {
+                    $submission['assignee'] = $submission_raw->assignment_group;
+                }
+                $submissions[] = $submission;
+            }
         return $submissions;
-    }   
+    }
+
     public function list_my_instance_workflow_submissions(Request $request, WorkflowInstance $workflow_instance) {
         if (!Auth::check()) { abort(403); }
         $submissions = WorkflowSubmission::
@@ -244,6 +250,16 @@ class WorkflowSubmissionController extends Controller {
 
     public function destroy(WorkflowSubmission $workflow_submission){
         if ($workflow_submission->delete()) {
+            return 1;
+        }
+    }
+
+    public function upgrade_version(WorkflowSubmission $workflow_submission){
+        $workflow_instance = WorkflowInstance::where('id',$workflow_submission->workflow_instance_id)->first();
+        if ($workflow_submission->update([
+                'workflow_version_id'=>$workflow_instance->version->id,
+                'workflow_instance_configuration'=>(Array)$workflow_instance->configuration 
+        ])) {
             return 1;
         }
     }

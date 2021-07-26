@@ -8,11 +8,13 @@ getData([`/api/workflowinstances/${resource_id}`, `/api/workflowinstances/${reso
 		mygrid = new GrapheneDataGrid({
 			actions:[
 				{type: "info", name: "d_csv", label: '<i class="fa fa-download"></i> Download CSV'},'','',
-				{type: "danger", name: "delete", label: 'Delete Submission <i class="fa fa-exclamation-triangle"></i>'}
+				{type: "danger", name: "delete", label: 'Delete Submission <i class="fa fa-exclamation-triangle"></i>'},
+                {type: "warning", name: "upgrade_version", label: 'Upgrade Version <i class="fa fa-exclamation-triangle"></i>', min:1}
 			],
 			autoSize: 10,
 			name: "workflow_submissions",
 			schema:[
+                {label: "ID", name: "id"},
 				{label: "Name", name: "name", template: "{{attributes.user.first_name}} {{attributes.user.last_name}}"},
 				{name:"created_at", label:"Created", template: "{{attributes.created_at.fromNow}}"},
 				{name:"updated_at", label:"Last Action", template: "{{attributes.updated_at.fromNow}}"},
@@ -21,7 +23,8 @@ getData([`/api/workflowinstances/${resource_id}`, `/api/workflowinstances/${reso
 					{label: "Closed", value: "closed"},
 					{label: "Open", value: "open"}
 				]},
-				{label:"Assigned", name:"assigned", template: "{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}}"}
+				{label:"Assigned", name:"assigned", template: "{{attributes.assignee.name}}{{attributes.assignee.first_name}} {{attributes.assignee.last_name}}"},
+                {label: "Version ID", name: "workflow_version_id"},
 			],
 			data: submissions,
 			download:false,
@@ -45,7 +48,24 @@ getData([`/api/workflowinstances/${resource_id}`, `/api/workflowinstances/${reso
 					toastr.error('Unable to Delete Submission')
 				}
 			});
-		})
+        }).on("upgrade_version", e => {
+            if (confirm('Are you sure you want to upgrade the selected versions to the current workflow version?  This action cannot be undone, and may break older submissions!')) {
+                toastr.warning('Upgrading Versions!');
+                _.each(e.grid.getSelected(),function(model) {
+                    $.ajax({
+                        url:'/api/workflowsubmissions/'+model.attributes.id+'/upgrade',
+                        dataType:'json',
+                        type:'GET',
+                        success: () => {
+                            toastr.success('Upgraded Sumission: '+model.attributes.id)
+                        },
+                        error: () => {
+                            toastr.error('Unable to Upgrade Submission: '+model.attributes.id)
+                        }
+                    });
+                });
+            }
+        });
 
 		mygrid.state.set(_.extend({},mygrid.state.get(),{filters:{status:'open'}}))
 		customFilter = function(status){
