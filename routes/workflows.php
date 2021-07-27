@@ -55,6 +55,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@status')->middleware('can:view,workflow_submission');
     Route::put('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionActionController@action')->middleware('can:take_action,workflow_submission');
     Route::delete('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@destroy')->middleware('can:delete,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/upgrade','WorkflowSubmissionController@upgrade_version')->middleware('can:upgrade_version,workflow_submission');
 
     // List all workflows
     Route::get('/workflows','WorkflowController@list_all_workflows')->middleware('can:get_all,App\Workflow');
