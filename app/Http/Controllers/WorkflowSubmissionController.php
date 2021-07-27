@@ -141,21 +141,24 @@ class WorkflowSubmissionController extends Controller {
         if (!Auth::check()) { abort(403); }
         $submissions_raw = WorkflowSubmission::select('assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','workflow_version_id')
             ->with('user')
+            ->with(['workflowVersion' => function($query) {
+                $query->select('id','summary','updated_at');
+            }])
             ->with('assignment_user')
             ->with('assignment_group')
             ->where('workflow_instance_id','=',$workflow_instance->id)
             ->where('status',"!=",'new')
             ->orderBy('created_at')->get();
-            $submissions = [];
-            foreach($submissions_raw as $submission_raw) {
-                $submission = $submission_raw->only(['assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','user','workflow_version_id']);
-                if ($submission_raw->assignment_type === 'user') {
-                    $submission['assignee'] = $submission_raw->assignment_user;
-                } else if ($submission_raw->assignment_type === 'group') {
-                    $submission['assignee'] = $submission_raw->assignment_group;
-                }
-                $submissions[] = $submission;
+        $submissions = [];
+        foreach($submissions_raw as $submission_raw) {
+            $submission = $submission_raw->only(['assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','user','workflowVersion']);
+            if ($submission_raw->assignment_type === 'user') {
+                $submission['assignee'] = $submission_raw->assignment_user;
+            } else if ($submission_raw->assignment_type === 'group') {
+                $submission['assignee'] = $submission_raw->assignment_group;
             }
+            $submissions[] = $submission;
+        }
         return $submissions;
     }
 
