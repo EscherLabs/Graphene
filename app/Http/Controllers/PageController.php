@@ -73,11 +73,12 @@ class PageController extends Controller
             return 1;
         }
     }
-    public function run($group, $slug = null, Request $request) {
-        return $this->render("main", $group, $slug, $request);
+    public function run(Request $request, $group, $slug = null, ) {
+        return $this->render($request, $group, $slug);
     }
 
-    public function render($template = "main", $group, $slug = null, Request $request) {
+    public function render(Request $request, $group, $slug = null, ) {
+        $template = 'main';
         if(!is_numeric($group)) {
             $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
             if (is_null($groupObj)) { abort(404);}
@@ -216,16 +217,22 @@ class PageController extends Controller
             $groupObj = Group::where('id','=',$group)->where('site_id','=',config('app.site')->id)->first();
         }
         if (!is_null($groupObj)) {
-            // Redirect to first page or first app in this group
-            $myPage = Page::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+            // Redirect to first page or first app or first workflow in this group
+            $myPage_q = Page::where('group_id','=', $groupObj->id)->orderBy('order', 'asc');
+            $myPage_q->where(function($query) { foreach(Auth::user()->groups as $user_group) { $query->orWhereJsonContains('groups',$user_group); } $query->orWhereJsonLength('groups',0); $query->orWhereNull('groups'); });
+            $myPage = $myPage_q->first();
             if(!is_null($myPage)){
                 return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
             } else {
-                $myAppInstance = AppInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+                $myAppInstance_q = AppInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc');
+                $myAppInstance_q->where(function($query) { foreach(Auth::user()->groups as $user_group) { $query->orWhereJsonContains('groups',$user_group); } $query->orWhereJsonLength('groups',0); $query->orWhereNull('groups'); });
+                $myAppInstance = $myAppInstance_q->first();
                 if(!is_null($myAppInstance)){
                     return redirect('/app/'.strtolower($groupObj->slug).'/'.strtolower($myAppInstance->slug));
                 }  else {
-                    $myWorkflowInstance = WorkflowInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc')->first();
+                    $myWorkflowInstance_q = WorkflowInstance::where('group_id','=', $groupObj->id)->orderBy('order', 'asc');
+                    $myWorkflowInstance_q->where(function($query) { foreach(Auth::user()->groups as $user_group) { $query->orWhereJsonContains('groups',$user_group); } $query->orWhereJsonLength('groups',0); $query->orWhereNull('groups'); });
+                    $myWorkflowInstance = $myWorkflowInstance_q->first();
                     if(!is_null($myWorkflowInstance)){
                         return redirect('/workflow/'.strtolower($groupObj->slug).'/'.strtolower($myWorkflowInstance->slug));
                     } else {
