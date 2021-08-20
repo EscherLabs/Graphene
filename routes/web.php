@@ -33,7 +33,7 @@ Route::get('/ar/{renderer}/{group}/{slug}', 'AppInstanceController@render');
 Route::get('/page/{group}/{slug}', 'PageController@run');
 Route::get('/page/{group}','PageController@redirect')->middleware('no.save.session');
 Route::get('/community/{group}/{slug?}', 'PageController@run'); /* Compatibility with old portal */
-Route::get('/r/{renderer}/{group}/{slug?}', 'PageController@render');
+Route::get('/r/{template}/{group}/{slug?}', 'PageController@render');
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::get('/image/{image}','ImageController@get')->middleware('no.save.session');
 

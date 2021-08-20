@@ -1358,7 +1358,12 @@ const fieldLibrary = (function(){
       ],
       _display: [
         {label: 'List in page menu', name:'unlisted',value:0, type: 'checkbox',options:[{label:'No',value:true},{label:'Yes',value:false}]},				
-        {label: 'Limit Device', name: 'device',type:"select", format:{value:"{{index}}"},value:0, options: ['All', 'Desktop Only', 'Tablet and Desktop', 'Tablet and Phone', 'Phone Only']},
+        {label: 'Limit Device', name: 'device',type:"select", value:0, options: [
+          {label:'All',value:"0"},
+          {label:'Desktop Only',value:"1"},
+          {label:'Tablet and Desktop',value:"2"},
+          {label:'Tablet and Phone',value:"3"},
+          {label:'Phone Only',value:"4"}]},
         {label: 'Public', name:'public', type: 'checkbox',options:[{label:'No',value:false},{label:'Yes',value:true}], edit:  [{type:'matches',name:'limit', value: false}]},    
       ]
 
