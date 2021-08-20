@@ -231,7 +231,6 @@ $g.collections.add('layouts',layouts)
 			cb.on('remove', save);
 			cb.on('change',save);
 			cb.on('manage',function(item){
-
 				new gform({name: 'modal', data: item.get(), legend: 'Display Settings',fields:[
 					{label: 'Device', name: 'device', type: 'select', value:'widget', options: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
 					{label: 'Enclose in a Container?', name:'container', type: 'checkbox'},
