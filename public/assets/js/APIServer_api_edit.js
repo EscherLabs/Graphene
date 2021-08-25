@@ -78,17 +78,8 @@ function load(app_version) {
       {
         "name":"resources",
         "array":{
-          "min": null,
-          "max": 10,
-          "duplicate": {
-            "enable": "auto",
-            "label": "",
-            "clone": false
-          },
-          "remove": {
-            "enable": "auto",
-            "label": ""
-          }
+          "min": 0,
+          "max": 100
         },
         "type":"fieldset",
         "fields": [
