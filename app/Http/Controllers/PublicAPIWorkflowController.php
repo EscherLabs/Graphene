@@ -120,7 +120,9 @@ class PublicAPIWorkflowController extends Controller
                 } else if (substr($current_filter_name,0,4) === 'data') {
                     // Replace dots with arrows for searching inside of JSON Object
                     $current_filter_name = str_replace('.','->',$current_filter_name);
-                } else if (!in_array($current_filter_name,['id','assignment_type','state','status','created_at','updated_at'])) {
+                } else if (in_array($current_filter_name,['id','assignment_type','state','status','created_at','updated_at'])) {
+                    $current_filter_name = 'workflow_submissions.'.$current_filter_name;
+                } else {
                     continue; // If it's not a valid name, ignore it and move on.
                 }
                 $query->where($current_filter_name,$current_operator,$current_filter_value);
