@@ -156,13 +156,18 @@ class GroupController extends Controller
         )->firstOrFail();
 
         foreach($request->get('members') as $member) {
-            $user = User::where(['unique_id' => $member['unique_id']])->orWhere(['email' => $member['email']])->first();
+            $query = User::where(['unique_id' => $member['unique_id']]);
+            if (isset($member['email'])) {
+                $query->orWhere(['email' => $member['email']]);
+            }
+            $user = $query->first();
             if(!isset($user)){
                 $user_exists = false;
                 $user = new User($member);
             }else{
                 $user_exists = true;
-                $user->update($member);
+                // TJC 9/8/2021 -- Don't Update User
+                // $user->update($member);
             }
             //This must be set seperately because it is not fillable
             $user->unique_id = $member['unique_id'];
