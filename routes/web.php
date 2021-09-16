@@ -208,7 +208,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     // Lookup specific user by user_id
     Route::get('/users/{user}/info','UserController@info')->middleware('can:get,user');
     // Update an existing user by user_id
-    Route::put('/users/{user}/info','UserController@updateinfo')->middleware('can:update,user');
+    Route::put('/users/{user}/info','UserController@update_site_permissions')->middleware('can:update,user');
 
     /***** Pages *****/
     // List all pages

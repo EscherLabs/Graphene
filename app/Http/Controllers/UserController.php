@@ -9,6 +9,8 @@ use App\Group;
 use App\SiteMember;
 use Illuminate\Http\Request;
 use App\Libraries\NicknameLookup;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -164,34 +166,17 @@ class UserController extends Controller
 
         return $user;
     }
-    public function updateinfo(Request $request,User $user)
+    public function update_site_permissions(Request $request,User $user)
     {
-        $member = SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$user->id)->first();
-
         if (Auth::user()->site_admin) {
-            $member->site_admin = $request->input('site_members')[0]['site_admin'];
-            $member->site_developer = $request->input('site_members')[0]['site_developer'];
-            $member->save();
+            DB::table('site_members')
+                ->where('site_id', config('app.site')->id)
+                ->where('user_id', $request->user_id)
+                ->update(['site_developer'=>$request->site_developer,
+                            'site_admin'=>$request->site_admin]);
         }
-        $user->load(array('site_members'=>function($query){
-            $query->where('site_id','=',config('app.site')->id);
-        }));
-        $user->load(array('app_developers'=>function($query){
-            $query->with(array('app'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
-            }) )->select('app_id','user_id');
-        }));
-        $user->load(array('group_admins'=>function($query){
-            $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }) )->select('group_id','user_id','content_admin','apps_admin');
-        }));
-        $user->load(array('group_members'=>function($query){
-            $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }))->select('group_id','user_id');
-        }));
-        return $user;
+
+        return  SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$request->user_id)->first();
     }
     
     public function init(Request $request)
