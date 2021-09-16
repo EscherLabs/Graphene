@@ -20,7 +20,9 @@ class AdminController extends Controller
             $resource === 'links' && Auth::user()->can('view_in_admin',App\Link::class) ||
             $resource === 'groups' && Auth::user()->can('view_in_admin',App\Group::class) ||
             $resource === 'apps' && Auth::user()->can('view_in_admin',App\App::class) ||
-            $resource === 'workflow' && Auth::user()->can('view_in_admin',App\Workflow::class)
+            $resource === 'workflows' && Auth::user()->can('view_in_admin',App\Workflow::class) ||
+            $resource === 'api_users' && Auth::user()->can('view_in_admin',App\APIUser::class) ||
+            $resource === 'sites' && Auth::user()->can('view_in_admin',App\Site::class)
         ) {
             return view('admin', ['resource'=>$resource,'id'=>'']);
         }
