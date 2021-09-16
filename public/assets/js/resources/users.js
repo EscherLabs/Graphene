@@ -98,7 +98,7 @@
 			{{#group_admins}}
 				{{#group}}
 					<li>
-						<a href="/admin/groups/{{group_id}}/members" target='_blank'>{{group.name}}</a> 
+						<a href="/admin/groups/{{group_id}}/admins" target='_blank'>{{group.name}}</a> 
 						{{#apps_admin}}<i class="fa fa-cubes text-info"></i>{{/apps_admin}}
 						{{#content_admin}}<i class="fa fa-file text-info"></i>{{/content_admin}}
 					</li>
