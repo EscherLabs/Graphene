@@ -123,6 +123,7 @@
 			if(typeof gform.instances.user !== 'undefined'){
 				gform.instances.user.destroy();
 			}
+            $('.user-view').hide();
 		})
 		.on('change:query',_.debounce(function(e){
 			$.ajax({
