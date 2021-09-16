@@ -148,10 +148,14 @@ class UserController extends Controller
             $query->where('site_id','=',config('app.site')->id);
         }));
         $user->load(array('app_developers'=>function($query){
-            //$query->where('site_id','=',config('app.site')->id)->with('app');;
             $query->with(array('app'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
             }) )->select('app_id','user_id');
+        }));
+        $user->load(array('workflow_developers'=>function($query){
+            $query->with(array('workflow'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
+            }) )->select('workflow_id','user_id');
         }));
         $user->load(array('group_admins'=>function($query){
             $query->with(array('group'=>function($query){
@@ -169,14 +173,10 @@ class UserController extends Controller
     public function update_site_permissions(Request $request,User $user)
     {
         if (Auth::user()->site_admin) {
-            DB::table('site_members')
-                ->where('site_id', config('app.site')->id)
-                ->where('user_id', $request->user_id)
-                ->update(['site_developer'=>$request->site_developer,
-                            'site_admin'=>$request->site_admin]);
+            $site = Site::find(config('app.site')->id);
+            $site->add_member($user,$request->site_admin?1:0,$request->site_developer?1:0);
         }
-
-        return  SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$request->user_id)->first();
+        return SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$user->id)->first();
     }
     
     public function init(Request $request)
