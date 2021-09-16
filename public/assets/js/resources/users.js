@@ -244,7 +244,7 @@
 					]
 				}).on('save',function(e){
 					$.ajax({
-						url: '/api/users/'+e.form.get().user_id+'/info',
+						url: '/api/users/'+e.form.get().user_id+'/permissions',
 						type: 'PUT',
 						dataType : 'json',
 						contentType: 'application/json',
