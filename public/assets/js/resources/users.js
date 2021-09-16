@@ -3,7 +3,7 @@
 	// 09/14/2021, AKT - Updated User.js file formatting
 	user_form_attributes = [
 		{name:'id', label:'Graphene ID', edit:false},	
-		{name:'unique_id',label:'Unique ID', edit:[{type:'matches',name:'modify_unique_id',value:true}]},
+		{name:'unique_id',label:'Unique ID', edit:[{type:'matches',name:'modify_unique_id',value:true}], parse:'edit'},
 		{name:'first_name',label:'First Name'},
 		{name:'last_name',label:'Last Name'},
 		{name:'email',label:'Email'},

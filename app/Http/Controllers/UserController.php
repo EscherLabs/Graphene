@@ -242,6 +242,10 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $user->update($request->all());
+        if ($request->has('unique_id')) {
+            $user->unique_id = $request->unique_id;
+            $user->save();
+        }
         return $user;
     }
 
