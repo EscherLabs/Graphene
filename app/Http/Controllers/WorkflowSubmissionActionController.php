@@ -576,7 +576,7 @@ You may view the current status as well as the complete history of this workflow
         if (!isset($config->default_email_options) || in_array('notify_actor',$config->default_email_options)) {
             // Send Email to Actor (if different person than actor)
             if (!$state_data['owner']['is']['actor']) {
-                $subject = 'Action Required '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
+                $subject = 'Update '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
                 $to = $state_data['actor'];
                 $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
                 // Clean up whitespaces and carriage returns
@@ -616,7 +616,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
     You may view the full history of this workflow here: {{report_url}}<br><br>
 {{/is.actionable}}
 ';
-        $subject = 'Assignment '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
+        $subject = 'Action Required '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
         if (isset($state_data['assignment']['group'])) {
             $to = Arr::pluck($state_data['assignment']['group']['members'],'email');
         } else if (isset($state_data['assignment']['user'])) {
