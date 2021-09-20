@@ -75,13 +75,20 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				var valueField = {columns:8,name:'value',label:"Value",title:'Value <span class="text-success pull-right">{{value}}</span>'}
 				var flagField =  {columns:6,type:"switch",options:[{label:"Off",value:false},{label:"On",value:true}]};
 
-				r_options = {name:"map",data:{suppress_emails:configuration.suppress_emails,suppress_email_tasks:configuration.suppress_email_tasks,encrypted:configuration.encrypted,initial:configuration.initial,title:configuration.title,map:_.map(map,function(resource){
-					var r = _.find(configuration.map,{name:resource.name});
-					if(typeof r !== 'undefined' && r.type == resource.type){
-						resource.value = r.value;
-					}
-					return resource;
-				})}, actions:[],fields:[
+				r_options = {name:"map",data:{
+                    suppress_emails:configuration.suppress_emails,
+                    suppress_email_tasks:configuration.suppress_email_tasks,
+                    default_email_options:configuration.default_email_options,
+                    encrypted:configuration.encrypted,
+                    initial:configuration.initial,
+                    title:configuration.title,
+                    map:_.map(map,function(resource){
+                        var r = _.find(configuration.map,{name:resource.name});
+                        if(typeof r !== 'undefined' && r.type == resource.type){
+                            resource.value = r.value;
+                        }
+                        return resource;
+                    })}, actions:[],fields:[
 					{columns:6,name:"initial",label:"Initial State", options:_.pluck(version.code.flow,'name'), type:"smallcombo"},
 					{columns:6,name:"title",label:"Title",placeholder:workflow.name},
                     {...flagField, 
