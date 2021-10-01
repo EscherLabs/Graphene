@@ -195,7 +195,7 @@ class WorkflowInstanceController extends Controller
                             "current"=>$current,
                             "all"=>$saved,
                             "workflow"=>$myWorkflow,
-                            "workflow_id"=>$myWorkflow->id,
+                            "instance_id"=>$myWorkflow->id,
                             "widgetType"=>"Workflow",
                             "resources"=>$this->fetch($myWorkflow,$request,$current),
                             "container"=>true
@@ -206,7 +206,7 @@ class WorkflowInstanceController extends Controller
                         "current"=>$current,
                         "all"=>$saved,
                         "workflow"=>$myWorkflow,
-                        "workflow_id"=>$myWorkflow->id,
+                        "instance_id"=>$myWorkflow->id,
                         "widgetType"=>"WorkflowSummary",
                         "resources"=>$this->fetch($myWorkflow,$request,$current),
                         "container"=>true

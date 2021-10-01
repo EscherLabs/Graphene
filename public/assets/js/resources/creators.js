@@ -718,6 +718,6 @@ var createEngine = function(e){
     fsm = new StateMachine(options);
 }
 $('#graphene-quick-create').on('click', createEngine)
-$('body').on('click','[data-action]',function(e){
-  fsm[e.currentTarget.dataset.action]()
-})
+// $('body').on('click','[data-action]',function(e){
+//   fsm[e.currentTarget.dataset.action]()
+// })

@@ -618,6 +618,7 @@ Cobler.types.bool = function(container) {
 	].concat(baseFields,baseConditions,_.map([{type: 'fieldset', label: false, array: {min:2,max:2},columns:12, name: 'options', fields: [
 		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Label','name':'label',parse:[{type:"requires"}]},
 		{title: '{{#parent.index}}True{{/parent.index}}{{^parent.index}}False{{/parent.index}} Value','name':'value',parse:[{type:"requires"}],value:function(e){
+			// debugger;
 			return (typeof e.initial.value !== 'string')?'':e.initial.value;
 		}},
 	]}],function(item){

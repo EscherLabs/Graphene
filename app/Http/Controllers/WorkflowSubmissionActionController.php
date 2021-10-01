@@ -51,7 +51,7 @@ class WorkflowSubmissionActionController extends Controller {
         if($save_or_submit === 'save' && $request->has('id')){
             $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
                 ->where('workflow_instance_id',$workflow_instance->id)
-                ->find($request->get('id'));//where('id','=',$request->get('id'))->first();
+                ->find($request->get('id'));
         }else{
             // Get any existing workflow submissions with a 'new' status
             $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
@@ -61,17 +61,18 @@ class WorkflowSubmissionActionController extends Controller {
                 $workflow_submission = new WorkflowSubmission();
             }
         }
-       //dd($myWorkflowInstance->configuration->title?$myWorkflowInstance->configuration->title:'{{workflow.name}}');
+
         $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
         $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
         $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
         $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
-        $workflow_submission->data = $request->has('_state')?$request->get('_state'):(Object)[];
+        $workflow_submission->data = $request->has('_state')?$request->get('_state'):(isset($workflow_submission->data)?$workflow_submission->data:(Object)[]);
         $workflow_submission->state = $myWorkflowInstance->configuration->initial;
         $workflow_submission->status = 'new';
         $workflow_submission->user_id = $current_user->id;
         $workflow_submission->assignment_type = 'user';
         $workflow_submission->assignment_id = Auth::user()->id;
+
         $m = new \Mustache_Engine;
 
         $data = $this->createDataObject($workflow_submission, $request);
@@ -106,15 +107,17 @@ class WorkflowSubmissionActionController extends Controller {
                     break;
             }
         }, $data['form']);
-// dd($data['form']);
+
         try{
             $workflow_submission->title = $m->render(isset($myWorkflowInstance->configuration->title)?$myWorkflowInstance->configuration->title:'{{workflow.name}}',$data);
         } catch(Exception $e){
             $workflow_submission->title = $m->render('{{workflow.name}}',$data);
         }
-        if($save_or_submit === 'save' && $request->has('comment')){
+        if($save_or_submit === 'save' && ($request->has('comment') || !is_null($workflow_submission->comment)) ){
             $workflow_submission->status = 'saved';
-            $workflow_submission->comment = $request->get('comment');
+            if($request->has('comment')){
+                $workflow_submission->comment = $request->get('comment');
+            }
         }
 
         $workflow_submission->save();

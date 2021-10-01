@@ -47,7 +47,6 @@ getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+r
 		$.ajax({
 			url: '/api/workflows/'+e.model.attributes.workflow_id+'/versions',
 			success: function(e, data) {
-				debugger;
 				new gform({name:"version",data:e.model.attributes,legend:'Select Version',fields:[
 					{label: 'Version', name:'workflow_version_id', required:true, options:[{type:'optgroup',options:[{id:null,label:'Latest (working or stable)'},{id:0,label:'Latest Stable'}]},{type:'optgroup',options:data}],type:'select', format:{value:function(e){return e.id;}}},
 				]}).on('save',function(e,g){

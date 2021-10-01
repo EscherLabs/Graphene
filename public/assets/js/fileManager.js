@@ -1,109 +1,109 @@
 
-gform.stencils.ace = `
-<div class="row clearfix form-group" name="{{name}}">
-	{{>_label}}
-	{{#label}}
-	{{#inline}}<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
-	{{^inline}}<div class="col-md-8" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
-	{{/label}}
-	{{^label}}
-	<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>
-	{{/label}}
-		<div class="formcontrol"><div placeholder="{{placeholder}}" style="min-height: 250px;outline:none;border:solid 1px #cbd5dd;{{^unstyled}}background:#fff;padding:10px{{/unstyled}}" id="{{id}}container"></div></div>
-	</div>
-</div>`;
-gform.types['ace'] = _.extend({}, gform.types['input'], {
-  create: function(){
-    var tempEl = document.createElement("span");
-    tempEl.setAttribute("id", this.id);
-    if(this.owner.options.clear){
-      tempEl.setAttribute("class", ''+gform.columnClasses[this.columns]);
-    }
-    tempEl.innerHTML = this.render();
-    return tempEl;
-},
-// render:function(){
-//   return gform.render('textarea',this)
+// gform.stencils.ace = `
+// <div class="row clearfix form-group" name="{{name}}">
+// 	{{>_label}}
+// 	{{#label}}
+// 	{{#inline}}<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
+// 	{{^inline}}<div class="col-md-8" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
+// 	{{/label}}
+// 	{{^label}}
+// 	<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>
+// 	{{/label}}
+// 		<div class="formcontrol"><div placeholder="{{placeholder}}" style="min-height: 250px;outline:none;border:solid 1px #cbd5dd;{{^unstyled}}background:#fff;padding:10px{{/unstyled}}" id="{{id}}container"></div></div>
+// 	</div>
+// </div>`;
+// gform.types['ace'] = _.extend({}, gform.types['input'], {
+//   create: function(){
+//     var tempEl = document.createElement("span");
+//     tempEl.setAttribute("id", this.id);
+//     if(this.owner.options.clear){
+//       tempEl.setAttribute("class", ''+gform.columnClasses[this.columns]);
+//     }
+//     tempEl.innerHTML = this.render();
+//     return tempEl;
 // },
-  initialize: function(){
-    //   this.iel = this.el.querySelector('input[name="' + this.name + '"]')
-    //   if(this.onchange !== undefined){ this.el.addEventListener('change', this.onchange);}
-      this.onchangeEvent = function(input){
-        //   this.input = input;
-          this.value = this.get();
-          if(this.el.querySelector('.count') != null){
-            var text = this.value.length;
-            if(this.limit){text+='/'+this.limit;}
-            this.el.querySelector('.count').innerHTML = text;
-          }
-        //   this.update({value:this.get()},true);
-        //   gform.types[this.type].focus.call(this)
-          this.owner.trigger(['change:'+this.name,'change','input:'+this.name,'input'], this,{input:this.value});
+// // render:function(){
+// //   return gform.render('textarea',this)
+// // },
+//   initialize: function(){
+//     //   this.iel = this.el.querySelector('input[name="' + this.name + '"]')
+//     //   if(this.onchange !== undefined){ this.el.addEventListener('change', this.onchange);}
+//       this.onchangeEvent = function(input){
+//         //   this.input = input;
+//           this.value = this.get();
+//           if(this.el.querySelector('.count') != null){
+//             var text = this.value.length;
+//             if(this.limit){text+='/'+this.limit;}
+//             this.el.querySelector('.count').innerHTML = text;
+//           }
+//         //   this.update({value:this.get()},true);
+//         //   gform.types[this.type].focus.call(this)
+//           this.owner.trigger(['change:'+this.name,'change','input:'+this.name,'input'], this,{input:this.value});
 
-        //   this.owner.pub('change:'+this.name, this,{input:this.value});
-        //   this.owner.pub('change', this,{input:this.value});
-        //   this.owner.pub('input:'+this.name, this,{input:this.value});
-        //   this.owner.pub('input', this,{input:this.value});
-      }.bind(this)
-      this.input = this.input || false;
-      this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
+//         //   this.owner.pub('change:'+this.name, this,{input:this.value});
+//         //   this.owner.pub('change', this,{input:this.value});
+//         //   this.owner.pub('input:'+this.name, this,{input:this.value});
+//         //   this.owner.pub('input', this,{input:this.value});
+//       }.bind(this)
+//       this.input = this.input || false;
+//       this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
 
-      this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
-    this.editor = ace.edit(this.id+"container");
-    this.editor.setTheme(this.item.theme || "ace/theme/chrome");
-    this.editor.getSession().setMode({path: this.owner.options.default.mode || this.item.mode || "ace/mode/handlebars", inline:this.owner.options.default.inlinemode || this.item.inlinemode});
-    this.editor.session.setValue(this.value);
+//       this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
+//     this.editor = ace.edit(this.el.querySelector('#'+this.id+"container"));
+//     this.editor.setTheme(this.item.theme || "ace/theme/chrome");
+//     this.editor.getSession().setMode({path: this.owner.options.default.mode || this.item.mode || "ace/mode/handlebars", inline:this.owner.options.default.inlinemode || this.item.inlinemode});
+//     this.editor.session.setValue(this.value);
    
-  },
-  // update: function(item, silent) {
-  //   if(typeof item !== 'undefined' && (
-  //       typeof item.options !== undefined ||
-  //       typeof item.max !== undefined ||
-  //       typeof item.action !== undefined 
-  //       )
-  //       && typeof this.mapOptions !== 'undefined'){
-  //       delete this.mapOptions;
-  //       this.item = _.defaults({},item,this.item);
+//   },
+//   // update: function(item, silent) {
+//   //   if(typeof item !== 'undefined' && (
+//   //       typeof item.options !== undefined ||
+//   //       typeof item.max !== undefined ||
+//   //       typeof item.action !== undefined 
+//   //       )
+//   //       && typeof this.mapOptions !== 'undefined'){
+//   //       delete this.mapOptions;
+//   //       this.item = _.defaults({},item,this.item);
 
-  //       // this.item.options = _.assign([],this.item.options,item.options);
-  //       this.options = _.extend([],this.item.options);
-  //       this.max = this.item.max;
-  //       this.min = this.item.min;
-  //       this.path = this.item.path;
-  //       this.action = this.item.action;
-  //   }
-  //   // else if(typeof this.mapOptions !== 'undefined'){
-  //   // }
-  //   if(typeof item === 'object') {
-  //       _.extend(item,this);
-  //   }
-  //   this.label = gform.renderString((item||{}).label||this.item.label, this);
+//   //       // this.item.options = _.assign([],this.item.options,item.options);
+//   //       this.options = _.extend([],this.item.options);
+//   //       this.max = this.item.max;
+//   //       this.min = this.item.min;
+//   //       this.path = this.item.path;
+//   //       this.action = this.item.action;
+//   //   }
+//   //   // else if(typeof this.mapOptions !== 'undefined'){
+//   //   // }
+//   //   if(typeof item === 'object') {
+//   //       _.extend(item,this);
+//   //   }
+//   //   this.label = gform.renderString((item||{}).label||this.item.label, this);
 
-  //   // var oldDiv = document.getElementById(this.id);
+//   //   // var oldDiv = document.getElementById(this.id);
 
-  //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
-  //   var oldDiv = this.el;
-  //   this.destroy();
-  //   this.el = gform.types[this.type].create.call(this);
-  //   oldDiv.parentNode.replaceChild(this.el,oldDiv);
-  //   gform.types[this.type].initialize.call(this);
+//   //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
+//   //   var oldDiv = this.el;
+//   //   this.destroy();
+//   //   this.el = gform.types[this.type].create.call(this);
+//   //   oldDiv.parentNode.replaceChild(this.el,oldDiv);
+//   //   gform.types[this.type].initialize.call(this);
 
-  //   if(!silent) {
-  //       this.owner.pub(['change:'+this.name,'change'], this);
-  //   }
-  //   if(typeof gform.types[this.type].setup == 'function') {gform.types[this.type].setup.call(this);}
+//   //   if(!silent) {
+//   //       this.owner.pub(['change:'+this.name,'change'], this);
+//   //   }
+//   //   if(typeof gform.types[this.type].setup == 'function') {gform.types[this.type].setup.call(this);}
     
-  // },
-  set:function(value){
-    this.editor.session.setValue(value);
-  },
-  get:function(){
-    return this.editor.getValue()
-  },
-  focus: function(){
-    this.editor.focus();
-  }
-});
+//   // },
+//   set:function(value){
+//     this.editor.session.setValue(value);
+//   },
+//   get:function(){
+//     return (typeof this.editor == 'undefined')?this.value:this.editor.getValue()
+//   },
+//   focus: function(){
+//     this.editor.focus();
+//   }
+// });
 
 var fileManager = function(selector, options){
   this.$el = $(selector);

@@ -86,7 +86,6 @@ function getData(urls,callback){
       {
         event:"model:edited",
         handler: e => {
-          debugger;
           $.ajax({
             url: $g.render(routes.update, {...e.model.attributes, resource_id: resource_id}),
             type: verbs.update,

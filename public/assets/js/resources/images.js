@@ -32,7 +32,6 @@ getData([url,'/api/groups'], (images, groups) => {
 		]})
 		.on('change:group_id', e => e.form.find('image_filename').update({path: '/api/images?group_id='+e.field.get() }, true))
 		.on('uploaded', e => {
-			debugger;
 			grid.add(e.response, { validate: false, silent: true});
 			e.form.trigger('close');
 		}).on('cancel',function(e){e.form.dispatch('close')})

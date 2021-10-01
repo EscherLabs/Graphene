@@ -33,7 +33,7 @@ Cobler.types.WorkflowSummary = function(container){
 		},
     saveFlow:function(e,data){
       $.ajax({
-        url:'/api/workflowsubmissions/'+this.get().workflow_id,
+        url:'/api/workflowsubmissions/'+this.get().instance_id,
         dataType : 'json',
         contentType: 'application/json',
         data: JSON.stringify(data),
@@ -99,9 +99,8 @@ Cobler.types.WorkflowSummary = function(container){
         $g.waiting = "Updating Comment..."
 
         e.form.trigger('close')
-
           $.ajax({
-            url:'/api/workflowsubmissions/'+e.form.options.data.workflow_id+'/save',
+            url:'/api/workflowsubmissions/'+e.form.options.data.workflow_instance_id+'/save',
             dataType : 'json',
             contentType: 'application/json',
             data: JSON.stringify(_.extend(e.form.options.data,{comment:e.form.get('comment')})),

@@ -657,9 +657,9 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
       if(typeof value == 'object' && !_.isArray(value)){
         value = [value];
       }
-      value=this.value = value||[];
+      value= this.internalValue = value||[];
     }else{
-      value=this.value = value||{};
+      value= this.internalValue = value||{};
     }
     var _this = this;
     _.each(((this.multiple)?value:[value]),function(value){
@@ -680,6 +680,8 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
     })
   },
   get: function() {
+    if(!('el' in this)){return this.internalValue};
+
     if(this.Dropzone.files.length){
       var val = _.reduce(this.Dropzone.files,function(obj,file){
         if(file instanceof Blob ){
@@ -1089,6 +1091,8 @@ gform.types['currency']= _.extend({}, gform.types['input'],{
           this.cleave.setRawValue(value)
       },
   get:function(){
+    if(!('el' in this)){return this.internalValue};
+
     return parseFloat(this.cleave.getRawValue())||0;
     // return parseInt(this.el.querySelector('input[name="' + this.name + '"]').value,10);
   }, 
@@ -1467,7 +1471,7 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
     //   if(this.onchange !== undefined){ this.el.addEventListener('change', this.onchange);}
       this.onchangeEvent = function(input){
         //   this.input = input;
-          this.value = this.get();
+          // this.value = this.get();
           if(this.el.querySelector('.count') != null){
             var text = this.value.length;
             if(this.limit){text+='/'+this.limit;}
@@ -1486,10 +1490,10 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
       // this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
 
       // this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
-    this.editor = ace.edit(this.id+"container");
+    this.editor = ace.edit(this.el.querySelector('#'+this.id+"container"));
     this.editor.setTheme(this.item.theme || "ace/theme/chrome");
     this.editor.getSession().setMode({path: this.owner.options.default.mode || this.item.mode || "ace/mode/handlebars", inline:this.owner.options.default.inlinemode || this.item.inlinemode});
-    this.editor.session.setValue(this.value);
+    this.editor.session.setValue(this.value||"");
     this.editor.on("change",this.onchangeEvent.bind(null,false))
    
   },
@@ -1535,7 +1539,7 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
     this.editor.session.setValue(value);
   },
   get:function(){
-    return this.editor.getValue()
+    return (typeof this.editor == 'undefined')?this.value:this.editor.getValue()
   },
   focus: function(){
     this.editor.focus();
