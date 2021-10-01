@@ -505,7 +505,7 @@ class WorkflowSubmissionActionController extends Controller {
             } else {
                 $email_state_data = $state_data;
             }
-            $this->send_default_emails($email_state_data);
+            $this->send_default_emails($email_state_data,$myWorkflowInstance->configuration);
         }
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
@@ -678,7 +678,7 @@ class WorkflowSubmissionActionController extends Controller {
         }
     }
 
-    private function send_default_emails($state_data) {
+    private function send_default_emails($state_data,$config) {
         $m = new \Mustache_Engine;
         // Email Actor and Owner
         $email_body = '
@@ -695,23 +695,34 @@ class WorkflowSubmissionActionController extends Controller {
 {{#is.closed}}This workflow is now CLOSED and in the "{{state}}" state.<br><br>{{/is.closed}}
 You may view the current status as well as the complete history of this workflow here: {{report_url}}
 ';
-        $subject = 'Update '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
-        // Send Email To Owner (if the owner is not also the assignee)
-        if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']) 
-            || isset($state_data['assignment']['group'])) {
-            $to = $state_data['owner'];
-            $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
-            // Clean up whitespaces and carriage returns
-            $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
+
+        // Check if we should send the email to the owner
+        if (!isset($config->default_email_options) ||
+            in_array('notify_owner_all',$config->default_email_options) ||
+            (in_array('notify_owner_open',$config->default_email_options) && $state_data['was']['initial'] === true) ||
+            (in_array('notify_owner_closed',$config->default_email_options) && $state_data['is']['closed'] === true) ) {
+            // Send Email To Owner (if the owner is not also the assignee)
+            if ((isset($state_data['assignment']['user']) && $state_data['assignment']['user']['unique_id'] !== $state_data['owner']['unique_id']) 
+                || isset($state_data['assignment']['group'])) {
+                $subject = 'Update '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
+                $to = $state_data['owner'];
+                $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
+                // Clean up whitespaces and carriage returns
+                $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
+                $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
+            }
         }
-        // Send Email to Actor (if different person than actor)
-        if (!$state_data['owner']['is']['actor']) {
-            $to = $state_data['actor'];
-            $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
-            // Clean up whitespaces and carriage returns
-            $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-            $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
+        // Check if we should send the email to the actor
+        if (!isset($config->default_email_options) || in_array('notify_actor',$config->default_email_options)) {
+            // Send Email to Actor (if different person than actor)
+            if (!$state_data['owner']['is']['actor']) {
+                $subject = 'Update '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
+                $to = $state_data['actor'];
+                $content_rendered = $m->render($email_body, array_merge($state_data,['to'=>$to]));
+                // Clean up whitespaces and carriage returns
+                $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
+                $this->send_email(['to'=>$to['email'],'subject'=>$subject,'content'=>$content_rendered]);
+            }
         }
 
         // Email Asignee(s)
@@ -745,7 +756,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
     You may view the full history of this workflow here: {{report_url}}<br><br>
 {{/is.actionable}}
 ';
-        $subject = 'Assignment '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
+        $subject = 'Action Required '.$state_data['workflow']['instance']['name'].' ('.$state_data['id'].')';
         if (isset($state_data['assignment']['group'])) {
             $to = Arr::pluck($state_data['assignment']['group']['members'],'email');
         } else if (isset($state_data['assignment']['user'])) {
@@ -754,7 +765,11 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
         $content_rendered = $m->render($email_body, $state_data);
         // Clean up whitespaces and carriage returns
         $content_rendered = str_replace('<br>',"\n",preg_replace('!\s+!',' ',str_replace("\n",'',$content_rendered)));
-        $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content_rendered]);
+        
+        // Check if we should send the email to the actor
+        if (!isset($config->default_email_options) || in_array('notify_asignee',$config->default_email_options)) {
+            $this->send_email(['to'=>$to,'subject'=>$subject,'content'=>$content_rendered]);
+        }
     }
 
     // 01/12/2021, AKT - Implemented inactivity related

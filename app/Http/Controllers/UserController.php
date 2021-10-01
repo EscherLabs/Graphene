@@ -9,6 +9,8 @@ use App\Group;
 use App\SiteMember;
 use Illuminate\Http\Request;
 use App\Libraries\NicknameLookup;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -146,10 +148,14 @@ class UserController extends Controller
             $query->where('site_id','=',config('app.site')->id);
         }));
         $user->load(array('app_developers'=>function($query){
-            //$query->where('site_id','=',config('app.site')->id)->with('app');;
             $query->with(array('app'=>function($query){
                 $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
             }) )->select('app_id','user_id');
+        }));
+        $user->load(array('workflow_developers'=>function($query){
+            $query->with(array('workflow'=>function($query){
+                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
+            }) )->select('workflow_id','user_id');
         }));
         $user->load(array('group_admins'=>function($query){
             $query->with(array('group'=>function($query){
@@ -164,34 +170,13 @@ class UserController extends Controller
 
         return $user;
     }
-    public function updateinfo(Request $request,User $user)
+    public function update_site_permissions(Request $request,User $user)
     {
-        $member = SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$user->id)->first();
-
         if (Auth::user()->site_admin) {
-            $member->site_admin = $request->input('site_members')[0]['site_admin'];
-            $member->site_developer = $request->input('site_members')[0]['site_developer'];
-            $member->save();
+            $site = Site::find(config('app.site')->id);
+            $site->add_member($user,$request->site_admin?1:0,$request->site_developer?1:0);
         }
-        $user->load(array('site_members'=>function($query){
-            $query->where('site_id','=',config('app.site')->id);
-        }));
-        $user->load(array('app_developers'=>function($query){
-            $query->with(array('app'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
-            }) )->select('app_id','user_id');
-        }));
-        $user->load(array('group_admins'=>function($query){
-            $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }) )->select('group_id','user_id','content_admin','apps_admin');
-        }));
-        $user->load(array('group_members'=>function($query){
-            $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }))->select('group_id','user_id');
-        }));
-        return $user;
+        return SiteMember::where('site_id','=',config('app.site')->id)->where('user_id','=',$user->id)->first();
     }
     
     public function init(Request $request)
@@ -257,6 +242,10 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $user->update($request->all());
+        if ($request->has('unique_id')) {
+            $user->unique_id = $request->unique_id;
+            $user->save();
+        }
         return $user;
     }
 

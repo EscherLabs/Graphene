@@ -75,13 +75,20 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				var valueField = {columns:8,name:'value',label:"Value",title:'Value <span class="text-success pull-right">{{value}}</span>'}
 				var flagField =  {columns:6,type:"switch",options:[{label:"Off",value:false},{label:"On",value:true}]};
 
-				r_options = {name:"map",data:{suppress_emails:configuration.suppress_emails,suppress_email_tasks:configuration.suppress_email_tasks,encrypted:configuration.encrypted,initial:configuration.initial,title:configuration.title,map:_.map(map,function(resource){
-					var r = _.find(configuration.map,{name:resource.name});
-					if(typeof r !== 'undefined' && r.type == resource.type){
-						resource.value = r.value;
-					}
-					return resource;
-				})}, actions:[],fields:[
+				r_options = {name:"map",data:{
+                    suppress_emails:configuration.suppress_emails,
+                    suppress_email_tasks:configuration.suppress_email_tasks,
+                    default_email_options:configuration.default_email_options,
+                    encrypted:configuration.encrypted,
+                    initial:configuration.initial,
+                    title:configuration.title,
+                    map:_.map(map,function(resource){
+                        var r = _.find(configuration.map,{name:resource.name});
+                        if(typeof r !== 'undefined' && r.type == resource.type){
+                            resource.value = r.value;
+                        }
+                        return resource;
+                    })}, actions:[],fields:[
 					{columns:6,name:"initial",label:"Initial State", options:_.pluck(version.code.flow,'name'), type:"smallcombo"},
 					{columns:6,name:"title",label:"Title",placeholder:workflow.name},
                     {...flagField, 
@@ -96,14 +103,50 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 							{{#value}}<div class="text-danger">Custom emails (from email "Tasks") will not be sent</div>{{/value}}
 							{{^value}}<div class="text-success">Custom emails (from email "Tasks") will be sent</div>{{/value}}`
 					},
+                    {
+                        "type": "radio",
+                        "name": "default_email_options",
+                        "label": "Default Email Options",
+                        "multiple": true,
+                        "showColumn": true,
+                        show:[{name:"suppress_emails", type:"matches",value:false}],
+                        parse:'show',
+                        value:['notify_owner_open','notify_owner_closed','notify_asignee'],
+                        "options": [
+                            {
+                                "label": "",
+                                "type": "optgroup",
+                                "options": [
+                                    {
+                                        "label": "Notify Owner of transition from 'initial' to 'open' status (on original submit)",
+                                        "value": "notify_owner_open"
+                                    },
+                                    {
+                                        "label": "Notify Owner of transition from 'open' to 'closed' status",
+                                        "value": "notify_owner_closed"
+                                    },
+                                    {
+                                        "label": "Notify Owner of <i>All</i> Actions",
+                                        "value": "notify_owner_all"
+                                    },
+                                    {
+                                        "label": "Notify Assignee(s) of Assignment",
+                                        "value": "notify_asignee"
+                                    },
+                                    {
+                                        "label": "Notify Actors of their own actions",
+                                        "value": "notify_actor"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
                     {...flagField, 
 						name: "encrypted", 
 						title: `Encrypt Data at Rest
 							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
 							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`
 					},
-
-					
 					{name:"map",label:false,edit:!!map.length,array:{min:map.length,max:map.length},type:"fieldset",fields:[
 						
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},

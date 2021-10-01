@@ -16,7 +16,17 @@ class AdminController extends Controller
     }
     
     public function index($resource = null) {
-       return view('admin', ['resource'=>$resource,'id'=>'']);
+        if ($resource === 'users' && Auth::user()->can('view_in_admin',App\User::class) ||
+            $resource === 'links' && Auth::user()->can('view_in_admin',App\Link::class) ||
+            $resource === 'groups' && Auth::user()->can('view_in_admin',App\Group::class) ||
+            $resource === 'apps' && Auth::user()->can('view_in_admin',App\App::class) ||
+            $resource === 'workflows' && Auth::user()->can('view_in_admin',App\Workflow::class) ||
+            $resource === 'api_users' && Auth::user()->can('view_in_admin',App\APIUser::class) ||
+            $resource === 'sites' && Auth::user()->can('view_in_admin',App\Site::class)
+        ) {
+            return view('admin', ['resource'=>$resource,'id'=>'']);
+        }
+        abort(403);
     }    
     public function members(Group $group) {
        return view('admin', ['resource'=>'members','id'=>$group->id,'group'=>$group]);

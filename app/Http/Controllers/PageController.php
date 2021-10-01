@@ -210,6 +210,12 @@ class PageController extends Controller
 
 
     public function redirect($group, Request $request) {
+        if(!Auth::user()){           
+            $return = $this->customAuth->authenticate($request);
+            if(isset($return)){
+                return $return;
+            }
+        }
         if(!is_numeric($group)) {
             $groupObj = Group::where('slug','=',$group)->where('site_id','=',config('app.site')->id)->first();
 		}else{
