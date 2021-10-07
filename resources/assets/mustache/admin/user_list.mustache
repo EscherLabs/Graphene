@@ -1,1 +1,13 @@
-{{#users.length}}Click a user to take action{{/users.length}}<hr style="border:solid 1px #333">{{^users.length}}No results{{/users.length}}<div class="list-group">{{#users}}<a href="javascript:void(0);" class="list-group-item user" data-id="{{id}}">{{first_name}} {{last_name}}</a>{{/users}}</div>
+{{#owner.fields.0.value}}
+<div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">{{#value.length}}Click a user to take action{{/value.length}}{{^value.length}}No results{{/value.length}}</h3></div>
+    <div class="panel-body">
+        {{^value.length}}Try altering your search{{/value.length}}
+        <div class="list-group">
+            {{#value}}
+            <a href="javascript:void(0);" class="list-group-item user" data-id="{{id}}">{{first_name}} {{last_name}}</a>
+            {{/value}}
+        </div>
+    </div>
+</div>
+{{/owner.fields.0.value}}

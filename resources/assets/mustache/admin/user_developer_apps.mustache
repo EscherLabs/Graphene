@@ -1,0 +1,11 @@
+<div class="list-group" style='max-height:200px; overflow: scroll;'>
+    {{#app_developers}}
+        {{#app}}
+            {{^deleted_at}}<a class="list-group-item" href="/admin/apps/{{app_id}}" target="_blank">{{name}}</a>{{/deleted_at}}
+            {{#deleted_at}}<span class="list-group-item list-group-item-danger">{{name}}</span>{{/deleted_at}}
+        {{/app}}
+    {{/app_developers}}
+</div>
+{{^app_developers}}
+    <div class="alert alert-warning">Not a Developer of any Apps</div>
+{{/app_developers}}

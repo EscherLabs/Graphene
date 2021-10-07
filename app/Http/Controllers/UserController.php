@@ -149,25 +149,31 @@ class UserController extends Controller
         }));
         $user->load(array('app_developers'=>function($query){
             $query->with(array('app'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
-            }) )->select('app_id','user_id');
-        }));
+                $query->where('site_id','=',config('app.site')->id)->withTrashed()->select('id','site_id','name','deleted_at');
+            }))->select('app_id','user_id');
+        })); 
+        //->whereNull('deleted_at')
         $user->load(array('workflow_developers'=>function($query){
             $query->with(array('workflow'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name');
-            }) )->select('workflow_id','user_id');
+                $query->where('site_id','=',config('app.site')->id)->withTrashed()->select('id','site_id','name','deleted_at');
+            }))->select('workflow_id','user_id');
         }));
         $user->load(array('group_admins'=>function($query){
             $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
-            }) )->select('group_id','user_id','content_admin','apps_admin');
+                $query->where('site_id','=',config('app.site')->id)->withTrashed()->select('id','site_id','name','slug','deleted_at');
+            }))->select('group_id','user_id','content_admin','apps_admin');
         }));
         $user->load(array('group_members'=>function($query){
             $query->with(array('group'=>function($query){
-                $query->where('site_id','=',config('app.site')->id)->select('id','site_id','name','slug');
+                $query->where('site_id','=',config('app.site')->id)->withTrashed()->select('id','site_id','name','slug','deleted_at');
             }))->select('group_id','user_id');
         }));
 
+        $user_site = SiteMember::where('user_id','=',$user->id)
+            ->where('site_id','=',config('app.site')->id)->first();
+
+        $user->site_admin = $user_site->site_admin;
+        $user->site_developer = $user_site->site_developer;
         return $user;
     }
     public function update_site_permissions(Request $request,User $user)

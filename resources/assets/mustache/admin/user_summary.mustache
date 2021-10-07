@@ -1,0 +1,16 @@
+<div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Group Memberships <span class="badge pull-right"> {{group_members.length}}</span></h3></div>
+    {{>user_group_memberships}}
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Group Admins <span class="badge pull-right"> {{group_admins.length}}</span></h3></div>
+    {{>user_group_admin_memberships}}
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Developer Apps <span class="badge pull-right"> {{app_developers.length}}</span></h3></div>
+    {{>user_developer_apps}}
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Developer Workflows <span class="badge pull-right"> {{workflow_developers.length}}</span></h3></div>
+    {{>user_developer_workflows}}
+</div>
