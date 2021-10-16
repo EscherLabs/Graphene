@@ -1,4 +1,4 @@
-workflow_report.attachments = `<div class="list-group">
+workflow_report.attachments = `{{#files.length}}<div class="list-group">
         {{#files}}
         <a style="height:60px;padding-left:70px" href="{{path}}" target="_blank" class="list-group-item {{#deleted_at}}list-group-item-danger{{/deleted_at}}">
         <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:5px;left:5px">
@@ -13,7 +13,10 @@ workflow_report.attachments = `<div class="list-group">
           {{/deleted_at}}
         </a>
         {{/files}}
+        {{/files.length}}
+        </div>
         {{^files}}
+        <center><b>
           No files yet...click below or drop some files there to begin.
-        {{/files}}
-        </div>`;
+        </b></center>
+        {{/files}}`;

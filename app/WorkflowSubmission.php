@@ -65,9 +65,9 @@ class WorkflowSubmission extends Model
     public function getDataAttribute($value) {
         $payload = json_decode($value,true);
         if (isset($payload['_encrypted']) && $payload['_encrypted']===true && isset($payload['data'])) {
-            return json_decode(decrypt($payload['data']),true);
+            return json_decode(decrypt($payload['data']),false);
         } else {
-            return $payload;
+            return json_decode($value,false);
         }
     }
     public function setDataAttribute($value) {

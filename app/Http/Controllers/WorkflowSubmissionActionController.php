@@ -37,6 +37,11 @@ class WorkflowSubmissionActionController extends Controller {
         // Reason: Internal function call from Kernel cannot have an authenticated user
     }
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
+        if($request->has('_state')){
+            $request['_state'] = json_decode($request->get('_state'),false);
+        }
+
+
         //01/20/2021, AKT - Added the code below to check if the user is authenticated
         $this->customAuth = new CustomAuth();
         $this->resourceService = new ResourceService($this->customAuth);
@@ -109,10 +114,11 @@ class WorkflowSubmissionActionController extends Controller {
         }, $data['form']);
 
         try{
-            $workflow_submission->title = $m->render(isset($myWorkflowInstance->configuration->title)?$myWorkflowInstance->configuration->title:'{{workflow.name}}',$data);
+            $workflow_submission->title = $m->render((isset($myWorkflowInstance->configuration->title) && $myWorkflowInstance->configuration->title !== "")?$myWorkflowInstance->configuration->title:'{{workflow.name}}',$data);
         } catch(Exception $e){
             $workflow_submission->title = $m->render('{{workflow.name}}',$data);
         }
+        
         if($save_or_submit === 'save' && ($request->has('comment') || !is_null($workflow_submission->comment)) ){
             $workflow_submission->status = 'saved';
             if($request->has('comment')){

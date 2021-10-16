@@ -179,7 +179,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
               mappedData.is.actionable = !!mappedData.actions.length
 
               /* problem here  */
-              gform.options.rootpath = '/workflows/fetch/'+mappedData.workflow.instance.id+'/'
+              gform.prototype.options.rootpath = '/workflows/fetch/'+mappedData.workflow.instance.id+'/'
 
               _.each(resources,function(item,name){
                 gform.collections.add(name, _.isArray(item)?item:[])

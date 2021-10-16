@@ -320,7 +320,7 @@ function processFilter(options){
 	}
 	collection.each(
 	function(){
-    if($.score($(this).text().replace(/\s+/g, " ").toLowerCase(), $(currentTarget).val().toLowerCase() ) > ($(currentTarget).data('score') || 0.40)){
+    if(_.score($(this).text().replace(/\s+/g, " ").toLowerCase(), $(currentTarget).val().toLowerCase() ) > ($(currentTarget).data('score') || 0.40)){
       $(this).removeClass('nodisplay');
 		}else{
 			$(this).addClass('nodisplay');
@@ -415,20 +415,19 @@ gform.types['group']= _.extend({}, gform.types['smallcombo'], {
 	},
   defaults:{template:"{{display.group_id}}",options: '/api/groups?members=20',format:{title:'{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{name}}",value:"{{id}}"}}
 })
-gform.types['files']= _.extend({}, gform.types['smallcombo'], {
+gform.types['files'] = _.extend({}, gform.types['smallcombo'], {
   toString: function(name,display){
 		if(!display){
 			if(typeof this.combo !== 'undefined'){
-				return '<dt>'+this.label+'</dt> <dd>'+(this.combo.innerText||'(empty)')+'</dd><hr>'
+				return '<dt>'+this.label+'</dt> <dd>'+(this.combo.innerText||'(empty)')+'</dd><hr>';
 			}else{
-				return '<dt>'+this.label+'</dt> <dd>'+(this.get()||'(empty)')+'</dd><hr>'
+				return '<dt>'+this.label+'</dt> <dd>'+(this.get()||'(empty)')+'</dd><hr>';
 			}
     }else{
-      return _.find(this.options,{id:parseInt(this.value)})||{}
-
+      return _.find(this.options,{id:parseInt(this.value)})||{};
 		}
 	},
-  defaults:{options: 'files',custom:{name:"addFile",display:'<div style="padding:10px;color:#084010;border-top:solid 1px #333">Upload New File <span class="pull-right"><i class="fa fa-upload"></i></span></div>',action:function(e){
+  defaults:{options: 'files',strict:true,custom:{name:"addFile",display:'<div style="line-height:50px"><span class="label label-success">Upload New File</span> <span class="pull-right"><i class="fa fa-upload"></i></span></div>',action:function(e){
     $('div#myId').click()
 
   }},format:{title:'<i class="fa fa-paperclip"></i> {{{label}}}{{^label}}Attachement{{/label}}',label:"{{name}}",value:"{{id}}",display:'<div style="height:50px;padding-left:60px;position:relative" href="{{path}}" target="_blank"><div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url({{path}});background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:0px;left:5px">{{{icon}}}</div> {{name}} <span class="pull-right">{{date}}</span></div>'}}
@@ -455,7 +454,7 @@ gform.types['endpoint'] = {...gform.types['smallcombo'],
         }.bind(this))
     }
     this.options = this.mapOptions.getoptions();
-    this.value = this.value || "";
+    this.internalValue = this.value || "";
     this.help = ($g.collections.get('endpoints').find(endpoint=>endpoint.id == this.value)||{config:{url:''}}).config.url
     + (this.owner.options.data.resources.find(resource=>resource.name == this.owner.options.data.resources[this.parent.index].name)||{path:''}).path	
     
@@ -697,14 +696,14 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
       },[])
       if(this.multiple){
         
-          this.value = val||[];
+          this.internalValue = val||[];
         }else{
-          this.value = val[0]||this.value;
+          this.internalValue = val[0]||this.value;
         }   
     }else{
-      this.value = (this.multiple)?[]:{};
+      this.internalValue = (this.multiple)?[]:{};
     }
-    return this.value;
+    return this.internalValue;
   },
   assignIcon:file => {
     if(typeof file.type !== 'undefined'){
@@ -738,9 +737,10 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
     return file;
   },
   toString: function(name, report) {
-    this.value = this.get();
+    this.internalValue = this.get();
     if(!report){
-      this.value = (this.multiple)?_.map(this.value,gform.types.base64_file.assignIcon):gform.types.base64_file.assignIcon(this.value);
+      this.internalValue =
+       (this.multiple)?_.map(this.value,gform.types.base64_file.assignIcon):gform.types.base64_file.assignIcon(this.value);
 return gform.renderString((this.limit>1)?`
       <dt>{{label}}</dt> <dd style="min-height:30px">
       {{#value}}
@@ -1047,7 +1047,7 @@ gform.types['currency']= _.extend({}, gform.types['input'],{
     //   if(this.onchange !== undefined){ this.el.addEventListener('change', this.onchange);}
       this.onchangeEvent = function(input){
         //   this.input = input;
-          this.value = this.get();
+          this.internalValue = this.get();
           if(this.el.querySelector('.count') != null){
             var text = (this.value+"").length;
             if(this.limit>1){text+='/'+this.limit;}
@@ -1131,7 +1131,7 @@ $g = function(){
       };
   
       let emit = (e, data) => {
-          let a = data || {};
+          let a = {};
           let pd = true;
           let propagate = true;
           a.preventDefault = () => { pd = true; }
@@ -1146,6 +1146,7 @@ $g = function(){
   
           e.forEach(event => {
               a.event = event;
+              a.data = data;
               let f = (handler) => {
                   if(typeof handler.handler == 'function'){
                       handler.handler(a);
@@ -1186,7 +1187,7 @@ $g = function(){
     off:globalevents.off,
     schedule: (method, interval) => {
       return api.on('schedule',(e) => {
-          if(!(e.ticks%(interval||1))) method.call(null,e);
+          if(!(e.data.ticks%(interval||1))) method.call(null, e);
       })
     },
     intervalTask:(actions, opts) =>{

@@ -51,7 +51,6 @@ Cobler.types.WorkflowSummary = function(container){
       })
     },
 		initialize: function(el) {
-
   this.ractive = new Ractive({el: this.container.elementOf(this), template: workflow_report.workflow_summary, data:  this.get(), partials: {}});
 
   $('.current-panel').on('click','.error-field, .missing-field',function(e){
@@ -64,18 +63,20 @@ Cobler.types.WorkflowSummary = function(container){
     var data = _.extend({},_.find(this.get().all,{id:parseInt(e.currentTarget.dataset.id)} ))
     if(!_.isEmpty(data)){
         data = $g.formatDates(data);
-        var modal = new gform({legend:"Previously started workflow",actions:[{type:"cancel",action:"discard","modifiers": "btn btn-danger",label:'<i class="fa fa-times"></i> Discard instance'},{type:"button",action:"switch",label:'<i class="fa fa-check"></i> Switch to this instance'},{type:"button",action:"update",label:'<i class="fa fa-check"></i> Update Comment'}],data:data,name:"modal",fields:[{label:false,name:"title",
+        var modal = new gform({legend:"Previously started workflow",actions:[{type:"cancel",action:"discard","modifiers": "btn btn-danger",label:'<i class="fa fa-times"></i> Discard instance'},{type:"button",action:"update","modifiers": "btn btn-info",label:'<i class="fa fa-check"></i> Update Comment'},{type:"button",action:"switch","modifiers": "btn btn-success",label:'<i class="fa fa-refresh"></i> Switch to this instance'}],data:data,name:"modal",fields:[{label:false,name:"title",
         type:"output",format:{value:`{{#owner.options.data}}
         <dl class="dl-horizontal">
-<dt>Title</dt>
-<dd>{{{title}}}</dd>
-<dt>Comment</dt>
-<dd>{{{comment}}}</dd>
-<dt>Started</dt>
-<dd>{{created_at.date}} @ {{{created_at.time}}}</dd>
-<dt>Last Updated</dt>
-<dd>{{updated_at.date}} @ {{{updated_at.time}}}</dd>
-</dl>
+        {{#title}}<dt>Title</dt>
+    <dd>{{{title}}}</dd>{{/title}}
+    
+    {{#saved}}<dt>Comment</dt>
+    <dd>{{{comment}}}{{^comment}} - {{/comment}}</dd>
+    {{/saved}}
+    <dt>Started</dt>
+    <dd>{{created_at.date}} @ {{{created_at.time}}}</dd>
+    <dt>Last Updated</dt>
+    <dd>{{updated_at.date}} @ {{{updated_at.time}}}</dd>
+    </dl>
         {{/owner.options.data}}`}
       },{
 

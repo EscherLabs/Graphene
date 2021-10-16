@@ -1,14 +1,14 @@
-<div class="list-group" style='max-height:200px; overflow: scroll;'>
+<div class="list-group" id="group_admins" style='max-height:200px; overflow: scroll;'>
     {{#group_admins}}
         {{#group}}
             {{^deleted_at}}
-            <a class="list-group-item" href="/admin/groups/{{group_id}}/admins" target="_blank">{{name}}
+            <a class="list-group-item filterable " href="/admin/groups/{{group_id}}/admins" target="_blank">{{name}}
                 {{#apps_admin}}<i class="fa fa-cubes text-info" style="position:absolute;top:10px;right:10px"></i>{{/apps_admin}}
                 {{#content_admin}}<i class="fa fa-file text-info" style="position:absolute;top:10px;right:40px"></i>{{/content_admin}}
             </a>
             {{/deleted_at}}
             {{#deleted_at}}
-            <span class="list-group-item list-group-item-danger">{{name}}
+            <span class="list-group-item filterable  list-group-item-danger">{{name}}
                 {{#apps_admin}}<i class="fa fa-cubes text-info" style="position:absolute;top:10px;right:10px"></i>{{/apps_admin}}
                 {{#content_admin}}<i class="fa fa-file text-info" style="position:absolute;top:10px;right:40px"></i>{{/content_admin}}
             </span>{{/deleted_at}}

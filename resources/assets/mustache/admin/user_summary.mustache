@@ -1,16 +1,52 @@
 <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Group Memberships <span class="badge pull-right"> {{group_members.length}}</span></h3></div>
+    <div class="panel-heading">
+    <h3 class="panel-title">Group Memberships
+        <div class="input-group" style="width:200px;float:right;margin: -8px -14px -10px;">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>    
+                <label for="filter" class="sr-only">Filter</label>
+                <input type="text" class="form-control filter" data-selector="#group_memberships" name="filter" placeholder="Filter...">
+                <span class="input-group-addon"><span class="badge">{{group_members.length}}</span></span>    
+            </div>
+        </h3>
+    </div>
     {{>user_group_memberships}}
 </div>
-<div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Group Admins <span class="badge pull-right"> {{group_admins.length}}</span></h3></div>
+<div class="panel panel-default ">
+    <div class="panel-heading">
+        <h3 class="panel-title">Group Admins
+            <div class="input-group" style="width:200px;float:right;margin: -8px -14px -10px;">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>    
+                <label for="filter" class="sr-only">Filter</label>
+                <input type="text" class="form-control filter" data-selector="#group_admins" name="filter" placeholder="Filter...">
+                <span class="input-group-addon"><span class="badge">{{group_admins.length}}</span></span>    
+            </div>
+        </h3>
+    </div>
     {{>user_group_admin_memberships}}
 </div>
 <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Developer Apps <span class="badge pull-right"> {{app_developers.length}}</span></h3></div>
+    <div class="panel-heading">
+        <h3 class="panel-title">Developer Apps
+            <div class="input-group" style="width:200px;float:right;margin: -8px -14px -10px;">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>    
+                <label for="filter" class="sr-only">Filter</label>
+                <input type="text" class="form-control filter" data-selector="#app_developers" name="filter" placeholder="Filter...">
+                <span class="input-group-addon"><span class="badge">{{app_developers.length}}</span></span>    
+            </div>
+        </h3>
+    </div>
     {{>user_developer_apps}}
 </div>
 <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Developer Workflows <span class="badge pull-right"> {{workflow_developers.length}}</span></h3></div>
+    <div class="panel-heading">
+        <h3 class="panel-title">Developer Workflows
+            <div class="input-group" style="width:200px;float:right;margin: -8px -14px -10px;">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>    
+                <label for="filter" class="sr-only">Filter</label>
+                <input type="text" class="form-control filter" data-selector="#workflow_developers" name="filter" placeholder="Filter...">
+                <span class="input-group-addon"><span class="badge">{{workflow_developers.length}}</span></span>    
+            </div>
+        </h3>
+    </div>
     {{>user_developer_workflows}}
 </div>

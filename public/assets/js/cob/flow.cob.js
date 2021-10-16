@@ -275,7 +275,11 @@ Cobler.types.Workflow = function(container){
               search = search.parent;
             }
             return true;
-          }),function(e){return !e.satisfied()?{label:e.label,id:e.id}:null})))})
+          }),function(e){
+            // return !e.satisfied()?{label:e.label,id:e.id}:null;
+            return {label:e.label,id:e.id,satisfied:e.satisfied()};
+            
+          })))})
               
 
       // document.body.querySelector('.workflow-required').innerHTML = gform.renderString('{{#required.length}}<hr class="thin"><h5>Required information</h5>{{/required.length}}<div>{{#required}}<div class="label label-primary">{{.}}</div>{{/required}}</div>', )
@@ -285,7 +289,11 @@ Cobler.types.Workflow = function(container){
         url:'/api/workflowsubmissions/'+this.get().instance_id,
         dataType : 'json',
         contentType: 'application/json',
-        data: JSON.stringify(data),
+        data: JSON.stringify(function(){
+          let temp = data;
+          temp._state = JSON.stringify(data._state);
+          return temp;
+        }.call(null,data)),
         type: 'POST',
         success  : function(data){
           e.form.find('_state').el.style.opacity = 1
@@ -300,6 +308,20 @@ Cobler.types.Workflow = function(container){
       })
     },
 		initialize: function(el) {
+      gform.collections.add('files', [])
+
+
+      window.addEventListener("beforeunload", function (e) {
+        
+          if($('.flow-title .status').html() == 'Saving...'){
+            var confirmationMessage = 'Changes you made May not be saved';
+      
+            (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+            return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+          }
+      });
+
+
       if(typeof this.get().instance_id == 'undefined'){return false;};
         this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && this.get().enable_min){
@@ -321,7 +343,7 @@ Cobler.types.Workflow = function(container){
         })
 
         /* problem here  */
-        // gform.options.rootpath = '/workflows/fetch/'+this.get().instance_id+'/'
+        // gform.prototype.options.rootpath = '/workflows/fetch/'+this.get().instance_id+'/'
         _.each(this.get().resources,function(item,name){
           gform.collections.add(name, _.isArray(item)?item:[])
         })
@@ -343,10 +365,12 @@ Cobler.types.Workflow = function(container){
 
             //nothing started - we can assume starting a new one
             (this.get().current == null) ||
+            (this.get().current.updated_at == this.get().current.created_at) ||
 
             //data is the same as starting - assume continuing 
-            (JSON.stringify(this.get().current.data) == JSON.stringify(new gform({fields:this.get().workflow.version.code.form.fields}).get()) && (this.get().current.files == null || _.isEmpty(this.get().current.files) )) ||
-            
+            // (JSON.stringify(this.get().current.data) == JSON.stringify(new gform({fields:this.get().workflow.version.code.form.fields}).get()) && (this.get().current.files == null || _.isEmpty(this.get().current.files) )) ||
+            // (JSON.stringify(this.get().current.data) == JSON.stringify(new gform({fields:this.get().workflow.version.code.form.fields}).get()) && (this.get().current.files == null || _.isEmpty(this.get().current.files) )) ||
+            _.isEqual(this.get().current.data,new gform({fields:this.get().workflow.version.code.form.fields}).get()) ||
             
             parseInt(window.location.search.split('?saved=')[1]) == this.get().current.id
 
@@ -367,20 +391,22 @@ Cobler.types.Workflow = function(container){
         // this.get().current
           var content = $g.render(`You are currently in the middle of this workflow. Would you like to continue with your current data?<hr>{{#current}}
           <dl class="dl-horizontal">
-      <dt>Title</dt>
-      <dd>{{{title}}}</dd>
-      <dt>Comment</dt>
-      <dd>{{{comment}}}</dd>
+          {{#title}}<dt>Title</dt>
+      <dd>{{{title}}}</dd>{{/title}}
+      
+      {{#saved}}<dt>Comment</dt>
+      <dd>{{{comment}}}{{^comment}} - {{/comment}}</dd>
+      {{/saved}}
       <dt>Started</dt>
       <dd>{{created_at.date}} @ {{{created_at.time}}}</dd>
       <dt>Last Updated</dt>
       <dd>{{updated_at.date}} @ {{{updated_at.time}}}</dd>
       </dl>
-          {{/current}}`,{current:$g.formatDates(this.get().current)});
+          {{/current}}`,{saved:this.get().current.status == 'saved',current:$g.formatDates(this.get().current)});
           new gform({legend:"Workflow in progress",modal:{header_class:'bg-info'},fields:[{type:'output',name:'modal',label:false,format:{},value:content}],actions:[
             {type:'button',action:'discard',label:'<i class="fa fa-times"></i> Discard',"modifiers": "btn btn-danger pull-left"},
-            {type:'save',label:'<i class="fa fa-times"></i> Save For later',"modifiers": "btn btn-info pull-right"},
-            {type:'button',action:'use',label:'<i class="fa fa-times"></i> Use',"modifiers": "btn btn-success pull-right"}
+            {type:'save',label:'<i class="fa fa-save"></i> Save For later',"modifiers": "btn btn-info pull-right"},
+            {type:'button',action:'use',label:'<i class="fa fa-check"></i> Use',"modifiers": "btn btn-success pull-right"}
             ]}).modal()
             .on('discard save use cancel',function(myResolve,e){
               e.form.dispatch('close');
@@ -490,6 +516,12 @@ Cobler.types.Workflow = function(container){
                   "action":"canceled",
                   "label": "<i class='fa fa-times'></i> Clear"
                 },{
+                  "type": "button",
+                  "name": "_save_for_later",
+                  "action":"save",
+                  "modifiers":"btn btn-info pull-right",
+                  "label": "<i class='fa fa-save'></i> Save For later"
+                },{
                   "type": "hidden",
                   "name": "_flowstate"
                 }
@@ -541,10 +573,10 @@ Cobler.types.Workflow = function(container){
             if(this.get().current != null){
               this.initialstate = this.get().current.data;
               this.id = this.get().current.id;
-              gform.collections.add('files', this.get().current.files||[])
+              gform.collections.update('files', this.get().current.files||[])
               this.form = new gform(formSetup, '.g_'+get().guid);
             }else{
-              gform.collections.add('files', [])
+              gform.collections.update('files', [])
             }
 
             this.form = new gform(formSetup, '.g_'+get().guid);
@@ -705,6 +737,60 @@ Cobler.types.Workflow = function(container){
             }.bind(this))
 
             this.form.on('save',function(e){
+              if(e.field.name == '_save_for_later'){
+                
+
+                // data._state = this.get().data
+                debugger;
+                var data = {
+                  _flowstate:instance.configuration.initial,
+                  _state:e.form.get('_state'),//(this.get().current||this.get()).data,
+                  user:this.get().user,
+                  data:mappedData
+                }
+
+
+                let savePromise = new Promise(function(saveResolve, saveReject) {
+                  new gform({legend:"Comment associated with this submission",modal:{header_class:'bg-success'},fields:[{label:"Comment"}]}).modal().on('save',function(saveResolve,e){
+                    e.form.dispatch('close');
+                    e.form.destroy();
+                    saveResolve(e.form.get('comment'))
+                  }.bind(null,saveResolve)).on('cancel',function(saveReject,e){
+                    saveReject()
+                  }.bind(null,saveReject))
+                }.bind(null))
+                savePromise.then(
+                  function(value) {
+
+                    $.ajax({
+                      url:'/api/workflowsubmissions/'+this.get().instance_id+'/save',
+                      dataType : 'json',
+                      contentType: 'application/json',
+                      data: JSON.stringify(_.extend(this.get().current,{comment:value})),
+                      type: 'POST',
+                      success  : (data)=>{
+                        this.set({current:{data:{}}})
+                        this.initialstate = this.get().current.data;
+                        location.reload();                        
+                      },
+                      error:function(){
+                    
+                        // this.form.find('_state').el.style.opacity = 1
+                        // gform.types.fieldset.edit.call(e.form.find('_state'),true)
+                    
+                        // $('.gform-footer').show();
+                        // toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+                    
+                    
+                      }
+                    })
+
+
+                  }.bind(this))
+
+                
+                return false;
+              }
 
                 //check if validation required first
               var currentAction = _.find(_.find(this.get().workflow.version.code.flow,{name:mappedData.state}).actions,{name:e.field.name});
@@ -760,7 +846,7 @@ Cobler.types.Workflow = function(container){
                 this.saveFlow.call(this,e,data)
               }
             }.bind(this))
-            .on('canceled',function(e){
+            .on('canceled',function(e) {
               e.form.set('_state',this.initialstate._state)
             }.bind(this))
             this.form.on('input canceled', function() {
@@ -786,7 +872,11 @@ Cobler.types.Workflow = function(container){
                   url:'/api/workflowsubmissions/'+this.get().instance_id+'/save'+((parseInt(window.location.search.split('?saved=')[1]) == (this.get().current||{id:null}).id)?"?id="+this.get().current.id:""),
                   dataType : 'json',
                   contentType: 'application/json',
-                  data: JSON.stringify(this.form.get()),
+                  data:  JSON.stringify(function(){
+                    let temp = this.form.get();
+                    temp._state = JSON.stringify(temp._state);
+                    return temp;
+                  }.call(this)),
                   type: 'POST',
                   success  : function(data){
                     $('.flow-title .status').html('All Changes Saved').removeClass('label-danger').addClass('label-success')
