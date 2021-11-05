@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Manage API Accounts');
 
-getData(url, app_users => {
+$g.getData(url, app_users => {
 	new GrapheneDataGrid({...tableConfig, 
 		schema: [
 			{label: 'App Name', name:'app_name', help:'HTTP Basic Auth <i>Username</i>', required: true},

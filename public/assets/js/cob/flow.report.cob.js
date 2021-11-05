@@ -27,7 +27,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
         default:
           
           // var icon = ;
-          file.icon = '<i class="fa '+mime_type_icon_map[file.mime_type] || mime_type_icon_map[file.mime_type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o"+' fa-3x" style="padding-top: 4px;"></i>';
+          file.icon = '<i class="fa '+mime_icons[file.mime_type] || mime_icons[file.mime_type.split('/')[0]] || mime_icons[file.ext] || "fa-file-o"+' fa-3x" style="padding-top: 4px;"></i>';
           file.preview = "";
         }
 
@@ -95,13 +95,7 @@ Cobler.types.WorkflowSubmissionReport = function(container){
                 return e.content.length;
               }),function(e){return e.name.toLowerCase();}),'content'))
     
-     
-     
-     
-     
-     
               mappedData = _.pick(this.get().options,'status','state')
-    
               mappedData.report_url = this.get().report_url;
               mappedData.owner = _.pick(this.get().options.user,'first_name','last_name','email','unique_id','id','params')
               mappedData.actor = _.pick(this.get().user,'first_name','last_name','email','unique_id','id','params','groups')

@@ -41,7 +41,6 @@ class WorkflowSubmissionActionController extends Controller {
             $request['_state'] = json_decode($request->get('_state'),false);
         }
 
-
         //01/20/2021, AKT - Added the code below to check if the user is authenticated
         $this->customAuth = new CustomAuth();
         $this->resourceService = new ResourceService($this->customAuth);
@@ -59,12 +58,13 @@ class WorkflowSubmissionActionController extends Controller {
                 ->find($request->get('id'));
         }else{
             // Get any existing workflow submissions with a 'new' status
-            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
-                ->where('workflow_instance_id',$workflow_instance->id)
-                ->where('status','new')->first();
-            if (is_null($workflow_submission)) {
+            // $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
+            //     ->where('workflow_instance_id',$workflow_instance->id)
+            //     ->where('status','new')->orderBy('created_at','desc')->first();
+
+            // if (is_null($workflow_submission)) {
                 $workflow_submission = new WorkflowSubmission();
-            }
+            // }
         }
 
         $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
@@ -107,7 +107,6 @@ class WorkflowSubmissionActionController extends Controller {
                             $data->{$field->name."-file"} = $file->only('name','mime_type','path','icon');
 
                         }
-                    // dd($data->{$field->name."-file"});
                     }
                     break;
             }
@@ -120,7 +119,6 @@ class WorkflowSubmissionActionController extends Controller {
         }
         
         if($save_or_submit === 'save' && ($request->has('comment') || !is_null($workflow_submission->comment)) ){
-            $workflow_submission->status = 'saved';
             if($request->has('comment')){
                 $workflow_submission->comment = $request->get('comment');
             }
@@ -155,7 +153,7 @@ class WorkflowSubmissionActionController extends Controller {
 
 
     public function destroy(WorkflowSubmission $workflowSubmission) {
-        if($workflowSubmission->status == 'new' || $workflowSubmission->status == 'saved'){
+        if($workflowSubmission->status == 'new'){
             $files = WorkflowSubmissionFile::where('workflow_submission_id',$workflow_submission->id)->get();
             foreach($files as $file) {
                 Storage::delete($file->get_file_path());

@@ -3,7 +3,7 @@ if(resource_id !== ''){
 	$('[href="/admin/groups"]').parent().addClass('active');
 }
 
-getData([url, '/api/groups'], function(endpoints, groups){
+$g.getData([url, '/api/groups'], function(endpoints, groups){
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,

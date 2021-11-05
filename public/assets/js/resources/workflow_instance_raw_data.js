@@ -2,7 +2,7 @@ $('.navbar-header .nav a h4').html('Workflow Instance Raw Data Report');
 $('[href="/admin/workflowinstances"]').parent().addClass('active');
 
 
-getData(['/api/workflowinstances/'+resource_id, '/api/workflowinstances/'+resource_id+'/raw'], (workflow_instance, raw_data) => {
+$g.getData(['/api/workflowinstances/'+resource_id, '/api/workflowinstances/'+resource_id+'/raw'], (workflow_instance, raw_data) => {
 
 	$('.navbar-header .nav a h4').append(' - '+workflow_instance.workflow.name+'');
 

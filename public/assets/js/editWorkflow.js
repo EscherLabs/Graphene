@@ -125,7 +125,7 @@ mainForm = function(){
         {name:"horizontal",label:"Horizontal",value:true,type:"checkbox",show:false,parse:true},
         {name:"resource",label:"Initial Data Source",type:"select",options:["None",{type:'optgroup',min:0,max:4,show:false},{type:'optgroup',label:"Methods",options:'methods',format:{label:"{{label}}"}},{type:"optgroup",label:"Resources",options:'resources'}]},
         {parse:false,type:"output",label:false,value:"<h3>Events</h3>"},
-        {type: 'fieldset',label:false,name:"events",array:{max:100},fields:[
+        {type: 'fieldset',label:false,name:"events",array:{min:1,max:100},fields:[
           {type: 'text', label: 'Event',name:'event',parse:[{type:"requires"}],target:"#collapseEvents .panel-body"},
       
           {type: 'select', label: 'Method', name: 'handler',target:"#collapseEvents .panel-body",options:[
@@ -188,16 +188,12 @@ mainForm = function(){
       fields: formConfig.fields,
       legend: 'Edit Fieldset',
     }, '#mainform').on('change', function(e){
-      // form = _.extend(form,e.form.get())
       var workingForm = myform;
-        _.each(path,function(p){
+        _.each(path, p=>{
           workingForm = _.find(workingForm.fields,{name:p})
         })
         
-      // workingForm = 
-      _.extend(workingForm,e.form.get())
-      
-
+      _.extend(workingForm, e.form.get())
     })
 
   }
@@ -831,7 +827,7 @@ function drawForm(name){
    {target:"#collapseBasic .panel-body", name: "state_id",type:'hidden', label: false},
    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
-    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
+    {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"NOTE: Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
     {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
     {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
@@ -1036,6 +1032,8 @@ gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),f
 gform.collections.add('templates', _.map(_.pluck(attributes.code.templates,'name'),function(item,i){
     return {value:"template_"+i,label:item}
 }));  
+var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
+
 var taskForm = [
   {name: "task", label: "Task", type: "select", options: [{value: "", label: "None"},{value: "email", label: "Email"},{value:"resource",label:"Resource"},{value: "purge_files", label: "Purge All Files"},{value: "purge_fields_by_name", label: "Purge Fields By Name"}]},
   
@@ -1098,7 +1096,6 @@ var taskForm = [
     "show": [{"type": "matches","name": "task","value": "purge_fields_by_name"}],
   }
 ]
-var valueField = {label:'Value <span class="text-success pull-right">{{value}}</span>'}
 
 $('#flow-preview').on('click','.nodes .node',function(e){
 

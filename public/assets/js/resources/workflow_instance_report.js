@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('Workflow Instance Report');
 $('[href="/admin/workflowinstances"]').parent().addClass('active');
 
-getData([`/api/workflowinstances/${resource_id}`, `/api/workflowinstances/${resource_id}/submissions`], (workflow_instance, submissions) => {
+$g.getData([`/api/workflowinstances/${resource_id}`, `/api/workflowinstances/${resource_id}/submissions`], (workflow_instance, submissions) => {
 		$('.navbar-header .nav a h4').append(' - '+workflow_instance.workflow.name);
 
 		submissions.forEach($g.formatDates)

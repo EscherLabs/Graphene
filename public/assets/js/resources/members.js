@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('Members');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-getData('/api/groups/'+resource_id+'/members', members =>{
+$g.getData('/api/groups/'+resource_id+'/members', members =>{
 
 	routes.create = routes.delete = '/api/groups/{{resource_id}}/members/{{user_id}}';
 

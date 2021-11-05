@@ -730,36 +730,40 @@ renderBuilder = function(){
 
   if(typeof form !== 'undefined'){
     var temp = $.extend(true, {}, form);
-    for(var i in temp.fields){
-      // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
-      // temp.fields[i].options = mapOptions.getobject()
-      switch(temp.fields[i].type) {
-        case "select":
-        case "radio":
-        case "scale":
-        case "range":
-        // case "grid":
-        case "user":
-        case "user_email":
-        case "group":
-        case "groups":
-        case "smallcombo":
-          temp.fields[i].widgetType = 'collection';
-          break;
-        case "checkbox":
-        case "switch":
-          temp.fields[i].widgetType = 'bool';
-          break;
-        case "fieldset":
-        case "table":
-        case "template":
-        case "grid":
-          temp.fields[i].widgetType = 'section';
-          break;
-        default:
-          temp.fields[i].widgetType = 'input';
-      }
-    }
+
+    _.each(temp.fields,function(field){
+      field.widgetType = (gform.types[field.type]||{}).base||'input'
+    })
+    // for(var i in temp.fields){
+    //   // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
+    //   // temp.fields[i].options = mapOptions.getobject()
+    //   switch(temp.fields[i].type) {
+    //     case "select":
+    //     case "radio":
+    //     case "scale":
+    //     case "range":
+    //     // case "grid":
+    //     case "user":
+    //     case "user_email":
+    //     case "group":
+    //     case "groups":
+    //     case "smallcombo":
+    //       temp.fields[i].widgetType = 'collection';
+    //       break;
+    //     case "checkbox":
+    //     case "switch":
+    //       temp.fields[i].widgetType = 'bool';
+    //       break;
+    //     case "fieldset":
+    //     case "table":
+    //     case "template":
+    //     case "grid":
+    //       temp.fields[i].widgetType = 'section';
+    //       break;
+    //     default:
+    //       temp.fields[i].widgetType = 'input';
+    //   }
+    // }
     
     list.className = list.className.replace('hidden', '');
     cb.collections[0].load(temp.fields);
@@ -772,7 +776,9 @@ renderBuilder = function(){
 
   mainForm();
 } 
+
 mainForm = function(){
+  debugger;
   var form = myform;
   _.each(path,function(p){
     form = _.find(form.fields,{name:p})

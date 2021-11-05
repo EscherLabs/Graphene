@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Sites');
 
-getData(url, sites => {
+$g.getData(url, sites => {
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
 			{label: 'Site Name', name:'name', required: true},

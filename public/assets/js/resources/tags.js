@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('Tags');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-getData([url, '/api/groups'], function(tags, groups){
+$g.getData([url, '/api/groups'], function(tags, groups){
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,

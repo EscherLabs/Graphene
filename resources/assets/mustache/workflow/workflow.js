@@ -6,11 +6,9 @@ workflow_report.workflow = `
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
-      <div class="panel-heading{{^titlebar}} hide{{/titlebar}}" style="position:relative">
-        <h3 class="panel-title">{{title}}{{^title}}{{{widgetType}}}{{/title}}</h3>
-      </div>
-      <div class="collapsible panel-body">
-        <h3 class="flow-title"></h3>
+      <div class="panel-body">
+        <span class="label label-default pull-right" id="flow-status"></span>
+        <h2 class="flow-title" style="margin-top:0"></h2>
         <h4 class="submission-title"></h4>
         <div>
           <!-- Nav tabs -->

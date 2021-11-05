@@ -23,7 +23,7 @@ var schema = [
 	{name: 'id', type:'hidden'}
 ];
 
-getData([url,'/api/groups','/assets/data/icons.json'], (links, groups, icons) => {
+$g.getData([url,'/api/groups','/assets/data/icons.json'], (links, groups, icons) => {
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,

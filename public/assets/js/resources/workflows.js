@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Workflows');
 
-getData([url, '/api/workflows/developers'], (workflows, developers) => {
+$g.getData([url, '/api/workflows/developers'], (workflows, developers) => {
 
 	new GrapheneDataGrid({...tableConfig,
 		schema: [

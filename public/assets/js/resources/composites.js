@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('Group Composites');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-getData('/api/groups/'+resource_id+'/composites', composites => {
+$g.getData('/api/groups/'+resource_id+'/composites', composites => {
 	routes.create = routes.delete = '/api/groups/{{resource_id}}/composites/{{id}}';
 	new GrapheneDataGrid({...tableConfig,
 		schema: [

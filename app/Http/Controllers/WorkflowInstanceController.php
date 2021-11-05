@@ -178,11 +178,11 @@ class WorkflowInstanceController extends Controller
 
         $myWorkflow->findVersion();
 
-        $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->first();
+        $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->orderBy('created_at','desc')->first();
         if($request->has('saved')){
-            $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new','saved'])->where('id','=',$request->get('saved'))->with('files')->first();
+            $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new'])->where('id','=',$request->get('saved'))->with('files')->first();
         }
-        $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['saved'])->get();
+        $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new'])->orderBy('updated_at','desc')->get();
         if($myWorkflow != null) {
             $renderer = new PageRenderer();
             return $renderer->render([

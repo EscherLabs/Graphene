@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('Images');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-getData([url,'/api/groups'], (images, groups) => {
+$g.getData([url,'/api/groups'], (images, groups) => {
 	// images = images.map(image => {return {...image, group_id:image.group_id+''}})
 
 	new GrapheneDataGrid({...tableConfig, schema: [

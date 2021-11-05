@@ -251,6 +251,7 @@ function Cobler(options) {
 			toJSON: toJSON,
 			toHTML: toHTML,
 			deactivate: deactivate,
+			activate: activate,
 			clear: reset,
 			load: loadItems,
 			update: update.bind(this),

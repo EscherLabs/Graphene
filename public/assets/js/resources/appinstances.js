@@ -2,7 +2,7 @@
 $('.navbar-header .nav a h4').html('App Instances');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-getData([url,'/assets/data/icons.json', '/api/groups', '/api/apps'+((resource_id !== '')?'/group/'+resource_id:'')], (appinstances, icons, groups, apps) => {
+$g.getData([url,'/assets/data/icons.json', '/api/groups', '/api/apps'+((resource_id !== '')?'/group/'+resource_id:'')], (appinstances, icons, groups, apps) => {
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema:[
 			fieldLibrary.group,

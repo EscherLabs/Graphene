@@ -1,5 +1,5 @@
 $('.navbar-header .nav a h4').html('Developers');
-getData(['/api/apps/'+resource_id+'/developers'], developers => {
+$g.getData(['/api/apps/'+resource_id+'/developers'], developers => {
 	routes.create = routes.delete = '/api/apps/{{resource_id}}/developers/{{id}}';
 
 	new GrapheneDataGrid({...tableConfig, 

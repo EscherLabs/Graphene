@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('App Instance');
 $('[href="/admin/appinstances"]').parent().addClass('active');
 root = '/api/appinstances/'+resource_id;
-getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (appinstance, icons, endpoints) => {
+$g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (appinstance, icons, endpoints) => {
 	$g.collections.add('composites',group.composites)
 	$('.navbar-header .nav a h4').append(' - '+appinstance.app.name+'');
 	const {forms=[], resources=[]} = appinstance.app.code;

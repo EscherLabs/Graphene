@@ -1,5 +1,5 @@
 $('.navbar-header .nav a h4').html('Groups');
-getData(url, groups => {
+$g.getData(url, groups => {
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema: [
 			{label: 'Name', name:'name', required: true},        

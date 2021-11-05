@@ -1,6 +1,6 @@
 $('.navbar-header .nav a h4').html('Pages');
 
-getData([url, '/api/groups', '/assets/data/icons.json'], (pages, groups, icons) => {
+$g.getData([url, '/api/groups', '/assets/data/icons.json'], (pages, groups, icons) => {
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,

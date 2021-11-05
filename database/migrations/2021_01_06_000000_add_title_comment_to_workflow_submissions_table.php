@@ -13,7 +13,7 @@ class AddTitleCommentToWorkflowSubmissionsTable extends Migration
             $table->string('title')->nullable()->default(null)->after('data');;
             $table->text('comment')->nullable()->default(null)->after('data');
         });
-        DB::statement("ALTER TABLE workflow_submissions MODIFY `status` ENUM('open','closed','new','saved') NOT NULL DEFAULT 'new';");
+        DB::statement("ALTER TABLE workflow_submissions MODIFY `status` ENUM('open','closed','new') NOT NULL DEFAULT 'new';");
 
     }
 

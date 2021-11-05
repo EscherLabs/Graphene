@@ -1,9 +1,7 @@
 workflow_report.workflow_summary_container = `
 <div></div>`;
 workflow_report.workflow_summary = `
-{{#if current.status == 'saved'}}
 <div style="margin-bottom:15px"><a href="./{{title}}"><button type="button" class="btn btn-success">New {{title}}</button></a></div>
-{{/if}}
 <div class="panel panel-default current-panel">
   <div class="panel-heading" style="position:relative">
     <h3 class="panel-title">Current Workflow</h3>
@@ -27,10 +25,10 @@ workflow_report.workflow_summary = `
       </dl>
     {{/current}}            
     <div class="workflow-required">
-      {{#required.length}}<hr class="thin"><h5>Required information</h5>{{/required.length}}<div>{{#required}}<a data-id="{{id}}" style="margin-right:10px" class="missing-field label label-{{^satisfied}}info{{/satisfied}}{{#satisfied}}default{{/satisfied}}">{{label}}{{#satisfied}} <i class="fa fa-check"></i>{{/satisfied}}</a>{{/required}}</div>
+      {{#required.length}}<hr class="thin"><h5>Required information</h5>{{/required.length}}<div>{{#required}}<a data-id="{{id}}" class="missing-field label label-{{^satisfied}}info{{/satisfied}}{{#satisfied}}default{{/satisfied}}">{{label}} <i class="fa fa-check"></i></a>{{/required}}</div>
     </div>
     <div class="workflow-errors">
-    {{#errors.length}}<hr class="thin"><h5>Errors</h5><div class="list-group#337ab7 workflow-errors">{{#errors}}<a class="list-group-item text-info error-field" data-id="{{id}}" style="cursor:pointer" >{{label}}<ul>
+    {{#errors.length}}<hr class="thin"><h5>Errors</h5><div class="list-group#337ab7 workflow-errors">{{#errors}}<a class="list-group-item text-info error-field" data-id="{{id}}" style="cursor:pointer;padding: 5px 5px 0;" >{{label}}<ul>
     {{#errors}}<li class="text-danger" >{{{.}}}</li>{{/errors}}
     </ul></a>{{/errors}}</div>{{/errors.length}}
     </div>    
@@ -38,13 +36,15 @@ workflow_report.workflow_summary = `
 </div>
 <div class="panel panel-default saved-panel">
   <div class="panel-heading" style="position:relative">
-    <h3 class="panel-title">Saved Workflows</h3>
+    <h3 class="panel-title">Saved Workflows <span class="badge pull-right">{{all.length -1}}</span></h3>
   </div>
-  {{#all.length}}
-    <div class="list-group">
-  {{#all}}
-    <a href="#" onclick="event.preventDefault();" class="list-group-item {{status}} inProgress" data-id="{{id}}">{{title}}<br><small class="text-muted">{{comment}}</small></a>
-  {{/all}}
+  {{#if all.length > 1}}
+    <div class="list-group" style="max-height: 295px;overflow: scroll;">
+    {{#all}}
+      {{#if current.id !== id}}
+      <a href="#" onclick="event.preventDefault();" class="list-group-item {{status}} inProgress {{#if current.id == id}}list-group-item-info{{/if}}" data-id="{{id}}">{{title}}<br><small class="text-muted">{{comment}}</small></a>
+      {{/if}}
+    {{/all}}
   </div>
-  {{/all.length}}
+  {{/if}}
 </div>`;

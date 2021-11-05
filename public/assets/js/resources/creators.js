@@ -15,7 +15,7 @@ var selectGroup = function(e){
   //     ],actions:false
   //   })
     // mymodal.ref.find('.modal-body').berry
-   getData(['/api/groups?limit=true'], (groups) => {
+   $g.getData(['/api/groups?limit=true'], (groups) => {
 
     new $g.form({
       data:instanceData,
@@ -38,7 +38,7 @@ var selectGroup = function(e){
 }
 
 var selectComposite = function(){
-  getData(['/api/groups/'+instanceData.group_id+'/composites'], (composites) => {
+  $g.getData(['/api/groups/'+instanceData.group_id+'/composites'], (composites) => {
 
   // $.ajax({
   //   url: '/api/groups/'+instanceData.group_id+'/composites',

@@ -2,7 +2,7 @@ $('.navbar-header .nav a h4').html('Workflow Instance');
 $('[href="/admin/workflowinstances"]').parent().addClass('active');
 root = '/api/workflowinstances/'+resource_id;
 
-getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (workflowinstance, icons, endpoints) => {
+$g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (workflowinstance, icons, endpoints) => {
 	$('.navbar-header .nav a h4').append(' - '+workflowinstance.workflow.name+'');
 	workflowinstance.configuration = workflowinstance.configuration||{};
 	const {configuration={}, workflow={},version={}} = workflowinstance;
@@ -76,12 +76,13 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 				var flagField =  {columns:6,type:"switch",options:[{label:"Off",value:false},{label:"On",value:true}]};
 
 				r_options = {name:"map",data:{
-                    suppress_emails:configuration.suppress_emails,
-                    suppress_email_tasks:configuration.suppress_email_tasks,
-                    default_email_options:configuration.default_email_options,
-                    encrypted:configuration.encrypted,
-                    initial:configuration.initial,
-                    title:configuration.title,
+                    // suppress_emails:configuration.suppress_emails,
+                    // suppress_email_tasks:configuration.suppress_email_tasks,
+                    // default_email_options:configuration.default_email_options,
+                    // encrypted:configuration.encrypted,
+                    // initial:configuration.initial,
+                    // title:configuration.title,
+					...configuration,
                     map:_.map(map,function(resource){
                         var r = _.find(configuration.map,{name:resource.name});
                         if(typeof r !== 'undefined' && r.type == resource.type){
@@ -147,7 +148,7 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
 							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`
 					},
-					{name:"map",label:false,edit:!!map.length,array:{min:map.length,max:map.length},type:"fieldset",fields:[
+					{target:()=>document.querySelector("#datamap .col-sm-9"),name:"map",label:false,edit:!!map.length,array:{target:"#datamap .col-sm-9",min:map.length,max:map.length},type:"fieldset",fields:[
 						
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
 
@@ -161,8 +162,11 @@ getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints'], (
 
 					]}
 				]}
-				new gform(r_options,'#map .col-sm-9');
-
+				new gform(r_options,'#config .col-sm-9');
+				
+				if(configuration.map.length) {	
+					$('#datamaptab').show();
+				}
 				if(resources.length && resources[0].name !== '') {	
 					$('#resourcestab').show();
 					new gform({

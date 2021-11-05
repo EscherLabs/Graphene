@@ -191,7 +191,8 @@ var fileManager = function(selector, options){
     this.options.items.push({name: name,key:key, content:""})
     this.$el.find('.tab-content').append(templates.pages_tabpanel.render({name: name,key:key, content:""}));
     if(typeof this.gform.find(key) == 'undefined'){
-      this.gform.fields.push(gform.createField.call(this.gform, this.gform, {}, null ,null, $.extend({name:key,target:'#'+key},this.gform.options.default)))
+      // this.gform.fields.push(gform.createField.call(this.gform, this.gform, {}, null ,null, $.extend({name:key,target:'#'+key},this.gform.options.default)))
+      this.gform.add({name:key,target:'#'+key})
     }else{      
       var updateItem = _.findWhere(this.options.items, {name: name});
       

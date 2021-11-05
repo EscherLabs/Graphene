@@ -1115,7 +1115,7 @@ fieldset:disabled .actions{
   /* top: 0; */
   /* height: 100%; */
   /* overflow: hidden; */
-
+  border-radius: 0 5px 5px 0;
   padding: 5px 10px;position:fixed;bottom:20px;left:0;color:#333;background:rgb(200 200 200 );box-shadow:0 0 2px #fff;
   border:rgb(200 200 200);
   height: auto;
@@ -1139,10 +1139,15 @@ hr.thin{
   margin:5px 0;
 }
 
-.missing-field{
-  text-overflow: ellipsis;
-    /* width: 100%; */
-    overflow: hidden;
+.label.missing-field{
+    text-overflow: ellipsis;
+    /* line-height: 12px; */
+    /* overflow: hidden; */
     max-width: 100%;
+    margin: 0 5px 5px 0;
     display: inline-block;
+    position:relative;
 }
+
+.missing-field i{position:absolute;right:-4px;top:-4px;background-color: #3f903f;border-radius: 50%;padding:3px;opacity: .8;box-shadow:0 0 1px 1px white}
+.label-info.missing-field i{display:none}

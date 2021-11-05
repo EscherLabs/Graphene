@@ -1,7 +1,7 @@
 $('.navbar-header .nav a h4').html('Workflow Instances');
 $('[href="/admin/groups"]').parent().addClass('active');
 
-getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+resource_id], (workflowinstances, groups, icons, workflows) => {
+$g.getData([url, '/api/groups', '/assets/data/icons.json','/api/workflows/group/'+resource_id], (workflowinstances, groups, icons, workflows) => {
 	grid = new GrapheneDataGrid({...tableConfig,
 		schema: [
 			fieldLibrary.group,

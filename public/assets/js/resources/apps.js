@@ -1,5 +1,5 @@
 $('.navbar-header .nav a h4').html('MicroApps');
-getData([url, '/api/apps/developers'], (apps, developers) => {
+$g.getData([url, '/api/apps/developers'], (apps, developers) => {
 	new GrapheneDataGrid({...tableConfig,
 		schema: [
 			{label: 'Name', name:'name', required: true, enabled:(resource_id == ''),value: resource_id},

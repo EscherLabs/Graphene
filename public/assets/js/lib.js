@@ -1,3 +1,281 @@
+
+modal = (options, data) => {
+
+  if(typeof options == 'string'){
+    options = {content:options};
+  }
+  var hClass = ''
+  switch(options.status){
+    case 'error':
+      hClass = 'bg-danger';
+      break;
+    case 'success':
+    case 'primary':
+    case 'info':
+    case 'warning':
+      hClass = 'bg-'+options.status;
+      break;
+  }
+  let mm =  new gform({
+    modal:{ header_class: hClass},
+    ...options,
+    data:{...data,...options.data},
+    fields:[
+      {
+        type:'output',
+        name:'modal',
+        label:false,
+        format:{},
+        value:$g.render(options.content,_.extend({}, options.partials, data))
+      },
+      ...(options.fields||[])],
+    actions:(!!options.footer)?[]:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}],
+
+  }).modal().on('cancel', e => {
+    e.form.dispatch('close');
+    e.form.destroy();
+  });
+  mm.ref = $(mm.el);
+  return mm;
+}
+
+$g = function(){
+  //new gform.eventBus({owner:"graphene",item:'data',handlers:{}}, this),
+  function eventHub() {
+   let handlers = {};
+   let on = (event, handler, data) => {
+     let guid = false;
+     if(typeof event !== 'undefined'){
+         var events = event.split(' ');
+         guid = api.uuid
+         events.forEach(event => {
+             handlers[event] = handlers[event] ||[];
+             if(typeof handler !== 'function') throw "Event handler must be a function"
+
+             handlers[event].push({handler:handler, id: guid, data:data});
+         });
+     }
+     return guid;
+   };
+
+   let off = (event, id) => {
+       handlers[event].splice(handlers[event].findIndex(elem => (elem.id == id)),1)
+   };
+
+   let emit = (e, data) => {
+       let a = {};
+       let pd = true;
+       let propagate = true;
+       a.preventDefault = () => { pd = true; }
+       a.stopPropagation = () => { propagate = false; }
+
+       // let events = [];
+       if(typeof e == 'string'){
+           e = e.split(' ');
+       }
+       if(typeof e !== 'object' || !Array.isArray(e)) throw 'Event must be a string or array'
+       // events = events.concat(e)
+
+       e.forEach(event => {
+           a.event = event;
+           a.data = data;
+           let f = (handler) => {
+               if(typeof handler.handler == 'function'){
+                   handler.handler(a);
+               }
+               return propagate;
+           }
+           if(event in handlers)handlers[event].every(f);
+           if('*' in handlers)handlers['*'].every(f);
+       })
+       return a;
+   }
+   return {
+     emit: emit,
+     on: on,
+     off: off
+   }
+}
+let globalevents = new eventHub();
+let actionBuffer =[]
+
+let api =  {
+ worker: new Worker('/assets/js/grapheneWorker.js'),
+ // elapsedSeconds:0,
+ // timer:setInterval(function() {
+ //  $g.emit('cron',++$g.elapsedSeconds);
+ // }, 1000),
+ isSet: e=>(e !== 'undefined'),
+ setData:(urls, options, callback, onError, onComplete)=>{
+   if(typeof urls == 'string')urls = [urls];
+   
+   Promise.all(_.map(urls, (url, index, list) =>{
+     return new Promise((resolve,reject) => {
+      // let map = false;
+      // let data = options;
+      //  if(_.isArray(options))data = data[index];
+      //  if(data.url == url)data = data.data;map=true;
+debugger;
+       $.ajax({
+         url: url,
+         dataType : 'json',
+         contentType: 'application/json',
+         data:  JSON.stringify(options.data),
+         type: 'POST',
+         success: data=>{resolve(data)},
+         error: data=>{reject(data)}
+       })
+ 
+     })
+   })).then(data => {
+    // if(map){
+    //   debugger;
+    //   _.each(data,datum=>{
+    //     //$g.collections.update(item.trim(), data[index])
+    //     debugger;
+    //   })
+    // }
+
+    //  let ss = callback.toString().split('=>')[0].split('(');
+    //  ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
+    //    //assumes no more parameters are expected in the callback than the number of urls requested
+    //    if(data.length<=index)return data;
+    //    $g.collections.update(item.trim(), data[index])
+    //    return data;
+    //  }, data)
+    if(typeof callback !== 'undefined'){
+      callback.apply(null, data);
+    }
+   }).catch(onError||(()=>{})).finally(onComplete||(()=>{}))
+ },
+ getData:(urls, callback, onError, onComplete)=>{
+   if(typeof urls == 'string')urls = [urls];
+   Promise.all(_.map(urls, url =>{
+     return new Promise((resolve,reject) => {
+       gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
+     })
+   })).then(data => {
+     let ss = callback.toString().split('=>')[0].split('(');
+     ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').forEach((item, index) => {
+       if(data.length>index)$g.collections.add(item.trim(), data[index])
+     })
+ 
+     callback.apply(null, data);
+   }).catch(onError||(()=>{})).finally(onComplete||(()=>{}))
+ },
+ form:gform,
+ forms:gform.instances,
+ render:gform.m,
+ alert:function(options,data){
+   if(typeof options == 'string'){
+     options = {content:options};
+   }
+   toastr[options.status||'info'](gform.m(options.content||'',_.extend({},/* this.partials,*/ data)),options.title )
+ },
+ emit:globalevents.emit,
+ on:globalevents.on,
+ off:globalevents.off,
+ schedule: (method, interval) => {
+   return api.on('schedule',(e) => {
+       if(!(e.data.ticks%(interval||1))) method.call(null, e);
+   })
+ },
+ intervalTask:(actions, opts) =>{
+   let options = _.extend({period:1000},opts);
+   actionBuffer = actionBuffer.concat(actions||[]);
+   if(timer == null) {
+     timer = setInterval(function() {
+       if(actionBuffer.length) {
+         if(typeof actionBuffer[0] == "function") {
+           actionBuffer.shift().call(this)
+         } else {
+           actionBuffer.shift()
+         }
+       }
+       if(!actionBuffer.length) {
+         clearInterval(timer);
+         timer = null;
+       }
+     }, options.period)
+   }
+   return timer;
+ },
+ modal:modal,
+ // getID:generateUUID,
+ grid:GrapheneDataGrid,
+ collections: gform.collections,
+ apps:{},
+ engines:{},
+ formatDates:function(data){
+   if(data == null) return {};
+   if(typeof data.created_at == 'string'){
+     var cat = moment(data.created_at);
+     data.created_at = {
+       original:data.created_at,
+       time:cat.format('h:mma'),
+       date:cat.format('MM/DD/YY'),
+       fromNow:cat.fromNow()
+     }
+
+     data.date = data.created_at.original;
+   }
+   if(typeof data.updated_at == 'string'){
+
+     var uat = moment(data.updated_at);
+     data.updated_at = {
+       original:data.updated_at,
+       time:uat.format('h:mma'),
+       date:uat.format('MM/DD/YY'),
+       fromNow:uat.fromNow()
+     }
+   }
+   return data;
+ }
+}
+
+api.worker.onmessage = (message)=>{
+ api.emit('schedule', {timeStamp:message.timeStamp,ticks: message.data.ticks})
+}
+Object.defineProperty(api, "widgets", {
+ get:function(){
+     return _.reduce(cb.collections, function(list,item){
+       return list.concat(item.getItems())
+       // return list;
+     },[])
+     // return cb.collections[0].getItems()[0]
+
+ },
+ enumerable: true
+});
+Object.defineProperty(api, "uuid", {
+ get:()=>generateUUID(),
+ enumerable: true
+});
+Object.defineProperty(api, "waiting", {
+ get:()=>!!this.isWaiting,
+ set: value=>{
+   if(value){
+     if(!this.el){
+       this.el  = document.createElement("div");
+       this.el.setAttribute("class", "hide_wait");
+       this.el.setAttribute("id", "waiting");
+       document.body.append(this.el);
+     }
+     this.el.innerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i> <span>'+value+'</span>';
+     this.el.setAttribute("class", "");
+   }else{
+     if(this.el)this.el.setAttribute("class", "hide_wait");
+   }
+   this.isWaiting = value;
+ },
+ enumerable: true
+});
+
+return api;
+
+}()
+
+
 toastr.options = {
   "closeButton": false,
   "debug": false,
@@ -269,46 +547,6 @@ function render(template, data){
   }
 }
 
-modal = (options, data) => {
-
-  if(typeof options == 'string'){
-    options = {content:options};
-  }
-  var hClass = ''
-  switch(options.status){
-    case 'error':
-      hClass = 'bg-danger';
-      break;
-    case 'success':
-    case 'primary':
-    case 'info':
-    case 'warning':
-      hClass = 'bg-'+options.status;
-      break;
-  }
-  let mm =  new gform({
-    modal:{ header_class: hClass},
-    ...options,
-    data:{...data,...options.data},
-    fields:[
-      {
-        type:'output',
-        name:'modal',
-        label:false,
-        format:{},
-        value:$g.render(options.content,_.extend({}, options.partials, data))
-      },
-      ...(options.fields||[])],
-    actions:(!!options.footer)?[]:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}],
-
-  }).modal().on('cancel', e => {
-    e.form.dispatch('close');
-    e.form.destroy();
-  });
-  mm.ref = $(mm.el);
-  return mm;
-}
-
 function processFilter(options){
   options = options || {};
 	var	currentTarget = options.currentTarget || this.currentTarget;
@@ -343,6 +581,243 @@ $('body').on('keyup','[name=filter]', function(event){
 });
 
 templates.listing = Hogan.compile('<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>')
+
+gform.validations.is_https = value =>  value.startsWith("https://") ? false : 'Basic Auth Routes must start with "https://"';
+
+var mime_icons = {
+  // Media
+  image: "fa-file-image-o",
+  audio: "fa-file-audio-o",
+  video: "fa-file-video-o",
+  // Documents
+  "application/pdf": "fa-file-pdf-o",
+  "application/msword": "fa-file-word-o",
+  "application/vnd.ms-word": "fa-file-word-o",
+  "application/vnd.oasis.opendocument.text": "fa-file-word-o",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml":
+    "fa-file-word-o",
+  "application/vnd.ms-excel": "fa-file-excel-o",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml":
+    "fa-file-excel-o",
+  "application/vnd.oasis.opendocument.spreadsheet": "fa-file-excel-o",
+  "application/vnd.ms-powerpoint": "fa-file-powerpoint-o",
+  "application/vnd.openxmlformats-officedocument.presentationml":
+    "fa-file-powerpoint-o",
+  "application/vnd.oasis.opendocument.presentation": "fa-file-powerpoint-o",
+  "text/plain": "fa-file-text-o",
+  "text/html": "fa-file-code-o",
+  "application/json": "fa-file-code-o",
+  // Archives
+  "application/gzip": "fa-file-archive-o",
+  "application/zip": "fa-file-archive-o"
+}
+
+debug = {};
+Object.defineProperty(debug,'about',{
+  get: function(){
+    console.log('%c Workflow:\t%c'+mappedData.workflow.name+' %c(ID: '+mappedData.workflow.instance.workflow_id+')','color: #d85e16','color: #aaa','color: #aaa')
+    console.log('%c Instance:\t%c'+mappedData.workflow.instance.name+' %c(ID: '+mappedData.workflow.instance.id+')','color: #d85e16','color: #aaa','color: #aaa')
+    console.log('%c Version:\t%c'+(mappedData.workflow.instance.version_id||'Latest')+' %c(Using ID: '+mappedData.workflow.instance.version.id+')  %cUpdated  %c'+mappedData.workflow.instance.updated_at,'color: #d85e16','color: #aaa','color: #aaa','color: #d85e16','color: #aaa')
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'summary',{
+  get: function(){
+    console.log('%c Status:\t\t%c'+mappedData.status,'color: #d85e16','color: #aaa')
+    console.log('%c State:\t\t\t%c'+mappedData.state,'color: #d85e16','color: #aaa')
+
+    if(typeof gform.instances.display !== 'undefined'){
+      console.log('%c _flowstate:\t%c'+gform.instances.display.get('_flowstate'),'color: #d85e16','color: #aaa')
+      console.log('%c Current Form Data:','color: #0088FF')
+      console.log(gform.instances.display.get('_state'))
+    }
+    console.log('%c Template Data:','color: #0088FF')
+    console.log(mappedData)
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'form',{
+  get: function(){
+    if(typeof gform.instances.display !== 'undefined'){
+      return gform.instances.display;
+    }
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'data',{
+  get: function(){
+    return mappedData;
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'history',{
+  get: function(){
+    console.table(_.map(mappedData.history,function(item){
+      // item = _.omit(item,'is','log','file','data','date');
+      item.owner = item.user.first_name+' '+item.user.last_name;
+      item.created_at = item.created_at.date+' '+item.created_at.time;
+      item.updated_at = item.updated_at.date+' '+item.updated_at.time;
+      if(item.assignemnt.type == "group"){
+        item.assignemnt = "Group:"+item.assignemnt.id
+      }else{
+        item.assignemnt = "User:"+item.assignemnt.id
+      }
+      item.actor = item.actor.first_name+' '+item.actor.last_name;
+      item.previous = item.state+'('+item.status+')';
+
+      // item.user = item.user.first_name+' '+item.user.last_name;
+      return _.omit(item,'is','log','file','data','date','user');
+    }))
+  },
+  configurable: false,
+});
+Object.defineProperty(window,'help',{
+  get: function(){
+    console.log('%c debug.about\t%c - info about the workflow configuration','color: #0088FF','color: #aaa')
+    console.log('%c debug.summary\t%c - summary','color: #0088FF','color: #aaa')
+    console.log('%c debug.form\t\t%c - reference to the displayed form','color: #0088FF','color: #aaa')
+    console.log('%c debug.data\t\t%c - template data','color: #0088FF','color: #aaa')
+    console.log('%c debug.history\t%c - template data','color: #0088FF','color: #aaa')
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'app',{
+  get: function(){
+    return cb.collections[0].getItems()[0].appEngine
+  },
+  configurable: false,
+});
+Object.defineProperty(debug,'state',{
+  get: function(){
+    return window.localStorage.getItem("debug") == 'true'
+  },
+  configurable: false,
+});
+
+
+gform.types['textarea'] = _.extend({}, gform.types['textarea'], {
+  focus:function(timeout) {
+      //   .focus();
+      window.setTimeout(function(){
+          if(this.el.querySelector('textarea[name="' + this.name + '"]') !== null && typeof this.el.querySelector('textarea[name="' + this.name + '"]').focus == "function"){
+  
+  
+              this.el.querySelector('textarea[name="'+this.name+'"]').focus();
+              var temp = this.value;
+              this.set('');
+              this.set(temp);
+          }
+      }.bind(this), timeout||0); 
+  
+       
+      //   this.el.querySelector('[name="'+this.name+'"]').select();
+    }
+  });
+gform.stencils.ace = `
+<div class="row clearfix form-group" name="{{name}}">
+	{{>_label}}
+	{{#label}}
+	{{#inline}}<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
+	{{^inline}}<div class="col-md-8" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
+	{{/label}}
+	{{^label}}
+	<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>
+	{{/label}}
+		<div class="formcontrol"><div placeholder="{{placeholder}}" style="min-height: 250px;outline:none;border:solid 1px #cbd5dd;{{^unstyled}}background:#fff;padding:10px{{/unstyled}}" id="{{id}}container"></div></div>
+	</div>
+</div>`;
+gform.types['ace'] = _.extend({}, gform.types['input'], {
+  create: function(){
+    var tempEl = document.createElement("span");
+    tempEl.setAttribute("id", this.id);
+    if(this.owner.options.clear){
+      tempEl.setAttribute("class", ''+gform.columnClasses[this.columns]);
+    }
+    tempEl.innerHTML = this.render();
+    return tempEl;
+},
+// render:function(){
+//   return gform.render('textarea',this)
+// },
+  initialize: function(){
+    //   this.iel = this.el.querySelector('input[name="' + this.name + '"]')
+    //   if(this.onchange !== undefined){ this.el.addEventListener('change', this.onchange);}
+      this.onchangeEvent = function(input){
+        //   this.input = input;
+          // this.value = this.get();
+          if(this.el.querySelector('.count') != null){
+            var text = this.value.length;
+            if(this.limit){text+='/'+this.limit;}
+            this.el.querySelector('.count').innerHTML = text;
+          }
+        //   this.update({value:this.get()},true);
+        //   gform.types[this.type].focus.call(this)
+          this.owner.trigger(['change:'+this.name,'change','input:'+this.name,'input'], this,{input:this.value});
+
+        //   this.owner.pub('change:'+this.name, this,{input:this.value});
+        //   this.owner.pub('change', this,{input:this.value});
+        //   this.owner.pub('input:'+this.name, this,{input:this.value});
+        //   this.owner.pub('input', this,{input:this.value});
+      }.bind(this)
+      this.input = this.input || false;
+      // this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
+
+      // this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
+    this.editor = ace.edit(this.el.querySelector('#'+this.id+"container"));
+    this.editor.setTheme(this.item.theme || "ace/theme/chrome");
+    this.editor.getSession().setMode({path: this.owner.options.default.mode || this.item.mode || "ace/mode/handlebars", inline:this.owner.options.default.inlinemode || this.item.inlinemode});
+    this.editor.session.setValue(this.value||"");
+    this.editor.on("change",this.onchangeEvent.bind(null,false))
+   
+  },
+  // update: function(item, silent) {
+  //   if(typeof item !== 'undefined' && (
+  //       typeof item.options !== undefined ||
+  //       typeof item.max !== undefined ||
+  //       typeof item.action !== undefined 
+  //       )
+  //       && typeof this.mapOptions !== 'undefined'){
+  //       delete this.mapOptions;
+  //       this.item = _.defaults({},item,this.item);
+
+  //       // this.item.options = _.assign([],this.item.options,item.options);
+  //       this.options = _.extend([],this.item.options);
+  //       this.max = this.item.max;
+  //       this.min = this.item.min;
+  //       this.path = this.item.path;
+  //       this.action = this.item.action;
+  //   }
+  //   // else if(typeof this.mapOptions !== 'undefined'){
+  //   // }
+  //   if(typeof item === 'object') {
+  //       _.extend(item,this);
+  //   }
+  //   this.label = gform.renderString((item||{}).label||this.item.label, this);
+
+  //   // var oldDiv = document.getElementById(this.id);
+  //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
+  //   var oldDiv = this.el;
+  //   this.destroy();
+  //   this.el = gform.types[this.type].create.call(this);
+  //   oldDiv.parentNode.replaceChild(this.el,oldDiv);
+  //   gform.types[this.type].initialize.call(this);
+
+  //   if(!silent) {
+  //       this.owner.pub(['change:'+this.name,'change'], this);
+  //   }
+  //   if(typeof gform.types[this.type].setup == 'function') {gform.types[this.type].setup.call(this);}
+    
+  // },
+  set:function(value){
+    this.editor.session.setValue(value);
+  },
+  get:function(){
+    return (typeof this.editor == 'undefined')?this.value:this.editor.getValue()
+  },
+  focus: function(){
+    this.editor.focus();
+  }
+});
 gform.types['user']= _.extend({}, gform.types['smallcombo'], {
   toString: function(name,display){
 		if(!display){
@@ -462,7 +937,6 @@ gform.types['endpoint'] = {...gform.types['smallcombo'],
   }
 }
 
-
 gform.stencils.signaturePad = `
 <style>.signaturePad-canvas{border:solid 1px #bbb;} 
 .has-error .signaturePad-canvas{border-color:red;}</style>
@@ -501,9 +975,12 @@ gform.types['signature']=gform.types['signaturePad'] = _.extend({}, gform.types[
           }
     },
     get: function() {
+        if(!('el' in this)){return this.internalValue};
+
         // return '<img src='+( this.signaturePad.toDataURL("image/svg+xml"))+' alt="(Empty)" style="border:solid 1px"/>'
         // return '<img src='+( this.signaturePad.toDataURL())+' alt="(Empty)"/>'
         return  this.signaturePad.toDataURL();
+        
         // return  this.signaturePad.toData();
     },
     resizeCanvas:function() {
@@ -543,8 +1020,6 @@ gform.types['signature']=gform.types['signaturePad'] = _.extend({}, gform.types[
 
     }
   });
-
-
  
 gform.stencils.base64_file = `
 <style>
@@ -560,7 +1035,7 @@ gform.stencils.base64_file = `
   {{^label}}
   <div class="col-md-12">
   {{/label}}
-    {{#pre}}<div class="input-group col-xs-12"><span class="input-group-addon">{{{pre}}}</span>{{/pre}}
+    {{#pre}}<div class="input-group col-md-12"><span class="input-group-addon">{{{pre}}}</span>{{/pre}}
     {{^pre}}{{#post}}<div class="input-group">{{/post}}{{/pre}}
       {{#multiple}}
       <small class="count text-muted pull-left" style="display:block;text-align:left;margin:5px">0/{{max}}</small>
@@ -727,7 +1202,7 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
       default:
         
         // var icon = ;
-        file.icon = (mime_type_icon_map[file.type] || mime_type_icon_map[file.type.split('/')[0]] || mime_type_icon_map[file.ext] || "fa-file-o");
+        file.icon = (mime_icons[file.type] || mime_icons[file.type.split('/')[0]] || mime_icons[file.ext] || "fa-file-o");
       }
 
       // if(file.ext == "pdf"){
@@ -818,7 +1293,7 @@ return gform.renderString((this.limit>1)?`
           default:
             
             // var icon = ;
-            data.icon = (mime_type_icon_map[data.type] || mime_type_icon_map[data.type.split('/')[0]] || mime_type_icon_map[data.ext] || "fa-file-o");
+            data.icon = (mime_icons[data.type] || mime_icons[data.type.split('/')[0]] || mime_icons[data.ext] || "fa-file-o");
           }
 
           // if(file.ext == "pdf"){
@@ -953,8 +1428,6 @@ if(this.options.formelement.replaceIndex !== null){
   }
 });
 
-
-
 gform.stencils.upload = `
 <div class="row clearfix form-group {{modifiers}}" data-type="{{type}}">
   {{>_label}}
@@ -965,7 +1438,7 @@ gform.stencils.upload = `
   {{^label}}
   <div class="col-md-12">
   {{/label}}
-    {{#pre}}<div class="input-group col-xs-12"><span class="input-group-addon">{{{pre}}}</span>{{/pre}}
+    {{#pre}}<div class="input-group col-md-12"><span class="input-group-addon">{{{pre}}}</span>{{/pre}}
     {{^pre}}{{#post}}<div class="input-group">{{/post}}{{/pre}}
       <div class="dropzone" id="{{id}}">
       </div>
@@ -977,7 +1450,6 @@ gform.stencils.upload = `
   </div>
 </div>
 `;
-
 gform.types.upload =  _.extend({}, gform.types['input'],{
   focus: function() {
 },
@@ -1013,9 +1485,6 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
     );
   }
 });
-
-
-
 /*!
  * cleave.js - 1.6.0
  * https://github.com/nosir/cleave.js
@@ -1107,450 +1576,6 @@ gform.types['currency']= _.extend({}, gform.types['input'],{
   }
 });
 
-$g = function(){
-     //new gform.eventBus({owner:"graphene",item:'data',handlers:{}}, this),
-     function eventHub() {
-      let handlers = {};
-      let on = (event, handler, data) => {
-        let guid = false;
-        if(typeof event !== 'undefined'){
-            var events = event.split(' ');
-            guid = api.uuid
-            events.forEach(event => {
-                handlers[event] = handlers[event] ||[];
-                if(typeof handler !== 'function') throw "Event handler must be a function"
-
-                handlers[event].push({handler:handler, id: guid, data:data});
-            });
-        }
-        return guid;
-      };
-  
-      let off = (event, id) => {
-          handlers[event].splice(handlers[event].findIndex(elem => (elem.id == id)),1)
-      };
-  
-      let emit = (e, data) => {
-          let a = {};
-          let pd = true;
-          let propagate = true;
-          a.preventDefault = () => { pd = true; }
-          a.stopPropagation = () => { propagate = false; }
-  
-          // let events = [];
-          if(typeof e == 'string'){
-              e = e.split(' ');
-          }
-          if(typeof e !== 'object' || !Array.isArray(e)) throw 'Event must be a string or array'
-          // events = events.concat(e)
-  
-          e.forEach(event => {
-              a.event = event;
-              a.data = data;
-              let f = (handler) => {
-                  if(typeof handler.handler == 'function'){
-                      handler.handler(a);
-                  }
-                  return propagate;
-              }
-              if(event in handlers)handlers[event].every(f);
-              if('*' in handlers)handlers['*'].every(f);
-          })
-          return a;
-      }
-      return {
-        emit: emit,
-        on: on,
-        off: off
-      }
-  }
-  let globalevents = new eventHub();
-  let actionBuffer =[]
-  
-  let api =  {
-    worker: new Worker('/assets/js/grapheneWorker.js'),
-    // elapsedSeconds:0,
-    // timer:setInterval(function() {
-    //  $g.emit('cron',++$g.elapsedSeconds);
-    // }, 1000),
-    form:gform,
-    forms:gform.instances,
-    render:gform.m,
-    alert:function(options,data){
-			if(typeof options == 'string'){
-				options = {content:options};
-			}
-			toastr[options.status||'info'](gform.m(options.content||'',_.extend({},/* this.partials,*/ data)),options.title )
-		},
-    emit:globalevents.emit,
-    on:globalevents.on,
-    off:globalevents.off,
-    schedule: (method, interval) => {
-      return api.on('schedule',(e) => {
-          if(!(e.data.ticks%(interval||1))) method.call(null, e);
-      })
-    },
-    intervalTask:(actions, opts) =>{
-      let options = _.extend({period:1000},opts);
-      actionBuffer = actionBuffer.concat(actions||[]);
-      if(timer == null) {
-        timer = setInterval(function() {
-          if(actionBuffer.length) {
-            if(typeof actionBuffer[0] == "function") {
-              actionBuffer.shift().call(this)
-            } else {
-              actionBuffer.shift()
-            }
-          }
-          if(!actionBuffer.length) {
-            clearInterval(timer);
-            timer = null;
-          }
-        }, options.period)
-      }
-      return timer;
-    },
-    modal:modal,
-    // getID:generateUUID,
-    grid:GrapheneDataGrid,
-    collections: gform.collections,
-    apps:{},
-    engines:{},
-    formatDates:function(data){
-      if(data == null) return {};
-      if(typeof data.created_at == 'string'){
-        var cat = moment(data.created_at);
-        data.created_at = {
-          original:data.created_at,
-          time:cat.format('h:mma'),
-          date:cat.format('MM/DD/YY'),
-          fromNow:cat.fromNow()
-        }
-
-        data.date = data.created_at.original;
-      }
-      if(typeof data.updated_at == 'string'){
-
-        var uat = moment(data.updated_at);
-        data.updated_at = {
-          original:data.updated_at,
-          time:uat.format('h:mma'),
-          date:uat.format('MM/DD/YY'),
-          fromNow:uat.fromNow()
-        }
-      }
-      return data;
-    }
-  }
-
-  api.worker.onmessage = (message)=>{
-    api.emit('schedule', {timeStamp:message.timeStamp,ticks: message.data.ticks})
-  }
-  Object.defineProperty(api, "widgets", {
-    get:function(){
-        return _.reduce(cb.collections, function(list,item){
-          return list.concat(item.getItems())
-          // return list;
-        },[])
-        // return cb.collections[0].getItems()[0]
-
-    },
-    enumerable: true
-  });
-  Object.defineProperty(api, "uuid", {
-    get:function(){
-        return generateUUID();
-    },
-    enumerable: true
-  });
-  Object.defineProperty(api, "waiting", {
-    get:function(){
-        return !!this.isWaiting;
-    },
-    set: function(value){
-      if(value){
-        if(!this.el){
-          this.el  = document.createElement("div");
-          this.el.setAttribute("class", "hide_wait");
-
-        this.el.setAttribute("id", "waiting");
-
-          // this.el.setAttribute("style", 'padding: 5px 10px;position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,.1);box-shadow:0 0 2px #888');
-
-          document.body.append(this.el);
-        }
-        this.el.innerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i> <span>'+value+'</span>';
-
-        this.el.setAttribute("class", "");
-
-      }else{
-        if(this.el)this.el.setAttribute("class", "hide_wait");
-      }
-      this.isWaiting = value;
-    },
-    enumerable: true
-  });
-
-  return api;
-
-}()
-
-gform.validations.is_https = function(value) {
-  return ( value.startsWith("https://")) ? false : 'Basic Auth Routes must start with "https://"';
-}
-
-gform.validations.is_https = function(value) {
-  return ( value.startsWith("https://")) ? false : 'Basic Auth Routes must start with "https://"';
-}
-
-
-var mime_type_icon_map = {
-  // Media
-  image: "fa-file-image-o",
-  audio: "fa-file-audio-o",
-  video: "fa-file-video-o",
-  // Documents
-  "application/pdf": "fa-file-pdf-o",
-  "application/msword": "fa-file-word-o",
-  "application/vnd.ms-word": "fa-file-word-o",
-  "application/vnd.oasis.opendocument.text": "fa-file-word-o",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml":
-    "fa-file-word-o",
-  "application/vnd.ms-excel": "fa-file-excel-o",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml":
-    "fa-file-excel-o",
-  "application/vnd.oasis.opendocument.spreadsheet": "fa-file-excel-o",
-  "application/vnd.ms-powerpoint": "fa-file-powerpoint-o",
-  "application/vnd.openxmlformats-officedocument.presentationml":
-    "fa-file-powerpoint-o",
-  "application/vnd.oasis.opendocument.presentation": "fa-file-powerpoint-o",
-  "text/plain": "fa-file-text-o",
-  "text/html": "fa-file-code-o",
-  "application/json": "fa-file-code-o",
-  // Archives
-  "application/gzip": "fa-file-archive-o",
-  "application/zip": "fa-file-archive-o"
-}
-
-
-
-debug = {};
-Object.defineProperty(debug,'about',{
-  get: function(){
-    console.log('%c Workflow:\t%c'+mappedData.workflow.name+' %c(ID: '+mappedData.workflow.instance.workflow_id+')','color: #d85e16','color: #aaa','color: #aaa')
-    console.log('%c Instance:\t%c'+mappedData.workflow.instance.name+' %c(ID: '+mappedData.workflow.instance.id+')','color: #d85e16','color: #aaa','color: #aaa')
-    console.log('%c Version:\t%c'+(mappedData.workflow.instance.version_id||'Latest')+' %c(Using ID: '+mappedData.workflow.instance.version.id+')  %cUpdated  %c'+mappedData.workflow.instance.updated_at,'color: #d85e16','color: #aaa','color: #aaa','color: #d85e16','color: #aaa')
-  },
-  configurable: false,
-});
-Object.defineProperty(debug,'summary',{
-  get: function(){
-    console.log('%c Status:\t\t%c'+mappedData.status,'color: #d85e16','color: #aaa')
-    console.log('%c State:\t\t\t%c'+mappedData.state,'color: #d85e16','color: #aaa')
-
-    if(typeof gform.instances.display !== 'undefined'){
-      console.log('%c _flowstate:\t%c'+gform.instances.display.get('_flowstate'),'color: #d85e16','color: #aaa')
-      console.log('%c Current Form Data:','color: #0088FF')
-      console.log(gform.instances.display.get('_state'))
-    }
-    console.log('%c Template Data:','color: #0088FF')
-    console.log(mappedData)
-  },
-  configurable: false,
-});
-Object.defineProperty(debug,'form',{
-  get: function(){
-    if(typeof gform.instances.display !== 'undefined'){
-      return gform.instances.display;
-    }
-  },
-  configurable: false,
-});
-Object.defineProperty(debug,'data',{
-  get: function(){
-    return mappedData;
-  },
-  configurable: false,
-});
-
-Object.defineProperty(debug,'history',{
-  get: function(){
-    console.table(_.map(mappedData.history,function(item){
-      // item = _.omit(item,'is','log','file','data','date');
-      item.owner = item.user.first_name+' '+item.user.last_name;
-      item.created_at = item.created_at.date+' '+item.created_at.time;
-      item.updated_at = item.updated_at.date+' '+item.updated_at.time;
-      if(item.assignemnt.type == "group"){
-        item.assignemnt = "Group:"+item.assignemnt.id
-      }else{
-        item.assignemnt = "User:"+item.assignemnt.id
-      }
-      item.actor = item.actor.first_name+' '+item.actor.last_name;
-      item.previous = item.state+'('+item.status+')';
-
-      // item.user = item.user.first_name+' '+item.user.last_name;
-      return _.omit(item,'is','log','file','data','date','user');
-    }))
-  },
-  configurable: false,
-});
-Object.defineProperty(window,'help',{
-  get: function(){
-    console.log('%c debug.about\t%c - info about the workflow configuration','color: #0088FF','color: #aaa')
-    console.log('%c debug.summary\t%c - summary','color: #0088FF','color: #aaa')
-    console.log('%c debug.form\t\t%c - reference to the displayed form','color: #0088FF','color: #aaa')
-    console.log('%c debug.data\t\t%c - template data','color: #0088FF','color: #aaa')
-    console.log('%c debug.history\t%c - template data','color: #0088FF','color: #aaa')
-  },
-  configurable: false,
-});
-
-Object.defineProperty(debug,'app',{
-  get: function(){
-    return cb.collections[0].getItems()[0].appEngine
-  },
-  configurable: false,
-});
-
-
-
-gform.types['textarea'] = _.extend({}, gform.types['textarea'], {
-focus:function(timeout) {
-    //   .focus();
-    window.setTimeout(function(){
-        if(this.el.querySelector('textarea[name="' + this.name + '"]') !== null && typeof this.el.querySelector('textarea[name="' + this.name + '"]').focus == "function"){
-
-
-            this.el.querySelector('textarea[name="'+this.name+'"]').focus();
-            var temp = this.value;
-            this.set('');
-            this.set(temp);
-        }
-    }.bind(this), timeout||0); 
-
-     
-    //   this.el.querySelector('[name="'+this.name+'"]').select();
-  }
-});
-Object.defineProperty(debug,'state',{
-  get: function(){
-    return window.localStorage.getItem("debug") == 'true'
-  },
-  configurable: false,
-});
-
-
-gform.stencils.ace = `
-<div class="row clearfix form-group" name="{{name}}">
-	{{>_label}}
-	{{#label}}
-	{{#inline}}<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
-	{{^inline}}<div class="col-md-8" {{#advanced}}style="padding:0px 13px"{{/advanced}}>{{/inline}}
-	{{/label}}
-	{{^label}}
-	<div class="col-md-12" {{#advanced}}style="padding:0px 13px"{{/advanced}}>
-	{{/label}}
-		<div class="formcontrol"><div placeholder="{{placeholder}}" style="min-height: 250px;outline:none;border:solid 1px #cbd5dd;{{^unstyled}}background:#fff;padding:10px{{/unstyled}}" id="{{id}}container"></div></div>
-	</div>
-</div>`;
-
-gform.types['ace'] = _.extend({}, gform.types['input'], {
-  create: function(){
-    var tempEl = document.createElement("span");
-    tempEl.setAttribute("id", this.id);
-    if(this.owner.options.clear){
-      tempEl.setAttribute("class", ''+gform.columnClasses[this.columns]);
-    }
-    tempEl.innerHTML = this.render();
-    return tempEl;
-},
-// render:function(){
-//   return gform.render('textarea',this)
-// },
-  initialize: function(){
-    //   this.iel = this.el.querySelector('input[name="' + this.name + '"]')
-    //   if(this.onchange !== undefined){ this.el.addEventListener('change', this.onchange);}
-      this.onchangeEvent = function(input){
-        //   this.input = input;
-          // this.value = this.get();
-          if(this.el.querySelector('.count') != null){
-            var text = this.value.length;
-            if(this.limit){text+='/'+this.limit;}
-            this.el.querySelector('.count').innerHTML = text;
-          }
-        //   this.update({value:this.get()},true);
-        //   gform.types[this.type].focus.call(this)
-          this.owner.trigger(['change:'+this.name,'change','input:'+this.name,'input'], this,{input:this.value});
-
-        //   this.owner.pub('change:'+this.name, this,{input:this.value});
-        //   this.owner.pub('change', this,{input:this.value});
-        //   this.owner.pub('input:'+this.name, this,{input:this.value});
-        //   this.owner.pub('input', this,{input:this.value});
-      }.bind(this)
-      this.input = this.input || false;
-      // this.el.addEventListener('input', this.onchangeEvent.bind(null,true));
-
-      // this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
-    this.editor = ace.edit(this.el.querySelector('#'+this.id+"container"));
-    this.editor.setTheme(this.item.theme || "ace/theme/chrome");
-    this.editor.getSession().setMode({path: this.owner.options.default.mode || this.item.mode || "ace/mode/handlebars", inline:this.owner.options.default.inlinemode || this.item.inlinemode});
-    this.editor.session.setValue(this.value||"");
-    this.editor.on("change",this.onchangeEvent.bind(null,false))
-   
-  },
-  // update: function(item, silent) {
-  //   if(typeof item !== 'undefined' && (
-  //       typeof item.options !== undefined ||
-  //       typeof item.max !== undefined ||
-  //       typeof item.action !== undefined 
-  //       )
-  //       && typeof this.mapOptions !== 'undefined'){
-  //       delete this.mapOptions;
-  //       this.item = _.defaults({},item,this.item);
-
-  //       // this.item.options = _.assign([],this.item.options,item.options);
-  //       this.options = _.extend([],this.item.options);
-  //       this.max = this.item.max;
-  //       this.min = this.item.min;
-  //       this.path = this.item.path;
-  //       this.action = this.item.action;
-  //   }
-  //   // else if(typeof this.mapOptions !== 'undefined'){
-  //   // }
-  //   if(typeof item === 'object') {
-  //       _.extend(item,this);
-  //   }
-  //   this.label = gform.renderString((item||{}).label||this.item.label, this);
-
-  //   // var oldDiv = document.getElementById(this.id);
-  //   // var oldDiv = this.owner.el.querySelector('#'+this.id);
-  //   var oldDiv = this.el;
-  //   this.destroy();
-  //   this.el = gform.types[this.type].create.call(this);
-  //   oldDiv.parentNode.replaceChild(this.el,oldDiv);
-  //   gform.types[this.type].initialize.call(this);
-
-  //   if(!silent) {
-  //       this.owner.pub(['change:'+this.name,'change'], this);
-  //   }
-  //   if(typeof gform.types[this.type].setup == 'function') {gform.types[this.type].setup.call(this);}
-    
-  // },
-  set:function(value){
-    this.editor.session.setValue(value);
-  },
-  get:function(){
-    return (typeof this.editor == 'undefined')?this.value:this.editor.getValue()
-  },
-  focus: function(){
-    this.editor.focus();
-  }
-});
-
-
-
-
-
 const fieldLibrary = (function(){
   let group_id = (typeof resource_id !== 'undefined')?resource_id:(typeof instanceData !== 'undefined')?instanceData.group_id:null;
   // let mycomposites = (typeof composites !== 'undefined')?composites:[]
@@ -1615,22 +1640,9 @@ return collection;
     
   }())
 
-  function getData(urls,callback){
-    if(typeof urls == 'string')urls = [urls];
-    Promise.all(_.map(urls, url =>{
-      return new Promise((resolve,reject) => {
-        gform.ajax({path: url,success:function(data){resolve(data)},error:function(data){reject(data)}})
-      })
-    })).then(data => {
-      let ss = callback.toString().split('=>')[0].split('(');
-      ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
-        //assumes no more parameters are expected in the callback than the number of urls requested
-        $g.collections.add(item.trim(), data[index])
-        return data;
-      },data)
-  
-      callback.apply(null, data);
-    }).catch(function(data){
-      // debugger;
-    })
-  }
+_.each(["success","danger","info","warning","default","primary","link"],actionType=>{
+  gform.types[actionType] = _.defaultsDeep({toString: ()=>''}, gform.types['button'], {defaults:{
+    "action":"save",
+    "modifiers": "btn btn-"+actionType
+  }});
+})
