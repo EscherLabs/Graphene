@@ -178,11 +178,12 @@ class WorkflowInstanceController extends Controller
 
         $myWorkflow->findVersion();
 
-        $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->orderBy('created_at','desc')->first();
+        $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','=','new')->with('files')->orderBy('updated_at','desc')->first();
         if($request->has('saved')){
-            $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new'])->where('id','=',$request->get('saved'))->with('files')->first();
+            $current = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','new')->where('id','=',$request->get('saved'))->with('files')->first();
         }
-        $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->whereIn('status',['new'])->orderBy('updated_at','desc')->get();
+
+        $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','new')->orderBy('updated_at', 'desc')->get();
         if($myWorkflow != null) {
             $renderer = new PageRenderer();
             return $renderer->render([
@@ -192,7 +193,7 @@ class WorkflowInstanceController extends Controller
                         [[
                             "title"=>$myWorkflow->name,
                             "user"=>Auth::user(),
-                            "current"=>$current,
+                            "submission"=>$current,
                             "all"=>$saved,
                             "workflow"=>$myWorkflow,
                             "instance_id"=>$myWorkflow->id,
@@ -203,7 +204,7 @@ class WorkflowInstanceController extends Controller
                     [[
                         "title"=>$myWorkflow->name,
                         "user"=>Auth::user(),
-                        "current"=>$current,
+                        "submission"=>$current,
                         "all"=>$saved,
                         "workflow"=>$myWorkflow,
                         "instance_id"=>$myWorkflow->id,
@@ -220,7 +221,21 @@ class WorkflowInstanceController extends Controller
         }
         abort(404,'Workflow not found');
     }
-
+    public function context(WorkflowSubmission $workflow_submission, Request $request) {
+        $myWorkflow = WorkflowInstance::with('workflow')->find($workflow_submission->workflow_instance_id);
+        if($myWorkflow != null) {
+            $myWorkflow->findVersion();
+            $workflow_submission->load('files');
+            return [
+                "title"=>$myWorkflow->name,
+                "submission"=>$workflow_submission,
+                "workflow"=>$myWorkflow,
+                "instance_id"=>$myWorkflow->id,
+                "resources"=>$this->fetch($myWorkflow, $request, $workflow_submission),
+            ];
+        }
+        abort(404,'Workflow not found');
+    }
     public function report(WorkflowInstance $workflow_instance,Request $request) {
         return view('admin', ['resource'=>'workflow_instance_report','id'=>$workflow_instance->id, 'group'=>$workflow_instance->group]);
     }

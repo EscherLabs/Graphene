@@ -111,11 +111,6 @@ let api =  {
    
    Promise.all(_.map(urls, (url, index, list) =>{
      return new Promise((resolve,reject) => {
-      // let map = false;
-      // let data = options;
-      //  if(_.isArray(options))data = data[index];
-      //  if(data.url == url)data = data.data;map=true;
-debugger;
        $.ajax({
          url: url,
          dataType : 'json',
@@ -128,21 +123,6 @@ debugger;
  
      })
    })).then(data => {
-    // if(map){
-    //   debugger;
-    //   _.each(data,datum=>{
-    //     //$g.collections.update(item.trim(), data[index])
-    //     debugger;
-    //   })
-    // }
-
-    //  let ss = callback.toString().split('=>')[0].split('(');
-    //  ((ss.length>1)?ss[1]:ss[0]).split(')')[0].split(',').reduce((data, item, index) => {
-    //    //assumes no more parameters are expected in the callback than the number of urls requested
-    //    if(data.length<=index)return data;
-    //    $g.collections.update(item.trim(), data[index])
-    //    return data;
-    //  }, data)
     if(typeof callback !== 'undefined'){
       callback.apply(null, data);
     }
@@ -230,7 +210,23 @@ debugger;
      }
    }
    return data;
- }
+ },
+ formatFile: file=>{
+  switch(file.mime_type){
+    case "image/jpeg":
+    case "image/png":
+    case "image/jpg":
+    case "image/gif":
+      break;
+    default:
+      file.icon = '<i class="fa '+
+        (mime_icons[file.mime_type] || mime_icons[file.mime_type.split('/')[0]] || mime_icons[file.ext] || "fa-file-o")
+        +' fa-3x" style="padding-top: 4px;"></i>';
+  }
+  file.date =  moment(file.deleted_at||file.created_at).format('MM/DD/YY h:mm a');
+  return file;
+
+}
 }
 
 api.worker.onmessage = (message)=>{
@@ -611,6 +607,7 @@ var mime_icons = {
   "application/gzip": "fa-file-archive-o",
   "application/zip": "fa-file-archive-o"
 }
+
 
 debug = {};
 Object.defineProperty(debug,'about',{

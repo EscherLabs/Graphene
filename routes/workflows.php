@@ -45,6 +45,8 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::delete('/workflowsubmissions/{workflow_submission}/files/{file}','WorkflowSubmissionFileController@destroy')->middleware('can:take_action,workflow_submission');
 
     // Workflow Submission (General)
+    Route::post('/workflowinstances/{workflow_instance}/save','WorkflowSubmissionActionController@create')->middleware('can:create_submission,workflow_instance');
+
     Route::post('/workflowsubmissions/{workflow_instance}/{save_or_submit?}','WorkflowSubmissionActionController@create')->middleware('can:create_submission,workflow_instance');
     Route::get('/workflowsubmissions/user','WorkflowSubmissionController@list_user_workflow_submissions');
     Route::get('/workflowsubmissions/user/assignments','WorkflowSubmissionController@list_workflow_submission_assignments');
@@ -53,6 +55,7 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
 
     Route::get('/workflowsubmissions/{workflow_submission}/history','WorkflowSubmissionController@workflow_submission_history')->middleware('can:view,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@status')->middleware('can:view,workflow_submission');
+    Route::get('/workflowsubmissions/{workflow_submission}/context','WorkflowInstanceController@context')->middleware('can:view,workflow_submission');
     Route::put('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionActionController@action')->middleware('can:take_action,workflow_submission');
     Route::delete('/workflowsubmissions/{workflow_submission}','WorkflowSubmissionController@destroy')->middleware('can:delete,workflow_submission');
     Route::get('/workflowsubmissions/{workflow_submission}/upgrade','WorkflowSubmissionController@upgrade_version')->middleware('can:upgrade_version,workflow_submission');

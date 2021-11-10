@@ -500,7 +500,7 @@ function load(workflow_version) {
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Key</h4>',columns:9,type:"output"},
     {label:false,value:'<h4 style="border-bottom:solid 1px #ccc">Type</h4>',columns:3,type:"output"},
 
-    {name:"map",label:false,array:{max:100},type:"fieldset",fields:[
+    {name:"map",label:false,array:{min:0,max:100},type:"fieldset",fields:[
       {name:"name",label:false,columns:9,placeholder:"Key"},
       {name:"type",label:false,type:"select",columns:3,options:[
         {label:"String",value:"string"},

@@ -81,7 +81,7 @@ class AppInstance extends Model
         return $myAppVersion;
     }
     public function findVersion() {
-        $myAppVersion;
+        // $myAppVersion;
         // if(is_null($this->app_version_id)){
         //     $myAppVersion = AppVersion::where('app_id','=',$this->app_id)->orderBy('created_at', 'desc')->first();
         // }else if($this->app_version_id == 0){

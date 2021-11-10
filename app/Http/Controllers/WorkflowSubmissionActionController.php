@@ -55,7 +55,7 @@ class WorkflowSubmissionActionController extends Controller {
         if($save_or_submit === 'save' && $request->has('id')){
             $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
                 ->where('workflow_instance_id',$workflow_instance->id)
-                ->find($request->get('id'));
+                ->find($request->input('id'));
         }else{
             // Get any existing workflow submissions with a 'new' status
             // $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
@@ -120,7 +120,7 @@ class WorkflowSubmissionActionController extends Controller {
         
         if($save_or_submit === 'save' && ($request->has('comment') || !is_null($workflow_submission->comment)) ){
             if($request->has('comment')){
-                $workflow_submission->comment = $request->get('comment');
+                $workflow_submission->comment = $request->input('comment');
             }
         }
 
@@ -254,8 +254,10 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
         $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
         $state_data['datamap'] = $state_data['assignment'] = [];
-        foreach($myWorkflowInstance->configuration->map as $resource){
-            $state_data['datamap'][$resource->name] = $resource->value;
+        if(isset($myWorkflowInstance->configuration->map)){
+            foreach($myWorkflowInstance->configuration->map as $resource){
+                $state_data['datamap'][$resource->name] = $resource->value;
+            }
         }
         $state_data['status'] = $workflow_submission->status;
         $state_data['state'] = $state->name;

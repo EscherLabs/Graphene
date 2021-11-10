@@ -84,6 +84,7 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
                     // title:configuration.title,
 					...configuration,
                     map:_.map(map,function(resource){
+						debugger;
                         var r = _.find(configuration.map,{name:resource.name});
                         if(typeof r !== 'undefined' && r.type == resource.type){
                             resource.value = r.value;
@@ -92,8 +93,9 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
                     })}, actions:[],fields:[
 					{columns:6,name:"initial",label:"Initial State", options:_.pluck(version.code.flow,'name'), type:"smallcombo"},
 					{columns:6,name:"title",label:"Title",placeholder:workflow.name},
+					{columns:12,name:"instructions",label:"Instructions",type:"textarea",placeholder:"Instructions to help filling out the form"},
                     {...flagField, 
-						name: "suppress_emails", 
+						name: "suppress_emails",
 						title: `Suppress Default Emails
 							{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}
 							{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}`
@@ -148,6 +150,12 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
 							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
 							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`
 					},
+					{...flagField, 
+						name: "allow_multiple_new", 
+						title: `Allow Multiple submissions in initial state
+							{{#value}}<div class="text-success">Multiple Submissions will be allowed in initial state</div>{{/value}}
+							{{^value}}<div class="text-danger">Only one Submission can be unsubmitted at a time</div>{{/value}}`
+					},
 					{target:()=>document.querySelector("#datamap .col-sm-9"),name:"map",label:false,edit:!!map.length,array:{target:"#datamap .col-sm-9",min:map.length,max:map.length},type:"fieldset",fields:[
 						
 						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
@@ -164,7 +172,7 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
 				]}
 				new gform(r_options,'#config .col-sm-9');
 				
-				if(configuration.map.length) {	
+				if(typeof configuration.map !== 'undefined' && configuration.map.length) {	
 					$('#datamaptab').show();
 				}
 				if(resources.length && resources[0].name !== '') {	
