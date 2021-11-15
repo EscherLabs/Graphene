@@ -467,7 +467,7 @@ function load(workflow_version) {
     {label: 'Cache', type: 'checkbox',name:'cache',options:[{label:'No',value:"false"},{label:"Yes",value:"true"}]}
   ];
   tableConfig.data = attributes.code.resources;
-
+  tableConfig.multiEdit = ['fetch','cache','path','modifier'];
   if(typeof resource_grid !== 'undefined'){
     resource_grid.destroy();
   }

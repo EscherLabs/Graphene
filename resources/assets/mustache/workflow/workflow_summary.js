@@ -22,17 +22,20 @@ workflow_report.workflow_summary = `
 <div class="callout callout-warning">{{instructions}}</div>
 {{/instructions}}
 {{/workflow.configuration}}
+{{#workflow.configuration.display_required_list}}
 {{#required.length}}
 <div class="panel panel-{{#satisfied.false}}info{{/satisfied.false}}{{^satisfied.false}}success{{/satisfied.false}} current-panel">
   <div class="panel-heading" style="position:relative">
     <h3 class="panel-title">Required Fields</h3>
   </div>
   <div class="panel-body workflow-required">
-      <div>{{#required}}<a data-id="{{id}}" class="missing-field label label-{{^satisfied}}info{{/satisfied}}{{#satisfied}}default{{/satisfied}}">{{label}} <i class="fa fa-check"></i></a>{{/required}}</div>
+      <div>{{#required}}<span class="required-field {{^satisfied}}missing{{/satisfied}}"><a data-id="{{id}}" class="label label-{{^satisfied}}info{{/satisfied}}{{#satisfied}}default{{/satisfied}}">{{label}}</a>{{/required}}</div>
   </div>
 </div>
 {{/required.length}}
+{{/workflow.configuration.display_required_list}}
 
+{{#workflow.configuration.display_error_list}}
 {{#errors.length}} 
 <div class="panel panel-danger current-panel">
   <div class="panel-heading" style="position:relative">
@@ -49,7 +52,7 @@ workflow_report.workflow_summary = `
   </div>
 </div>
 {{/errors.length}} 
-
+{{/workflow.configuration.display_error_list}}
 
 {{#workflow.configuration.allow_multiple_new}}
 {{#if all.length > 1 }}

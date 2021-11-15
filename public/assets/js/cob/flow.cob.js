@@ -247,12 +247,15 @@ Cobler.types.Workflow = function(container){
         _saveDelay = setTimeout(sync, 1500);
         updateRequiredFields(e.form);
       },500)
-    );
+    )
+    .on('options', _.debounce(e=>{
+      updateRequiredFields(e.form);
 
+    }));
+    debugger;
     workflowForm.trigger('input')
-    gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,isSatisfied:false},{stopOnFail:false})[0].focus()
-
-    // initialFormState = initialFormState||gform.instances['workflow'].get();
+    updateRequiredFields(workflowForm);
+    // gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,isSatisfied:false},{stopOnFail:false})[0].focus()
 
     if(typeof fileLoader == "undefined" && submission && form.files && flowState.uploads){
       if($("#uploader_"+item.guid).length){
@@ -424,8 +427,8 @@ Cobler.types.Workflow = function(container){
       return gform.renderString(workflow_report.workflow, {
         ...item,
         workflow_admin: group_admin,
-        allowFiles: (form.files && flowState.uploads,workflow_report)
-      })},
+        allowFiles: (form.files && flowState.uploads), ...workflow_report}
+    )},
     load: function(){
       formData.data.datamap = _.reduce(workflow.configuration.map, (datamap, item)=>{
         datamap[item.name] = item.value;
@@ -450,7 +453,11 @@ Cobler.types.Workflow = function(container){
       initialFormState = new gform({fields: form.fields,private:true, data:
           ((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](tformData):{})
       }).get();
-      lastSynced = submission.data;
+      
+      
+      lastSynced = (submission)?submission.data:{};
+
+
       if(
         (!this.container.owner.options.disabled) ||
         (resource_type !== 'workflow') ||
@@ -524,6 +531,9 @@ Cobler.types.Workflow = function(container){
       }
 
       $g.on('workflow_select', e=>{
+        if(e.data.id == submission.id)return
+        $g.emit('workflow_summary', {required:[],satisfied:[]})
+
         if(fileLoader)fileLoader.removeAllFiles();
         gform.collections.update('files', []);
         message.status = "loading";

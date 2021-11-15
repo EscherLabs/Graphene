@@ -35,7 +35,7 @@ Cobler.types.WorkflowSummary = function(container){
       workflowsummary = this;
       this.ractive = new Ractive({el: this.container.elementOf(this), template: workflow_report.workflow_summary, data:  this.get(), partials: {}});
 
-      $(this.container.elementOf(this)).on('click','.error-field, .missing-field', e=>{
+      $(this.container.elementOf(this)).on('click','.error-field, .required-field a', e=>{
         gform.instances.workflow.find(e.currentTarget.dataset).focus()
       })
 

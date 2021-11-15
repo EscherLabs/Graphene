@@ -144,20 +144,33 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
                         ]
                     },
                     {...flagField, 
-						name: "encrypted", 
+						name: "encrypted",
 						title: `Encrypt Data at Rest
 							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
 							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`
 					},
 					{...flagField, 
 						name: "allow_multiple_new", 
+						value: false,
 						title: `Allow Multiple submissions in initial state
 							{{#value}}<div class="text-success">Multiple Submissions will be allowed in initial state</div>{{/value}}
 							{{^value}}<div class="text-danger">Only one Submission can be unsubmitted at a time</div>{{/value}}`
 					},
+					{...flagField, 
+						name: "display_required_list",
+						value: false,
+						title: `Display the Required List Summary
+						<div>Will {{^value}}<span class="text-danger">not </span>{{/value}}be Shown</div>`
+					},
+					{...flagField, 
+						name: "display_error_list",
+						value: false,
+						title: `Display the Error List Summary
+							<div>Will {{^value}}<span class="text-danger">not </span>{{/value}}be Shown</div>`
+					},
 					{target:()=>document.querySelector("#datamap .col-sm-9"),name:"map",label:false,edit:!!map.length,array:{target:"#datamap .col-sm-9",min:map.length,max:map.length},type:"fieldset",fields:[
 						
-						{name:"name",label:false, columns:8,type:"output",format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
+						{name:"name",label:false, columns:8,type:"output", parse:true, format:{value:'<h4>{{value}} <span class="text-muted pull-right">({{parent.initialValue.type}})</span></h4>'}},
 
 						{columns:0,name:"type",label:false,edit:false},
 
@@ -165,6 +178,7 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
 						{...valueField, show:[{value:"user", type:"matches",name:"type"}],type:"user"},
 						{...valueField, show:[{value:"email", type:"matches",name:"type"}],type:"user_email"},
 						{...valueField, show:[{value:"group", type:"matches",name:"type"}],type:"group"},
+						{...valueField, show:[{value:"date", type:"matches",name:"type"}],type:"date"},
 						{...valueField, show:[{value:"endpoint", type:"matches",name:"type"}],type:"select",options:'endpoints',format:{label:"{{name}}",value:"{{id}}"}},
 
 					]}
@@ -174,11 +188,12 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
 				if(typeof configuration.map !== 'undefined' && configuration.map.length) {	
 					$('#datamaptab').show();
 				}
+				debugger;
 				if(resources.length && resources[0].name !== '') {	
 					$('#resourcestab').show();
 					new gform({
 						fields: [
-							{name:'resources',label:false,type:"fieldset",array:{min:0,max:3,duplicate:false,remove:false},fields:[
+							{name:'resources',label:false,type:"fieldset",array:{min:0,max:100,duplicate:false,remove:false},fields:[
 								{label:false, name: 'name',columns:0, type:'hidden'},
 								{name: 'endpoint', type: 'endpoint',required:true},
 							]}

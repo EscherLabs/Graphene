@@ -184,35 +184,53 @@ class WorkflowInstanceController extends Controller
         }
 
         $saved = WorkflowSubmission::where('user_id','=',$current_user->id)->where('workflow_instance_id','=',$myWorkflow->id)->where('status','new')->orderBy('updated_at', 'desc')->get();
+        $section = [
+            "title"=>$myWorkflow->name,
+            "user"=>Auth::user(),
+            "submission"=>$current,
+            "all"=>$saved,
+            "workflow"=>$myWorkflow,
+            "instance_id"=>$myWorkflow->id,
+            "resources"=>$this->fetch($myWorkflow,$request,$current),
+            "container"=>true
+        ];
+
+        $layout = '<div class="col-lg-offset-2 col-lg-8 col-md-12 col-sm-12 cobler_container"></div></div>';
+
+        if(!empty($myWorkflow->configuration->allow_multiple_new) || 
+        !empty($myWorkflow->configuration->display_required_list) || 
+        !empty($myWorkflow->configuration->display_error_list) || 
+        !empty($myWorkflow->configuration->instructions)){
+            $layout = '<div class="col-lg-offset-2 col-lg-6 col-md-12 col-sm-12 cobler_container"></div><div class="col-lg-2 col-md-12 col-sm-12 cobler_container workflow_sidebar" style="position:sticky"></div></div>';
+        }
+        $resources = $this->fetch($myWorkflow,$request,$current);
         if($myWorkflow != null) {
             $renderer = new PageRenderer();
             return $renderer->render([
                 'group'=>$groupObj,
                 'config'=>[
-                    "sections"=>[
-                        [[
-                            "title"=>$myWorkflow->name,
-                            "user"=>Auth::user(),
-                            "submission"=>$current,
-                            "all"=>$saved,
-                            "workflow"=>$myWorkflow,
-                            "instance_id"=>$myWorkflow->id,
-                            "widgetType"=>"Workflow",
-                            "resources"=>$this->fetch($myWorkflow,$request,$current),
-                            "container"=>true
-                        ]],
-                    [[
+                    "sections"=>[[[
                         "title"=>$myWorkflow->name,
                         "user"=>Auth::user(),
                         "submission"=>$current,
                         "all"=>$saved,
                         "workflow"=>$myWorkflow,
                         "instance_id"=>$myWorkflow->id,
-                        "widgetType"=>"WorkflowSummary",
-                        "resources"=>$this->fetch($myWorkflow,$request,$current),
-                        "container"=>true
+                        "resources"=>$resources,
+                        "container"=>true,
+                        "widgetType"=>"Workflow"
+                    ]],[[
+                        "title"=>$myWorkflow->name,
+                        "user"=>Auth::user(),
+                        "submission"=>$current,
+                        "all"=>$saved,
+                        "workflow"=>$myWorkflow,
+                        "instance_id"=>$myWorkflow->id,
+                        "resources"=>$resources,
+                        "container"=>true,
+                        "widgetType"=>"WorkflowSummary"
                     ]]],
-                    "layout"=>'<div class="col-lg-offset-2 col-lg-6 col-md-12 col-sm-12 cobler_container"></div><div class="col-lg-2 col-md-12 col-sm-12 cobler_container workflow_sidebar" style="position:sticky"></div></div>'
+                    "layout"=>$layout
                 ],
                 'id'=>$myWorkflow->id,
                 'resource'=>'workflow',
