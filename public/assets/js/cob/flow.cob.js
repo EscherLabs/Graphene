@@ -22,8 +22,12 @@ Cobler.types.Workflow = function(container){
     }
     if(typeof ractive !== 'undefined')ractive.set(item);
   }
-  // function reload(){location.reload();}
 
+  create = ()=>{
+    message.status = 'create';
+    workflowForm.destroy();
+    sync({});
+  }
   //additionalInfo
   //  action: required
   //  signature: used if required
@@ -239,16 +243,14 @@ Cobler.types.Workflow = function(container){
     )
     .on('input canceled reset', _.throttle(e=>{
       if(_.isEqual(lastSynced, e.form.get('_state')))return;
-        //if(!_.isEqual(initialFormState, e.form.get('_state'))) {
-          message.status = "saving";
-        //}else{
-        //  message.status = "success";
-        //}
+        message.status = "saving";
+        _saveDelay = setTimeout(sync, 1500);
         updateRequiredFields(e.form);
       },500)
     );
 
     workflowForm.trigger('input')
+    gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,isSatisfied:false},{stopOnFail:false})[0].focus()
 
     // initialFormState = initialFormState||gform.instances['workflow'].get();
 
@@ -300,10 +302,9 @@ Cobler.types.Workflow = function(container){
 
   var addComment = ()=>{
 
-    new gform({data:submission,legend:"Comment for this submission",name:"submission_comment",modal:{header_class:'bg-success'},fields:[{label:false, type:'textarea',placeholder:"example: Waiting for John Doe to send me his ID", help:'<span class="text-muted">HINT: <i>Use this comment to differentiate this submission from others you may have, or to remember what you are waiting on to continue.</i></span>'}],actions:[{type:'cancel', modifiers:"btn btn-danger pull-left"},{type:'save',label:"Save and start new",action:"save_create", modifiers:"btn btn-warning"}, {type:'save'}] }).modal()
+    new gform({data:submission,legend:"Comment for this submission",name:"submission_comment",modal:{header_class:'bg-success'},fields:[{label:false, name:'comment', type:'textarea',placeholder:"example: Waiting for John Doe to send me his ID", help:'<span class="text-muted">HINT: <i>Use this comment to differentiate this submission from others you may have, or to remember what you are waiting on to continue.</i></span>'}],actions:[{type:'cancel', modifiers:"btn btn-danger pull-left"},{type:'save',label:"Save and start new",action:"save_create", modifiers:"btn btn-warning"}, {type:'save'}] }).modal()
     .on('save_create save', e=>{
       if(!e.form.validate())return;
-      
       $g.waiting = "Updating Comment...";
       e.form.trigger('close')
       $.ajax({
@@ -313,7 +314,11 @@ Cobler.types.Workflow = function(container){
         success: submission=>{
           set({submission:submission});
           e.form.trigger('close');
-          message.status = (e.event=='save')?'success':'create';
+          if (e.event=='save'){
+            message.status = 'success';
+          }else{
+            create();
+          }
         },
       })
     }).on('save cancel',e=>{
@@ -375,18 +380,14 @@ Cobler.types.Workflow = function(container){
           case "saving":
             _message = 'Auto Saving...';
             $g.waiting = _message;
-            _saveDelay = setTimeout(sync, 1500);
             break;
           case "create":
             _message = 'Creating New...';
             $g.waiting = _message;
-            workflowForm.destroy();
-            sync({});
             break;
           case "loading":
             _message = 'Loading...';
             $g.waiting = _message;
-            workflowForm.destroy();
             break;
           case "error":
             _message = 'Error Saving';
@@ -525,7 +526,8 @@ Cobler.types.Workflow = function(container){
       $g.on('workflow_select', e=>{
         if(fileLoader)fileLoader.removeAllFiles();
         gform.collections.update('files', []);
-        message.status = "Loading...";
+        message.status = "loading";
+        workflowForm.destroy();
         $g.getData('/api/workflowsubmissions/'+e.data.id+'/context', context=>{
           set(context)
 
@@ -557,7 +559,6 @@ Cobler.types.Workflow = function(container){
         })
       })
       $g.on('workflow_action', e=>{
-        console.log(e.data.action);
         _.each(e.data.action.split(' '),action=>{
           switch(action){
             case 'restart':
@@ -571,12 +572,12 @@ Cobler.types.Workflow = function(container){
                   item.all = _.filter(item.all, item=>{
                     return item.id !== submission.id;
                   })
-                  message.status = 'create';
+                  create();
                 }
               })
               break;
             case 'new':
-              message.status = 'create';
+              create();;
               break;
             case 'validate':
               workflowForm.validate(true);
@@ -599,7 +600,7 @@ Cobler.types.Workflow = function(container){
                     set({submission:item.all[0]});
                     // loadForm();
                   }else{
-                    message.status = 'create';
+                    create();
                   }
                 }
               })
