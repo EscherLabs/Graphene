@@ -5,11 +5,10 @@ workflow_report.workflow = `
 {{#container}}
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="{{guid}}">
       <div class="panel-body">
-        <span class="label label-default pull-right" id="flow-status"></span>
-        <h2 class="flow-title" style="margin-top:0"></h2>
-        <h4 class="submission-title"></h4>
+
+        <div class="header"></div>
         <div>
           <!-- Nav tabs -->
           {{#allowFiles}}
@@ -35,7 +34,7 @@ workflow_report.workflow = `
         </div>
         {{#allowFiles}}
         </div>
-        <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        <div class="dropzone" id="uploader_{{guid}}"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
         {{/allowFiles}}
       </div>
     </div>
@@ -43,9 +42,10 @@ workflow_report.workflow = `
 </div>
 {{/container}}
 {{^container}}
-<div class="collapsible">
-  <h3 class="flow-title"></h3>
-  <h4 class="submission-title"></h4>
+<div class="collapsible "id="{{guid}}">
+
+
+<div class="header"></div>
   <div>
     <!-- Nav tabs -->
     {{#allowFiles}}
@@ -71,7 +71,7 @@ workflow_report.workflow = `
   </div>
   {{#allowFiles}}
   </div>
-  <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+  <div class="dropzone" id="uploader_{{guid}}"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
   {{/allowFiles}}
 </div>
 {{/container}}`;

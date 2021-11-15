@@ -146,11 +146,9 @@ let api =  {
  form:gform,
  forms:gform.instances,
  render:gform.m,
- alert:function(options,data){
-   if(typeof options == 'string'){
-     options = {content:options};
-   }
-   toastr[options.status||'info'](gform.m(options.content||'',_.extend({},/* this.partials,*/ data)),options.title )
+ alert:function(options, data){
+  let {status="info", content="", title=""} = (typeof options == 'string')?{content: options}: options;
+  toastr[status](gform.m(content, data||{}), title)
  },
  emit:globalevents.emit,
  on:globalevents.on,
@@ -1257,7 +1255,8 @@ return gform.renderString((this.limit>1)?`
     return (typeof value !== 'undefined' && value !== null && value !== '' && !(typeof value == 'number' && isNaN(value)) && !_.isEmpty(value));            
   },
   initialize:function(){
-    this.el.querySelector("#"+this.id+'.dropzone .dz-message').innerHTML = (this.item.format && this.item.format.message)?this.item.format.message:'Drop files here to upload';
+    debugger;
+    this.el.querySelector("#"+this.id+'.dropzone .dz-message').innerHTML = (this.item.format && this.item.format.message)?this.item.format.message:$g.render('Drop files here to upload to {{label}}',_.pick(this,'label'));
     var onError = function(data){
       this.trigger('change',this,data)
       this.trigger('error',this, data)

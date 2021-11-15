@@ -1151,3 +1151,32 @@ hr.thin{
 
 .missing-field i{position:absolute;right:-4px;top:-4px;background-color: #3f903f;border-radius: 50%;padding:3px;opacity: .8;box-shadow:0 0 1px 1px white}
 .label-info.missing-field i{display:none}
+.slice .Workflow .panel{
+  border-top: solid 3px #eee;
+}
+.slice .panel.success{
+  border-color:#5cb85c !important;
+}
+.slice .panel.error{
+  border-color:#d9534f !important;
+}
+.slice .flow-title{
+  border-bottom: solid 1px #eee;
+  margin: 0 -15px 10px;
+  padding: 0 10px 10px;
+}
+.animate-border {
+  border-width:0 !important;
+  padding-top:3px;
+  background: linear-gradient(90deg, #888 50%, transparent 50%);
+  background-repeat: repeat-x;
+  background-size: 40px 3px;
+  background-position: 0% 0%;
+  animation: dash 30s linear infinite;
+}
+
+@keyframes dash {
+  to {
+      background-position: 100% 0%;
+  }
+}

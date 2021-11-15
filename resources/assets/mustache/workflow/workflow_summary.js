@@ -10,7 +10,8 @@ workflow_report.workflow_summary = `
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu">
-    <li><a href="#" data-action="new" type="button">New</a></li>
+  <li><a href="#" data-action="new" type="button">New</a></li>
+  <li><a href="#" data-action="validate" type="button">Validate</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" data-action="discard" type="button" class="text-danger">Discard</a></li>
   </ul>

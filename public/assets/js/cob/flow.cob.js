@@ -20,6 +20,7 @@ Cobler.types.Workflow = function(container){
         loadForm();
       }
     }
+    if(typeof ractive !== 'undefined')ractive.set(item);
   }
   // function reload(){location.reload();}
 
@@ -44,7 +45,7 @@ Cobler.types.Workflow = function(container){
         workflowForm.find('_state').el.style.opacity = 1
         gform.types.fieldset.edit.call(workflowForm.find('_state'), true)
         $('.gform-footer').show();
-        toastr.error("An error occured submitting this form. Please try again later", 'ERROR')
+        $g.alert({content:"An error occured submitting this form. Please try again later", title:"ERROR",status: 'error'})
       }
     })
   }
@@ -65,7 +66,10 @@ Cobler.types.Workflow = function(container){
             
     if(action.validate !== false && !workflowForm.validate(true)){
       if(action.invalid_submission !== true || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?",{errors:_.values(e.form.errors)}) )){
-        toastr.error("Form invalid, please check for errors!", 'ERROR');
+        $g.alert({content:"Form invalid, please check for errors!", title:"ERROR", status: 'error'})
+        message.status = 'error';
+        gform.items.filter.call(e.form.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})[0].focus();
+
         return;
       }
     }
@@ -132,8 +136,8 @@ Cobler.types.Workflow = function(container){
       $g.waiting = 'Waiting...';
       saveFlow(newFormData || workflowForm.get(), response=>{
         message.status = 'success';
-        initialFormState = response.data;
-
+        // initialFormState = response.data;
+        lastSynced = response.data;
         response.files = gform.collections.get('files')
         set({submission:response});
 
@@ -145,14 +149,15 @@ Cobler.types.Workflow = function(container){
         if(!workflowForm.valid)workflowForm.validate();
       }, e=>{
         message.status = 'error';
-        toastr.error("An error occured durring autosave - please try refreshing before proceeding or you may lose your work", 'ERROR');
+        $g.alert({content:"An error occured durring autosave - please try refreshing before proceeding or you may lose your work", title:"ERROR",status: 'error'})
       });
     }
   }
   
   var loadForm = ()=>{
+    ractive.set(item);
     evalMethods = [];
-    _.each(methods,function(item,index){
+    _.each(methods, (item, index)=>{
       eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(formData,formData.data)');
     })
     var formSetup = {
@@ -164,15 +169,7 @@ Cobler.types.Workflow = function(container){
           "type": "cancel",
           "action":"canceled",
           "label": "<i class='fa fa-times'></i> Clear"
-        }
-        // ,{
-        //   "type": "button",
-        //   "name": "_save_for_later",
-        //   "action": "archive",
-        //   "modifiers": "btn btn-info pull-right",
-        //   "label": "<i class='fa fa-save'></i> Save For later"
-        // }
-        ,{
+        },{
           "type": "hidden",
           "name": "_flowstate"
         },{
@@ -197,19 +194,20 @@ Cobler.types.Workflow = function(container){
       return false;
     }))
 
-    formSetup.data._state = formSetup.data._state || {};
+    formSetup.data._state = {...formSetup.data._state, ...((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](formData):{})}
+    // if(form.resource !== ''){
 
-    if(form.resource !== ''){
-      if(form.resource in formData.data.resources){
-        _.extend(formSetup.data._state,formData.data.resources[form.resource]);
-      }
-      if(form.resource in evalMethods){
-        _.extend(formSetup.data._state,evalMethods[form.resource](formData));
-      }
-    }
+    //   ...((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](formData):{}),
+    //   if(form.resource in formData.data.resources){
+    //     _.extend(formSetup.data._state,formData.data.resources[form.resource]);
+    //   }
+    //   if(form.resource in evalMethods){
+    //     _.extend(formSetup.data._state,evalMethods[form.resource](formData));
+    //   }
+    // }
 
     if(submission != null){
-      initialFormState = submission.data;
+      // initialFormState = submission.data;
       gform.collections.update('files', _.map(submission.files||[], $g.formatFile))
     }else{
       gform.collections.update('files', [])
@@ -219,47 +217,45 @@ Cobler.types.Workflow = function(container){
     .on('validation', e=>{
       let status = {errors:[]}
       if(!e.form.valid){
-        var invalid_fields = gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})
+        var invalid_fields = gform.items.filter.call(e.form.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})
         status.errors = _.compact(_.map(invalid_fields,e=>{
           return {label: e.label, id: e.id, errors: e.errors.split('<br>')};
         }))
-        invalid_fields[0].focus();
       }
       $g.emit('workflow_summary', status)
     })
-    // .on('invalid', e=>{
-    //   var invalid_fields = gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})
 
-    //   $g.emit('workflow_summary',{errors: _.compact(_.map(invalid_fields,e=>{
-    //     return !e.valid?{label: e.label, id: e.id,errors: e.errors.split('<br>')}: null}))
-    //   })
-    //   invalid_fields[0].focus();
-    // })
-    // .on('valid', ()=>{$g.emit('workflow_summary',{errors:[]})})
     .on('save', processAction)
     // .on('archive', addComment)
     .on('canceled', e=>{
       set({submission:{...initialFormState,id:submission.id}});
       loadForm();
     })
-    .on('input canceled reset', _.throttle(e=>{
-      if(!_.isEqual(initialFormState, e.form.get('_state'))) {
-        message.status = "saving";
-      }else{
-        message.status = "success";
+    .on("input",e=>{
+      if('field' in e && !e.field.valid) {
+        gform.validateItem.call(null, true, e.field)
       }
-      updateRequiredFields(e.form);
-    },500));
+    }
+    )
+    .on('input canceled reset', _.throttle(e=>{
+      if(_.isEqual(lastSynced, e.form.get('_state')))return;
+        //if(!_.isEqual(initialFormState, e.form.get('_state'))) {
+          message.status = "saving";
+        //}else{
+        //  message.status = "success";
+        //}
+        updateRequiredFields(e.form);
+      },500)
+    );
 
     workflowForm.trigger('input')
 
-    initialFormState = initialFormState||gform.instances['workflow'].get();
+    // initialFormState = initialFormState||gform.instances['workflow'].get();
 
     if(typeof fileLoader == "undefined" && submission && form.files && flowState.uploads){
-      debugger;
-      if($('#myId').length){
-        $('#myId').html('');
-        fileLoader = new Dropzone("div#myId", {timeout:60000, url: "/api/workflowsubmissions/"+submission.id+"/files", init: function() {
+      if($("#uploader_"+item.guid).length){
+        $("#uploader_"+item.guid).html('');
+        fileLoader = new Dropzone("#uploader_"+item.guid, {dictDefaultMessage:"Drop files here to upload attatchments",timeout:60000, url: "/api/workflowsubmissions/"+submission.id+"/files", init: function() {
           this.on("success", update);
         }});
       }
@@ -304,9 +300,10 @@ Cobler.types.Workflow = function(container){
 
   var addComment = ()=>{
 
-    new gform({legend:"Comment associated with this submission",name:"submission_comment",modal:{header_class:'bg-success'},fields:[{label:"Comment"}],actions:[{type:'save'},{type:'cancel'},{type:'save',label:"Save and start new",action:"save_create"}] }).modal()
+    new gform({data:submission,legend:"Comment for this submission",name:"submission_comment",modal:{header_class:'bg-success'},fields:[{label:false, type:'textarea',placeholder:"example: Waiting for John Doe to send me his ID", help:'<span class="text-muted">HINT: <i>Use this comment to differentiate this submission from others you may have, or to remember what you are waiting on to continue.</i></span>'}],actions:[{type:'cancel', modifiers:"btn btn-danger pull-left"},{type:'save',label:"Save and start new",action:"save_create", modifiers:"btn btn-warning"}, {type:'save'}] }).modal()
     .on('save_create save', e=>{
       if(!e.form.validate())return;
+      
       $g.waiting = "Updating Comment...";
       e.form.trigger('close')
       $.ajax({
@@ -332,7 +329,7 @@ Cobler.types.Workflow = function(container){
 		'Workflow ID': {type: 'select', options: '/api/groups/'+group_id+'/workflowinstances', format: {label: "{{name}}", value: "{{id}}"}},
 	}
 
-  var submission, instance_id, rootPath, guid, user, resources, initialFormState, flowState, workflowForm, fileLoader, flow, form, methods,
+  var panelEL, ractive, submission, instance_id, rootPath, guid, user, resources, initialFormState={}, lastSynced, flowState, workflowForm, fileLoader, flow, form, methods,
     workflow={configuration:{}}, 
     evalMethods = [],
     formData = {
@@ -371,6 +368,9 @@ Cobler.types.Workflow = function(container){
         el.removeClass('label-success').removeClass('label-danger');
         clearTimeout(_saveDelay);
         $g.waiting = false;
+        gform.removeClass(panelEL, 'error')
+        gform.removeClass(panelEL, 'success')
+
         switch(e){
           case "saving":
             _message = 'Auto Saving...';
@@ -391,16 +391,20 @@ Cobler.types.Workflow = function(container){
           case "error":
             _message = 'Error Saving';
             el.addClass('label-danger')
+            gform.addClass(panelEL, 'error')
             break;
           case "success":
             _message = 'All Changes Saved';
             el.addClass('label-success')
+            gform.addClass(panelEL, 'success')
             break;
           default:
           _message = '';
         }
         
         $('#flow-status').html(_message);
+        gform.toggleClass(panelEL, 'animate-border', !!$g.waiting)
+
       },
       enumerable: false
     });
@@ -414,18 +418,14 @@ Cobler.types.Workflow = function(container){
 		toJSON: get,
 		get: get,
 		set: set,
-    // message: message,
-    fileLoader:fileLoader,
-    // sync: sync,
+    // fileLoader:fileLoader,
 		render: ()=>{
       return gform.renderString(workflow_report.workflow, {
         ...item,
         workflow_admin: group_admin,
-        allowFiles: (form.files && flowState.uploads)
+        allowFiles: (form.files && flowState.uploads,workflow_report)
       })},
     load: function(){
-      this.container.elementOf(this).querySelector('.flow-title').innerHTML = workflow.workflow.name;
-
       formData.data.datamap = _.reduce(workflow.configuration.map, (datamap, item)=>{
         datamap[item.name] = item.value;
         return datamap;
@@ -437,6 +437,19 @@ Cobler.types.Workflow = function(container){
         return resources;
       }, {})
 
+      
+      // formData._state = form.data|| {};
+      evalMethods = [];
+      let tformData = {...formData,_state:form.data||{}};
+
+      _.each(methods, (item, index)=>{
+        eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(tformData,tformData.data)');
+      })
+
+      initialFormState = new gform({fields: form.fields,private:true, data:
+          ((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](tformData):{})
+      }).get();
+      lastSynced = submission.data;
       if(
         (!this.container.owner.options.disabled) ||
         (resource_type !== 'workflow') ||
@@ -445,16 +458,18 @@ Cobler.types.Workflow = function(container){
         (submission == null) ||
         (submission.updated_at == submission.created_at) ||
 
-        _.isEqual(submission.data, new gform({fields: form.fields,private:true}).get()) ||
+        _.isEqual(lastSynced, initialFormState) ||
         
         parseInt(window.location.search.split('?saved=')[1]) == submission.id
 
       ){
-        //{{updated_at.date}} @ {{{updated_at.time}}}
         // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
 
       }else{
-        toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
+        set({isContinue:true})
+        $g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission)
+
+        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
 
       }
       // else{
@@ -467,6 +482,14 @@ Cobler.types.Workflow = function(container){
     },
 
 		initialize: function(el) {
+      ractive = new Ractive({el: this.container.elementOf(this).querySelector('.header'), template: workflow_report.header, data:  {}, partials: {}});
+
+      panelEL = this.container.elementOf(this).querySelector('.panel');
+
+      $(panelEL).on('click','[data-action]', e=>{
+        $g.emit('workflow_action', e.currentTarget.dataset);
+      })
+
       gform.collections.add('files', []);
       gform.collections.on('files', e=>{
         $('.f_'+guid).html(gform.renderString(workflow_report.attachments, submission))
@@ -503,14 +526,60 @@ Cobler.types.Workflow = function(container){
         if(fileLoader)fileLoader.removeAllFiles();
         gform.collections.update('files', []);
         message.status = "Loading...";
-        $g.getData('/api/workflowsubmissions/'+e.data.id+'/context', context=>set(context))
+        $g.getData('/api/workflowsubmissions/'+e.data.id+'/context', context=>{
+          set(context)
+
+      if(
+        (!this.container.owner.options.disabled) ||
+        (resource_type !== 'workflow') ||
+
+        //nothing started - we can assume starting a new one
+        (submission == null) ||
+        (submission.updated_at == submission.created_at) ||
+
+        _.isEqual(submission.data, initialFormState) ||
+        
+        parseInt(window.location.search.split('?saved=')[1]) == submission.id
+
+      ){
+        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
+        // set(context)
+
+      }else{
+        set({isContinue:true})
+        $g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission)
+
+        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
+
+      }
+
+
+        })
       })
       $g.on('workflow_action', e=>{
         console.log(e.data.action);
         _.each(e.data.action.split(' '),action=>{
           switch(action){
+            case 'restart':
+              $.ajax({
+                url:'/api/workflowsubmissions/'+submission.id,
+                type: 'delete',
+                success: e=>{
+                  submission.deleted_at = true;
+                  $g.emit('workflow_summary', {submission:submission})
+                  this.get()
+                  item.all = _.filter(item.all, item=>{
+                    return item.id !== submission.id;
+                  })
+                  message.status = 'create';
+                }
+              })
+              break;
             case 'new':
               message.status = 'create';
+              break;
+            case 'validate':
+              workflowForm.validate(true);
               break;
             case 'save':
               addComment();
@@ -523,11 +592,10 @@ Cobler.types.Workflow = function(container){
                   submission.deleted_at = true;
                   $g.emit('workflow_summary', {submission:submission})
                   this.get()
-                  item.all = _.filter(item.all,item=>{
+                  item.all = _.filter(item.all, item=>{
                     return item.id !== submission.id;
                   })
                   if(item.all.length){
-                    debugger;
                     set({submission:item.all[0]});
                     // loadForm();
                   }else{
@@ -546,8 +614,3 @@ Cobler.types.Workflow = function(container){
 		}
 	}
 }
-
-
-
-///sync files and reset uploads - finish testing
-//initialFormState
