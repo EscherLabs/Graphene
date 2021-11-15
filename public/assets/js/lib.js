@@ -1255,7 +1255,6 @@ return gform.renderString((this.limit>1)?`
     return (typeof value !== 'undefined' && value !== null && value !== '' && !(typeof value == 'number' && isNaN(value)) && !_.isEmpty(value));            
   },
   initialize:function(){
-    debugger;
     this.el.querySelector("#"+this.id+'.dropzone .dz-message').innerHTML = (this.item.format && this.item.format.message)?this.item.format.message:$g.render('Drop files here to upload to {{label}}',_.pick(this,'label'));
     var onError = function(data){
       this.trigger('change',this,data)

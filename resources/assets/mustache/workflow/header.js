@@ -2,6 +2,7 @@
 workflow_report.header = `
     <span class="label label-default pull-right" id="flow-status"></span>
     <h3 class="flow-title">{{workflow.workflow.name}}</h3>
+    <h5 class="submission-title">{{submission.title}}</h5>
     {{#isContinue}}
     <div class="alert alert-info alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>

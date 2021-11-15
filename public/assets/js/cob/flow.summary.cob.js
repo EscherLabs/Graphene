@@ -33,7 +33,6 @@ Cobler.types.WorkflowSummary = function(container){
 		},
 		initialize: function(el) {
       workflowsummary = this;
-      debugger;
       this.ractive = new Ractive({el: this.container.elementOf(this), template: workflow_report.workflow_summary, data:  this.get(), partials: {}});
 
       $(this.container.elementOf(this)).on('click','.error-field, .missing-field', e=>{

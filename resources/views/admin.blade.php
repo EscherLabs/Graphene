@@ -34,7 +34,6 @@
 
 //     callback.apply(null, data);
 //   }).catch(function(data){
-//     // debugger;
 //   })
 // }
     var route = '{{ $resource }}';

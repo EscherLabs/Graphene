@@ -84,7 +84,6 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
                     // title:configuration.title,
 					...configuration,
                     map:_.map(map,function(resource){
-						debugger;
                         var r = _.find(configuration.map,{name:resource.name});
                         if(typeof r !== 'undefined' && r.type == resource.type){
                             resource.value = r.value;
