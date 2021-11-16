@@ -188,7 +188,6 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
 				if(typeof configuration.map !== 'undefined' && configuration.map.length) {	
 					$('#datamaptab').show();
 				}
-				debugger;
 				if(resources.length && resources[0].name !== '') {	
 					$('#resourcestab').show();
 					new gform({

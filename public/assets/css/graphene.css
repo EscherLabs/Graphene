@@ -1148,8 +1148,8 @@ hr.thin{
     max-width: 100%;
     margin: 0 5px 0 0;
     display: inline-block;
+    cursor: pointer;
 }
-
 .required-field:before{
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -1158,7 +1158,7 @@ hr.thin{
   -moz-osx-font-smoothing: grayscale;
   position: absolute;
   right: 1px;
-  top: -10px;
+  top: -12px;
   background-color: rgb(63, 144, 63);
   opacity: 0.8;
   box-shadow: white 0px 0px 1px 1px;
@@ -1171,6 +1171,10 @@ hr.thin{
   opacity: .8;
   box-shadow:0 0 1px 1px white
 }
+
+.required-field:hover:before{
+  opacity: .65;
+  }
 .required-field.missing:before{display:none}
 
 

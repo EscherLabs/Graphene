@@ -898,8 +898,7 @@ gform.types['files'] = _.extend({}, gform.types['smallcombo'], {
 		}
 	},
   defaults:{options: 'files',strict:true,custom:{name:"addFile",display:'<div style="line-height:50px"><span class="label label-success">Upload New File</span> <span class="pull-right"><i class="fa fa-upload"></i></span></div>',action:function(e){
-    $('div#myId').click()
-
+    document.querySelector('#uploader_'+e.form.options.id).click()
   }},format:{title:'<i class="fa fa-paperclip"></i> {{{label}}}{{^label}}Attachement{{/label}}',label:"{{name}}",value:"{{id}}",display:'<div style="height:50px;padding-left:60px;position:relative" href="{{path}}" target="_blank"><div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url({{path}});background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:0px;left:5px">{{{icon}}}</div> {{name}} <span class="pull-right">{{date}}</span></div>'}}
 })
 gform.types['endpoint'] = {...gform.types['smallcombo'],

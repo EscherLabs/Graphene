@@ -26,9 +26,29 @@ Cobler.types.Workflow = function(container){
   create = ()=>{
     message.status = 'create';
     workflowForm.destroy();
+    item.isContinue = false;
     sync({});
   }
-  //additionalInfo
+
+  discard = (forceNew)=>{
+    $.ajax({
+      url:'/api/workflowsubmissions/'+submission.id,
+      type: 'delete',
+      success: e=>{
+        submission.deleted_at = true;
+        $g.emit('workflow_summary', {submission:submission})
+        item.all = _.filter(item.all, item=>{
+          return item.id !== submission.id;
+        })
+        if(!forceNew && item.all.length){
+          $g.emit('workflow_select', item.all[0]);
+        }else{
+          create();
+        }
+      }
+    })
+  }
+
   //  action: required
   //  signature: used if required
   function submitFlow(additionalInfo) {
@@ -55,7 +75,6 @@ Cobler.types.Workflow = function(container){
   }
 
   function updateRequiredFields(form) {
-    // if(!workflowForm)return;
     let required = _.uniq(_.compact(_.map(
       gform.items.filter.call(form.find({name: "_state"}), {active: true, required: true}, {stopOnFail: false})
       , e => {
@@ -80,22 +99,18 @@ Cobler.types.Workflow = function(container){
     
     if(action.signature){
       signature = new gform({legend:"Signature Required", actions:[{type:"cancel",label:'<i class="fa fa-times"></i> Clear'},{type:"save"}]}).
-      on('cancel', signatureEvent=>{
-        signatureEvent.form.set({signature:null})
-        signatureEvent.form.clearValidation();
-        action = null;
+      on('cancel', e=>{
+        e.form.set({signature:null})
+        e.form.clearValidation();
       }).
-      on('save', signatureEvent=>{
-        if(signatureEvent.form.validate()){
-          signatureEvent.form.trigger('close')
-          submitFlow({action:action.name,signature:signatureEvent.form.get('signature')})
-          // submitFlow.call(null, e, {...e.form.toJSON(),signature:signatureEvent.form.get('signature'),action:action.name})
+      on('save', e=>{
+        if(e.form.validate()){
+          e.form.trigger('close')
+          submitFlow({action: action.name, signature: e.form.get('signature')})
         }
-        action = null;
-      }).on('input',function(e){
+      }).on('input', e=>{
         if(e.form.el.classList.contains('in'))e.form.validate()                  
       }).modal()
-
         signature.add({type:'signaturePad',required:true,label:"Signature",hideLabel:true,help:(action.signature_text || "Please Sign Above"),name:"signature"})
     }else{
       submitFlow({action:action.name})
@@ -144,13 +159,7 @@ Cobler.types.Workflow = function(container){
         lastSynced = response.data;
         response.files = gform.collections.get('files')
         set({submission:response});
-
-        // if(gform.instances.workflow){
-        //   workflowForm.find('id').set(formData.id);
-        // }else{
-        //   loadForm();
-        // }
-        if(!workflowForm.valid)workflowForm.validate();
+        if(!workflowForm.valid) workflowForm.validate();
       }, e=>{
         message.status = 'error';
         $g.alert({content:"An error occured durring autosave - please try refreshing before proceeding or you may lose your work", title:"ERROR",status: 'error'})
@@ -165,6 +174,7 @@ Cobler.types.Workflow = function(container){
       eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(formData,formData.data)');
     })
     var formSetup = {
+      "id": item.guid,
       "data":formData,
       "name":"workflow",
       "events":form.events||{},
@@ -199,19 +209,8 @@ Cobler.types.Workflow = function(container){
     }))
 
     formSetup.data._state = {...formSetup.data._state, ...((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](formData):{})}
-    // if(form.resource !== ''){
-
-    //   ...((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](formData):{}),
-    //   if(form.resource in formData.data.resources){
-    //     _.extend(formSetup.data._state,formData.data.resources[form.resource]);
-    //   }
-    //   if(form.resource in evalMethods){
-    //     _.extend(formSetup.data._state,evalMethods[form.resource](formData));
-    //   }
-    // }
 
     if(submission != null){
-      // initialFormState = submission.data;
       gform.collections.update('files', _.map(submission.files||[], $g.formatFile))
     }else{
       gform.collections.update('files', [])
@@ -230,7 +229,6 @@ Cobler.types.Workflow = function(container){
     })
 
     .on('save', processAction)
-    // .on('archive', addComment)
     .on('canceled', e=>{
       set({submission:{...initialFormState,id:submission.id}});
       loadForm();
@@ -252,7 +250,6 @@ Cobler.types.Workflow = function(container){
       updateRequiredFields(e.form);
 
     }));
-    debugger;
     workflowForm.trigger('input')
     updateRequiredFields(workflowForm);
     // gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,isSatisfied:false},{stopOnFail:false})[0].focus()
@@ -346,12 +343,7 @@ Cobler.types.Workflow = function(container){
         actor: user,
         form: {},
         owner:null,
-        // state: workflow.configuration.initial,
-        history: [],
-        // datamap: _.reduce(workflow.configuration.map, (datamap, item)=>{
-        //     datamap[item.name] = item.value;
-        //     return datamap;
-        //   },{})
+        history: []
       }
     };
 
@@ -422,7 +414,6 @@ Cobler.types.Workflow = function(container){
 		toJSON: get,
 		get: get,
 		set: set,
-    // fileLoader:fileLoader,
 		render: ()=>{
       return gform.renderString(workflow_report.workflow, {
         ...item,
@@ -441,8 +432,6 @@ Cobler.types.Workflow = function(container){
         return resources;
       }, {})
 
-      
-      // formData._state = form.data|| {};
       evalMethods = [];
       let tformData = {...formData,_state:form.data||{}};
 
@@ -454,39 +443,16 @@ Cobler.types.Workflow = function(container){
           ((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](tformData):{})
       }).get();
       
-      
       lastSynced = (submission)?submission.data:{};
 
-
-      if(
-        (!this.container.owner.options.disabled) ||
-        (resource_type !== 'workflow') ||
-
-        //nothing started - we can assume starting a new one
-        (submission == null) ||
-        (submission.updated_at == submission.created_at) ||
-
-        _.isEqual(lastSynced, initialFormState) ||
-        
-        parseInt(window.location.search.split('?saved=')[1]) == submission.id
-
-      ){
-        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
-
-      }else{
-        set({isContinue:true})
-        $g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission)
-
-        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
-
-      }
-      // else{
-      //   // formData._state = submission.data
-
-      // }
+      set({isContinue: ((submission !== null) &&
+        (submission.updated_at !== submission.created_at) &&
+        !_.isEqual(lastSynced, initialFormState))
+      })
+      if(item.isContinue)$g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission);
 
       loadForm()
-      
+
     },
 
 		initialize: function(el) {
@@ -531,60 +497,31 @@ Cobler.types.Workflow = function(container){
       }
 
       $g.on('workflow_select', e=>{
+
+        toastr.clear();
         if(e.data.id == submission.id)return
-        $g.emit('workflow_summary', {required:[],satisfied:[]})
+        $g.emit('workflow_summary', {required:[],satisfied:[],errors:[]})
 
         if(fileLoader)fileLoader.removeAllFiles();
         gform.collections.update('files', []);
         message.status = "loading";
         workflowForm.destroy();
         $g.getData('/api/workflowsubmissions/'+e.data.id+'/context', context=>{
-          set(context)
-
-      if(
-        (!this.container.owner.options.disabled) ||
-        (resource_type !== 'workflow') ||
-
-        //nothing started - we can assume starting a new one
-        (submission == null) ||
-        (submission.updated_at == submission.created_at) ||
-
-        _.isEqual(submission.data, initialFormState) ||
-        
-        parseInt(window.location.search.split('?saved=')[1]) == submission.id
-
-      ){
-        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
-        // set(context)
-
-      }else{
-        set({isContinue:true})
-        $g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission)
-
-        // toastr.success($g.render("Continuing from data last updated {{updated_at.fromNow}}", submission))
-
-      }
-
-
+          message.status = "success";
+          lastSynced = context.submission.data;
+          set({...context, isContinue: ((context.submission !== null) &&
+            (context.submission.updated_at !== context.submission.created_at) &&
+            !_.isEqual(lastSynced, initialFormState))
+          })
+          if(item.isContinue)$g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission);
+          
         })
       })
       $g.on('workflow_action', e=>{
         _.each(e.data.action.split(' '),action=>{
           switch(action){
             case 'restart':
-              $.ajax({
-                url:'/api/workflowsubmissions/'+submission.id,
-                type: 'delete',
-                success: e=>{
-                  submission.deleted_at = true;
-                  $g.emit('workflow_summary', {submission:submission})
-                  this.get()
-                  item.all = _.filter(item.all, item=>{
-                    return item.id !== submission.id;
-                  })
-                  create();
-                }
-              })
+              discard(true);
               break;
             case 'new':
               create();;
@@ -596,24 +533,7 @@ Cobler.types.Workflow = function(container){
               addComment();
               break;
             case 'discard':
-              $.ajax({
-                url:'/api/workflowsubmissions/'+submission.id,
-                type: 'delete',
-                success: e=>{
-                  submission.deleted_at = true;
-                  $g.emit('workflow_summary', {submission:submission})
-                  this.get()
-                  item.all = _.filter(item.all, item=>{
-                    return item.id !== submission.id;
-                  })
-                  if(item.all.length){
-                    set({submission:item.all[0]});
-                    // loadForm();
-                  }else{
-                    create();
-                  }
-                }
-              })
+              discard(false);
               break;
           }
         })
