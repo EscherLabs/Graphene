@@ -1140,6 +1140,7 @@ hr.thin{
 }
 .required-field {
   position:relative;
+  display: inline-block;
 }
 .required-field .label{
     text-overflow: ellipsis;
@@ -1158,7 +1159,7 @@ hr.thin{
   -moz-osx-font-smoothing: grayscale;
   position: absolute;
   right: 1px;
-  top: -12px;
+  top: -5px;
   background-color: rgb(63, 144, 63);
   opacity: 0.8;
   box-shadow: white 0px 0px 1px 1px;
