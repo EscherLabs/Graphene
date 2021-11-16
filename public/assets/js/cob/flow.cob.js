@@ -76,7 +76,7 @@ Cobler.types.Workflow = function(container){
 
   function updateRequiredFields(form) {
     let required = _.uniq(_.compact(_.map(
-      gform.items.filter.call(form.find({name: "_state"}), {active: true, required: true}, {stopOnFail: false})
+      form.find({name: "_state"}).items.filter({active: true, required: true})
       , e => {
         return {..._.pick(e,'label','id'),satisfied:e.satisfied()};
       }
@@ -86,12 +86,14 @@ Cobler.types.Workflow = function(container){
 
   function processAction(e) {
     var action = _.find(flowState.actions, {name: e.field.name});
-            
     if(action.validate !== false && !workflowForm.validate(true)){
       if(action.invalid_submission !== true || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?",{errors:_.values(e.form.errors)}) )){
+        toastr.clear();
         $g.alert({content:"Form invalid, please check for errors!", title:"ERROR", status: 'error'})
         message.status = 'error';
-        gform.items.filter.call(e.form.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})[0].focus();
+        e.form.find("_state").filter({active:true,valid:false})
+
+//        gform..items.filter.call(e.form.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})[0].focus();
 
         return;
       }
@@ -220,7 +222,7 @@ Cobler.types.Workflow = function(container){
     .on('validation', e=>{
       let status = {errors:[]}
       if(!e.form.valid){
-        var invalid_fields = gform.items.filter.call(e.form.find({name:"_state"}),{active:true,valid:false},{stopOnFail:false})
+        var invalid_fields = e.form.find({name: "_state"}).items.filter({active:true,valid:false})
         status.errors = _.compact(_.map(invalid_fields,e=>{
           return {label: e.label, id: e.id, errors: e.errors.split('<br>')};
         }))
@@ -252,7 +254,6 @@ Cobler.types.Workflow = function(container){
     }));
     workflowForm.trigger('input')
     updateRequiredFields(workflowForm);
-    // gform.items.filter.call(workflowForm.find({name:"_state"}),{active:true,isSatisfied:false},{stopOnFail:false})[0].focus()
 
     if(typeof fileLoader == "undefined" && submission && form.files && flowState.uploads){
       if($("#uploader_"+item.guid).length){

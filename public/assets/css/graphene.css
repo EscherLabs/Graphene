@@ -1138,16 +1138,20 @@ fieldset:disabled .actions{
 hr.thin{
   margin:5px 0;
 }
+.workflow_sidebar{top:140px}
+.panel-body.workflow-required{padding-right: 10px;}
 .required-field {
   position:relative;
   display: inline-block;
+  max-width: 100%;
+  padding-right: 5px;
 }
 .required-field .label{
     text-overflow: ellipsis;
     /* line-height: 12px; */
     overflow: hidden;
     max-width: 100%;
-    margin: 0 5px 0 0;
+    /* margin: 0 5px 0 0; */
     display: inline-block;
     cursor: pointer;
 }
