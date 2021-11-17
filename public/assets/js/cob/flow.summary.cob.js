@@ -37,6 +37,7 @@ Cobler.types.WorkflowSummary = function(container){
 
       $(this.container.elementOf(this)).on('click','.error-field, .required-field a', e=>{
         gform.instances.workflow.find(e.currentTarget.dataset).focus()
+        gform.instances.workflow.find(e.currentTarget.dataset).el.scrollIntoView({block: "end", inline: "nearest",behavior: "smooth"})
       })
 
       $('.action-bar').on('click','[data-action]', e=>{

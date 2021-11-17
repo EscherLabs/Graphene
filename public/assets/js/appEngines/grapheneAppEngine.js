@@ -151,45 +151,63 @@ function App() {
 				}
 			}
 		}.bind(this),
-    form: function(name, target){
-		if(typeof this.forms[name] == 'undefined'){
-
-			if(typeof target == 'string'){
-				target = this.app.find(target)[0];
-			}
-			if(typeof name == 'string'){
-				var formOptions = _.cloneDeep(this.app.findForm(name));//_.find(this.options.config.forms,{name:name})
-				if(typeof formOptions !== 'undefined'){
-					// var formOptions = JSON.parse(form.content);
+		form: function(name, target, options){
+			if(typeof this.forms[name] == 'undefined'){
+	
+				if(typeof target == 'string'){
+					target = this.app.find(target)[0];
+				}
+				if(typeof name == 'string'){
+					var formOptions = _.cloneDeep(this.app.findForm(name));//_.find(this.options.config.forms,{name:name})
+					if(typeof formOptions !== 'undefined'){
+						// var formOptions = JSON.parse(form.content);
+						formOptions.private = true;
+						formOptions.collections = this.collections;
+						formOptions.selector = target;
+						formOptions.methods = this.methods;
+						formOptions.data = this.app.data[name]||this.app.data;
+	
+						if(typeof target == 'string'){
+							target = this.app.find(target)[0];
+						}
+						this.forms[name] = new gform(_.merge(formOptions,options),target)
+	
+						return this.forms[name]
+					}
+				}else{
+					var formOptions = name;
 					formOptions.private = true;
 					formOptions.collections = this.collections;
 					formOptions.selector = target;
 					formOptions.methods = this.methods;
-					formOptions.data = this.app;
-
-					if(typeof target == 'string'){
-						target = this.app.find(target)[0];
-					}
-					this.forms[name] = new gform(formOptions,target)
-
-					return this.forms[name]
+					formOptions.data = this.app.data[name]||this.app.data;
+					var newForm = new gform(_.merge(formOptions,options),target)
+					this.forms[newForm.name] = newForm;
+					return this.forms[newForm.name]
 				}
 			}else{
-				var formOptions = name;
-				formOptions.private = true;
-				formOptions.collections = this.collections;
-				formOptions.selector = target;
-				formOptions.methods = this.methods;
-				formOptions.data = this.app;
-				var newForm = new gform(formOptions,target)
-				this.forms[newForm.name] = newForm;
-				return this.forms[newForm.name]
+				if(typeof options == 'object'){
+					if('data' in options){
+						this.forms[name].set(options.data)
+					}
+				}
+				if(typeof target !== 'undefined'){
+					this.forms[name].attatch(target);
+					//move form to new target? very experimental
+					// debugger;
+					// let formOptions = this.forms[name].options;
+					// formOptions.actions = [];
+					// let data = this.forms[name].get()
+
+					// this.forms[name].destroy();
+					// this.forms[name] = new gform(_.merge(formOptions,options), target);
+					// this.forms[name].set(data);
+				}
 			}
-		}
-
-		return this.forms[name]
-
-		}.bind(this),
+	
+			return this.forms[name]
+	
+			}.bind(this),
 		grid: function(name, options){
 			if(typeof this.grids[name] == 'undefined'){
 				// _.each(['create','edit','form'],function(i){

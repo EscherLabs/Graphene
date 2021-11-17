@@ -565,47 +565,34 @@ loadInstances = function(){
     
           <div style="overflow:scroll">
             <p class="text-muted">{{version.description}}</p>
-    
-              {{#resources.length}}
-              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
-              <table>
-              <tr><th colspan="2" style="color:#666">Resources Map</th><tr>
+            {{#resources.length}}
+              <div style="border-top:solid 1px #aaa;margin:5px 0;font-size:16px;font-weithg:bold">Resources Map</div>
+            
+              <dl class="dl-horizontal">
               {{#resources}}
-              <tr>
-              <td valign="top">{{name}}:&nbsp;</td><td class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</td>
-              </tr>
-              {{/resources}} 
-            </table>
-              {{/resources.length}}
-    
-              {{#options.length}}                      
-              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
-    
-              <table>
-              <tr><th colspan="2" style="color:#666">Admin Options</th><tr>
+              <dt>{{name}}:</dt><dd class="text-muted">{{{endpoint.config.url}}}{{{resource.path}}}</dd>
+              {{/resources}}
+              </dl>
+            {{/resources.length}}
+  
+            {{#options.length}}                
+              <div style="border-top:solid 1px #aaa;margin:5px 0;font-size:16px;font-weithg:bold">Admin Options</div>            
+              <dl class="dl-horizontal">
               {{#options}}
-              <tr>
-              <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
-              </tr>
-              {{/options}}                         
-              </table>                      
-    
-              {{/options.length}}
-          
-    
-              {{#user_options_default.length}}
-              <div style="border-bottom:solid 1px #aaa;margin:5px 0"></div>
-    
-              <table>
-              <tr><th colspan="2" style="color:#666">Default User Options</th><tr>
+              <dt>{{key}}:</dt><dd class="text-muted">{{value}}</dd>
+              {{/options}}
+              </dl>               
+            {{/options.length}}
+
+            {{#user_options_default.length}}               
+              <div style="border-top:solid 1px #aaa;margin:5px 0;font-size:16px;font-weithg:bold">Default User Options</div>            
+              <dl class="dl-horizontal">
               {{#user_options_default}}
-              <tr>
-              <td valign="top">{{key}}:&nbsp;</td><td class="text-muted">{{value}}</td>
-              </tr>
+              <dt>{{key}}:</dt><dd class="text-muted">{{value}}</dd>
               {{/user_options_default}}
-              </table>
-    
-              {{/user_options_default.length}}
+              </dl>               
+            {{/user_options_default.length}}
+
           </div>
         </div>`,temp)});
       }.bind(null,app_instances))

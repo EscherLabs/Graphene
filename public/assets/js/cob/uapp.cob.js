@@ -111,9 +111,10 @@ Cobler.types.uApp = function(container){
             switch(opts.config.engine){
               case 'graphene':
                 if('graphene' in $g.engines){
-                  $g.engines['graphene'][opts.config.version||'v1']
+                  this.appEngine = $g.engines[opts.config.version||'v1']['v1'](opts)
+                }else{
+                  this.appEngine = gAE_v0001(opts);
                 }
-                this.appEngine = gAE_v0001(opts);
                 break;
               case 'vue':
                 this.appEngine = vueAppEngine(opts);
