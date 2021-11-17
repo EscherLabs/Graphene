@@ -192,7 +192,7 @@ function App() {
 					}
 				}
 				if(typeof target !== 'undefined'){
-					this.forms[name].attatch(target);
+					this.forms[name].attach(target);
 					//move form to new target? very experimental
 					// debugger;
 					// let formOptions = this.forms[name].options;
