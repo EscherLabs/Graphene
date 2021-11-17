@@ -1138,6 +1138,13 @@ fieldset:disabled .actions{
 hr.thin{
   margin:5px 0;
 }
+.Workflow.widget center{
+  display: none;
+}
+
+.Workflow.widget #form center:only-child{
+  display: block;
+}
 .workflow_sidebar{top:140px}
 .panel-body.workflow-required{padding-right: 10px;}
 .required-field {

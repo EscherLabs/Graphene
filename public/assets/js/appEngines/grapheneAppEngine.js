@@ -192,16 +192,10 @@ function App() {
 					}
 				}
 				if(typeof target !== 'undefined'){
+					if(typeof target == 'string'){
+						target = this.app.find(target)[0];
+					}
 					this.forms[name].attach(target);
-					//move form to new target? very experimental
-					// debugger;
-					// let formOptions = this.forms[name].options;
-					// formOptions.actions = [];
-					// let data = this.forms[name].get()
-
-					// this.forms[name].destroy();
-					// this.forms[name] = new gform(_.merge(formOptions,options), target);
-					// this.forms[name].set(data);
 				}
 			}
 	
