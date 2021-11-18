@@ -83,6 +83,7 @@ function App() {
 		post:_.partial(router, 'POST').bind(this),
 		get:_.partial(router, 'GET').bind(this),
 		put:_.partial(router, 'PUT').bind(this),
+		patch:_.partial(router, 'PATCH').bind(this),
 		delete:_.partial(router, 'DELETE').bind(this),
 		
 		redraw: redraw.bind(this),
