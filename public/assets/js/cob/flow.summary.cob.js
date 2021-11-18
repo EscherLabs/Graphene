@@ -32,12 +32,13 @@ Cobler.types.WorkflowSummary = function(container){
       item.submission = $g.formatDates(item.submission);
 		},
 		initialize: function(el) {
-      workflowsummary = this;
+      // workflowsummary = this;
       this.ractive = new Ractive({el: this.container.elementOf(this), template: workflow_report.workflow_summary, data:  this.get(), partials: {}});
 
       $(this.container.elementOf(this)).on('click','.error-field, .required-field a', e=>{
         gform.instances.workflow.find(e.currentTarget.dataset).focus()
         gform.instances.workflow.find(e.currentTarget.dataset).el.scrollIntoView({block: "end", inline: "nearest",behavior: "smooth"})
+        // setTimeout(()=>window.scrollBy(0, 140),0)
       })
 
       $('.action-bar').on('click','[data-action]', e=>{
