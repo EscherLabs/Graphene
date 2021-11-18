@@ -165,7 +165,7 @@ function App() {
 						formOptions.collections = this.collections;
 						formOptions.selector = target;
 						formOptions.methods = this.methods;
-						formOptions.data = this.app.data[name]||this.app.data;
+						formOptions.data = this.app.data[name]||this.app;
 	
 						if(typeof target == 'string'){
 							target = this.app.find(target)[0];
@@ -180,7 +180,7 @@ function App() {
 					formOptions.collections = this.collections;
 					formOptions.selector = target;
 					formOptions.methods = this.methods;
-					formOptions.data = this.app.data[name]||this.app.data;
+					formOptions.data = this.app.data[name]||this.app;
 					var newForm = new gform(_.merge(formOptions,options),target)
 					this.forms[newForm.name] = newForm;
 					return this.forms[newForm.name]
