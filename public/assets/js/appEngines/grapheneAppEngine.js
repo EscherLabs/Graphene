@@ -1,5 +1,6 @@
 function App() {
-	function router(verb, name, data, callback) {
+	var router = (verb, name, data, callback) =>{
+		debugger;
 		var callback = callback || function(data) {
 		if(data.error) {
 				if (data.error.message) {
@@ -80,11 +81,17 @@ function App() {
 	this.collections =  new gform.collectionManager(this.data)
 
 	var returnable = {
-		post:_.partial(router, 'POST').bind(this),
-		get:_.partial(router, 'GET').bind(this),
-		put:_.partial(router, 'PUT').bind(this),
-		patch:_.partial(router, 'PATCH').bind(this),
-		delete:_.partial(router, 'DELETE').bind(this),
+		// post:_.partial(router, 'POST').bind(this),
+		// get:_.partial(router, 'GET').bind(this),
+		// put:_.partial(router, 'PUT').bind(this),
+		// patch:_.partial(router, 'PATCH').bind(this),
+		// delete:_.partial(router, 'DELETE').bind(this),
+		
+		post:_.partial(router, 'POST'),
+		get:_.partial(router, 'GET'),
+		put:_.partial(router, 'PUT'),
+		patch:_.partial(router, 'PATCH'),
+		delete:_.partial(router, 'DELETE'),
 		
 		redraw: redraw.bind(this),
 		refresh: refresh.bind(this),

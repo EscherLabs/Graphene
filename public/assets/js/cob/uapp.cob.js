@@ -106,6 +106,8 @@ Cobler.types.uApp = function(container){
                   }
                 })
               }.bind(this));
+              $g.emit('loaded',this)
+
             }.bind(this)
 
             switch(opts.config.engine){
@@ -127,7 +129,6 @@ Cobler.types.uApp = function(container){
             }
             
             $g.apps[opts.config.app_instance_id] = this;
-
 
           }.bind(this)
       })

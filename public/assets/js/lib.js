@@ -39,7 +39,7 @@ modal = (options, data) => {
   return mm;
 }
 
-$g = function(){
+$g = function(options){
   //new gform.eventBus({owner:"graphene",item:'data',handlers:{}}, this),
   function eventHub() {
    let handlers = {};
@@ -265,9 +265,93 @@ Object.defineProperty(api, "waiting", {
  enumerable: true
 });
 
+Object.defineProperty(api, "message", {
+  set: message=>{
+    if(typeof message == "string")message = {message:message};
+    let packet = {...message,...(options.broadcast||{}),id:api.uuid};
+    window.localStorage.setItem("_gb", JSON.stringify(packet))
+    $g.emit('broadcast', packet)
+  },
+  enumerable: true
+ });
+
+window.addEventListener('storage', (event) => {
+  if (event.storageArea != localStorage) return;
+  if (event.key === '_gb') {
+      if(event.newValue !== ""){
+        let source = event.url.split(event.srcElement.location.origin)[1]
+        // let oldVal = JSON.parse(event.oldValue);
+        let newVal = JSON.parse(event.newValue);
+        // debugger;
+        //_.differenceWith([_.omit(newVal,'id')], [_.omit(oldVal,'id')], _.isEqual);
+
+
+          $g.emit('broadcast', {...newVal, source:event.url.split(event.srcElement.location.origin)[1]});
+      }
+  }
+});
+
+
+
 return api;
 
-}()
+}({broadcast:{app:"custom"}})
+
+$g.on('load',e=>{
+  if(window.localStorage.getItem("_gb") !== null && window.localStorage.getItem("_gb") !== ""){
+      $g.emit('broadcast', JSON.parse(window.localStorage.getItem("_gb")));
+  }
+})
+$g.on('broadcast', (e)=> {
+  if('action' in e.data){
+    switch(e.data.action){
+      case 'toggle':
+        debug[e.data.toggle] = !debug[e.data.toggle];
+        $g.message = "";
+        break;
+    }
+  }
+})
+
+
+$g.on('loaded debug', (e)=> {
+
+  var temp = document.querySelector('#debugtools') 
+  if(temp)document.body.removeChild(temp)
+  if(!debug.state || typeof resource_type == 'undefined' || resource_type !== 'app' || typeof cb == 'undefined')return;
+
+obj = {resources:_.reduce(debug.app.config.resources,(result, resource)=>{
+  result.push({results:debug.app.data[resource.name],...resource});
+  return result;
+},[])};
+debugger;
+  document.body.append(gform.create(gform.renderString(`
+<div id="debugtools" style="position:fixed;bottom:0;right:0;width: 400px;margin-bottom: 0;" class="panel panel-default">
+<div class="panel-heading" role="tab" id="headingTools">
+  <h4 class="panel-title">
+    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
+Tools
+    </a>
+  </h4>
+</div>
+<div id="collapseTools" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTools">
+  <div class="panel-body">
+  {{#resources}}
+  <h4>{{name}}</h4>
+  <span class="muted">{{path}}</span>
+  <div>Count:{{results.length}}</div>
+  {{/resources}}
+  </div>
+</div>
+</div>
+  `, obj)))
+  // debugger;
+  // if(e.data.clear) document.querySelector('#target').innerHTML = '';
+  // if(e.data.message.length){
+  //   console.log(gform.create(`<div>message: ${e.data.message}</div>`))
+  //   // document.querySelector('#target').appendChild(_j.create(`<div>message: ${e.data.message}</div>`))
+  // }
+})
 
 
 toastr.options = {
@@ -676,6 +760,13 @@ Object.defineProperty(window,'help',{
   },
   configurable: false,
 });
+
+Object.defineProperty(debug,'appInstance',{
+  get: function(){
+    return cb.collections[0].getItems()[0]
+  },
+  configurable: false,
+});
 Object.defineProperty(debug,'app',{
   get: function(){
     return cb.collections[0].getItems()[0].appEngine
@@ -683,8 +774,15 @@ Object.defineProperty(debug,'app',{
   configurable: false,
 });
 Object.defineProperty(debug,'state',{
-  get: function(){
+  get: ()=>{
     return window.localStorage.getItem("debug") == 'true'
+  },
+  set: value=>{
+    value +='';
+    if(window.localStorage.getItem("debug") !== value){
+      window.localStorage.setItem("debug", value);
+      $g.emit('debug',{state:(value=='true')});
+    }
   },
   configurable: false,
 });

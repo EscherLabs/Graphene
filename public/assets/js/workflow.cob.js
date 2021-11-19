@@ -520,8 +520,6 @@ Cobler.types.collection = function(container) {
 				{label: 'Section Label (optional)', name:"label"},
 				{label: 'Type',type:"select",parse:false, name:"options_type",options:[{label:"Resource",value:"string"},{label:"Derived",value:"int"},{label:"Manual",value:"object"}],value:function(e){
 					if(e.event == 'initialized'){
-						debugger;
-
 						var result = "object";
 						if(typeof e.initial.parent.initialValue['max'] !== 'undefined' && !isNaN(e.initial.parent.initialValue['max'])){
 							result = "int";
