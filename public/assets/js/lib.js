@@ -1385,7 +1385,6 @@ return gform.renderString((this.limit>1)?`
       this.trigger('success',this, data)
       this.trigger('input',this,data)
     }.bind(this)
-    debugger;
     this.Dropzone = new Dropzone(this.el.querySelector("#"+this.id+'.dropzone'), {
       addedfile: function(file) {
         var data = this.options.formelement.get();
