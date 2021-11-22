@@ -4,11 +4,12 @@ Cobler.types.Workflow = function(container){
 	function get(){ return {widgetType:'Workflow',...item};}
 	function set(newItem){
     $.extend(item, newItem);
-    ({submission, workflow, instance_id, guid, user, resources} = item);
-    ({flow, form, methods} = workflow.version.code);
-    flowState = (_.find(flow,{name:workflow.configuration.initial})||flow[0]||{"actions": []});
+    ({submission, guid, user, resources} = item);
+    instance = item.workflow;
+    ({flow, form, methods} = instance.version.code);
+    flowState = (_.find(flow,{name:instance.configuration.initial})||flow[0]||{"actions": []});
     formData._flowstate = flowState.name;
-    rootPath = '/api/workflowsubmissions/'+instance_id;
+    rootPath = '/api/workflowsubmissions/'+instance.id;
     $g.emit('workflow_summary', {submission:submission})
     if(submission){
       gform.collections.update('files', _.map(submission.files||[], $g.formatFile))
@@ -16,6 +17,7 @@ Cobler.types.Workflow = function(container){
       formData._state = submission.data;
       let oldId = formData.id;
       formData.id = submission.id;
+      formData.data.instance = instance;
       if(typeof oldId !== 'undefined' && oldId !== submission.id){
         loadForm();
       }
@@ -253,6 +255,17 @@ Cobler.types.Workflow = function(container){
       updateRequiredFields(e.form);
 
     }));
+    
+    // gform.collections.on('change',(obj)=>{
+    //   let target = workflowForm.items.find(obj.collection);
+    //   if(target){
+    //     target.set(obj.manager.get(obj.collection))
+    //     target.trigger(['change', 'input'])
+    //   }
+    // })
+
+
+
     workflowForm.trigger('input')
     updateRequiredFields(workflowForm);
 
@@ -310,7 +323,7 @@ Cobler.types.Workflow = function(container){
       $g.waiting = "Updating Comment...";
       e.form.trigger('close')
       $.ajax({
-        url:'/api/workflowsubmissions/'+instance_id+'/save',
+        url:'/api/workflowsubmissions/'+instance.id+'/save',
         dataType : 'json', contentType: 'application/json', type: 'POST',
         data: JSON.stringify({...submission, ...e.form.get()}),
         success: submission=>{
@@ -335,9 +348,8 @@ Cobler.types.Workflow = function(container){
 		Title: {},
 		'Workflow ID': {type: 'select', options: '/api/groups/'+group_id+'/workflowinstances', format: {label: "{{name}}", value: "{{id}}"}},
 	}
-
-  var panelEL, ractive, submission, instance_id, rootPath, guid, user, resources, initialFormState={}, lastSynced, flowState, workflowForm, fileLoader, flow, form, methods,
-    workflow={configuration:{}}, 
+  var panelEL, ractive, submission, rootPath, guid, user, resources, initialFormState={}, lastSynced, flowState, workflowForm, fileLoader, flow, form, methods,
+    instance={configuration:{}}, 
     evalMethods = [],
     formData = {
       user:user,
@@ -425,7 +437,7 @@ Cobler.types.Workflow = function(container){
       return ractive.el;
   },
     load: function(){
-      formData.data.datamap = _.reduce(workflow.configuration.map, (datamap, item)=>{
+      formData.data.datamap = _.reduce(instance.configuration.map, (datamap, item)=>{
         datamap[item.name] = item.value;
         return datamap;
       },{})
@@ -484,20 +496,20 @@ Cobler.types.Workflow = function(container){
         }
       });
 
-      if(typeof instance_id == 'undefined'){return false;};
+      if(typeof instance.id == 'undefined'){return false;};
       this.fields['Workflow ID'].enabled = false;
       if(this.container.owner.options.disabled && get().enable_min) {
         set({collapsed:(Lockr.get(guid) || get()).collapsed});
         $(el).find('.widget').toggleClass('cob-collapsed', get().collapsed)
       }
-      if(typeof workflow !== 'undefined'){
+      if(typeof instance !== 'undefined'){
         this.load()
       }else{
         $.ajax({
-          url:'/api/workflowinstances/'+instance_id,
+          url:'/api/workflowinstances/'+instance.id,
           type: 'GET',
-          success  : function(workflow){
-            set({workflow:workflow})
+          success  : function(instance){
+            set({workflow:instance})
             this.load();
           }.bind(this),
           error:()=>{}
