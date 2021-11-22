@@ -272,8 +272,16 @@ function Cobler(options) {
 			EL = document.createElement('LI');
 		}
 		EL.className = 'slice';
+
+		EL.dataset.name = item.get().name +' - ('+item.get().widgetType+')';
 		EL.innerHTML = templates[item.template || this.options.itemContainer].render(item.get(), templates);
-		EL.getElementsByClassName(item.target || this.options.itemTarget)[0].innerHTML += item.render();
+		var component = item.render();
+		if(typeof component == "object" && component instanceof Node){
+			EL.querySelector('.'+(item.target || this.options.itemTarget)).append(component);
+		}
+		if(typeof component == "string"){
+			EL.getElementsByClassName(item.target || this.options.itemTarget)[0].innerHTML += item.render();
+		}
 		return EL;
 	}
 	function getNodeIndex(node) {

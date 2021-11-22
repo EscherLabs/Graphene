@@ -184,6 +184,10 @@ class AppInstanceController extends Controller
                 }
             }
         }
+
+        if(!empty($myApp->options) && !empty($myApp->options->template)){
+            $template =$myApp->options->template;
+        }
         if($myApp != null) {
             $renderer = new PageRenderer();
             return $renderer->render([

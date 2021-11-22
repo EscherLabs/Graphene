@@ -902,7 +902,7 @@ mainForm = function(){
     })
   }else{
     var formConfig = new Cobler.types[gform.types[form.type].base]();
-    $("#mainform").html(gform.renderString(accordion))
+    // $("#mainform").html(gform.renderString(accordion))
 
     $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
 		$('.panelValidation').toggle(!!_.find(formConfig.fields,{target:"#collapseValidation .panel-body"}));

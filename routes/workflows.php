@@ -3,6 +3,8 @@
 use App\App;
 
 Route::get('/workflow/{group}/{slug}', 'WorkflowInstanceController@run');
+Route::get('/wr/{renderer}/{group}/{slug}', 'WorkflowInstanceController@render');
+
 Route::get('/workflow/{group}','PageController@redirect')->middleware('no.save.session');
 
 

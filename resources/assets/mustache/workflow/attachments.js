@@ -16,7 +16,5 @@ workflow_report.attachments = `{{#files.length}}<div class="list-group">
         {{/files.length}}
         </div>
         {{^files}}
-        <center><b>
-          No files yet...click below or drop some files there to begin.
-        </b></center>
+        <b style="text-align:center">No files yet...click below or drop some files there to begin.</b>
         {{/files}}`;

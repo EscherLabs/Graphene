@@ -1,6 +1,5 @@
 function App() {
 	var router = (verb, name, data, callback) =>{
-		debugger;
 		var callback = callback || function(data) {
 		if(data.error) {
 				if (data.error.message) {

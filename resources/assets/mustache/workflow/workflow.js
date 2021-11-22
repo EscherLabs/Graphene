@@ -8,7 +8,21 @@ workflow_report.workflow = `
     <div class="panel panel-default" id="{{guid}}">
       <div class="panel-body">
 
-        <div class="header"></div>
+        <div class="header">{{>header}}</div>
+        {{#isContinue}}
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <b>Continuing with workflow that was previously started. <br><br>Click <a href="#" data-action="restart">here</a> to discard this data and start over.</b>
+            <hr>
+            <small class="pull-right">Last updated {{submission.updated_at.fromNow}}</small>
+            {{#submission}}
+            <dl class="dl-horizontal" style="margin-bottom: 0;">
+            <dt>Title</dt><dd>{{title}}</dd>
+            <dt>Comment</dt><dd>{{comment}}</dd>
+            </dl>
+            {{/submission}}
+        </div>
+        {{/isContinue}}
         <div>
           <!-- Nav tabs -->
           {{#allowFiles}}
@@ -33,8 +47,8 @@ workflow_report.workflow = `
           </div>
         </div>
         {{#allowFiles}}
-        </div>
         <div class="dropzone" id="uploader_{{guid}}"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+        </div>
         {{/allowFiles}}
       </div>
     </div>
@@ -70,8 +84,7 @@ workflow_report.workflow = `
     </div>
   </div>
   {{#allowFiles}}
-  </div>
-  <div class="dropzone" id="uploader_{{guid}}"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center>
+  <div class="dropzone" id="uploader_{{guid}}"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
   {{/allowFiles}}
 </div>
 {{/container}}`;

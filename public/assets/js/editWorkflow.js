@@ -194,6 +194,8 @@ mainForm = function(){
         })
         
       _.extend(workingForm, e.form.get())
+    }).on('destroyed',(e)=>{
+      e.form.el.innerHTML = "";
     })
 
   }

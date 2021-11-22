@@ -179,6 +179,7 @@ Cobler.types.Workflow = function(container){
       "id": item.guid,
       "data":formData,
       "name":"workflow",
+      "methods":evalMethods,
       "events":form.events||{},
       "actions": [
         {
@@ -416,11 +417,13 @@ Cobler.types.Workflow = function(container){
 		get: get,
 		set: set,
 		render: ()=>{
-      return gform.renderString(workflow_report.workflow, {
+      ractive = new Ractive({el: gform.create('<div></div>'), template: workflow_report.workflow, data:  {
         ...item,
         workflow_admin: group_admin,
-        allowFiles: (form.files && flowState.uploads), ...workflow_report}
-    )},
+        allowFiles: (form.files && flowState.uploads)
+      }, partials: workflow_report});
+      return ractive.el;
+  },
     load: function(){
       formData.data.datamap = _.reduce(workflow.configuration.map, (datamap, item)=>{
         datamap[item.name] = item.value;
@@ -440,9 +443,12 @@ Cobler.types.Workflow = function(container){
         eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(tformData,tformData.data)');
       })
 
-      initialFormState = new gform({fields: form.fields,private:true, data:
+      initialFormState
+      let tempForm = new gform({fields: form.fields,private:true, data:
           ((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](tformData):{})
-      }).get();
+      })
+      initialFormState = tempForm.get()
+      tempForm.destroy();
       
       lastSynced = (submission)?submission.data:{};
 
@@ -453,11 +459,12 @@ Cobler.types.Workflow = function(container){
       if(item.isContinue)$g.alert({content:"Continuing from data last updated {{updated_at.fromNow}}", status:"success"}, submission);
 
       loadForm()
+      $g.emit('loaded')
 
     },
 
 		initialize: function(el) {
-      ractive = new Ractive({el: this.container.elementOf(this).querySelector('.header'), template: workflow_report.header, data:  {}, partials: {}});
+      // ractive = new Ractive({el: this.container.elementOf(this).querySelector('.header'), template: workflow_report.header, data:  {}, partials: {}});
 
       panelEL = this.container.elementOf(this).querySelector('.panel');
 
@@ -522,7 +529,7 @@ Cobler.types.Workflow = function(container){
         _.each(e.data.action.split(' '),action=>{
           switch(action){
             case 'restart':
-              discard(true);
+              $g.confirm("Are you sure you want to discard the current data?",()=>(discard(true)));
               break;
             case 'new':
               create();;
@@ -534,7 +541,7 @@ Cobler.types.Workflow = function(container){
               addComment();
               break;
             case 'discard':
-              discard(false);
+              $g.confirm("Are you sure you want to discard the current data?",()=>(discard(false)));
               break;
           }
         })

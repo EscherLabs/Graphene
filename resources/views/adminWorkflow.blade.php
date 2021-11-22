@@ -236,7 +236,7 @@
   <script type='text/javascript' src='/assets/js/vendor/popper.min.js?cb={{ config("app.cache_bust_id") }}'></script>
   <script type='text/javascript' src='/assets/js/vendor/colorpicker.min.js?cb={{ config("app.cache_bust_id") }}'></script>
   <script type='text/javascript' src='/assets/js/editWorkflow.js?cb={{ config("app.cache_bust_id") }}'></script>
-  <script type='text/javascript' src='/assets/js/workflow.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type='text/javascript' src='/assets/js/form.cob.js?cb={{ config("app.cache_bust_id") }}'></script>
 @endsection
 
 @section('bottom_page_styles')

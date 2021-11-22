@@ -40,8 +40,9 @@ class PageRenderer {
             'partials_loader' => $partials_loader,
             'cache' => storage_path('cache/mustache'),
         ]);
-
-        $tpl = $m->loadTemplate($data['template']);
+            
+        $tpl = $m->loadTemplate(in_array($data['template'],array_keys((array)$site_templates->partials))?$data['template']:'main');
+        
         return response($tpl->render($data))
             ->header('Content-Type', 'text/html')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -103,6 +104,7 @@ class PageRenderer {
         if (!isset($data['template'])) {
             $render_data['template'] = 'main';
         } else{
+
             $render_data['template'] = $data['template'];
         }
         $this->set_defaults($render_data);

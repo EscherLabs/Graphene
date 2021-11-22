@@ -321,14 +321,23 @@ gformEditor = function(container){
 		mygform.on('manage',function(e){
 			var testForm = new gform(myform)
 			
-			if(e.form.get('name') == ""){
-				if(typeof testForm.find(e.form.get('label').toLowerCase().split(' ').join('_')) == 'undefined'){
-					e.form.find('name').update({value:e.form.get('label').toLowerCase().split(' ').join('_')})
-				}else{
-					e.form.find('name').update({value:gform.getUID()})
-				}
+			// if(e.form.get('name') == ""){
+			// 	if(typeof testForm.find(e.form.get('label').toLowerCase().split(' ').join('_')) == 'undefined'){
+			// 		e.form.find('name').update({value:e.form.get('label').toLowerCase().split(' ').join('_')})
+			// 	}else{
+			// 		e.form.find('name').update({value:gform.getUID()})
+			// 	}
+			// }
+			// container.update(mygform.toJSON(), this);
+
+
+			let targetField = e.form.find('name')
+			let {placeholder,value} = targetField;
+
+			if(value == "" && typeof e.form.find('label') !== 'undefined'){
+				targetField.set( (testForm.filter(placeholder).length == 1)?placeholder:gform.getUID())
+				container.update(e.form.get(), this);
 			}
-			container.update(mygform.toJSON(), this);
 
 			cb.deactivate();
 			path.push(e.form.get('name'));
@@ -336,16 +345,17 @@ gformEditor = function(container){
 		}.bind(this))
 
 		mygform.on('destroy',function(e){
+			debugger;
+
 			if(container.indexOf(this) !== -1){
 
 				var testForm = new gform(myform)
 
-				if(e.form.get('name') == "" && typeof e.form.get('label') !== 'undefined'){
-					if(typeof testForm.find(e.form.get('label').toLowerCase().split(' ').join('_')) == 'undefined'){
-						e.form.find('name').set(e.form.get('label').toLowerCase().split(' ').join('_'))
-					}else{
-						e.form.find('name').set(gform.getUID())
-					}
+				let targetField = e.form.find('name')
+				let {placeholder,value} = targetField;
+
+				if(value == "" && typeof e.form.find('label') !== 'undefined'){
+					targetField.set( (testForm.filter(placeholder).length == 1)?placeholder:gform.getUID())
 					container.update(e.form.get(), this);
 				}
 			}

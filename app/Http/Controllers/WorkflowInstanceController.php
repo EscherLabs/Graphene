@@ -141,11 +141,11 @@ class WorkflowInstanceController extends Controller
         }
     }
 
-    public function run($group, $slug = null, Request $request) {
-        return $this->render("main", $group, $slug, $request);
+    public function run(Request $request, $group, $slug = null, ) {
+        return $this->render($request, "main", $group, $slug);
     }
 
-    public function render($renderer = "main", $group, $slug, Request $request) {
+    public function render(Request $request, $template = "main", $group, $slug) {
         if(!is_numeric($group)) {
             $groupObj = Group::with('composites')->where('slug','=',$group)->first();
 			$group = $groupObj->id;
@@ -203,6 +203,9 @@ class WorkflowInstanceController extends Controller
         !empty($myWorkflow->configuration->instructions)){
             $layout = '<div class="col-lg-offset-2 col-lg-6 col-md-12 col-sm-12 cobler_container"></div><div class="col-lg-2 col-md-12 col-sm-12 cobler_container workflow_sidebar" style="position:sticky"></div></div>';
         }
+        if(!empty($myWorkflow->configuration->template)){
+            $template =$myWorkflow->configuration->template;
+        }
         $resources = $this->fetch($myWorkflow,$request,$current);
         if($myWorkflow != null) {
             $renderer = new PageRenderer();
@@ -235,6 +238,7 @@ class WorkflowInstanceController extends Controller
                 'id'=>$myWorkflow->id,
                 'resource'=>'workflow',
                 'name'=>$myWorkflow->name,
+                'template'=>$template
             ]);
         }
         abort(404,'Workflow not found');

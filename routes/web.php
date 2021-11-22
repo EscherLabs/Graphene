@@ -63,6 +63,7 @@ Route::group(['middleware' => ['custom.auth'],'prefix' => 'admin'], function () 
   Route::get('/appinstances/{app_instance}', 'AppInstanceController@admin')->middleware('can:get,app_instance');
 
   Route::get('/sites/{site}', 'SiteController@admin')->middleware('can:get,site');
+  Route::get('/sites/{site}/templates', 'SiteController@templates')->middleware('can:get,site');
 });
 
 Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function () {

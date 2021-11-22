@@ -320,13 +320,36 @@ body{
 .cobler_container{list-style:none;/*padding-left:0;*/}
 .cobler_container > li > .parent-hover{z-index: 10;opacity:.6;position:absolute;top:3px;right:3px;}
 .cobler_container > li{position: relative;display: block;}
-.cobler_container > li:hover{outline:dashed 1px #ccc;z-index: 1}
+.cobler_container > li:hover{outline:dashed 1px #ccc;z-index: 2}
 .cobler_container > li.sortable-chosen {outline:none;outline:dashed 1px #222;background:#fff;}
 .cobler_container > li.sortable-ghost {opacity: 1;border:solid 0px #ccc;}
 .cobler_container > li.sortable-ghost .parent-hover{display:none !important;}
 .cobler_select.cobler_container > li:before{content:'';z-index: 10; position: absolute; top: 0; bottom: 0; left: 0; right: 0;}
 .cobler_select.cobler_container > li.widget_active{outline: dashed 1px #222;z-index: 2;background:#FFFFF8;}
 .cobler_select.cobler_container > li.sortable-ghost:before{background:#fff;}
+
+.cobler_select.cobler_container > li.widget_active{outline: solid 2px #4ca8e9;z-index: 2;background:#FFFFF8;}
+
+.cobler_select.cobler_container > li:hover:after{opacity:.7;content: attr(data-name);background:#4ca8e9;z-index: 10; position: absolute;
+  padding: 2px 4px;
+  bottom:0;
+  right:0;
+  /* top: -25px;
+  left: -2px; */
+  color: #fff;
+  border-radius: 5px 0 0 0;
+}
+.cobler_select.cobler_container > li.widget_active:after{opacity:1;content: attr(data-name);background:#4ca8e9;z-index: 10; position: absolute;
+  padding: 2px 4px;
+  bottom:0;
+  right:0;
+  /* top: -25px;
+  left: -2px; */
+  color: #fff;
+  border-radius: 5px 0 0 0;
+}
+
+
 
 
 .cobler_container > li.widget_active{outline: dashed 1px #999;z-index: 2;background:#FFFFF8;}
@@ -376,10 +399,13 @@ display:none;
     cursor:move;
 }
 #editor .slice{
-  overflow: hidden;
+  /* overflow: hidden; */
   min-height: 34px;
 }
+#editor .cobler-li-content{
 
+  overflow: hidden;
+}
 li.widget_active{cursor:default}
 
 .note-editor.note-frame.fullscreen {
@@ -1142,10 +1168,25 @@ hr.thin{
   display: none;
 }
 
+/* .Workflow.widget .gform-footer,.Workflow.widget .header {
+  position: sticky;
+  margin: -15px;
+  padding: 15px;
+  background: #fff;
+}
+
+.Workflow.widget .header{
+  top: 122px;
+  z-index: 10;
+}
+.Workflow.widget .gform-footer{
+  bottom: 0;
+}
+.workflow_sidebar{top:140px} */
+
 .Workflow.widget #form center:only-child{
   display: block;
 }
-.workflow_sidebar{top:140px}
 .panel-body.workflow-required{padding-right: 10px;}
 .required-field {
   position:relative;

@@ -7,7 +7,6 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
 	workflowinstance.configuration = workflowinstance.configuration||{};
 	const {configuration={}, workflow={},version={}} = workflowinstance;
 	const {map=[], resources=[]} = workflow.code;
-
 	$.ajax({
 		url: '/api/workflows/'+workflowinstance.workflow_id+'/versions',
 		success: function(versions) {
@@ -90,9 +89,11 @@ $g.getData([root,'/assets/data/icons.json','/api/groups/'+group.id+'/endpoints']
                         }
                         return resource;
                     })}, actions:[],fields:[
+						
 					{columns:6,name:"initial",label:"Initial State", options:_.pluck(version.code.flow,'name'), type:"smallcombo"},
 					{columns:6,name:"title",label:"Title",placeholder:workflow.name},
-					{columns:12,name:"instructions",label:"Instructions",type:"textarea",placeholder:"Instructions to help filling out the form"},
+					{columns:9,name:"instructions",label:"Instructions",type:"textarea",placeholder:"Instructions to help filling out the form"},
+					{columns:3,name:"template",label:"Template",type:"smallcombo",options:"/admin/sites/"+workflow.site_id+"/templates",value:"main"},
                     {...flagField, 
 						name: "suppress_emails",
 						title: `Suppress Default Emails

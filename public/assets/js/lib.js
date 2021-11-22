@@ -29,7 +29,7 @@ modal = (options, data) => {
         value:$g.render(options.content,_.extend({}, options.partials, data))
       },
       ...(options.fields||[])],
-    actions:(!!options.footer)?[]:[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}],
+    actions:(!!options.footer)?[]:options.actions||[{type:'cancel',label:'<i class="fa fa-times"></i> Close',"modifiers": "btn btn-default pull-right"}],
 
   }).modal().on('cancel', e => {
     e.form.dispatch('close');
@@ -179,6 +179,12 @@ let api =  {
    return timer;
  },
  modal:modal,
+ confirm:(message,action)=>{
+  $g.modal({title:'Confirm',content: message, actions: [
+    {type:'save',label:'<i class="fa fa-check"></i> Ok',"modifiers": "btn btn-primary pull-right"},
+    {type:'cancel',label:'<i class="fa fa-times"></i> Cancel',"modifiers": "btn btn-default pull-right"}
+  ]}).on('save',(e)=>{e.form.destroy();action(e)})
+ },
  // getID:generateUUID,
  grid:GrapheneDataGrid,
  collections: gform.collections,
@@ -282,17 +288,11 @@ window.addEventListener('storage', (event) => {
         let source = event.url.split(event.srcElement.location.origin)[1]
         // let oldVal = JSON.parse(event.oldValue);
         let newVal = JSON.parse(event.newValue);
-        // debugger;
-        //_.differenceWith([_.omit(newVal,'id')], [_.omit(oldVal,'id')], _.isEqual);
-
 
           $g.emit('broadcast', {...newVal, source:event.url.split(event.srcElement.location.origin)[1]});
       }
   }
 });
-
-
-
 return api;
 
 }({broadcast:{app:"custom"}})
@@ -300,8 +300,10 @@ return api;
 $g.on('load',e=>{
   if(window.localStorage.getItem("_gb") !== null && window.localStorage.getItem("_gb") !== ""){
       $g.emit('broadcast', JSON.parse(window.localStorage.getItem("_gb")));
+      $g.message = "";
   }
 })
+
 $g.on('broadcast', (e)=> {
   if('action' in e.data){
     switch(e.data.action){
@@ -313,38 +315,42 @@ $g.on('broadcast', (e)=> {
   }
 })
 
-
 $g.on('loaded debug', (e)=> {
-
   var temp = document.querySelector('#debugtools') 
   if(temp)document.body.removeChild(temp)
-  if(!debug.state || typeof resource_type == 'undefined' || resource_type !== 'app' || typeof cb == 'undefined')return;
+  if(!debug.state || typeof resource_type == 'undefined' || ['app','workflow'].indexOf(resource_type)<0 || typeof cb == 'undefined')return;
+  switch(resource_type){
+    case 'app':
+      obj = {resources:_.reduce(debug.app.config.resources,(result, resource)=>{
+        result.push({results:debug.app.data[resource.name],...resource});
+        return result;
+      },[])};
 
-obj = {resources:_.reduce(debug.app.config.resources,(result, resource)=>{
-  result.push({results:debug.app.data[resource.name],...resource});
-  return result;
-},[])};
-debugger;
+ 
+    case 'workflow':
+      obj = {};
+      break;
+  }
   document.body.append(gform.create(gform.renderString(`
-<div id="debugtools" style="position:fixed;bottom:0;right:0;width: 400px;margin-bottom: 0;" class="panel panel-default">
-<div class="panel-heading" role="tab" id="headingTools">
-  <h4 class="panel-title">
-    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
-Tools
-    </a>
-  </h4>
-</div>
-<div id="collapseTools" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTools">
-  <div class="panel-body">
-  {{#resources}}
-  <h4>{{name}}</h4>
-  <span class="muted">{{path}}</span>
-  <div>Count:{{results.length}}</div>
-  {{/resources}}
+  <div id="debugtools" style="position:fixed;bottom:0;right:0;width: 400px;margin-bottom: 0;" class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingTools">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTools" aria-expanded="false" aria-controls="collapseTools">
+  Tools
+      </a>
+    </h4>
   </div>
-</div>
-</div>
-  `, obj)))
+  <div id="collapseTools" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTools">
+    <div class="panel-body">
+    {{#resources}}
+    <h4>{{name}}</h4>
+    <span class="muted">{{path}}</span>
+    <div>Count:{{results.length}}</div>
+    {{/resources}}
+    </div>
+  </div>
+  </div>`,
+obj)))
   // debugger;
   // if(e.data.clear) document.querySelector('#target').innerHTML = '';
   // if(e.data.message.length){
@@ -761,7 +767,7 @@ Object.defineProperty(window,'help',{
   configurable: false,
 });
 
-Object.defineProperty(debug,'appInstance',{
+Object.defineProperty(debug,'instance',{
   get: function(){
     return cb.collections[0].getItems()[0]
   },
@@ -773,6 +779,14 @@ Object.defineProperty(debug,'app',{
   },
   configurable: false,
 });
+Object.defineProperty(debug,'workflow',{
+  get: function(){
+    return cb.collections[0].getItems()[0]
+  },
+  configurable: false,
+});
+
+
 Object.defineProperty(debug,'state',{
   get: ()=>{
     return window.localStorage.getItem("debug") == 'true'
@@ -786,6 +800,11 @@ Object.defineProperty(debug,'state',{
   },
   configurable: false,
 });
+if(debug.state){// && typeof resource_type !== 'undefined' && resource_type == 'app'){
+  window.addEventListener('error', function(event) {
+    $g.alert({content:event.message, title:"ERROR",status: 'error'})
+   })
+}
 
 
 gform.types['textarea'] = _.extend({}, gform.types['textarea'], {
@@ -1245,6 +1264,9 @@ defaults:{format:{uri: '{{{name}}}',options:[]}},
       }
     })
   },
+  destroy:function(){
+    this.Dropzone.destroy();
+  },
   get: function() {
     if(!('el' in this)){return this.internalValue};
 
@@ -1363,6 +1385,7 @@ return gform.renderString((this.limit>1)?`
       this.trigger('success',this, data)
       this.trigger('input',this,data)
     }.bind(this)
+    debugger;
     this.Dropzone = new Dropzone(this.el.querySelector("#"+this.id+'.dropzone'), {
       addedfile: function(file) {
         var data = this.options.formelement.get();

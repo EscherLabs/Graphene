@@ -29,6 +29,11 @@ class SiteController extends Controller
         return $site;
     }
 
+    public function templates(Request $request, Site $site)
+    {   
+        return array_keys((array)$site->templates->partials);
+    }
+
     public function create(Request $request)
     {
         $this->validate($request,['domain'=>['required']]);
