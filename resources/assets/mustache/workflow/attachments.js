@@ -4,7 +4,7 @@ workflow_report.attachments = `{{#files.length}}<div class="list-group">
         <div style="outline:dashed 1px #ccc;display:inline-block;text-align:center;width:50px;;height:50px;{{^icon}}background-image: url('{{path}}');background-size: contain;background-repeat: no-repeat;background-position: center;{{/icon}}position:absolute;top:5px;left:5px">
         {{{icon}}}
         </div>{{name}}
-        <div style="margin-top:5px" class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
+        <div class="text-muted">{{mime_type}}<span class="pull-right">{{date}}</span></div>
           {{^deleted_at}}
           <div style="position: absolute;right: 10px;top: 5px;" class="btn-group parent-hover">
             <span data-id="{{id}}" data-action="edit" class="edit-item btn btn-default fa fa-pencil" data-title="Edit"></span>

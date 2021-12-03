@@ -356,8 +356,10 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
         $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
         $state_data['datamap'] = $state_data['assignment'] = [];
-        foreach($myWorkflowInstance->configuration->map as $resource){
-            $state_data['datamap'][$resource->name] = $resource->value;
+        if(isset($myWorkflowInstance->configuration->map)){
+            foreach($myWorkflowInstance->configuration->map as $resource){
+                $state_data['datamap'][$resource->name] = $resource->value;
+            }
         }
         $state_data['status'] = $workflow_submission->status;
         $state_data['state'] = $state->name;

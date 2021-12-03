@@ -946,7 +946,7 @@ gform.types['user']= _.extend({}, gform.types['smallcombo'], {
       }
 		}
 	},
-  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{unique_id}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
+  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}}<span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{unique_id}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
 })
 gform.types['user_id']= _.extend({}, gform.types['smallcombo'], {
   toString: function(name,display){
@@ -964,7 +964,7 @@ gform.types['user_id']= _.extend({}, gform.types['smallcombo'], {
       }
 		}
 	},
-  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:function(item){return item.id}, display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}, template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'}
+  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}}<span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:function(item){return item.id}, display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}, template:'{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}'}
 })
 gform.types['user_email']= _.extend({}, gform.types['user'], {
   toString: function(name,display){
@@ -982,7 +982,7 @@ gform.types['user_email']= _.extend({}, gform.types['user'], {
       }
 		}
 	},
-  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}} <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{email}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
+  defaults:{strict:true,search:"/api/users/search/{{search}}{{value}}",format:{title:'{{{label}}}{{^label}}User{{/label}}<span class="text-success pull-right">{{value}}</span>',label:"{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",value:"{{email}}", display:'{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>'}}
 })
 gform.types['group']= _.extend({}, gform.types['smallcombo'], {
   toString: function(name,display){

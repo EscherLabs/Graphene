@@ -20,7 +20,7 @@ $g.getData([url, '/api/groups'], function(endpoints, groups){
 				// {label:'Google Redirect URL', name:'google_redirect', enabled:false, type:'text',show:{matches:{name:'type',value:'google_sheets'}}},
 				{label:'Username', required: true,show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
 				{label:'Password', 'name':'secret', required: true, show:[{type:'matches',name:'type',value:'http_basic_auth'}]},
-				{label:'Content Type', 'name':'content_type', required: true, show:[{type:'matches',name:'type',value:'http_basic_auth'}],type:"select",options:[
+				{label:'Content Type', 'name':'content_type', required: true,type:"select",options:[
 					{label:"Form Data (application/x-www-form-urlencoded)",value:'application/x-www-form-urlencoded'},
 					{label:"JSON (application/json)",value:'application/json'},
 					{label:"XML (application/xml)",value:'application/xml'},
