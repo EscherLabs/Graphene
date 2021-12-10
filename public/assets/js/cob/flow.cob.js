@@ -175,7 +175,7 @@ Cobler.types.Workflow = function(container){
     ractive.set(item);
     evalMethods = [];
     _.each(methods, (item, index)=>{
-      eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n}.bind(formData,formData.data)');
+      eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n return "";}.bind(formData,formData.data)');
     })
     var formSetup = {
       "id": item.guid,
@@ -212,7 +212,6 @@ Cobler.types.Workflow = function(container){
 
       return false;
     }))
-debugger;
     formSetup.data._state = {...formSetup.data._state, ...((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](formData):{})}
 
     if(submission != null){

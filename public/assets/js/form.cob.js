@@ -345,7 +345,6 @@ gformEditor = function(container){
 		}.bind(this))
 
 		mygform.on('destroy',function(e){
-			debugger;
 
 			if(container.indexOf(this) !== -1){
 
