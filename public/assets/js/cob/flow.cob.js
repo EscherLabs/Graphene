@@ -4,8 +4,8 @@ Cobler.types.Workflow = function(container){
 	function get(){ return {widgetType:'Workflow',...item};}
 	function set(newItem){
     $.extend(item, newItem);
-    ({submission, guid, user, resources} = item);
-    instance = item.workflow;
+    ({submission, guid, user, resources, workflow: instance} = item);
+    // instance = item.workflow;
     ({flow, form, methods} = instance.version.code);
     flowState = (_.find(flow,{name:instance.configuration.initial})||flow[0]||{"actions": []});
     formData._flowstate = flowState.name;
@@ -212,7 +212,7 @@ Cobler.types.Workflow = function(container){
 
       return false;
     }))
-
+debugger;
     formSetup.data._state = {...formSetup.data._state, ...((form.resource in formData.data.resources)?formData.data.resources[form.resource]:(form.resource in evalMethods)?evalMethods[form.resource](formData):{})}
 
     if(submission != null){

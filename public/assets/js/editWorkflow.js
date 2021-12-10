@@ -830,7 +830,7 @@ function drawForm(name){
    {target:"#collapseBasic .panel-body", name: "name",inline:false, label: "Name"},
    {target:"#collapseBasic .panel-body", name: "status",inline:false, label: "Status",type:"select",options:["open","closed"]},
     {target:"#collapseBasic .panel-body", name: "uploads",type:'checkbox',inline:false,help:"NOTE: Uploads must also be turned on in the form",label: "Allow File uploads/management in this state",show:[{name:"hasLogic",value:false,type:"matches"}]},
-    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: {min:0}},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
+    {target:"#collapseOnenter .panel-body", name: "onEnter",label:false, type: "fieldset", fields: taskForm, array: true},// show:[{type: "matches", name: "hasOnEnter", value: true}]},
     {target:"#collapseOnleave .panel-body", name: "onLeave",label:false, type: "fieldset", fields: taskForm, array: true},// show: [{type: "matches", name: "hasOnLeave", value: true}]},
     (!formConfig.data.logic ? {target:"#collapseActions .panel-body", 
     name: "actions",show:[{name:"hasLogic",value:false,type:"matches"}], label: false, type: "fieldset", fields: [
