@@ -19,7 +19,7 @@ workflow_report.workflow_summary = `
 <hr>
 {{/allow_multiple_new}}
 {{#instructions}}
-<div class="callout callout-warning">{{instructions}}</div>
+<div class="callout callout-warning">{{{instructions}}}</div>
 {{/instructions}}
 {{/workflow.configuration}}
 {{#workflow.configuration.display_required_list}}
