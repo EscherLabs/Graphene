@@ -1025,7 +1025,7 @@ gform.collections.add('map_emails', _.where(attributes.code.map, {type: "email"}
 gform.collections.add('map_groups', _.where(attributes.code.map, {type: "group"}))
 gform.collections.add('flowstates', _.pluck(flow_states, 'name'))
 gform.collections.add('resources', _.pluck(attributes.code.resources, 'name'))
-var temp = new gform(attributes.code.form);
+var temp = new gform(attributes.code.form||{});
 gform.collections.add('form_users', temp.filter({type:"user"},20));
 gform.collections.add('form_groups', temp.filter({type:"group"},20));
 gform.collections.add('methods', _.map(_.pluck(attributes.code.methods,'name'),function(item,i,j){
