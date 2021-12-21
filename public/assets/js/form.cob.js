@@ -310,6 +310,7 @@ gformEditor = function(container){
 		}
 		mygform.on('change:label',function(e){
 			if(e.field.name == 'label' && e.form.get('name') == ""){
+				debugger;
 				e.form.find('name').update({placeholder:e.form.get('label').toLowerCase().split(' ').join('_')})
 			}		
 		}.bind(this))
