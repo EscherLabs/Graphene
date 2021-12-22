@@ -1092,7 +1092,7 @@ var taskForm = [
   {name: "verb",columns:4, label: "Verb", type: "select", options: ["GET","POST","PUT","DELETE"],show: [{type: "matches", name: "task", value: 'resource'}]},
   {name: "resource", type: "select", label:"Resource",placeholder: "None", options:"resources", show: [{type: "matches", name: "task", value: 'api'}]},
   {type:"output","value":"This task purges all values of a specified name from the form data, and throughout the workflow history",show: [{"type": "matches","name": "task","value": "purge_fields_by_name"}]},
-  {name:"dataset",label:"Data",type:"fieldset", array:{max:100},show: [{type: "matches", name: "task", value: 'resource'}],fields:[
+  {name:"dataset",label:"Data",type:"fieldset", array:{min:1,max:100},show: [{type: "matches", name: "task", value: 'resource'}],fields:[
     {label:"Key"},
     {label:"Value"}
   ]},
