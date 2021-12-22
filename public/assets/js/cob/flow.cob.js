@@ -18,8 +18,10 @@ Cobler.types.Workflow = function(container){
       let oldId = formData.id;
       formData.id = submission.id;
       formData.data.instance = instance;
-      if(typeof oldId !== 'undefined' && oldId !== submission.id){
-        loadForm();
+      if(typeof formData.id !== 'undefined' && oldId !== submission.id){
+       
+        if(typeof ractive !== 'undefined') loadForm();
+
       }
     }
     if(typeof ractive !== 'undefined')ractive.set(item);
@@ -158,6 +160,7 @@ Cobler.types.Workflow = function(container){
     if(message.status || !submission || typeof submission.id == 'undefined'){
       $g.waiting = 'Waiting...';
       saveFlow(newFormData || workflowForm.get(), response=>{
+        debugger;
         message.status = 'success';
         // initialFormState = response.data;
         lastSynced = response.data;
@@ -172,7 +175,9 @@ Cobler.types.Workflow = function(container){
   }
   
   var loadForm = ()=>{
-    ractive.set(item);
+    if(typeof ractive !== 'undefined')ractive.set(item);
+
+    // ractive.set(item);
     evalMethods = [];
     _.each(methods, (item, index)=>{
       eval('evalMethods["method_'+index+'"] = function(data,e){'+item.content+'\n return "";}.bind(formData,formData.data)');

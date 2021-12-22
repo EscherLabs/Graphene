@@ -52,20 +52,20 @@ class WorkflowSubmissionActionController extends Controller {
         }
         $myWorkflowInstance->findVersion();
         $current_user = Auth::check()?Auth::user():(new User);
-        if($save_or_submit === 'save' && $request->has('id')){
-            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
-                ->where('workflow_instance_id',$workflow_instance->id)
-                ->find($request->input('id'));
-        }else{
-            // Get any existing workflow submissions with a 'new' status
+        // if($save_or_submit === 'save' && $request->has('id')){
             // $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
             //     ->where('workflow_instance_id',$workflow_instance->id)
-            //     ->where('status','new')->orderBy('created_at','desc')->first();
+            //     ->where('status','new')->find($request->input('id'));
+        // }else{
+            // Get any existing workflow submissions with a 'new' status
+            $workflow_submission = WorkflowSubmission::where('user_id',$current_user->id)
+                ->where('workflow_instance_id',$workflow_instance->id)
+                ->where('status','new')->find($request->input('id'));
 
-            // if (is_null($workflow_submission)) {
+            if (is_null($workflow_submission)) {
                 $workflow_submission = new WorkflowSubmission();
-            // }
-        }
+            }
+        // }
 
         $workflow_submission->workflow_id = $myWorkflowInstance->workflow_id;
         $workflow_submission->workflow_instance_id = $myWorkflowInstance->id;
