@@ -280,11 +280,17 @@ Cobler.types.Workflow = function (container) {
         $("#uploader_" + item.guid).html('');
         fileLoader = new Dropzone("#uploader_" + item.guid, {
           dictDefaultMessage: "Drop files here to upload attatchments", timeout: 60000, url: "/api/workflowsubmissions/" + submission.id + "/files", init: function () {
+            this.on("processing", file => {
+              this.options.url = "/api/workflowsubmissions/" + submission.id + "/files";
+            });
             this.on("success", update);
           }
         });
       }
       update();
+    }
+    else {
+
     }
     $('.f_' + guid).off('click');
     $('.f_' + guid).on('click', '[data-id]', e => {
@@ -342,6 +348,7 @@ Cobler.types.Workflow = function (container) {
             if (e.event == 'save') {
               message.status = 'success';
             } else {
+              if (fileLoader) fileLoader.removeAllFiles();
               create();
             }
           },
