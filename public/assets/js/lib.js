@@ -35,7 +35,7 @@ modal = (options, data) => {
     e.form.dispatch('close');
     e.form.destroy();
   });
-  mm.ref = $(mm.el);
+  mm.ref = mm;//$(mm.el);
   return mm;
 }
 
