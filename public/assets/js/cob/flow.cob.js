@@ -91,7 +91,6 @@ Cobler.types.Workflow = function (container) {
   function processAction(e) {
     var action = _.find(flowState.actions, { name: e.field.name });
     if (action.validate !== false && !workflowForm.validate(true)) {
-      debugger;
       if (action.invalid_submission !== true || !confirm(gform.renderString("This form has the following errors:\r\n\r\n{{#errors}}{{.}}\r\n{{/errors}}\r\nWould you like to submit anyway?", { errors: _.values(e.form.errors) }))) {
         toastr.clear();
         $g.alert({ content: "Form invalid, please check for errors!", title: "ERROR", status: 'error' })
@@ -161,7 +160,6 @@ Cobler.types.Workflow = function (container) {
     if (message.status || !submission || typeof submission.id == 'undefined') {
       $g.waiting = 'Waiting...';
       saveFlow(newFormData || workflowForm.get(), response => {
-        debugger;
         message.status = 'success';
         // initialFormState = response.data;
         lastSynced = response.data;
