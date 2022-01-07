@@ -296,7 +296,7 @@ function editMobileOrder(){
 
 	mymodal = modal({title: "Mobile Layout", content: templates.listing.render({widgets:tempdata} ), footer: '<div class="btn btn-success save-mobile">Save</div>'})
 
-	Sortable.create($(mymodal.ref).find('.modal-content ol')[0], {draggable:'li'})
+	Sortable.create($(mymodal.ref.container).find('#sorter')[0], {draggable:'li'})
 		
 	$('.save-mobile').on('click', function(e){
 		new_mobile_order = _.map($(mymodal.ref).find('.modal-content ol').find('li'), function(item){return item.dataset.guid});

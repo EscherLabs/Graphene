@@ -33,7 +33,7 @@ $g.getData([url, '/assets/data/icons.json', '/api/groups', '/api/apps' + ((resou
 		.on('sort', e => {
 			var tempdata = _.map(e.grid.models, function (item) { return item.attributes }).reverse();//[].concat.apply([],pageData)
 			mymodal = modal({ title: "Sort App Instances", content: templates.sortlist.render({ items: tempdata }, templates), footer: '<div class="btn btn-success save-sort">Save</div>' });
-			Sortable.create($(mymodal.ref).find('.modal-content ol')[0], { draggable: 'li' });
+			Sortable.create($(mymodal.ref.container).find('#sorter')[0], { draggable: 'li' });
 		})
 		.on('model:version', e => {
 			$.ajax({
