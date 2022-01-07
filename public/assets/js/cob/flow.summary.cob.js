@@ -44,7 +44,6 @@ Cobler.types.WorkflowSummary = function (container) {
       $('.action-bar').on('click', '[data-action]', e => {
         $g.emit('workflow_action', e.currentTarget.dataset);
       })
-      debugger;
       $(this.container.elementOf(this)).on('click', '[data-id]', e => {
         $g.emit('workflow_select', _.find(this.get().all, { id: parseInt(e.currentTarget.dataset.id) }));
       })
