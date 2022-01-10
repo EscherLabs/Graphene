@@ -194,28 +194,40 @@ $g = function (options) {
     engines: {},
     formatDates: function (data) {
       if (data == null) return {};
-      if (typeof data.created_at == 'string') {
-        var cat = moment(data.created_at);
-        data.created_at = {
-          original: data.created_at,
-          time: cat.format('h:mma'),
-          date: cat.format('MM/DD/YY'),
-          fromNow: cat.fromNow()
+      return _.reduce(['created_at', 'updated_at', 'deleted_at', 'opened_at'], (data, date) => {
+        if (typeof data[date] == 'string') {
+          let formated_date = moment(data[date]);
+          data[date] = {
+            original: data[date],
+            time: formated_date.format('h:mma'),
+            date: formated_date.format('MM/DD/YY'),
+            fromNow: formated_date.fromNow()
+          }
         }
+        return data;
+      }, data)
+      // if (typeof data.created_at == 'string') {
+      //   var cat = moment(data.created_at);
+      //   data.created_at = {
+      //     original: data.created_at,
+      //     time: cat.format('h:mma'),
+      //     date: cat.format('MM/DD/YY'),
+      //     fromNow: cat.fromNow()
+      //   }
 
-        data.date = data.created_at.original;
-      }
-      if (typeof data.updated_at == 'string') {
+      //   data.date = data.created_at.original;
+      // }
+      // if (typeof data.updated_at == 'string') {
 
-        var uat = moment(data.updated_at);
-        data.updated_at = {
-          original: data.updated_at,
-          time: uat.format('h:mma'),
-          date: uat.format('MM/DD/YY'),
-          fromNow: uat.fromNow()
-        }
-      }
-      return data;
+      //   var uat = moment(data.updated_at);
+      //   data.updated_at = {
+      //     original: data.updated_at,
+      //     time: uat.format('h:mma'),
+      //     date: uat.format('MM/DD/YY'),
+      //     fromNow: uat.fromNow()
+      //   }
+      // }
+      // return data;
     },
     formatFile: file => {
       switch (file.mime_type) {

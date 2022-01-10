@@ -24,6 +24,6 @@ workflow_report.report = `<div>
         {{>files}}
       </div>
       {{#current_state.uploads}}
-      <div class="dropzone" id="myId"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
+      <div class="dropzone" id="uploader_{{original.workflow_submission_id}}"><center><i class="fa fa-spinner fa-spin" style="font-size:60px;margin:40px auto;color:#eee"></i></center></div>
       {{/current_state.uploads}}
       {{/workflow.instance.version.code.form.files}}`;

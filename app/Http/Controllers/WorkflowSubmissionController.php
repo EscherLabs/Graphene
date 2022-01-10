@@ -139,7 +139,7 @@ class WorkflowSubmissionController extends Controller {
 
     public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
         if (!Auth::check()) { abort(403); }
-        $submissions_raw = WorkflowSubmission::select('assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','workflow_version_id')
+        $submissions_raw = WorkflowSubmission::select('assignment_id','assignment_type','created_at','updated_at','opened_at','id','state','status','user_id','workflow_version_id')
             ->with('user')
             ->with(['workflowVersion' => function($query) {
                 $query->select('id','summary','updated_at');
@@ -151,7 +151,7 @@ class WorkflowSubmissionController extends Controller {
             ->orderBy('created_at')->get();
         $submissions = [];
         foreach($submissions_raw as $submission_raw) {
-            $submission = $submission_raw->only(['assignment_id','assignment_type','created_at','updated_at','id','state','status','user_id','user','workflowVersion']);
+            $submission = $submission_raw->only(['assignment_id','assignment_type','created_at','updated_at','opened_at','id','state','status','user_id','user','workflowVersion']);
             if ($submission_raw->assignment_type === 'user') {
                 $submission['assignee'] = $submission_raw->assignment_user;
             } else if ($submission_raw->assignment_type === 'group') {
@@ -165,7 +165,7 @@ class WorkflowSubmissionController extends Controller {
     public function list_my_instance_workflow_submissions(Request $request, WorkflowInstance $workflow_instance) {
         if (!Auth::check()) { abort(403); }
         $submissions = WorkflowSubmission::
-            select('assignment_id','assignment_type','created_at','updated_at','id','state','status','data')
+            select('assignment_id','assignment_type','created_at','updated_at','opened_at','id','state','status','data')
             ->with('files')
             ->where('user_id',Auth::user()->id)
             ->where('workflow_instance_id','=',$workflow_instance->id)

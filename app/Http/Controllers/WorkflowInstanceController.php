@@ -315,6 +315,7 @@ class WorkflowInstanceController extends Controller
                 'email' => $submission->user->email,
                 'created_at' => $submission->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
+                'opened_at' => $submission->opened_at->format('Y-m-d H:i:s'),
                 'report_url' => '=HYPERLINK("'.URL::to('/workflows/report/'.$submission->id).'","Open Report")'
             ]);
             $all_keys = array_unique(array_merge($all_keys,array_keys($data)),SORT_REGULAR);
@@ -345,6 +346,7 @@ class WorkflowInstanceController extends Controller
             ["type"=>"text","name"=>"_w_submitter","label"=>"Submitter",],
             ["type"=>"text","name"=>"_w_email","label"=>"Email",],
             ["type"=>"text","name"=>"_w_created_at","label"=>"Created"],
+            ["type"=>"text","name"=>"_w_opened_at","label"=>"Opened"],
             ["type"=>"text","name"=>"_w_updated_at","label"=>"Updated"],
         ];
         $submissions = WorkflowSubmission::with('workflowVersion')
@@ -365,6 +367,7 @@ class WorkflowInstanceController extends Controller
                 '_w_submitter' => $submission->user->first_name.' '.$submission->user->last_name,
                 '_w_email' => $submission->user->email,
                 '_w_created_at' => $submission->created_at->format('Y-m-d H:i:s'),
+                '_w_opened_at' => $submission->opened_at->format('Y-m-d H:i:s'),
                 '_w_updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
             ];
             $data = array_merge($flat,$workflow_metadata);
