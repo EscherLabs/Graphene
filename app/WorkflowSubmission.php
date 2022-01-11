@@ -12,6 +12,7 @@ class WorkflowSubmission extends Model
     protected $casts = ['workflow_instance_configuration'=>'object'];
     protected $appends = ['history'];
     protected $hidden = ['history']; // Don't share the full history
+    protected $dates = ['opened_at'];
 
     protected function serializeDate(\DateTimeInterface $date) {
         return $date->format('Y-m-d H:i:s');

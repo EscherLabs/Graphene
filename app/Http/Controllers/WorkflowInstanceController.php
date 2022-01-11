@@ -367,7 +367,7 @@ class WorkflowInstanceController extends Controller
                 '_w_submitter' => $submission->user->first_name.' '.$submission->user->last_name,
                 '_w_email' => $submission->user->email,
                 '_w_created_at' => $submission->created_at->format('Y-m-d H:i:s'),
-                '_w_opened_at' => $submission->opened_at->format('Y-m-d H:i:s'),
+                '_w_opened_at' => ($submission->opened_at == null)?'':$submission->opened_at->format('Y-m-d H:i:s'),
                 '_w_updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
             ];
             $data = array_merge($flat,$workflow_metadata);

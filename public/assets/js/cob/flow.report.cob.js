@@ -147,8 +147,9 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                 }
                 return newEvent
               })
+              // mappedData.original = data[data.length - 1];
+              mappedData.original = _.findLast(data, ({ log, status }) => (log == true && status == "open"))
 
-              mappedData.original = data[data.length - 1];
               mappedData.latest = _.find(data, { log: true });
               mappedData.datamap = {};
               _.each(mappedData.workflow.instance.configuration.map, function (item) {

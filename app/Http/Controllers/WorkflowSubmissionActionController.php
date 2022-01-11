@@ -282,7 +282,7 @@ class WorkflowSubmissionActionController extends Controller {
     }
     
     // 01/14/2021, AKT -  Added a new parameter with a default value for automated workflow actions
-    public function action(WorkflowSubmission $workflow_submission, Request $request,$is_internal=false){
+    public function action(WorkflowSubmission $workflow_submission, Request $request, $is_internal=false){
         //01/20/2021, AKT - Added the code below to check if the actions is taken internally
         //If not, then check for authentication
         // This will be called multiple times when calling in logic blocks
@@ -327,7 +327,9 @@ class WorkflowSubmissionActionController extends Controller {
             $workflow_submission->status = $state->status;
         }else{
             $workflow_submission->status = 'open';
-        }             
+        }          
+        if($previous_status != 'open' && $workflow_submission->status == 'open' && $workflow_submission->opened_at == null)   
+        $workflow_submission->opened_at = now();
 
         $state_data = [];
         $state_data['id'] = $workflow_submission->id;
