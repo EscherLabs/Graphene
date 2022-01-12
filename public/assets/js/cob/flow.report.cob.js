@@ -158,16 +158,40 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
 
               // if(this.get().is_assigned){
               mappedData.actions = _.filter((_.find(this.get().options.workflow_version.code.flow, { name: this.get().options.state }) || { "actions": [] }).actions, function (is_assigned, action) {
+                let response = true;
+                if ('show' in action) {
+                  gform.processConditions.call(action, action['show'], (result, e) => {
+                    debugger;
+                    e.field.display = result;
+                  }, {
+                    _lookup: function (data, field, args, _lookup) {
+
+                      var states = _.map(data.history, function (item) { return item.state; })
+                      states.push(data.workflow.instance.configuration.initial)
+                      var log = _.find(data.history, { log: true });
+
+                      let stuff = {
+                        _state: log.data,
+                        _flowstate: log.state,
+                        _flowstate_history: _.uniq(_.compact(states))
+                      };
+
+                      return { value: _.selectPath(stuff, '_state.' + args.name) }
+                    }.bind(null, mappedData)
+
+                  })
+                  response = action.display;
+                }
                 if (typeof action.assignment == 'undefined') {
-                  if (is_assigned) { return true; }
+                  if (is_assigned) { return response; }
                 } else {
                   if (action.assignment.type == "user") {
                     if (gform.m(action.assignment.id, mappedData) == mappedData.actor.unique_id.toString()) {
-                      return true;
+                      return response;
                     }
                   } else if (action.assignment.type == "group") {
                     if (mappedData.actor.groups.indexOf(parseInt(gform.m(action.assignment.id, mappedData))) >= 0) {
-                      return true;
+                      return response;
                     }
                   }
                 }
@@ -176,6 +200,9 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
 
               }.bind(null, this.get().is_assigned))
               // }
+              // gform.processConditions.call(field, field.edit, function (result) {
+              // debugger;
+
               mappedData.is.actionable = !!mappedData.actions.length
 
               /* problem here  */

@@ -728,6 +728,7 @@ function drawForm(name) {
 
 
   formConfig = {
+    name: "state_editor",
     actions: [{ target: "#display", type: "button", name: "delete", action: "delete", modifiers: "btn btn-danger pull-left", label: '<i class="fa fa-times"></i> Delete' }, { target: "#display", type: "button", modifiers: "btn btn-info pull-right", label: '<i class="fa fa-check"></i>', action: "done" }],
     // legend:"State",
     // sections:"tab",
@@ -977,15 +978,15 @@ function drawForm(name) {
           { name: "invalid_submission", label: "Allow Invalid Submission", value: false, type: "switch", format: { label: "" }, columns: 6, show: [{ name: "validate", value: true, type: "matches" }] },
           {
             type: 'select', other: true, columns: 12, label: 'Show Action', value: true, name: "show", parse: [{ type: "not_matches", name: "show", value: true }], options:
-              [{ type: "optgroup", options: [{ label: 'Always', value: true }, { label: 'Never', value: false }, { label: 'Use same settings as "Enable"', value: 'edit' }, { label: "Conditionally", value: "other" }] }]
+              [{ type: "optgroup", options: [{ label: 'Always', value: true }, { label: 'Never', value: false }, { label: "Conditionally", value: "other" }] }]
           },
           { type: 'fieldset', columns: 11, offset: '1', label: false, name: "show", fields: myconditions, array: { min: 1, max: 1 }, show: [{ name: "show", value: ['other'], type: "matches" }] },
 
-          {
-            type: 'select', other: true, columns: 12, label: 'Enable Action', value: true, name: "edit", parse: [{ type: "not_matches", name: "edit", value: true }], options:
-              [{ type: "optgroup", options: [{ label: 'Always', value: true }, { label: 'Never', value: false }, { label: 'Use same settings as "Show"', value: 'show' }, { label: "Conditionally", value: "other" }] }]
-          },
-          { type: 'fieldset', columns: 11, offset: '1', label: false, name: "edit", fields: myconditions, array: { min: 1, max: 1 }, show: [{ name: "edit", value: ['other'], type: "matches" }] },
+          // {
+          //   type: 'select', other: true, columns: 12, label: 'Enable Action', value: true, name: "edit", parse: [{ type: "not_matches", name: "edit", value: true }], options:
+          //     [{ type: "optgroup", options: [{ label: 'Always', value: true }, { label: 'Never', value: false }, { label: 'Use same settings as "Show"', value: 'show' }, { label: "Conditionally", value: "other" }] }]
+          // },
+          // { type: 'fieldset', columns: 11, offset: '1', label: false, name: "edit", fields: myconditions, array: { min: 1, max: 1 }, show: [{ name: "edit", value: ['other'], type: "matches" }] },
 
           { name: "task_label", label: "<h4>Tasks</h4>", type: "output", parse: false },
 
