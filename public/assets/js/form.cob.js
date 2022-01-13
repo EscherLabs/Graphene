@@ -33,7 +33,7 @@ displayFields = _.map([
 	{ type: 'switch', label: 'Force New Row {{#value}}- <span class="text-success">Yes</span>{{/value}}', name: 'forceRow', show: [{ name: "columns", value: [12], type: "not_matches" }, { name: "columns", type: "requires" }], parse: [{ type: "requires" }, { name: "columns", value: [12], type: "not_matches" }, { name: "columns", type: "requires" }], format: { label: '' } },
 
 	{
-		type: 'select', label: 'Width', forceRow: true, value: 12, name: 'columns', min: 1, max: 12, format: {
+		type: 'select', label: 'Width', forceRow: true, defaultValue: 12, name: 'columns', min: 1, max: 12, format: {
 			label: "{{value}} Column(s)", value: function (e) {
 				return parseInt(e.value);
 			}
