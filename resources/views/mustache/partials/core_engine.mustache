@@ -238,10 +238,10 @@ $g.collections.add('layouts',layouts)
 					{label: 'Allow Minimization?', name: 'enable_min', type: 'checkbox', show:[{type:'matches',name:'container',value:true}]}, //show:!item.get().no_minimize},
 					{label:' Start Minimized?', name:'collapsed',type:'checkbox', show:[{type:'matches',name:'enable_min',value:true}],parse:'show'},
 					{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  [{type:'test',test: function(){return group_composites.length >0;}}] },
-                    {legend: 'Groups',name:"group", 'show': [{type:'matches', name: 'limit',value: true}],type:'fieldset',fields:[
-                            {label: false, name: 'ids',array:{min:0,max:100}, type: 'select', options: group_composites}
-                        ]
-                    },
+						{legend: 'Groups',name:"group", 'show': [{type:'matches', name: 'limit',value: true}],type:'fieldset',fields:[
+										{label: false, name: 'ids',array:{create:{label:"Add a group"},min:0,max:100}, type: 'select', options: group_composites}
+								]
+						},
 				]}
 				).on('save',function(e){
 
