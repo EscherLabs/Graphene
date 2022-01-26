@@ -592,7 +592,6 @@ Cobler.types.collection = function (container) {
 							if (typeof e.initial.parent.initialValue['path'] !== 'undefined' && e.initial.parent.initialValue['path'].length) {
 								result = "string";
 							}
-
 							return result;
 						} else {
 							return e.initial.value
@@ -604,7 +603,7 @@ Cobler.types.collection = function (container) {
 					type: 'fieldset', label: false, array: { min: 1, max: 100 }, columns: 12, name: 'options', fields: [
 						{ name: "label", label: "Label", parse: [{ type: "requires" }] },
 						{ name: "value", label: "Value", parse: [{ type: "requires" }] }
-					], parse: [{ type: "requires" }, { type: "matches", name: "options_type", value: "object" }], show: [{ type: "matches", name: "options_type", value: "object" }]
+					], parse: [{ type: "matches", name: "options_type", value: "object" }], show: [{ type: "matches", name: "options_type", value: "object" }]
 				},
 
 				{ type: 'text', label: "Resource Name", name: 'path', show: [{ type: "matches", name: "options_type", value: "string" }] },
