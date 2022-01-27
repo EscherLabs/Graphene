@@ -161,10 +161,9 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                 let response = true;
                 if ('show' in action) {
                   gform.processConditions.call(action, action['show'], (result, e) => {
-                    debugger;
                     e.field.display = result;
                   }, {
-                    _lookup: function (data, field, args, _lookup) {
+                    _lookup: function (data, field, args) {
 
                       var states = _.map(data.history, function (item) { return item.state; })
                       states.push(data.workflow.instance.configuration.initial)
