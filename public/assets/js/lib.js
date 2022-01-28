@@ -1016,7 +1016,7 @@ gform.types['group'] = _.extend({}, gform.types['smallcombo'], {
       }
     }
   },
-  defaults: { template: "{{display.group_id}}", search: '/api/groups?members=20', format: { title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>', label: "{{name}}", value: "{{id}}" } }
+  defaults: { template: "{{display.group_id}}", options: '/api/groups?members=20', format: { title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>', label: "{{name}}", value: "{{id}}" } }
 })
 gform.types['files'] = _.extend({}, gform.types['smallcombo'], {
   toString: function (name, display) {
