@@ -9,6 +9,8 @@ Cobler.types.Workflow = function (container) {
     ({ flow, form, methods } = instance.version.code);
     flowState = (_.find(flow, { name: instance.configuration.initial }) || flow[0] || { "actions": [] });
     formData._flowstate = flowState.name;
+    formData.user = user;
+    formData.data.actor = user;
     rootPath = '/api/workflowsubmissions/' + instance.id;
     $g.emit('workflow_summary', { submission: submission })
     if (submission) {
@@ -363,6 +365,7 @@ Cobler.types.Workflow = function (container) {
     Title: {},
     'Workflow ID': { type: 'select', options: '/api/groups/' + group_id + '/workflowinstances', format: { label: "{{name}}", value: "{{id}}" } },
   }
+  debugger;
   var panelEL, ractive, submission, rootPath, guid, user, resources, initialFormState = {}, lastSynced, flowState, workflowForm, fileLoader, flow, form, methods,
     instance = { configuration: {} },
     evalMethods = [],
