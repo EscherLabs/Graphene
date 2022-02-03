@@ -692,7 +692,7 @@ function createFlow() {
           }
         }
 
-        return graph + '-->|' + action.label + '|' + ' ' + action.to.split(' ').join('_') + '';
+        return graph + '-->|' + action.label + '|' + ' ' + (action.to || '').split(' ').join('_') + '';
       })
       return graph + stuff.join('')
     })
@@ -995,7 +995,7 @@ function drawForm(name) {
       } : {
         target: "#collapseLogic .panel-body",
         name: "actions", show: [{ name: "hasLogic", value: true, type: "matches" }], label: false, type: "fieldset", fields: [
-          { name: "name", label: false, type: 'output', format: { value: "<b>Logic Result: <i>{{value}}</i></b>" } },
+          { name: "name", label: false, parse: true, type: 'output', format: { value: "<b>Logic Result: <i>{{value}}</i></b>" } },
           { name: "label", label: "Label", columns: 6 },
 
           { name: "to", label: "To", columns: 6, type: "select", options: 'flowstates'/*, show: [{type: "not_matches", name: "label", value: ""}]*/ },
@@ -1081,6 +1081,7 @@ function drawForm(name) {
 
     createFlow();
   })
+  flowForm.trigger('input')
 
 }
 
