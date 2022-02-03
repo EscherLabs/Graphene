@@ -153,7 +153,7 @@ Cobler.types.Workflow = function (container) {
 
   function saveFlow(data, callback, onError) {
     $g.setData(rootPath + '/save',
-      { data: { ...data, _state: JSON.stringify(data['_state']) } },
+      { data: { ...data, _state: data['_state'] } },
       callback, onError
     )
   }

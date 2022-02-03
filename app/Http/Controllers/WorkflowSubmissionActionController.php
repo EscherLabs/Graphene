@@ -37,11 +37,8 @@ class WorkflowSubmissionActionController extends Controller {
         // Reason: Internal function call from Kernel cannot have an authenticated user
     }
     public function create(WorkflowInstance $workflow_instance, Request $request,$save_or_submit='submit') {
-        if($request->has('_state')){
-            $request['_state'] = $request->has('_state');
-            if(is_string($request->get('_state'))) {
-                $request['_state'] = json_decode($request['_state'],false);
-            }
+        if($request->has('_state') && is_string($request->get('_state'))){
+            $request['_state'] = json_decode($request['_state'],false);
         }
 
         //01/20/2021, AKT - Added the code below to check if the user is authenticated
