@@ -464,7 +464,7 @@ Cobler.types.input = function (container) {
 		]
 	}].concat(baseFields, baseConditions, [
 		{
-			target: "#collapseDisplay .panel-body", type: 'fieldset', label: false, columns: 12, name: 'format', show: [{ type: "matches", name: 'type', value: ["date", 'template', 'output'] }], parse: [{ type: "requires" }], fields: [
+			target: "#collapseDisplay .panel-body", type: 'fieldset', label: false, columns: 12, name: 'format', show: [{ type: "matches", name: '/type', value: ["date", 'template', 'output'] }], parse: [{ type: "requires" }], fields: [
 				{
 					name: "input", type: "smallcombo", options: [
 						{ label: "Datetime", value: "MM/DD/YYYY h:mm A" },
