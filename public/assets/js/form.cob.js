@@ -159,7 +159,44 @@ minCond = [
 baseCond = minCond.concat([
 
 	{
-		type: 'select', other: true, columns: 12, label: 'Include value in data <span class="pull-right text-muted">"parse"</span>', value: 'show', name: "parse", parse: [{ type: "not_matches", name: "parse", value: "show" }], options:
+		type: 'select', other: true, columns: 12, label: 'Include value in data <span class="pull-right text-muted">"parse"</span>', value: 'show', name: "parse", parse: [
+
+
+			{
+				"op": "or",
+				"conditions": [
+					{
+						"type": "conditions",
+						"op": "and",
+						"conditions": [
+							{
+								"type": "not_matches",
+								"name": "/type",
+								"value": [
+									"output"
+								]
+							},
+							{ type: "not_matches", name: "parse", value: "show" },
+						]
+					},
+					{
+						"type": "conditions",
+						"op": "and",
+						"conditions": [
+							{
+								"type": "matches",
+								"name": "/type",
+								"value": [
+									"output"
+								]
+							},
+							{ type: "not_matches", name: "parse", value: false }
+						]
+					}
+				]
+			}
+
+		], options:
 			[{ type: "optgroup", options: [{ label: 'Always', value: true }, { label: 'Never', value: false }, { label: 'Use same settings as "Edit"', value: 'edit' }, { label: 'Use same settings as "Show"', value: 'show' }, { label: "Conditionally", value: "other" }] }]
 	},
 	{ type: 'fieldset', columns: 11, offset: '1', label: false, name: "parse", fields: myconditions, array: { min: 1, max: 1 }, show: [{ name: "parse", value: ['other'], type: "matches" }] },
