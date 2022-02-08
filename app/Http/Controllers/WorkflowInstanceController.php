@@ -315,7 +315,7 @@ class WorkflowInstanceController extends Controller
                 'email' => $submission->user->email,
                 'created_at' => $submission->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $submission->updated_at->format('Y-m-d H:i:s'),
-                'opened_at' => $submission->opened_at->format('Y-m-d H:i:s'),
+                'opened_at' => ($submission->opened_at == null)?'':$submission->opened_at->format('Y-m-d H:i:s'),
                 'report_url' => '=HYPERLINK("'.URL::to('/workflows/report/'.$submission->id).'","Open Report")'
             ]);
             $all_keys = array_unique(array_merge($all_keys,array_keys($data)),SORT_REGULAR);
