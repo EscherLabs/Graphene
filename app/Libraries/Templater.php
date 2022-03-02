@@ -129,6 +129,9 @@ class Templater {
         if (!isset($data['template'])) {
             $data['template'] = 'main';
         }   
+        if (!isset($data['includes'])) {
+            $data['includes'] = config('includes');
+        }   
         $tpl = $m->loadTemplate($data['template']);
         // return $tpl->render($data);
 
