@@ -58,15 +58,18 @@ Cobler.types.Workflow = function (container) {
   //  action: required
   //  signature: used if required
   function submitFlow(additionalInfo) {
-    gform.types.fieldset.edit.call(workflowForm.find('_state'), false)
-    workflowForm.find('_state').el.style.opacity = .7
+    let formState = workflowForm.find('_state');
+    gform.types.fieldset.edit.call(formState, false)
+    formState.el.style.opacity = .7
     $('.gform-footer').hide();
-
+    if ($g.waiting) {
+      formData._state = formState.get();
+    }
     $.ajax({
       url: rootPath + '/submit',
       dataType: 'json', contentType: 'application/json', type: 'POST',
       data: JSON.stringify((() => {
-        return { ...workflowForm.get(), ...additionalInfo, _state: JSON.stringify(formData['_state']) }
+        return { ...workflowForm.get(), ...additionalInfo, _state: JSON.stringify(formData._state) }
       })()),
       success: response => {
         document.location = "/workflows/report/" + response.id;
