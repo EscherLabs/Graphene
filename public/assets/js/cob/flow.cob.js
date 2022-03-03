@@ -62,14 +62,11 @@ Cobler.types.Workflow = function (container) {
     gform.types.fieldset.edit.call(formState, false)
     formState.el.style.opacity = .7
     $('.gform-footer').hide();
-    if ($g.waiting) {
-      formData._state = formState.get();
-    }
     $.ajax({
       url: rootPath + '/submit',
       dataType: 'json', contentType: 'application/json', type: 'POST',
       data: JSON.stringify((() => {
-        return { ...workflowForm.get(), ...additionalInfo, _state: JSON.stringify(formData._state) }
+        return { ...workflowForm.get(), ...additionalInfo, _state: JSON.stringify(formState.get()) }
       })()),
       success: response => {
         document.location = "/workflows/report/" + response.id;
