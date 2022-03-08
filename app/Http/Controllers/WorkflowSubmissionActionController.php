@@ -232,7 +232,9 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data = [];
         $state_data['id'] = $workflow_submission->id;
         $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
-        $state_data['form'] = $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
+        
+        $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
+        $state_data['form'] = clone($workflow_submission->data);
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
         $state_data['owner']['is'] = [];
@@ -334,7 +336,9 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data = [];
         $state_data['id'] = $workflow_submission->id;
         $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
-        $state_data['form'] = $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
+        $workflow_submission->data = (object)array_merge((array)$workflow_submission->data, (array)$request->get('_state'));
+
+        $state_data['form'] = clone($workflow_submission->data);
         $state_data['report_url'] = URL::to('/workflows/report/'.$workflow_submission->id);
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
         $state_data['owner']['is'] = [];

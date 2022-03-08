@@ -614,7 +614,7 @@ Cobler.types.collection = function (container) {
 		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
 		// 	// {name:"Title",label:"title"}
 		// ] },
-		{ name: "strict", label: "Strict", type: "switch", show: [{ type: "matches", value: ["smallcombo"], name: "/type" },] },
+		{ name: "strict", label: "Strict", value: true, type: "switch", show: [{ type: "matches", value: ["smallcombo", 'user', 'groups'], name: "/type" },] },
 		{
 			type: 'fieldset', label: false, array: { min: 1, max: 100 }, columns: 12, parse: [{ type: "requires" }, { type: "not_matches", name: "type", value: ["user", "groups", "files"] }], show: [{ type: "not_matches", name: "type", value: ["user", "groups", "files"] }], name: 'options',
 			fields: [
