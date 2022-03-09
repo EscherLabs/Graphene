@@ -946,7 +946,10 @@ gform.types['ace'] = _.extend({}, gform.types['input'], {
     this.editor.focus();
   }
 });
-gform.types['user'] = _.extend({}, gform.types['smallcombo'], {
+
+
+gform.types['smallcombo'] = gform.types['combobox'];
+gform.types['user'] = _.extend({}, gform.types['combobox'], {
   toString: function (name, display) {
     if (!display) {
       if (typeof this.combo !== 'undefined') {
@@ -964,7 +967,7 @@ gform.types['user'] = _.extend({}, gform.types['smallcombo'], {
   },
   defaults: { strict: true, search: "/api/users/search/{{search}}{{value}}", format: { title: '{{{label}}}{{^label}}User{{/label}}<span class="text-success pull-right">{{value}}</span>', label: "{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}", value: "{{unique_id}}", display: '{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>' } }
 })
-gform.types['user_id'] = _.extend({}, gform.types['smallcombo'], {
+gform.types['user_id'] = _.extend({}, gform.types['combobox'], {
   toString: function (name, display) {
     if (!display) {
       if (typeof this.combo !== 'undefined') {
@@ -1000,7 +1003,7 @@ gform.types['user_email'] = _.extend({}, gform.types['user'], {
   },
   defaults: { strict: true, search: "/api/users/search/{{search}}{{value}}", format: { title: '{{{label}}}{{^label}}User{{/label}}<span class="text-success pull-right">{{value}}</span>', label: "{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}", value: "{{email}}", display: '{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>' } }
 })
-gform.types['group'] = _.extend({}, gform.types['smallcombo'], {
+gform.types['group'] = _.extend({}, gform.types['combobox'], {
   toString: function (name, display) {
     if (!display) {
       if (typeof this.combo !== 'undefined') {
@@ -1018,7 +1021,7 @@ gform.types['group'] = _.extend({}, gform.types['smallcombo'], {
   },
   defaults: { template: "{{display.group_id}}", options: '/api/groups?members=20', format: { title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>', label: "{{name}}", value: "{{id}}" } }
 })
-gform.types['files'] = _.extend({}, gform.types['smallcombo'], {
+gform.types['files'] = _.extend({}, gform.types['combobox'], {
   toString: function (name, display) {
     if (!display) {
       if (typeof this.combo !== 'undefined') {
@@ -1039,7 +1042,7 @@ gform.types['files'] = _.extend({}, gform.types['smallcombo'], {
   }
 })
 gform.types['endpoint'] = {
-  ...gform.types['smallcombo'],
+  ...gform.types['combobox'],
   defaults: { label: true, options: [{ id: 'none', name: "None" }, { type: "optgroup", options: 'endpoints' }], format: { label: '{{name}}', value: "{{id}}", display: '<dl class="dl-horizontal" style="margin-bottom:0"><dt>Name:</dt><dd>{{name}}</dd>{{#config}}<dt>URL:</dt><dd>{{url}}</dd><dt>User:</dt><dd>{{username}}</dd>{{/config}}{{^config}}<dt></dt><dd>No Endpoint will be used{{/config}}</dd></dl>' } },
   setLabel() {
     gform.toggleClass(this.labelEl, 'required', this.required)
@@ -1065,7 +1068,7 @@ gform.types['endpoint'] = {
     this.help = ($g.collections.get('endpoints').find(endpoint => endpoint.id == this.value) || { config: { url: '' } }).config.url
       + (this.owner.options.data.resources.find(resource => resource.name == this.owner.options.data.resources[this.parent.index].name) || { path: '' }).path
 
-    return gform.render('smallcombo', this);
+    return gform.render('combobox', this);
   }
 }
 
@@ -1729,11 +1732,11 @@ const fieldLibrary = (function () {
       options: 'layouts',
       value: 0,
       format: { display: "{{{original.label}}} {{title}} ", label: "{{title}}", value: layout => parseInt(layout.value) },
-      type: 'smallcombo'
+      type: 'combobox'
     },
-    group: { label: 'Group', name: 'group_id', strict: true, type: 'smallcombo', required: true, value: parseInt(group_id), edit: [{ type: 'not_matches', name: "_method", value: "edit" }, { type: 'test', test: () => (resource_id == '') }], options: 'groups', format: { title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>', label: "{{name}}", value: (group => group.id) } },
+    group: { label: 'Group', name: 'group_id', strict: true, type: 'combobox', required: true, value: parseInt(group_id), edit: [{ type: 'not_matches', name: "_method", value: "edit" }, { type: 'test', test: () => (resource_id == '') }], options: 'groups', format: { title: '{{{label}}}{{^label}}Group{{/label}} <span class="text-success pull-right">{{value}}</span>', label: "{{name}}", value: (group => group.id) } },
     icon: {
-      label: 'Icon', name: 'icon', type: 'smallcombo', template: '<i class="fa fa-{{attributes.icon}}"></i>',
+      label: 'Icon', name: 'icon', type: 'combobox', template: '<i class="fa fa-{{attributes.icon}}"></i>',
       format: {
         title: 'Icon <span class="pull-right"><i class="fa fa-{{value}}"></i></span>',
         label: i => i.name.replace(/(\r\n|\s)/gm, ""),
@@ -1762,7 +1765,7 @@ const fieldLibrary = (function () {
       {
         label: 'Composites', get: function () {
           return (this.visible) ? gform.types[this.type].get.call(this) : null
-        }, legend: 'Composites', parse: true, array: { min: 1, max: 100, duplicate: { copy: true } }, name: 'groups', type: 'smallcombo', options: 'composites', format: { label: "{{name}}", value: function (i) { return i.id } }, 'show': [{ type: "matches", name: 'limit', value: true }], validate: [{ type: 'unique', message: "Duplicate group" }]
+        }, legend: 'Composites', parse: true, array: { min: 1, max: 100, duplicate: { copy: true } }, name: 'groups', type: 'combobox', options: 'composites', format: { label: "{{name}}", value: function (i) { return i.id } }, 'show': [{ type: "matches", name: 'limit', value: true }], validate: [{ type: 'unique', message: "Duplicate group" }]
       }
     ],
     _display: [

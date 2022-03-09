@@ -74,7 +74,7 @@ renderBuilder = function () {
     //   case "user_email":
     //   case "group":
     //   case "groups":
-    //   case "smallcombo":
+    //   case "combobox":
     //   case "files":
     //   case "base64_file":
     //     temp.fields[i].widgetType = 'collection';
@@ -141,11 +141,11 @@ mainForm = function () {
         // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
         // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
 
-        //   {name:"type",columns:6,label:"Type",type:"smallcombo",options:["cancel","save"]},
+        //   {name:"type",columns:6,label:"Type",type:"combobox",options:["cancel","save"]},
         //   // {name:"name",columns:6,label:"Name"},
         //   {name:"action",columns:6,label:"Action"},
         //   {name:"label",columns:6,label:"Label"},
-        //   {name:"modifiers",columns:6,label:"Classes",type:"smallcombo",options:[
+        //   {name:"modifiers",columns:6,label:"Classes",type:"combobox",options:[
         //     {label:"Danger",value:"btn btn-danger"},
         //     {label:"Success",value:"btn btn-success"},
         //     {label:"Info",value:"btn btn-info"}]}
@@ -772,13 +772,13 @@ function drawForm(name) {
       {
         type: "fieldset", name: "assignment", label: false, fields: [
           {
-            name: "type", inline: false, label: "Type", type: "smallcombo", options: [
+            name: "type", inline: false, label: "Type", type: "combobox", options: [
               { value: "user", label: "User" },
               { value: "group", label: "Group" }
             ]
           },
 
-          // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+          // gform.types['user']= _.extend({}, gform.types['combobox'], {
           //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
           // })
 
@@ -850,8 +850,8 @@ function drawForm(name) {
               }
             ]
           },
-          // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "smallcombo", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
-          // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "smallcombo", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
+          // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "combobox", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
+          // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "combobox", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
 
           { name: "id", inline: false, label: 'ID (template)', type: "text", show: [{ type: "not_matches", name: "type", value: ["user", "group"] }] },
           { name: "resource", type: "select", label: "Resource", placeholder: "None", options: "resources" },
@@ -892,7 +892,7 @@ function drawForm(name) {
             name: "assignment", type: "fieldset", parse: [{ type: "requires" }], label: false, fields: [
 
               {
-                name: "type", inline: false, label: "Actor(s)", parse: [{ type: "requires" }], type: "smallcombo", options: [
+                name: "type", inline: false, label: "Actor(s)", parse: [{ type: "requires" }], type: "combobox", options: [
                   { value: "internal", label: "Inactivity Based" },
                   { value: "", label: "Assignee" },
                   { value: "user", label: "User" },
@@ -900,7 +900,7 @@ function drawForm(name) {
                 ]
               },
 
-              // gform.types['user']= _.extend({}, gform.types['smallcombo'], {
+              // gform.types['user']= _.extend({}, gform.types['combobox'], {
               //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
               // })
               { type: "number", min: 1, name: "delay", label: "Days of Inactivity", show: [{ type: "matches", name: "type", value: "internal" }] },
@@ -1175,7 +1175,7 @@ var taskForm = [
 
   { name: "subject", type: "text", label: "Subject", show: [{ type: "matches", name: "task", value: 'email' }] },
   {
-    name: "template", type: "smallcombo", value: "",
+    name: "template", type: "combobox", value: "",
     options: [
       { value: "", label: "Custom body template" }, { type: 'optgroup', options: 'templates', format: { label: "Template: {{label}}" } }],
     label: "Body Template", show: [{ type: "matches", name: "task", value: 'email' }], strict: true

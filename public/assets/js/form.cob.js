@@ -101,7 +101,7 @@ baseFields = _.map([
 
 
 	{
-		type: 'smallcombo', label: 'Value Calculation', name: 'method', columns: 12, parse: [{ type: "requires" }, { name: "type", value: ['color', 'checkbox', 'switch', 'textarea'], type: "not_matches" }], show: [{ name: "type", value: ['color', , 'checkbox', 'switch', 'textarea'], type: "not_matches" }], options: [
+		type: 'combobox', label: 'Value Calculation', name: 'method', columns: 12, parse: [{ type: "requires" }, { name: "type", value: ['color', 'checkbox', 'switch', 'textarea'], type: "not_matches" }], show: [{ name: "type", value: ['color', , 'checkbox', 'switch', 'textarea'], type: "not_matches" }], options: [
 			"None", { type: 'optgroup', options: 'methods', format: { label: "Method: {{label}}" } }]
 	},
 	{ type: 'text', label: 'Default value', name: 'value', columns: 12, parse: [{ type: "requires" }, { name: "type", value: ['color', 'number', 'checkbox', 'switch', 'textarea'], type: "not_matches" }], show: [{ name: "type", value: ['color', 'number', 'checkbox', 'switch', 'textarea', 'output'], type: "not_matches" }] },
@@ -275,7 +275,7 @@ baseConditions = baseCond.concat(_.map([
 			},
 
 
-			{ name: 'test', label: "Method", show: [{ name: "type", value: ['custom'], type: "matches" }], type: 'smallcombo', options: [{ type: 'optgroup', label: "Methods", options: 'methods', format: { value: "{{value}}", label: "Method: {{label}}" } }] },
+			{ name: 'test', label: "Method", show: [{ name: "type", value: ['custom'], type: "matches" }], type: 'combobox', options: [{ type: 'optgroup', label: "Methods", options: 'methods', format: { value: "{{value}}", label: "Method: {{label}}" } }] },
 			{ name: 'regex', forceRow: true, label: "Regex", show: [{ name: "type", value: ['pattern'], type: "matches" }] },
 			{ name: 'flags', label: "Flags", show: [{ name: "type", value: ['pattern'], type: "matches" }] },
 			{ name: 'message', columns: 12, label: "Message", show: [{ name: "type", value: ['pattern'], type: "matches" }] },
@@ -483,7 +483,7 @@ Cobler.types.input = function (container) {
 	}
 
 	var fields = [{
-		target: "#display", type: 'smallcombo', columns: 9, label: false, name: 'type', value: 'text', parse: [{ type: "not_matches", name: "type", value: "text" }], 'options': [
+		target: "#display", type: 'combobox', columns: 9, label: false, name: 'type', value: 'text', parse: [{ type: "not_matches", name: "type", value: "text" }], 'options': [
 			{ label: 'Single Line', value: 'text' },
 			{ label: 'Multi-line', value: 'textarea' },
 			{ label: 'Phone', value: 'tel' },
@@ -503,7 +503,7 @@ Cobler.types.input = function (container) {
 		{
 			target: "#collapseDisplay .panel-body", type: 'fieldset', label: false, columns: 12, name: 'format', show: [{ type: "matches", name: '/type', value: ["date", 'template', 'output'] }], parse: [{ type: "requires" }], fields: [
 				{
-					name: "input", type: "smallcombo", options: [
+					name: "input", type: "combobox", options: [
 						{ label: "Datetime", value: "MM/DD/YYYY h:mm A" },
 						{ label: "Date", value: "MM/DD/YYYY" },
 						{ label: "Time", value: "h:mm A" },
@@ -587,10 +587,10 @@ Cobler.types.collection = function (container) {
 	var fields = [
 
 		{
-			target: "#display", type: 'smallcombo', columns: 9, label: false, name: 'type', value: 'text', 'options': [
+			target: "#display", type: 'combobox', columns: 9, label: false, name: 'type', value: 'text', 'options': [
 				{ label: 'Dropdown', value: 'select' },
 				{ label: 'List', value: 'radio' },
-				{ label: 'Combobox', value: 'smallcombo' },
+				{ label: 'Combobox', value: 'combobox' },
 
 				// {label: 'Scale', value: 'scale'},
 				{ label: 'Range', value: 'range' },
@@ -611,10 +611,10 @@ Cobler.types.collection = function (container) {
 		// {type: 'fieldset', label: "Format",columns:12, name: 'format',parse:[{type:"requires",name:"format"}], fields:[
 		// 	{name:"label",label:"Label",parse:[{type:"requires",name:"label"}]},
 		// 	{name:"value",label:"Value",parse:[{type:"requires",name:"value"}]},
-		// 	{name:"display",label:"Display",show:[{type:"matches",value:"smallcombo",name:"type"}]}
+		// 	{name:"display",label:"Display",show:[{type:"matches",value:"combobox",name:"type"}]}
 		// 	// {name:"Title",label:"title"}
 		// ] },
-		{ name: "strict", label: "Strict", value: true, type: "switch", show: [{ type: "matches", value: ["smallcombo", 'user', 'groups'], name: "/type" },] },
+		{ name: "strict", label: "Strict", value: true, type: "switch", show: [{ type: "matches", value: ["combobox", 'user', 'groups'], name: "/type" },] },
 		{
 			type: 'fieldset', label: false, array: { min: 1, max: 100 }, columns: 12, parse: [{ type: "requires" }, { type: "not_matches", name: "type", value: ["user", "groups", "files"] }], show: [{ type: "not_matches", name: "type", value: ["user", "groups", "files"] }], name: 'options',
 			fields: [
@@ -650,7 +650,7 @@ Cobler.types.collection = function (container) {
 					type: 'fieldset', label: "Format", columns: 12, name: 'format', parse: [{ type: "requires" }], fields: [
 						{ name: "label", label: "Label", parse: [{ type: "requires" }] },
 						{ name: "value", label: "Value", parse: [{ type: "requires" }] },
-						{ name: "display", label: "Display", show: [{ type: "matches", value: ["smallcombo"], name: "/type" },] },
+						{ name: "display", label: "Display", show: [{ type: "matches", value: ["combobox"], name: "/type" },] },
 						// {name:"Title",label:"title"}
 					]
 				},
@@ -803,7 +803,7 @@ Cobler.types.section = function (container) {
 	var fields = [
 
 		{
-			target: "#display", type: 'smallcombo', columns: 9, label: false, name: 'type', value: 'text', 'options': [
+			target: "#display", type: 'combobox', columns: 9, label: false, name: 'type', value: 'text', 'options': [
 				{ label: 'Fieldset', value: 'fieldset' },
 				{ label: 'Template', value: 'template' },
 				{ label: 'Table', value: 'table' },
