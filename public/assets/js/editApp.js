@@ -532,7 +532,7 @@ loadInstances = function () {
               <dt>Limit To Composites:</dt>
               <dd>
               {{#composite_limit}}
-              Yes <i class="fa fa-user"></i>
+              Yes <i class="pull-right fa fa-user"></i>
               {{/composite_limit}}
               {{^composite_limit}}
               No, Open to all Group Members <i class="pull-right fa fa-users"></i>
