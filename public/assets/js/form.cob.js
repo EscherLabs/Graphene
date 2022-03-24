@@ -1326,15 +1326,9 @@ gformEditor = function (container) {
       "change:label",
       function (e) {
         if (e.field.name == "label" && e.form.get("name") == "") {
-          e.form
-            .find("name")
-            .update({
-              placeholder: e.form
-                .get("label")
-                .toLowerCase()
-                .split(" ")
-                .join("_"),
-            });
+          e.form.find("name").update({
+            placeholder: e.form.get("label").toLowerCase().split(" ").join("_"),
+          });
         }
       }.bind(this)
     );
@@ -1870,8 +1864,20 @@ Cobler.types.collection = function (container) {
           name: "search",
           label: "Search Target",
           type: "combobox",
+          columns: 12,
           strict: false,
-          options: [{ type: "optgroup", options: "methods" }],
+          options: [
+            {
+              type: "optgroup",
+              options: "methods",
+              format: { display: "Method: {{label}}" },
+            },
+            {
+              type: "optgroup",
+              options: "resources",
+              format: { display: "Resource: {{label}}" },
+            },
+          ],
         },
       ],
       function (item) {
