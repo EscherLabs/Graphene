@@ -2,8 +2,9 @@
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-brand:focus {
   background-color: #d85e16;
-  color:#eee;
+  color: #eee;
 }
 div#flow-preview .label {
-    color: #000 !important;
+  color: #000 !important;
+  height: calc(100vh - 100px);
 }

@@ -92,8 +92,10 @@ class ResourceService
         // $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
         // $state_data['was']['initial'] = ($WorkflowInstance->configuration->initial == $state_data['previous']['state']);
         $state_data['datamap'] = $state_data['assignment'] = [];
-        foreach($WorkflowInstance->configuration->map as $resource){
-            $state_data['datamap'][$resource->name] = $resource->value;
+        if(isset($WorkflowInstance->configuration->map)){
+            foreach($WorkflowInstance->configuration->map as $resource){
+                $state_data['datamap'][$resource->name] = $resource->value;
+            }
         }
         $state_data['state'] = $state->name;
         if (!isset($state->actions)) { $state->actions = []; }
