@@ -218,7 +218,7 @@ class PageController extends Controller
         if (!is_null($groupObj)) {
             // Redirect to first page or first app or first workflow in this group
             $myPage_q = Page::where('group_id','=', $groupObj->id)->orderBy('order', 'asc');
-            $myPage_q->where(function($query) { foreach(Auth::user()->groups as $user_group) { $query->orWhereJsonContains('groups',$user_group); } $query->orWhereJsonLength('groups',0); $query->orWhereNull('groups'); });
+            $myPage_q->where(function($query) { if(Auth::user()) { foreach(Auth::user()->groups as $user_group) { $query->orWhereJsonContains('groups',$user_group); } } $query->orWhereJsonLength('groups',0); $query->orWhereNull('groups'); });
             $myPage = $myPage_q->first();
             if(!is_null($myPage)){
                 return redirect('/page/'.strtolower($groupObj->slug).'/'.strtolower($myPage->slug));
