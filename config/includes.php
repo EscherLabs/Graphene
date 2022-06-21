@@ -9,7 +9,7 @@ return [
         'src' => [
             'head' => [
                 ['file'=>'/assets/css/bootstrap.min.css'],
-                ['file'=>'/assets/css/font-awesome.min.css'],
+		//['file'=>'/assets/css/font-awesome.min.css'],
                 ['file'=>'/assets/css/toastr.min.css'],
                 ['file'=>'/assets/css/nivo-slider.min.css'],
                 ['file'=>'/assets/css/colorpicker.min.css'],
@@ -28,7 +28,8 @@ return [
             'head' => [],
             'body' => [
                 // Use of CDNs is not compatible with code minifier.  Removing VUE
-                // ['file'=>'https://unpkg.com/vue@next'], 
+		    // ['file'=>'https://unpkg.com/vue@next'],
+		['file'=>'https://kit.fontawesome.com/e479ec51f9.js'], 
                 ['file'=>'/assets/js/vendor/moment.js'],
                 ['file'=>'/assets/js/vendor/math.min.js'],
                 ['file'=>'/assets/js/vendor/popper.min.js'],
