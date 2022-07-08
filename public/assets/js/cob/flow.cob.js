@@ -531,7 +531,7 @@ Cobler.types.Workflow = function (container) {
       format: { label: "{{name}}", value: "{{id}}" },
     },
   };
-  debugger;
+
   var panelEL,
     ractive,
     submission,

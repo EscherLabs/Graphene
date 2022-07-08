@@ -144,13 +144,10 @@ class ResourceService
 
     private function http_endpoint(Endpoint $endpoint, $resource_info, $verb, $all_data, $workflow_instance_id) {
         // Derive and Map URL with Mustache
-        // dd($all_data);
-
         $m = new \Mustache_Engine;
         $url = $m->render($endpoint->config->url . $resource_info->path, $all_data);
-        // dd($url);
 
-        if ($resource_info->cache === true || $resource_info->cache === 'true') {
+        if (isset($resource_info->cache) && ($resource_info->cache === true || $resource_info->cache === 'true')) {
             $cache = ResourceCache::where('workflow_instance_id', '=', $workflow_instance_id)
                     ->where('url','=',$url)
                     ->where('created_at','>=',Carbon::now()->subMinutes(10)->toDateTimeString())
@@ -185,7 +182,7 @@ class ResourceService
             } else {
                 abort(505,'Authentication Type Not Supported');
             }
-            if ($resource_info->cache === true || $resource_info->cache === 'true') {
+            if (isset($resource_info->cache) && ($resource_info->cache === true || $resource_info->cache === 'true')) {
                 // TJC -- Laravel has a "non-bug" which prevents updateOrCreate from working 
                 // correctly in the event of a race condition.  See details:
                 // https://github.com/laravel/framework/issues/19372
@@ -243,7 +240,12 @@ class ResourceService
 
         // $options = $workflow_instance->options;
         // $user_options_default = $workflow_instance->user_options_default;
-        $resources = $workflow_instance->configuration->resources;
+        // dd($workflow_instance->configuration);
+        if(isset($workflow_instance->configuration->resources)){
+            $resources = $workflow_instance->configuration->resources;
+        }else{
+            return array('content'=>[],'code'=>501);
+        }
         // $temp = $request->all();
         $verb = 'GET'; // Default Verb
         if (isset($request['verb'])) {
@@ -255,7 +257,9 @@ class ResourceService
         }
 
         if(!count($resources)){
-            return [];
+            // return [];
+            return array('content'=>[],'code'=>501);
+
         }
         // Lookup Resource by Name
         $endpoint_found = false;

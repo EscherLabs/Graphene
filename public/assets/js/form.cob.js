@@ -1653,6 +1653,10 @@ Cobler.types.collection = function (container) {
           label: "Strict",
           value: true,
           type: "switch",
+          options: [
+            { value: false, label: "No" },
+            { value: true, label: "Yes" },
+          ],
           show: [
             {
               type: "matches",
@@ -1866,6 +1870,8 @@ Cobler.types.collection = function (container) {
           type: "combobox",
           columns: 12,
           strict: false,
+          parse: [{ type: "requires" }],
+
           options: [
             {
               type: "optgroup",

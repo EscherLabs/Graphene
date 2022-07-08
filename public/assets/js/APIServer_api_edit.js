@@ -167,7 +167,7 @@ function load(app_version) {
         show: false,
         parse: true,
         showColumn: false,
-        array: { max: 100 },
+        array: { min: 0, max: 100 },
         fields: [
           { name: "name", label: "Name", inline: true, columns: 6 },
           { name: "example", label: "Example", inline: true, columns: 6 },
@@ -187,7 +187,7 @@ function load(app_version) {
         show: false,
         parse: true,
         showColumn: false,
-        array: { max: 100 },
+        array: { min: 0, max: 100 },
         fields: [
           { name: "name", label: "Name", inline: true, columns: 6 },
           { name: "example", label: "Example", inline: true, columns: 6 },
@@ -257,7 +257,10 @@ function load(app_version) {
       .on(
         "save",
         function (e) {
-          this.update(e.form.get());
+          this.set({
+            ..._.omit(this.attributes, "required"),
+            ...e.form.get(),
+          });
           e.form.dispatch("close");
         }.bind(e.model)
       )
@@ -294,7 +297,10 @@ function load(app_version) {
       .on(
         "save",
         function (e) {
-          this.update(e.form.get());
+          this.set({
+            ..._.omit(this.attributes, "optional"),
+            ...e.form.get(),
+          });
           e.form.dispatch("close");
         }.bind(e.model)
       )
