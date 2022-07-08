@@ -14,8 +14,8 @@ $g.getData("/api/groups/" + resource_id + "/admins", admins => {
         label: "User",
         type: "user_id",
         name: "user_id",
-        template:
-          "{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}",
+        // template:
+        //   "{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}",
         parse: true,
         show: [{ type: "matches", value: "create", name: "_method" }],
       },

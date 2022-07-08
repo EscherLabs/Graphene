@@ -13,8 +13,6 @@ $g.getData("/api/groups/" + resource_id + "/members", members => {
         label: "User",
         type: "user_id",
         name: "user_id",
-        template:
-          "{{attributes.user.first_name}} {{attributes.user.last_name}} - {{attributes.user.email}}",
         show: [{ type: "matches", value: "create", name: "_method" }],
       },
     ],
