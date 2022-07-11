@@ -32,7 +32,7 @@
     <li role="presentation"><a href="#templates" aria-controls="templates" role="tab" data-toggle="tab"><i class="fa fa-code"></i> <span class="hidden-xs hidden-sm">Templates</span></a></li>
     <li role="presentation"><a href="#styles" aria-controls="styles" role="tab" data-toggle="tab"><i class="fa fa-css3"></i> <span class="hidden-xs hidden-sm">Styles</a></span></li>
     <li role="presentation"><a href="#forms" aria-controls="forms" role="tab" data-toggle="tab"><i class="fa fa-check-square-o"></i> <span class="hidden-xs hidden-sm">Forms<span></a></li>
-    <li role="presentation"><a href="#tests" aria-controls="tests" role="tab" data-toggle="tab"><i class="fa fa-question-circle"></i> <span class="hidden-xs hidden-sm">Tests<span></a></li>
+    <!-- <li role="presentation"><a href="#tests" aria-controls="tests" role="tab" data-toggle="tab"><i class="fa fa-question-circle"></i> <span class="hidden-xs hidden-sm">Tests<span></a></li> -->
   </ul>
 
   <!-- Tab panes -->
