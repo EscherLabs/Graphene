@@ -1934,7 +1934,7 @@ var taskForm = [
     columns: 4,
     label: "Verb",
     type: "select",
-    options: ["GET", "POST", "PUT", "DELETE"],
+    options: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     show: [{ type: "matches", name: "task", value: "resource" }],
   },
   {

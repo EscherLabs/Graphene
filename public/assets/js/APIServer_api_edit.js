@@ -150,7 +150,7 @@ function load(app_version) {
         label: "Verb",
         name: "verb",
         type: "select",
-        options: ["ALL", "GET", "POST", "PUT", "DELETE"],
+        options: ["ALL", "GET", "POST", "PUT", "PATCH", "DELETE"],
         required: true,
       },
       {
