@@ -1,0 +1,51 @@
+{
+  "releases": {
+    "layout": "_page",
+    "releases": [
+      {
+        "notes": "This release exchanges the master branch for the main branch. All branches are currently merged. All pull requests are merged as well. This is a new baseline and marks a change in the way releases will be managed, with frequency changing to a regular biweekly schedule.",
+        "date": "July 14, 2022",
+        "version": "1.1.0.0",
+        "type": "Baseline",
+        "upgrade": [{ "description": "" }],
+        "breaking": [],
+        "features": [
+          {
+            "issues": ["219"],
+            "tags": ["Workflows"],
+            "description": "Enable cache configuration of resouces in workflows"
+          }
+        ],
+        "performance": [],
+        "bugs": [
+          {
+            "issues": ["212"],
+            "tags": ["Framework"],
+            "description": "Merged pull request to fix unauthenticated navigation of public pages"
+          },
+          {
+            "issues": ["214"],
+            "tags": ["GrapheneDataGrid"],
+            "description": "Fixes a problem when searching a field in a GrapheneDataGrid whose type has a default template that is not defined explicitly on the field instance."
+          },
+          {
+            "issues": ["215"],
+            "tags": ["GrapheneApiGateway"],
+            "description": "Allow Api's in the GrapheneApiGateway be configured to have no (0) required parameters and handle that scenario in the gateway itself and the generated documentation as well."
+          },
+          {
+            "issues": ["220"],
+            "tags": ["Form Builder", "microApps", "Workflows"],
+            "description": "Fix 'user' type field configuration by not parsing the search field unless it is populated - this fixes a current problem introduced in the last release but a better pattern should be defined"
+          }
+        ],
+        "tests": [],
+        "other": []
+      }
+    ]
+  },
+  "index": {},
+  "release": {
+    "layout": "_page"
+  }
+}

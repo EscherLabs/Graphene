@@ -1,0 +1,76 @@
+<ul  class="list-unstyled">
+<dl class="row">
+      <dt class="col-sm-2">Version</dt>
+      <dd class="col-sm-10">{{version}}</dd>
+      <dt class="col-sm-2">Type</dt>
+      <dd class="col-sm-10"><span class="{{#bugs.length}}bg-danger{{/bugs.length}}{{#features.length}}bg-success{{/features.length}} {{#bugs.length}}{{#features.length}}bg-primary{{/features.length}}{{/bugs.length}} text-light rounded-pill py-1 px-2">{{type}}</span></dd>
+      <dt class="col-sm-2">Date</dt>
+      <dd class="col-sm-10">{{date}}</dd>
+      <dt class="col-sm-2">Notes</dt>
+      <dd class="col-sm-10">{{notes}}</dd>
+</dl>
+
+<hr><li>
+<h4 {{#breaking}}class="text-danger"{{/breaking}}>Breaking Changes</h4>
+<ul class="list-group">
+{{#breaking}}
+{{ >item}}
+{{/breaking}}
+{{^breaking}}
+NONE
+{{/breaking}}
+</ul>
+</li>
+
+{{#bugs.length}}<li><hr>
+<h4 class="text-danger">Bug Fixes</h4>
+<ul class="list-group">
+{{#bugs}}
+{{ >item}}
+{{/bugs}}
+</ul>
+</li>
+{{/bugs.length}}
+
+{{#features.length}}<hr><li>
+<h4 class="text-success">New Features</h4>
+<ul class="list-group">
+{{#features}}
+{{ >item}}
+{{/features}}
+</ul>
+</li>
+{{/features.length}}
+
+{{#performance.length}}<hr><li>
+<h4 class="text-success">Improvements</h4>
+<ul class="list-group">
+{{#performance}}
+{{ >item}}
+{{/performance}}
+</ul>
+</li>
+{{/performance.length}}
+
+{{#tests.length}}<li><hr>
+<h4 class="text-primary">Test Coverage</h4>
+<ul class="list-group">
+{{#tests}}
+{{ >item}}
+{{/tests}}
+</ul>
+</li>
+{{/tests.length}}
+
+{{#other.length}}<li><hr>
+<h4 class="text-primary">Other</h4>
+<ul class="list-group">
+{{#other}}
+{{ >item}}
+{{/other}}
+</ul>
+</li>
+{{/other.length}}
+
+
+</ul>

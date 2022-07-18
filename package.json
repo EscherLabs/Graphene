@@ -1,10 +1,13 @@
 {
   "private": true,
   "dependencies": {
+    "bluebird": "^3.3.3",
     "chai": "^4.3.6",
     "jquery": "^3.1.0",
     "lodash": "^4.16.2",
+    "marked": "^4.0.18",
     "mocha": "^10.0.0",
+    "mustache": "^2.2.1",
     "vue": "^2.0.1",
     "vue-resource": "^1.0.3"
   },

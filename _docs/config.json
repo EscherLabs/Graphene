@@ -1,0 +1,6 @@
+{
+  "target_dir": "../Graphene/docs",
+  "template_dir": "../Graphene/_docs/templates",
+  "data_dir": "../Graphene/_docs/data",
+  "global": "../Graphene/_docs/data/_global.json"
+}
