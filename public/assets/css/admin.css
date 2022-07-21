@@ -8,3 +8,15 @@ div#flow-preview .label {
   color: #000 !important;
   height: calc(100vh - 100px);
 }
+
+.isDirty::after {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: rgb(239, 172, 47);
+  border: solid 1px #fff;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}

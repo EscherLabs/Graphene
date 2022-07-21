@@ -53,25 +53,24 @@
     return this;
   };
 })(jQuery);
-// let isDirty = false;
-window.onbeforeunload = () => {
-  return templatePage.isDirty ||
+
+const isDirty = () => {
+  // let pages = [templatePage, scriptPage, resource_grid,formsPage,stylesPage];
+  $('[href="#templates"]').toggleClass("isDirty", templatePage.isDirty);
+  $('[href="#scripts"]').toggleClass("isDirty", scriptPage.isDirty);
+  $('[href="#resources"]').toggleClass("isDirty", resource_grid.isDirty);
+  $('[href="#forms"]').toggleClass("isDirty", formsPage.isDirty);
+  $('[href="#styles"]').toggleClass("isDirty", stylesPage.isDirty);
+  return (
+    templatePage.isDirty ||
     scriptPage.isDirty ||
     resource_grid.isDirty ||
-    !_.isEqual(
-      $g.forms.style.options.data.code.css,
-      $g.forms.style.get().code.css
-    ) ||
-    !_.isEqual(
-      _.map(working_forms, function (original_form) {
-        var form = JSON.parse(JSON.stringify(original_form));
-        if (typeof form.content == "object") {
-          form.content = JSON.stringify(form.content);
-        }
-        return _.omit(form, "i");
-      }),
-      attributes.code.forms
-    )
+    stylesPage.isDirty ||
+    formsPage.isDirty
+  );
+};
+window.onbeforeunload = () => {
+  return isDirty()
     ? "You have unsaved changes, are you sure you want to leave?"
     : undefined;
 };
@@ -137,7 +136,25 @@ function load(app_version) {
   };
 
   tableConfig.schema = [
-    { label: "Name", name: "name" },
+    {
+      label: "Name",
+      name: "name",
+      required: true,
+      validate: [
+        {
+          type: "custom",
+          test: function (e) {
+            let models = resource_grid.models;
+            if (e.form.get("_method") == "edit") {
+              models = _.reject(models, e.form.options.model);
+            }
+            return _.includes(_.map(models, "attributes.name"), e.value)
+              ? "Name already used - please choose a unique name"
+              : false;
+          }.bind(null),
+        },
+      ],
+    },
     {
       label: "Modifier",
       name: "modifier",
@@ -150,7 +167,7 @@ function load(app_version) {
         { label: "Include as CSS", value: "css" },
       ],
     },
-    { label: "Path", name: "path" },
+    { label: "Path", name: "path", required: true },
     {
       label: "Fetch",
       type: "checkbox",
@@ -219,6 +236,29 @@ function load(app_version) {
   });
   setupform();
 }
+var formsPage = {
+  toJSON: function () {
+    return _.map(working_forms, function (original_form) {
+      var form = JSON.parse(JSON.stringify(original_form));
+      if (typeof form.content == "object") {
+        form.content = JSON.stringify(form.content);
+      }
+      return _.omit(form, "i");
+    });
+  },
+};
+Object.defineProperty(formsPage, "isDirty", {
+  get: () => !_.isEqual(formsPage.toJSON(), attributes.code.forms),
+});
+
+var stylesPage = {
+  toJSON: function () {
+    return $g.forms.style.get().code.css;
+  },
+};
+Object.defineProperty(stylesPage, "isDirty", {
+  get: () => !_.isEqual(attributes.code.css, stylesPage.toJSON()),
+});
 
 $(document).keydown(function (e) {
   if ((e.which == "115" || e.which == "83") && (e.ctrlKey || e.metaKey)) {
@@ -304,10 +344,15 @@ $(document).keydown(function (e) {
 // }
 
 $("#save").on("click", function () {
+  if (!isDirty()) {
+    toastr.success("All up to date!", "No Changes");
+    return;
+  }
+
   template_errors = templatePage.errors();
   script_errors = scriptPage.errors();
   var data = { code: {} };
-  data.code.css = $g.forms.style.get().code.css;
+  data.code.css = stylesPage.toJSON(); //$g.forms.style.get().code.css;
 
   data.code.resources = resource_grid.toJSON(); //_.map(bt.models,'attributes');
   data.code.templates = templatePage.toJSON();
@@ -332,13 +377,7 @@ $("#save").on("click", function () {
 
   if (!errorCount) {
     data.code.scripts = scriptPage.toJSON();
-    data.code.forms = _.map(working_forms, function (original_form) {
-      var form = JSON.parse(JSON.stringify(original_form));
-      if (typeof form.content == "object") {
-        form.content = JSON.stringify(form.content);
-      }
-      return _.omit(form, "i");
-    });
+    data.code.forms = formsPage.toJSON();
 
     data.updated_at = attributes.updated_at;
 
@@ -347,27 +386,20 @@ $("#save").on("click", function () {
       method: "put",
       data: data,
       success: function (e) {
-        templatePage.isDirty = false;
-        scriptPage.isDirty = false;
-
-        resource_grid.isDirty = false;
+        templatePage.items = e.code.templates;
+        scriptPage.items = e.code.scripts;
+        resource_grid.items = e.code.resources;
 
         //sync style
-        $g.forms.style.options.data.code.css = $g.forms.style.get().code.css;
+        attributes.code.css = e.code.css;
 
         //sync forms
-        attributes.code.forms = _.map(working_forms, function (original_form) {
-          var form = JSON.parse(JSON.stringify(original_form));
-          if (typeof form.content == "object") {
-            form.content = JSON.stringify(form.content);
-          }
-          return _.omit(form, "i");
-        });
+        attributes.code.forms = e.code.forms;
 
         attributes.updated_at = e.updated_at;
         loadInstances();
         toastr.success("", "Successfully Saved");
-        //mark as clean
+        isDirty();
       },
       error: function (e) {
         toastr.error(e.statusText, "ERROR");
@@ -971,7 +1003,8 @@ mainForm = function () {
             name: "name",
             label: "Name",
             columns: 6,
-            edit: [{ type: "matches", name: "disabled", value: false }],
+            edit: false,
+            // edit: [{ type: "matches", name: "disabled", value: false }],
           },
           {
             name: "autoFocus",
@@ -1190,6 +1223,8 @@ mainForm = function () {
           gform.renderString(
             `<div class="btn-group">
             <button type="button" class="btn btn-info go pages_new">New Form</span></button>
+            <button type="button" class="btn btn-primary rename_form">Rename Form</span></button>
+
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class=""> Select Form</span> <span class="caret"></span>
               <span class="sr-only">Toggle Dropdown</span>
@@ -1291,6 +1326,8 @@ setupform = function (index) {
     gform.renderString(
       `<div class="btn-group">
         <button type="button" class="btn btn-info go pages_new">New Form</span></button>
+        <button type="button" class="btn btn-primary rename_form">Rename</span></button>
+
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class=""> Select Form</span> <span class="caret"></span>
           <span class="sr-only">Toggle Dropdown</span>
@@ -1324,6 +1361,27 @@ document.addEventListener("DOMContentLoaded", function () {
   $("#formlist").on("click", ".form_edit", function (e) {
     setupform(parseInt(e.target.dataset.index));
   });
+  $("#formlist").on("click", ".rename_form", function (e) {
+    if (working_forms[formIndex].disabled) return;
+    new gform({
+      name: "renameform",
+      legend: "Rename Form",
+      fields: [{ name: "name", label: "Form Name" }],
+      data: working_forms[formIndex],
+    })
+      .on("save", function (e) {
+        debugger;
+        let el = gform.instances.editor.find("name");
+        el.set(e.form.get("name"));
+        el.trigger("input", el);
+        e.form.trigger("close");
+      })
+      .on("cancel", function () {
+        e.form.trigger("close");
+      })
+      .modal();
+  });
+
   $("#formlist").on("click", ".pages_new", function (e) {
     new gform({
       name: "page_name",
