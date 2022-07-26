@@ -633,7 +633,25 @@ function load(workflow_version) {
   };
 
   tableConfig.schema = [
-    { label: "Name", name: "name" },
+    {
+      label: "Name",
+      name: "name",
+      required: true,
+      validate: [
+        {
+          type: "custom",
+          test: function (e) {
+            let models = resource_grid.models;
+            if (e.form.get("_method") == "edit") {
+              models = _.reject(models, e.form.options.model);
+            }
+            return _.includes(_.map(models, "attributes.name"), e.value)
+              ? "Name already used - please choose a unique name"
+              : false;
+          }.bind(null),
+        },
+      ],
+    },
     {
       label: "Modifier",
       name: "modifier",
@@ -716,7 +734,26 @@ function load(workflow_version) {
         array: { min: 0, max: 100, append: { enable: true } },
         type: "fieldset",
         fields: [
-          { name: "name", label: false, columns: 9, placeholder: "Key" },
+          {
+            name: "name",
+            label: false,
+            columns: 9,
+            placeholder: "Key name",
+            required: true,
+            validate: [
+              {
+                type: "required",
+                name: "name",
+                message:
+                  "Key name is required - if you no longer need this key, please delete it",
+              },
+              {
+                type: "unique",
+                name: "map",
+                message: "Key name must be unique",
+              },
+            ],
+          },
           {
             name: "type",
             label: false,
@@ -1965,6 +2002,7 @@ $("#save").on("click", function () {
     // data.code.form = JSON.parse(formPage.toJSON()[0].content);
 
     // template_errors = templatePage.errors();
+    if (!map.validate()) return;
     data.updated_at = attributes.updated_at;
 
     data.code.form = JSON.stringify(myform);
