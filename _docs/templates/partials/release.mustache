@@ -6,8 +6,15 @@
       <dd class="col-sm-10"><span class="{{#bugs.length}}bg-danger{{/bugs.length}}{{#features.length}}bg-success{{/features.length}} {{#bugs.length}}{{#features.length}}bg-primary{{/features.length}}{{/bugs.length}} text-light rounded-pill py-1 px-2">{{type}}</span></dd>
       <dt class="col-sm-2">Date</dt>
       <dd class="col-sm-10">{{date}}</dd>
+      {{#notes}}
       <dt class="col-sm-2">Notes</dt>
       <dd class="col-sm-10">{{notes}}</dd>
+      {{/notes}}
+
+      {{#upgrade}}
+      <dt class="col-sm-2">Upgrade</dt>
+      <dd class="col-sm-10">{{upgrade.description}}</dd>
+      {{/upgrade}}
 </dl>
 
 <hr><li>

@@ -387,6 +387,22 @@ $g = (function (options) {
       }
     }
   });
+
+  Object.defineProperty(api, "about", {
+    get: () => {
+      return {
+        version: "1.1.0.1",
+        subSystems: [
+          { type: "Workflow", version: "0.0.1.0" },
+          { type: "microApp", version: "0.0.1.0" },
+          { type: "forms", version: "0.0.1.0", name: "gform" },
+          { type: "grids", version: "0.0.1.0", name: "gformDataGrid" },
+        ],
+      };
+    },
+    enumerable: true,
+  });
+
   return api;
 })({ broadcast: { app: "custom" } });
 
@@ -467,6 +483,7 @@ $g.on("loaded debug", e => {
       )
     )
   );
+
   // debugger;
   // if(e.data.clear) document.querySelector('#target').innerHTML = '';
   // if(e.data.message.length){
@@ -1094,15 +1111,13 @@ gform.types["ace"] = _.extend({}, gform.types["input"], {
     // this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
     this.editor = ace.edit(this.el.querySelector("#" + this.id + "container"));
     this.editor.setTheme(this.item.theme || "ace/theme/chrome");
-    this.editor
-      .getSession()
-      .setMode({
-        path:
-          this.owner.options.default.mode ||
-          this.item.mode ||
-          "ace/mode/handlebars",
-        inline: this.owner.options.default.inlinemode || this.item.inlinemode,
-      });
+    this.editor.getSession().setMode({
+      path:
+        this.owner.options.default.mode ||
+        this.item.mode ||
+        "ace/mode/handlebars",
+      inline: this.owner.options.default.inlinemode || this.item.inlinemode,
+    });
     this.editor.session.setValue(this.value || "");
     this.editor.on("change", this.onchangeEvent.bind(null, false));
   },
