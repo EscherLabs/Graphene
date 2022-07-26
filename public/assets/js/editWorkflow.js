@@ -1997,12 +1997,13 @@ $("#save").on("click", function () {
     toastr.success("All up to date!", "No Changes");
     return;
   }
+
+  if (!map.validate()) return;
   var data = { code: { flow: flow_states } };
   if (true || !errorCount) {
     // data.code.form = JSON.parse(formPage.toJSON()[0].content);
 
     // template_errors = templatePage.errors();
-    if (!map.validate()) return;
     data.updated_at = attributes.updated_at;
 
     data.code.form = JSON.stringify(myform);

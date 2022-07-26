@@ -115,6 +115,8 @@ function load(app_version) {
         // {type:'output',name:'test',format:{value:'<div></div>'},label:false},
         {
           name: "resources",
+          label: false,
+          legend: "Resources",
           array: {
             min: 0,
             max: 100,
@@ -123,7 +125,27 @@ function load(app_version) {
           fields: [
             // "database": {}
             // {label: false, name:'database',type:'select', required: true,choices:'/api/proxy/databases',label_key:'name',value_key:'id'}
-            { label: "Name", name: "name", required: false, columns: 6 },
+            {
+              label: false,
+              placeholder: "Resource Name",
+              name: "name",
+              required: false,
+              columns: 6,
+              required: true,
+              validate: [
+                {
+                  type: "required",
+                  name: "name",
+                  message:
+                    "Resource name is required - if you no longer need this Resource, please delete it",
+                },
+                {
+                  type: "unique",
+                  name: "resources",
+                  message: "Resource name must be unique",
+                },
+              ],
+            },
             // {label: 'Type', name:'type', type:'select',options:[
             //   {label: 'MySQL Database',value: 'mysql'},
             //   {label: 'Oracle Database', value:'oracle'},
@@ -154,6 +176,38 @@ function load(app_version) {
                 return "Must be a valid url path begining with a / and ending in a number or letter. Please see examples in help text";
               }
             },
+          },
+          {
+            type: "custom",
+            test: function (e) {
+              let models = grid.models;
+              if (e.form.get("_method") == "edit") {
+                models = _.reject(models, e.form.options.model);
+              }
+
+              // _.includes(
+              //   _.map(models, "attributes.verb"),
+              //   e.form.get(verb),
+              //   "ALL"
+              // );
+              // debugger;
+              let pathMatches = _.filter(_.map(models, "attributes"), {
+                path: e.value,
+              });
+
+              return (e.form.get("verb") == "ALL" && pathMatches.length) ||
+                _.intersection(_.pluck(pathMatches, "verb"), [
+                  e.form.get("verb"),
+                  "ALL",
+                ]).length
+                ? "This 'Path' and 'Verb' combination already has a function defined to it - please change the path or assign to an available 'Verb'"
+                : false;
+
+              // console.log(filtered);
+              // return _.includes(_.map(models, "attributes.path"), e.value)
+              //   ? "Name already used - please choose a unique name"
+              //   : false;
+            }.bind(null),
           },
         ],
         help: "i.e. /example/route or /my-example_2",
@@ -375,6 +429,8 @@ $("#save").on("click", function () {
     toastr.success("All up to date!", "No Changes");
     return;
   }
+
+  if (!gform.instances.resources.validate()) return;
   script_errors = filepage.errors();
   script_errors += functionpage.errors();
   var data = attributes;
