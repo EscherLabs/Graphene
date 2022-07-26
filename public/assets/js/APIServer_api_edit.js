@@ -53,8 +53,35 @@
     return this;
   };
 })(jQuery);
+const isDirty = () => {
+  // $('[href="#files"]').toggleClass("isDirty", filepage.isDirty);
+  // $('[href="#functions"]').toggleClass("isDirty", functionpage.isDirty);
+  // $('[href="#routes"]').toggleClass("isDirty", grid.isDirty);
+  // $('[href="#resources"]').toggleClass("isDirty", resourcePage.isDirty);
 
-attributes = {};
+  return (
+    filepage.isDirty ||
+    functionpage.isDirty ||
+    grid.isDirty ||
+    resourcePage.isDirty
+  );
+};
+
+var resourcePage = {
+  toJSON: function () {
+    return gform.instances.resources.get().resources;
+  },
+};
+Object.defineProperty(resourcePage, "isDirty", {
+  get: () =>
+    !_.isEqual(attributes.resources || false, resourcePage.toJSON() || false),
+});
+window.onbeforeunload = () => {
+  return isDirty()
+    ? "You have unsaved changes, are you sure you want to leave?"
+    : undefined;
+};
+attributes = $.extend({}, loaded);
 var root = "/api/apps/";
 function load(app_version) {
   $(".nav-tabs").stickyTabs();
@@ -333,7 +360,7 @@ function load(app_version) {
   });
 }
 load(loaded);
-orig = $.extend({}, loaded);
+// orig = $.extend({}, loaded);
 
 $(document).keydown(function (e) {
   if ((e.which == "115" || e.which == "83") && (e.ctrlKey || e.metaKey)) {
@@ -344,6 +371,10 @@ $(document).keydown(function (e) {
 });
 
 $("#save").on("click", function () {
+  if (!isDirty()) {
+    toastr.success("All up to date!", "No Changes");
+    return;
+  }
   script_errors = filepage.errors();
   script_errors += functionpage.errors();
   var data = attributes;
@@ -364,6 +395,13 @@ $("#save").on("click", function () {
       success: function (e) {
         if (typeof e.updated_at !== "undefined") {
           attributes.updated_at = e.updated_at;
+
+          // attributes = e;
+
+          functionpage.items = e.functions;
+          filepage.items = e.files;
+          grid.items = e.routes;
+          attributes.resources = e.resources;
         }
         toastr.clear();
 
@@ -498,8 +536,8 @@ $("#versions").on("click", function () {
     success: function (data) {
       console.log(data);
       data = _.where(data, { stable: 1 });
-      if (!orig.stable) {
-        data.unshift({ id: orig.id, summary: "Working Version" });
+      if (!loaded.stable) {
+        data.unshift({ id: loaded.id, summary: "Working Version" });
       }
 
       new gform({

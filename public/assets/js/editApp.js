@@ -55,12 +55,11 @@
 })(jQuery);
 
 const isDirty = () => {
-  // let pages = [templatePage, scriptPage, resource_grid,formsPage,stylesPage];
-  $('[href="#templates"]').toggleClass("isDirty", templatePage.isDirty);
-  $('[href="#scripts"]').toggleClass("isDirty", scriptPage.isDirty);
-  $('[href="#resources"]').toggleClass("isDirty", resource_grid.isDirty);
-  $('[href="#forms"]').toggleClass("isDirty", formsPage.isDirty);
-  $('[href="#styles"]').toggleClass("isDirty", stylesPage.isDirty);
+  // $('[href="#templates"]').toggleClass("isDirty", templatePage.isDirty);
+  // $('[href="#scripts"]').toggleClass("isDirty", scriptPage.isDirty);
+  // $('[href="#resources"]').toggleClass("isDirty", resource_grid.isDirty);
+  // $('[href="#forms"]').toggleClass("isDirty", formsPage.isDirty);
+  // $('[href="#styles"]').toggleClass("isDirty", stylesPage.isDirty);
   return (
     templatePage.isDirty ||
     scriptPage.isDirty ||
@@ -69,6 +68,38 @@ const isDirty = () => {
     formsPage.isDirty
   );
 };
+
+const page = function ({ label, type = "file", name }) {
+  let ref;
+  switch (type) {
+    case "grid":
+      break;
+    case "files":
+      break;
+    case "form":
+      break;
+    default:
+  }
+  const api = {};
+
+  return api;
+};
+
+const pages = function (options) {
+  const pages = _.map(options.pages, currentPage => new page(page));
+  const api = {};
+
+  Object.defineProperty(api, "isDirty", {
+    get: () =>
+      templatePage.isDirty ||
+      scriptPage.isDirty ||
+      resource_grid.isDirty ||
+      stylesPage.isDirty ||
+      formsPage.isDirty,
+  });
+  return api;
+};
+
 window.onbeforeunload = () => {
   return isDirty()
     ? "You have unsaved changes, are you sure you want to leave?"
@@ -268,81 +299,6 @@ $(document).keydown(function (e) {
   return true;
 });
 
-// function modalForm(form, name, onSave) {
-
-//   if(typeof cb === 'undefined'){
-//     if(typeof form === 'string'){
-//       form = JSON.parse(form || '{}');
-//     }
-//     form = form || {};
-//     $('#myModal').remove();
-//     this.onSave = onSave;
-//     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-//     $(this.ref).appendTo('body');
-//     this.ref.find('.modal-body').html(templates.formEditor.render());
-//     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-//     this.ref.on('hide.bs.modal', function(){
-//       cb.destroy();
-//       delete cb;
-//     });
-//     this.ref.find('#saveForm').on('click', function(){
-//       this.onSave.call(this)
-//       this.ref.modal('hide');
-
-//     }.bind(this))
-//     this.ref.modal({backdrop: 'static'});
-
-//     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-//     $('.modal #form').keydown(function(event) {
-//       switch(event.keyCode) {
-//         case 27://escape
-//             event.stopPropagation();
-//             cb.deactivate();
-//             return false;
-//           break;
-//       }
-//     });
-//     list = document.getElementById('sortableList');
-//     cb.addSource(list);
-//     cb.on('activate', function(){
-//       if(list.className.indexOf('hidden') == -1){
-//         list.className += ' hidden';
-//       }
-//       $('#form').removeClass('hidden');
-//     })
-//     cb.on('deactivate', function(){
-//       list.className = list.className.replace('hidden', '');
-//       $('#form').addClass('hidden');
-//     })
-//     document.getElementById('sortableList').addEventListener('click', function(e) {
-//       cb.collections[0].addItem(e.target.dataset.type);
-//     })
-//   }
-
-//   if(typeof form !== 'undefined'){
-//     var temp = $.extend(true, {}, form);
-//     for(var i in temp.fields){
-
-//       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-//       switch(temp.fields[i].type) {
-//         case "select":
-//         case "radio":
-//           temp.fields[i].widgetType = 'select';
-//           break;
-//         case "checkbox":
-//           temp.fields[i].widgetType = 'checkbox';
-//           break;
-//         default:
-//           temp.fields[i].widgetType = 'textbox';
-//       }
-
-//     }
-
-//     list.className = list.className.replace('hidden', '');
-//     cb.collections[0].load(temp.fields);
-//   }
-// }
-
 $("#save").on("click", function () {
   if (!isDirty()) {
     toastr.success("All up to date!", "No Changes");
@@ -352,9 +308,9 @@ $("#save").on("click", function () {
   template_errors = templatePage.errors();
   script_errors = scriptPage.errors();
   var data = { code: {} };
-  data.code.css = stylesPage.toJSON(); //$g.forms.style.get().code.css;
 
-  data.code.resources = resource_grid.toJSON(); //_.map(bt.models,'attributes');
+  data.code.css = stylesPage.toJSON();
+  data.code.resources = resource_grid.toJSON();
   data.code.templates = templatePage.toJSON();
 
   try {
