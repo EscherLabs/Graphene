@@ -63,7 +63,8 @@ const isDirty = () => {
     filepage.isDirty ||
     functionpage.isDirty ||
     grid.isDirty ||
-    resourcePage.isDirty
+    resourcePage.isDirty ||
+    optionsPage.isDirty
   );
 };
 
@@ -76,6 +77,16 @@ Object.defineProperty(resourcePage, "isDirty", {
   get: () =>
     !_.isEqual(attributes.resources || false, resourcePage.toJSON() || false),
 });
+
+var optionsPage = {
+  toJSON: function () {
+    return myform;
+  },
+};
+Object.defineProperty(optionsPage, "isDirty", {
+  get: () => !_.isEqual(attributes.options, optionsPage.toJSON()),
+});
+
 window.onbeforeunload = () => {
   return isDirty()
     ? "You have unsaved changes, are you sure you want to leave?"
@@ -101,6 +112,8 @@ function load(app_version) {
     [{ name: "Constructor", content: "", disabled: true }],
     attributes.functions
   );
+  debugger;
+  attributes.options = $.extend(true, { name: "options" }, attributes.options);
 
   $(".navbar-header .nav a h4").html("API - " + api.name);
 
@@ -412,7 +425,332 @@ function load(app_version) {
     label: "Function",
     inlinemode: true,
   });
+  myform = _.extend({}, attributes.options);
+  // $('#cobler').click();
+  path = [];
+  renderBuilder();
+  // optionpage = new fileManager(".options", {
+  //   name: "options",
+  //   items: attributes.options,
+  //   mode: "ace/mode/php",
+  //   label: "Options",
+  //   inlinemode: true,
+  // });
 }
+
+renderBuilder = function () {
+  var target = document.querySelector(".target");
+  $(target).html(
+    '<div data-map="" style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" class="btn btn-default">Form Root</div>'
+  );
+  var form = myform;
+  var map = "";
+  _.each(path, function (p) {
+    form = _.find(form.fields, { name: p });
+    map += form.name + ",";
+    $(target).append(
+      '<div style="text-align:center;padding:5px;color: #555;"><i class="fa fa-long-arrow-down fa-2x"> </i></div><div style="padding:15px;width: 100%;text-overflow: ellipsis;overflow: hidden;" data-map="' +
+        map +
+        '" class="btn btn-default">' +
+        (form.label || form.name) +
+        "</div>"
+    );
+  });
+  target.querySelectorAll(".btn-default")[
+    target.querySelectorAll(".btn-default").length - 1
+  ].style.border = "solid 2px #d85e16";
+
+  $(target).append("<hr>");
+  if (typeof cb === "undefined") {
+    cb = new Cobler({
+      formTarget: $("#form"),
+      sortSelected: true,
+      disabled: false,
+      targets: [document.getElementById("editor")],
+      items: [[]],
+    });
+    list = document.getElementById("sortableList");
+    cb.addSource(list);
+    cb.on("activate", function (e) {
+      // if(list.className.indexOf('hidden') == -1){
+      //   list.className += ' hidden';
+      // }
+      $("#form").removeClass("hidden");
+    });
+    cb.on("deactivate", function () {
+      if (typeof gform.instances.editor !== "undefined") {
+        gform.instances.editor.destroy();
+      }
+      // list.className = list.className.replace('hidden', '');
+      $("#form").addClass("hidden");
+      mainForm();
+    });
+    document
+      .getElementById("sortableList")
+      .addEventListener("click", function (e) {
+        cb.deactivate();
+        cb.collections[0].addItem(
+          e.target.dataset.type || e.target.parentElement.dataset.type
+        );
+      });
+    cb.on("change", function () {
+      var workingForm = myform;
+      _.each(path, function (p) {
+        workingForm = _.find(workingForm.fields, { name: p });
+      });
+      workingForm.fields = cb.toJSON()[0];
+    });
+    cb.on("remove", function (e) {
+      if (
+        typeof gform.instances.editor !== "undefined" &&
+        gform.instances.editor.options.cobler == e[0]
+      ) {
+        cb.deactivate();
+      }
+    });
+  }
+
+  if (typeof form !== "undefined") {
+    var temp = $.extend(true, {}, form);
+    _.each(temp.fields, function (field) {
+      field.widgetType = (gform.types[field.type] || {}).base || "input";
+    });
+    // for(var i in temp.fields){
+    // var mapOptions = new gform.mapOptions(temp.fields[i],undefined,0,gform.collections)
+    // temp.fields[i].options = mapOptions.getobject()
+
+    // switch(temp.fields[i].type) {
+    //   case "select":
+    //   case "radio":
+    //   case "scale":
+    //   case "range":
+    //   // case "grid":
+    //   case "user":
+    //   case "user_email":
+    //   case "group":
+    //   case "groups":
+    //   case "combobox":
+    //   case "files":
+    //   case "base64_file":
+    //     temp.fields[i].widgetType = 'collection';
+    //     break;
+    //   case "checkbox":
+    //   case "switch":
+    //     temp.fields[i].widgetType = 'bool';
+    //     break;
+    //   case "fieldset":
+    //   case "table":
+    //   case "template":
+    //   case "grid":
+    //     temp.fields[i].widgetType = 'section';
+    //     break;
+    //   default:
+    //     temp.fields[i].widgetType = 'input';
+    // }
+    // }
+
+    list.className = list.className.replace("hidden", "");
+    cb.collections[0].load(temp.fields);
+  }
+  // mainForm(form,map);
+
+  if (typeof gform.instances.editor !== "undefined") {
+    gform.instances.editor.destroy();
+  }
+
+  mainForm();
+};
+mainForm = function () {
+  var form = myform;
+  _.each(path, function (p) {
+    form = _.find(form.fields, { name: p });
+  });
+  if (!path.length) {
+    new gform(
+      {
+        name: "editor",
+        data: form,
+        actions: [],
+        fields: [
+          // {name:"legend",label:"Label"},
+          // {name:"name",label:"Name"},
+          {
+            name: "default",
+            label: false,
+            type: "fieldset",
+            fields: [
+              {
+                name: "horizontal",
+                horizontal: true,
+                label: "Horizontal",
+                type: "switch",
+                format: { label: "" },
+              },
+            ],
+          },
+          {
+            name: "files",
+            label: "Allow File uploads",
+            type: "switch",
+            horizontal: true,
+            format: { label: "" },
+          },
+          {
+            name: "horizontal",
+            label: "Horizontal",
+            value: true,
+            type: "checkbox",
+            show: false,
+            parse: true,
+          },
+          {
+            name: "resource",
+            label: "Initial Data Source",
+            type: "select",
+            options: [
+              "None",
+              { type: "optgroup", min: 0, max: 4, show: false },
+              {
+                type: "optgroup",
+                label: "Methods",
+                options: "methods",
+                format: { label: "{{label}}" },
+              },
+              { type: "optgroup", label: "Resources", options: "resources" },
+            ],
+          },
+          {
+            parse: false,
+            type: "output",
+            label: false,
+            value: "<h3>Events</h3>",
+          },
+          {
+            type: "fieldset",
+            label: false,
+            name: "events",
+            array: { min: 1, max: 100 },
+            fields: [
+              {
+                type: "text",
+                label: "Event",
+                name: "event",
+                parse: [{ type: "requires" }],
+                target: "#collapseEvents .panel-body",
+              },
+
+              {
+                type: "select",
+                label: "Method",
+                name: "handler",
+                target: "#collapseEvents .panel-body",
+                options: [
+                  "None",
+                  { type: "optgroup", min: 0, max: 4, show: false },
+                  {
+                    type: "optgroup",
+                    options: "methods",
+                    format: { label: "Method: {{label}}" },
+                  },
+                ],
+                parse: [{ name: "event", value: "", type: "not_matches" }],
+              },
+            ],
+          },
+          // {type: 'switch', label: 'Custom Actions', name: 'actions',parse:false, show:[{name:"type",value:['output'],type:"not_matches"}]},
+          // {type: 'fieldset',columns:12,array:true, label:false,name:"actions",parse:'show', show:[{name:"actions",value:true,type:"matches"}],fields:[
+
+          //   {name:"type",columns:6,label:"Type",type:"combobox",options:["cancel","save"]},
+          //   // {name:"name",columns:6,label:"Name"},
+          //   {name:"action",columns:6,label:"Action"},
+          //   {name:"label",columns:6,label:"Label"},
+          //   {name:"modifiers",columns:6,label:"Classes",type:"combobox",options:[
+          //     {label:"Danger",value:"btn btn-danger"},
+          //     {label:"Success",value:"btn btn-success"},
+          //     {label:"Info",value:"btn btn-info"}]}
+
+          // ]},
+        ],
+        legend: false,
+      },
+      "#mainform"
+    )
+      .on("input:type", function (e) {
+        if (e.field.value == "cancel") {
+          e.field.parent.set({
+            label: '<i class="fa fa-times"></i> Cancel',
+            action: "cancel",
+            modifiers: "btn btn-danger",
+          });
+        }
+      })
+      .on(
+        "input",
+        _.throttle(function (e) {
+          form = _.extend(form, e.form.get());
+          // if(typeof e.form.get().actions == 'undefined'){
+          //   delete form.actions;
+          // }
+          // if(typeof e.field !== 'undefined' && e.field.name == 'horizontal'){
+          //   renderBuilder()
+          // }
+        })
+      )
+      .on("input:horizontal", function () {
+        renderBuilder();
+      });
+  } else {
+    var formConfig = new Cobler.types[gform.types[form.type].base]();
+    $("#mainform").html(gform.renderString(accordion));
+
+    $(".panelOptions").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseOptions .panel-body" })
+    );
+    $(".panelValidation").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseValidation .panel-body" })
+    );
+    $(".panelBasic").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseBasic .panel-body" })
+    );
+    $(".panelConditions").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseConditions .panel-body" })
+    );
+    $(".panelDisplay").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseDisplay .panel-body" })
+    );
+    $(".panelEvents").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseEvents .panel-body" })
+    );
+    $(".panelGrid").toggle(
+      !!_.find(formConfig.fields, { target: "#collapseGrid .panel-body" })
+    );
+
+    new gform(
+      {
+        name: "editor",
+        nomanage: true,
+        data: form,
+        actions: [],
+        clear: false,
+        fields: formConfig.fields,
+        legend: "Edit Fieldset",
+      },
+      "#mainform"
+    )
+      .on("change", function (e) {
+        var workingForm = myform;
+        _.each(path, p => {
+          workingForm = _.find(workingForm.fields, { name: p });
+        });
+
+        _.extend(workingForm, e.form.get());
+      })
+      .on("destroyed", e => {
+        e.form.el.innerHTML = "";
+      });
+  }
+};
+
 load(loaded);
 // orig = $.extend({}, loaded);
 
@@ -436,6 +774,7 @@ $("#save").on("click", function () {
   var data = attributes;
   data.routes = grid.toJSON();
   data.resources = gform.instances.resources.get().resources;
+  data.options = myform;
   var errorCount = script_errors.length; //+ css_errors.length
 
   if (!errorCount) {
@@ -458,6 +797,7 @@ $("#save").on("click", function () {
           filepage.items = e.files;
           grid.items = e.routes;
           attributes.resources = e.resources;
+          attributes.options = e.options;
         }
         toastr.clear();
 

@@ -342,6 +342,26 @@ $.ajax({
                         .modal();
                     });
 
+                    if (
+                      api.api_version.options !== null &&
+                      api.api_version.options.fields.length > 0 //&&
+                      // api.api_version.file
+                    ) {
+                      new gform(
+                        {
+                          name: "options",
+                          data: api.options || {},
+                          actions: [],
+
+                          fields: [],
+                          ...api.api_version.options,
+                        },
+                        ".options"
+                      );
+                    } else {
+                      $("#optionstab").hide();
+                    }
+
                     $("body").on("click", "#version", function () {
                       new gform({
                         name: "versionForm",
@@ -416,6 +436,8 @@ $.ajax({
             // 	delete item.parameters;
             // })
             api.route_user_map = grid.toJSON();
+            debugger;
+            api.options = gform.instances.options.get();
 
             $.ajax({
               url: url,
