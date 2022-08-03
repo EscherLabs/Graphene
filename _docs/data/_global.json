@@ -6,13 +6,23 @@
       {
         "notes": "",
         "date": "July 27, 2022",
-        "version": "1.1.0.1",
+        "version": "1.2.0-rc.1",
         "type": "Enhancement",
         "upgrade": {
           "description": "Run 'composer update' to add 'doctrine/dbal' in order to alter the column size and 'php artisan migration' to change the app and workflow descriptions columns "
         },
         "breaking": [],
         "features": [
+          {
+            "issues": ["34"],
+            "tags": ["Workflows"],
+            "description": "Finalize support for 0 keys in the datamap of workflows"
+          },
+          {
+            "issues": ["43"],
+            "tags": ["APIGateway"],
+            "description": "Finalize support public apis and document use. Also creates public user when a new environment is created and defaults a new users data to public when adding users."
+          },
           {
             "issues": ["56"],
             "tags": ["Workflows", "microApps"],
@@ -37,20 +47,24 @@
             "issues": ["174"],
             "tags": ["microApps", "APIGateway"],
             "description": "Increased the description length for microApps and workflows to 1000 characters and added validation to the input forms"
+          },
+          {
+            "issues": ["130"],
+            "tags": ["microApps", "APIGateway"],
+            "description": "Added a configurable options form that can be created for an API and then configured in the API Instance"
           }
         ],
         "performance": [],
         "bugs": [],
         "tests": [],
         "other": []
-      }
-    ],
-    "old": [
+      },
       {
         "notes": "This release exchanges the master branch for the main branch. All branches are currently merged. All pull requests are merged as well. This is a new baseline and marks a change in the way releases will be managed, with frequency changing to a regular biweekly schedule.",
         "date": "July 14, 2022",
-        "version": "1.1.0.0",
+        "version": "1.1.0",
         "type": "Baseline",
+        "link": "07_14_2022",
         "upgrade": [{ "description": "" }],
         "breaking": [],
         "features": [
