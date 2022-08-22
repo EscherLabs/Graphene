@@ -1094,15 +1094,13 @@ gform.types["ace"] = _.extend({}, gform.types["input"], {
     // this.el.addEventListener('change', this.onchangeEvent.bind(null,false));
     this.editor = ace.edit(this.el.querySelector("#" + this.id + "container"));
     this.editor.setTheme(this.item.theme || "ace/theme/chrome");
-    this.editor
-      .getSession()
-      .setMode({
-        path:
-          this.owner.options.default.mode ||
-          this.item.mode ||
-          "ace/mode/handlebars",
-        inline: this.owner.options.default.inlinemode || this.item.inlinemode,
-      });
+    this.editor.getSession().setMode({
+      path:
+        this.owner.options.default.mode ||
+        this.item.mode ||
+        "ace/mode/handlebars",
+      inline: this.owner.options.default.inlinemode || this.item.inlinemode,
+    });
     this.editor.session.setValue(this.value || "");
     this.editor.on("change", this.onchangeEvent.bind(null, false));
   },
@@ -1433,7 +1431,7 @@ gform.types["endpoint"] = {
   },
 };
 
-gform.stencils.signaturePad = `
+gform.stencils.signature = gform.stencils.signaturePad = `
 <style>.signaturePad-canvas{border:solid 1px #bbb;} 
 .has-error .signaturePad-canvas{border-color:red;}</style>
 <div class="row clearfix form-group {{modifiers}} data-type="{{type}}">
