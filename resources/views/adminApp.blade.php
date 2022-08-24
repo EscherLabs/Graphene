@@ -14,7 +14,7 @@
   <ul class="dropdown-menu">
     <li><a href="/admin/apps/{!! $app->app_id !!}/developers" target="_blank">Manage Developers</a></li>
     <li role="separator" class="divider"></li>
-    <li><a href="/api/apps/{!! $app->app_id !!}" target="_blank">Export</a></li>
+    <li><a href="/api/apps/{!! $app->app_id !!}/versions/{!! $app->id !!}" target="_blank">Export</a></li>
     <li><a href="#" id="import">Import</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="#" id="versions">Versions</a></li>
@@ -204,7 +204,6 @@
       <script src="test.object.js"></script>
       <script src="test.xhr.js"></script> -->
       <script class="mocha-exec">
-        debugger;
         // mocha.run();
       </script>
 @endsection

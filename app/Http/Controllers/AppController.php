@@ -53,7 +53,8 @@ class AppController extends Controller
         return App::with('user')->where('id',$app->id)->first();
     }
 
-    public function code(Request $request, App $app) { 
+    public function code(Request $request, App $app) {
+        
         $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
         $post_data = $request->all();
         if(!isset($post_data['updated_at']) && !isset($post_data['force']) ){
@@ -194,13 +195,13 @@ class AppController extends Controller
         return $search_response;
     }
     public function versions(Request $request, App $app) { 
-        $app_versions = AppVersion::select('id','summary','created_at','updated_at','user_id')
+        $app_versions = AppVersion::select('id','summary','description','stable','created_at','updated_at','user_id')
             ->with('user')->where('app_id','=',$app->id)->where('stable','=',1)
             ->orderBy('created_at', 'desc')->get();
-        foreach($app_versions as $i => $app_version) {
-            $last_name = !is_null($app_version->toArray()['user'])?'('.$app_version->toArray()['user']['last_name'].')':'';
-            $app_versions[$i]->label = $app_version->updated_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
-        }
+        // foreach($app_versions as $i => $app_version) {
+        //     $last_name = !is_null($app_version->toArray()['user'])?'('.$app_version->toArray()['user']['last_name'].')':'';
+        //     $app_versions[$i]->label = $app_version->updated_at->format('Y-m-d').' - '.$app_version->summary.' '.$last_name;
+        // }
         return $app_versions;
     }
 
@@ -219,7 +220,12 @@ class AppController extends Controller
             return 1;
         }
     }
-    public function admin(App $app) {
+    public function admin(Request $request, App $app) {
+        if($request->has('v')){
+            // return $request->get('v');
+            return view('adminApp', ['app'=>AppVersion::with('app')->where('app_id','=',$app->id)->find($request->get('v') ) ]);
+
+        }
         return view('adminApp', ['app'=>AppVersion::with('app')->where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first()]);
     }
     public function list_developers(App $app)
