@@ -327,7 +327,7 @@ $(".target").on("click", "[data-map]", function (e) {
 
 document.addEventListener("DOMContentLoaded", function () {
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  myform = loaded.code.form || {};
+  myform = attributes.code.form || {};
   // $('#cobler').click();
   path = [];
   // $(e.target).siblings().removeClass('active');
@@ -500,7 +500,58 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 })(jQuery);
 
-attributes = {};
+const isDirty = () => {
+  // $('[href="#templates"]').toggleClass("isDirty", templatePage.isDirty);
+  // $('[href="#methods"]').toggleClass("isDirty", methodPage.isDirty);
+  // $('[href="#resources"]').toggleClass("isDirty", resource_grid.isDirty);
+
+  // $('[href="#form"]').toggleClass("isDirty", formPage.isDirty);
+  // $('[href="#flow"]').toggleClass("isDirty", flow.isDirty);
+  // $('[href="#map"]').toggleClass("isDirty", mapPage.isDirty);
+
+  return (
+    templatePage.isDirty ||
+    methodPage.isDirty ||
+    resource_grid.isDirty ||
+    flowPage.isDirty ||
+    formPage.isDirty ||
+    mapPage.isDirty
+  );
+};
+var flowPage = {
+  toJSON: function () {
+    return flow_states;
+  },
+};
+Object.defineProperty(flowPage, "isDirty", {
+  get: () => !_.isEqual(attributes.code.flow, flowPage.toJSON()),
+});
+
+var formPage = {
+  toJSON: function () {
+    return myform;
+  },
+};
+Object.defineProperty(formPage, "isDirty", {
+  get: () => !_.isEqual(attributes.code.form, formPage.toJSON()),
+});
+
+var mapPage = {
+  toJSON: function () {
+    return map.toJSON().map;
+  },
+};
+Object.defineProperty(mapPage, "isDirty", {
+  get: () => !_.isEqual(attributes.code.map, mapPage.toJSON()),
+});
+
+window.onbeforeunload = () => {
+  return isDirty()
+    ? "You have unsaved changes, are you sure you want to leave?"
+    : undefined;
+};
+
+const attributes = {};
 $('[href="/admin/workflows"]').parent().addClass("active");
 
 var root = "/api/workflows/";
@@ -514,7 +565,23 @@ function setSize() {
 
 window.onresize = setSize;
 function load(workflow_version) {
-  $(".nav-tabs").stickyTabs();
+  // loaded.code = ;
+
+  $.extend(
+    true,
+    attributes,
+    {
+      code: $.extend(
+        true,
+        {
+          templates: [{ name: "Preview", content: "", disabled: true }],
+          methods: [{ name: "Action", content: "", disabled: false }],
+        },
+        workflow_version
+      ),
+    },
+    loaded
+  );
   $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
     var temp = new gform(myform);
     gform.collections.update("form_users", temp.filter({ type: "user" }, 20));
@@ -554,16 +621,6 @@ function load(workflow_version) {
 
   // }
 
-  loaded.code = $.extend(
-    true,
-    {
-      templates: [{ name: "Preview", content: "", disabled: true }],
-      methods: [{ name: "Action", content: "", disabled: false }],
-    },
-    workflow_version
-  );
-
-  attributes = $.extend(true, {}, { code: {} }, loaded);
   $(".navbar-header .nav a h4").html("Workflow - " + attributes.workflow.name);
 
   $("#version").html(attributes.summary || "Working Version");
@@ -576,7 +633,25 @@ function load(workflow_version) {
   };
 
   tableConfig.schema = [
-    { label: "Name", name: "name" },
+    {
+      label: "Name",
+      name: "name",
+      required: true,
+      validate: [
+        {
+          type: "custom",
+          test: function (e) {
+            let models = resource_grid.models;
+            if (e.form.get("_method") == "edit") {
+              models = _.reject(models, e.form.options.model);
+            }
+            return _.includes(_.map(models, "attributes.name"), e.value)
+              ? "Name already used - please choose a unique name"
+              : false;
+          }.bind(null),
+        },
+      ],
+    },
     {
       label: "Modifier",
       name: "modifier",
@@ -636,9 +711,8 @@ function load(workflow_version) {
   //     toastr.error('If you would like to continue using the form builder UI you will need to remove any fieldsets', 'Fieldsets Not Currently Supported');
   //   }
   // }});
-
   r_options = {
-    data: loaded.code,
+    data: attributes.code,
     actions: [],
     fields: [
       {
@@ -660,7 +734,26 @@ function load(workflow_version) {
         array: { min: 0, max: 100, append: { enable: true } },
         type: "fieldset",
         fields: [
-          { name: "name", label: false, columns: 9, placeholder: "Key" },
+          {
+            name: "name",
+            label: false,
+            columns: 9,
+            placeholder: "Key name",
+            required: true,
+            validate: [
+              {
+                type: "required",
+                name: "name",
+                message:
+                  "Key name is required - if you no longer need this key, please delete it",
+              },
+              {
+                type: "unique",
+                name: "map",
+                message: "Key name must be unique",
+              },
+            ],
+          },
           {
             name: "type",
             label: false,
@@ -730,8 +823,9 @@ function load(workflow_version) {
     );
 }
 
-load(loaded.code);
+$(".nav-tabs").stickyTabs();
 orig = $.extend({}, loaded);
+load(loaded.code);
 
 $(document).keydown(function (e) {
   if ((e.which == "115" || e.which == "83") && (e.ctrlKey || e.metaKey)) {
@@ -741,102 +835,8 @@ $(document).keydown(function (e) {
   return true;
 });
 
-// function modalForm(form, name, onSave) {
-//   if(typeof cb === 'undefined'){
-//     if(typeof form === 'string'){
-//       form = JSON.parse(form || '{}');
-//     }
-//     form = form || {};
-//     $('#myModal').remove();
-//     this.onSave = onSave;
-//     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-//     $(this.ref).appendTo('body');
-//     this.ref.find('.modal-body').html(templates.formEditor.render());
-//     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-//     this.ref.on('hide.bs.modal', function(){
-//       cb.destroy();
-//       delete cb;
-//     });
-//     this.ref.find('#saveForm').on('click', function(){
-//       this.onSave.call(this)
-//       this.ref.modal('hide');
-
-//     }.bind(this))
-//     this.ref.modal({backdrop: 'static'});
-
-//     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-//     $('.modal #form').keydown(function(event) {
-//       switch(event.keyCode) {
-//         case 27://escape
-//             event.stopPropagation();
-//             cb.deactivate();
-//             return false;
-//           break;
-//       }
-//     });
-//     list = document.getElementById('sortableList');
-//     cb.addSource(list);
-//     cb.on('activate', function(){
-//       if(list.className.indexOf('hidden') == -1){
-//         list.className += ' hidden';
-//       }
-//       $('#form').removeClass('hidden');
-//     })
-//     cb.on('deactivate', function(){
-//       list.className = list.className.replace('hidden', '');
-//       $('#form').addClass('hidden');
-//     })
-//     document.getElementById('sortableList').addEventListener('click', function(e) {
-//       cb.collections[0].addItem(e.target.dataset.type);
-//     })
-//   }
-
-//   if(typeof form !== 'undefined'){
-//     var temp = $.extend(true, {}, form);
-//     for(var i in temp.fields){
-
-//       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-//       switch(temp.fields[i].type) {
-//         case "select":
-//         case "radio":
-//           temp.fields[i].widgetType = 'select';
-//           break;
-//         case "checkbox":
-//           temp.fields[i].widgetType = 'checkbox';
-//           break;
-//         default:
-//           temp.fields[i].widgetType = 'textbox';
-//       }
-
-//     }
-
-//     list.className = list.className.replace('hidden', '');
-//     cb.collections[0].load(temp.fields);
-//   }
-// }
-
 function createFlow() {
-  // options = new gform({data:attributes.code,actions:[],fields:[
-  //   {name:"flow",label:false,type:'ace',mode:'ace/mode/javascript'}
-  // ]},".options").on('change',function(e){
-  //   try{
-  //     var temp = _.map(JSON.parse(options.get().flow),function(item){
-  //       var temp = '\n'+item.name+'['+item.name+']';
-  //       var stuff = _.map(item.actions,function(i){
-  //         return '\n'+item.name+'['+item.name+']'+'-->|'+i.label+'|'+' '+i.to;
-  //       })
-  //       return temp+stuff.join('')
-  //     })
-  //     myfunc('graph TB'+temp.join(''))
-  //   }catch(e){}
-  // })
-  // options.trigger('change')
-  //<span class="fa fa-plus"></span>
   try {
-    // flow_states = _.map(flow_states,function(state){
-    //   state.name = state.name||state.state_id;
-    //   return state;
-    // })
     var graph = _.map(flow_states, function (state, i, j) {
       state.name = state.name || state.state_id;
       var graph = "\n" + state.name.split(" ").join("_") + "";
@@ -934,8 +934,6 @@ function drawForm(name) {
         action: "done",
       },
     ],
-    // legend:"State",
-    // sections:"tab",
     clear: false,
     data: _.find(flow_states, { name: name }),
   };
@@ -1179,9 +1177,6 @@ function drawForm(name) {
                     },
                   ],
                 },
-                // _.extend({name:"id",show: [{type: "matches", name: "type", value: "user"}], type: "combobox", search: "/api/users/search/{{search}}{{value}}", format: {label: "{{first_name}} {{last_name}}", value: "{{unique_id}}", display: "{{first_name}} {{last_name}}<div>{{email}}</div>"}}, valueField),
-                // _.extend({name:"id",show: [{type: "matches", name: "type", value: "group"}], type: "combobox", options: '/api/groups', format: {label: "{{name}}", value: "{{id}}"}}, valueField),
-
                 {
                   name: "id",
                   inline: false,
@@ -1202,9 +1197,6 @@ function drawForm(name) {
                   placeholder: "None",
                   options: "resources",
                 },
-
-                // {name: "endpoint",columns:4, label: "Endpoint", type: "select", options: "endpoints", format: {label: "{{name}}", value: "{{name}}"}, show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
-                // {name: "url",columns:8,placeholder:"\\", type: "url", label: "Path", show: [{type: "not_matches", name: "type", value: ["user","group"]}]},
               ],
             },
           ],
@@ -1215,7 +1207,6 @@ function drawForm(name) {
         )
       )
       .concat([
-        // {type:"button",name:"delete",action:"delete",modifiers:"btn btn-danger pull-right",label:'<i class="fa fa-times"></i> Delete',target:false},
         {
           target: "#collapseBasic .panel-body",
           name: "state_id",
@@ -1313,10 +1304,6 @@ function drawForm(name) {
                         { value: "group", label: "Group" },
                       ],
                     },
-
-                    // gform.types['user']= _.extend({}, gform.types['combobox'], {
-                    //   defaults:{search:"/api/users/search/{{search}}{{value}}",format:{title:'User <span class="text-success pull-right">{{value}}</span>',label:"{{first_name}} {{last_name}}",value:"{{unique_id}}", display:"{{first_name}} {{last_name}}<div>{{email}}</div>"}}
-                    // })
                     {
                       type: "number",
                       min: 1,
@@ -1486,13 +1473,6 @@ function drawForm(name) {
                   array: { min: 1, max: 1 },
                   show: [{ name: "show", value: ["other"], type: "matches" }],
                 },
-
-                // {
-                //   type: 'select', other: true, columns: 12, label: 'Enable Action', value: true, name: "edit", parse: [{ type: "not_matches", name: "edit", value: true }], options:
-                //     [{ type: "optgroup", options: [{ label: 'Always', value: true }, { label: 'Never', value: false }, { label: 'Use same settings as "Show"', value: 'show' }, { label: "Conditionally", value: "other" }] }]
-                // },
-                // { type: 'fieldset', columns: 11, offset: '1', label: false, name: "edit", fields: myconditions, array: { min: 1, max: 1 }, show: [{ name: "edit", value: ['other'], type: "matches" }] },
-
                 {
                   name: "task_label",
                   label: "<h4>Tasks</h4>",
@@ -1555,7 +1535,6 @@ function drawForm(name) {
   );
   $("#flow-form").html(gform.renderString(flowAccordion));
 
-  // $('.panelOptions').toggle(!!_.find(formConfig.fields,{target:"#collapseOptions .panel-body"}));
   $(".panelAssignment").toggle(
     !!_.find(formConfig.fields, {
       target: "#collapseAssignment .panel-body",
@@ -1576,9 +1555,6 @@ function drawForm(name) {
     !!_.find(formConfig.fields, { target: "#collapseActions .panel-body" }) &&
       !formConfig.data.logic
   );
-
-  // $('.panelConditions').toggle(!!_.find(formConfig.fields,{target:"#collapseConditions .panel-body"}));
-  // $('.panelDisplay').toggle(!!_.find(formConfig.fields,{target:"#collapseDisplay .panel-body"}));
 
   flowForm = new gform(formConfig, "#flow-form")
     .on("input", function (e) {
@@ -1627,9 +1603,6 @@ function drawForm(name) {
       if (tempName != e.form.options.data.name) {
         _.each(flow_states, function (state) {
           _.each(state.actions, function (action, i) {
-            // if(action.from == e.form.options.data.name){
-            //   action.from = e.form.toJSON().name
-            // }
             if (action.to == e.form.options.data.name) {
               action.to = tempName;
               if (tempName == state.name) {
@@ -1701,9 +1674,6 @@ gform.collections.add(
 );
 gform.collections.add("flowstates", _.pluck(flow_states, "name"));
 gform.collections.add("resources", _.pluck(attributes.code.resources, "name"));
-var temp = new gform(attributes.code.form || {});
-gform.collections.add("form_users", temp.filter({ type: "user" }, 20));
-gform.collections.add("form_groups", temp.filter({ type: "group" }, 20));
 gform.collections.add(
   "methods",
   _.map(_.pluck(attributes.code.methods, "name"), function (item, i, j) {
@@ -1716,6 +1686,10 @@ gform.collections.add(
     return { value: "template_" + i, label: item };
   })
 );
+
+var temp = new gform(attributes.code.form || {});
+gform.collections.add("form_users", temp.filter({ type: "user" }, 20));
+gform.collections.add("form_groups", temp.filter({ type: "group" }, 20));
 var valueField = {
   label: 'Value <span class="text-success pull-right">{{value}}</span>',
 };
@@ -1934,7 +1908,7 @@ var taskForm = [
     columns: 4,
     label: "Verb",
     type: "select",
-    options: ["GET", "POST", "PUT", "DELETE"],
+    options: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     show: [{ type: "matches", name: "task", value: "resource" }],
   },
   {
@@ -2019,16 +1993,24 @@ $("#add-logic").on("click", function () {
   createFlow();
 });
 $("#save").on("click", function () {
+  if (!isDirty()) {
+    toastr.success("All up to date!", "No Changes");
+    return;
+  }
+
+  if (!map.validate()) return;
   var data = { code: { flow: flow_states } };
   if (true || !errorCount) {
     // data.code.form = JSON.parse(formPage.toJSON()[0].content);
-    data.code.form = JSON.stringify(myform);
+
+    // template_errors = templatePage.errors();
     data.updated_at = attributes.updated_at;
+
+    data.code.form = JSON.stringify(myform);
     data.code.map = map.toJSON().map;
-    template_errors = templatePage.errors();
     data.code.templates = templatePage.toJSON();
     data.code.methods = methodPage.toJSON();
-    data.code.resources = resource_grid.toJSON(); //_.map(bt.models,'attributes');
+    data.code.resources = resource_grid.toJSON();
     $.ajax({
       url: root + attributes.workflow_id + "/code",
       method: "put",
@@ -2037,6 +2019,13 @@ $("#save").on("click", function () {
       data: JSON.stringify(data),
       success: function (e) {
         attributes.updated_at = e.updated_at;
+        attributes.code = e.code;
+
+        templatePage.items = e.code.templates;
+        methodPage.items = e.code.methods;
+        resource_grid.items = e.code.resources;
+
+        isDirty();
         loadInstances();
         toastr.success("", "Successfully Saved");
       },
@@ -2146,19 +2135,9 @@ $("#publish").on("click", function () {
     .modal();
 });
 
-// $.get('/api/workflowinstances?workflow_id=' + loaded.app_id, function(data) {
-//   if(data.length > 0){
-//     // viewTemplate = Hogan.compile();
-
-//     // modal({title: 'This App has the following instances', content: viewTemplate.render({items: data})});
-//     document.querySelector('.sidebar').appendChild(gform.create(gform.m('<div class="list-group">{{#items}}<div class="list-group-item"><a href="/workflow/{{group_id}}/{{slug}}" rel=”noopener noreferrer” target="_blank">{{name}}</a><a class="btn btn-warning" style="position: absolute;top: 3px;right: 3px;" href="/admin/workflowinstances/{{id}}" target="_blank"><i class="fa fa-pencil"></i></a></div>{{/items}}</div>',{items: data})))
-//   }else{
-//   }
-// })
-
 loadInstances = function () {
   $.get(
-    "/api/workflowinstances?workflow_id=" + loaded.workflow_id,
+    "/api/workflowinstances?workflow_id=" + attributes.workflow_id,
     function (workflow_instances) {
       if (workflow_instances.length > 0) {
         // viewTemplate = Hogan.compile();
@@ -2512,7 +2491,7 @@ $.get("/api/groups?members=20", function (groups) {
 
 $("#versions").on("click", function () {
   $.ajax({
-    url: root + loaded.workflow_id + "/versions",
+    url: root + attributes.workflow_id + "/versions",
     success: function (data) {
       if (!orig.stable) {
         data.unshift({ id: orig.id, label: "Working Version" });
@@ -2521,7 +2500,7 @@ $("#versions").on("click", function () {
       new gform({
         actions: [{ type: "cancel" }, { type: "save", label: "Switch" }],
         name: "modal",
-        data: { workflow_version_id: loaded.id },
+        data: { workflow_version_id: attributes.id },
         legend: "Select Version",
         fields: [
           {

@@ -20,6 +20,7 @@ use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AppInstanceController extends Controller
 {
@@ -92,10 +93,19 @@ class AppInstanceController extends Controller
 	}
 
     public function create(Request $request) {
-        $this->validate($request,['name'=>['required']]);
+        $this->validate($request,[
+            'name'=>['required'],
+            "group_id"=>["required"],
+            'slug'=>["required",
+                Rule::unique('app_instances', 'slug')->where(function ($query) use($request) {
+                    return $query->where('group_id', $request->get('group_id'));
+                })
+            ]
+        ]);
+        if(new AppInstance($request->all()))
         $app_instance = new AppInstance($request->all());
-        // TJC 3/22/19 Defaunt New App Instances to NULL (latest working or published)
-        // $app_instance->app_version_id = AppVersion::where('app_id','=',$request->get('app_id'))->orderBy('id','desc')->pluck('id')->first();
+
+        // Default New App Instances to NULL (latest working or published)
         $app_instance->app_version_id = null;
         $app_instance->app_id = $request->get('app_id');
         $app_instance->group_id = $request->get('group_id');
@@ -109,6 +119,14 @@ class AppInstanceController extends Controller
     }
 
     public function update(Request $request, AppInstance $app_instance) {
+        $this->validate($request,[
+            'name'=>['required'],
+            'slug'=>["required",
+                Rule::unique('app_instances', 'slug')->where(function ($query) use($app_instance) {
+                    return $query->where('group_id', $app_instance->group_id);
+                })->ignore($app_instance)
+            ]
+        ]);
         $data = $request->all();
         if(isset($data['groups'])){
             $data['groups'] = array_filter($data['groups']);

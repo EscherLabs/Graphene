@@ -56,7 +56,44 @@
       route:route
     }
     templates = {};
-    
+
+@verbatim
+    var onError = function (event, error) {
+      event.model.undo();
+      if (event.model.deleted) {
+        event.grid.dispatch("create", {
+          event: "create",
+          data: gform.instances.modal.get(),
+        });
+      } else {
+        event.grid.dispatch("edit", { event: "edit", model: event.model });
+      }
+      try {
+        error = JSON.parse(error.responseText);
+
+        toastr.error(
+          $g.render(
+            "{{#errors}}<b>{{label}}</b>{{#values}}<div>{{.}}</div>{{/values}}{{/errors}}",
+            {
+              errors: _.reduce(
+                error.errors,
+                (result, error, key) => {
+                  result.push({ label: key, values: error });
+                  return result;
+                },
+                []
+              ),
+            }
+          ),
+          error.message
+        );
+        gform.instances.modal.find(_.keys(error.errors)[0]).focus();
+      } catch (ierror) {
+        toastr.error(error.statusText, "ERROR");
+      }
+    };
+
+@endverbatim
     var tableConfig = {
       entries: [25, 50, 100],
       count: 25,
@@ -76,9 +113,7 @@
                 model.set(response);
                 toastr.success('', 'Successfully Added')
               }.bind(null, e.model),
-              error: response => {
-                toastr.error(response.statusText, 'ERROR');
-              }
+              error: onError.bind(null, e),
             });
           }
         },
@@ -91,13 +126,11 @@
             dataType : 'json',
             contentType: 'application/json',
             data: JSON.stringify(e.model.attributes),
-              success:function(e,data) {
-                e.model.set(data);
-                toastr.success('', 'Successfully Updated')
-              }.bind(null,e),
-              error: e => {
-                toastr.error(e.statusText, 'ERROR');
-              }
+            success:function(e,data) {
+              e.model.set(data);
+              toastr.success('', 'Successfully Updated')
+            }.bind(null,e),
+            error: onError.bind(null, e),
           });
         }
       },{event:"model:deleted",handler:function(e){
@@ -107,9 +140,7 @@
             success:function(e) {
               toastr.success('', 'Successfully Deleted')
             }.bind(null,e),
-            error: e => {
-              toastr.error(e.statusText, 'ERROR');
-            }
+            error: onError.bind(null, e),
           });
       }}]
     }

@@ -387,6 +387,22 @@ $g = (function (options) {
       }
     }
   });
+
+  Object.defineProperty(api, "about", {
+    get: () => {
+      return {
+        version: "1.1.0.1",
+        subSystems: [
+          { type: "Workflow", version: "0.0.1.0" },
+          { type: "microApp", version: "0.0.1.0" },
+          { type: "forms", version: "0.0.1.0", name: "gform" },
+          { type: "grids", version: "0.0.1.0", name: "gformDataGrid" },
+        ],
+      };
+    },
+    enumerable: true,
+  });
+
   return api;
 })({ broadcast: { app: "custom" } });
 
@@ -467,6 +483,7 @@ $g.on("loaded debug", e => {
       )
     )
   );
+
   // debugger;
   // if(e.data.clear) document.querySelector('#target').innerHTML = '';
   // if(e.data.message.length){

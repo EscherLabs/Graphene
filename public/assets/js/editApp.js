@@ -54,6 +54,58 @@
   };
 })(jQuery);
 
+const isDirty = () => {
+  // $('[href="#templates"]').toggleClass("isDirty", templatePage.isDirty);
+  // $('[href="#scripts"]').toggleClass("isDirty", scriptPage.isDirty);
+  // $('[href="#resources"]').toggleClass("isDirty", resource_grid.isDirty);
+  // $('[href="#forms"]').toggleClass("isDirty", formsPage.isDirty);
+  // $('[href="#styles"]').toggleClass("isDirty", stylesPage.isDirty);
+  return (
+    templatePage.isDirty ||
+    scriptPage.isDirty ||
+    resource_grid.isDirty ||
+    stylesPage.isDirty ||
+    formsPage.isDirty
+  );
+};
+
+const page = function ({ label, type = "file", name }) {
+  let ref;
+  switch (type) {
+    case "grid":
+      break;
+    case "files":
+      break;
+    case "form":
+      break;
+    default:
+  }
+  const api = {};
+
+  return api;
+};
+
+const pages = function (options) {
+  const pages = _.map(options.pages, currentPage => new page(page));
+  const api = {};
+
+  Object.defineProperty(api, "isDirty", {
+    get: () =>
+      templatePage.isDirty ||
+      scriptPage.isDirty ||
+      resource_grid.isDirty ||
+      stylesPage.isDirty ||
+      formsPage.isDirty,
+  });
+  return api;
+};
+
+window.onbeforeunload = () => {
+  return isDirty()
+    ? "You have unsaved changes, are you sure you want to leave?"
+    : undefined;
+};
+
 attributes = {};
 $('[href="/admin/apps"]').parent().addClass("active");
 
@@ -115,7 +167,25 @@ function load(app_version) {
   };
 
   tableConfig.schema = [
-    { label: "Name", name: "name" },
+    {
+      label: "Name",
+      name: "name",
+      required: true,
+      validate: [
+        {
+          type: "custom",
+          test: function (e) {
+            let models = resource_grid.models;
+            if (e.form.get("_method") == "edit") {
+              models = _.reject(models, e.form.options.model);
+            }
+            return _.includes(_.map(models, "attributes.name"), e.value)
+              ? "Name already used - please choose a unique name"
+              : false;
+          }.bind(null),
+        },
+      ],
+    },
     {
       label: "Modifier",
       name: "modifier",
@@ -128,7 +198,7 @@ function load(app_version) {
         { label: "Include as CSS", value: "css" },
       ],
     },
-    { label: "Path", name: "path" },
+    { label: "Path", name: "path", required: true },
     {
       label: "Fetch",
       type: "checkbox",
@@ -217,6 +287,29 @@ function load(app_version) {
   });
   setupform();
 }
+var formsPage = {
+  toJSON: function () {
+    return _.map(working_forms, function (original_form) {
+      var form = JSON.parse(JSON.stringify(original_form));
+      if (typeof form.content == "object") {
+        form.content = JSON.stringify(form.content);
+      }
+      return _.omit(form, "i");
+    });
+  },
+};
+Object.defineProperty(formsPage, "isDirty", {
+  get: () => !_.isEqual(formsPage.toJSON(), attributes.code.forms),
+});
+
+var stylesPage = {
+  toJSON: function () {
+    return $g.forms.style.get().code.css;
+  },
+};
+Object.defineProperty(stylesPage, "isDirty", {
+  get: () => !_.isEqual(attributes.code.css, stylesPage.toJSON()),
+});
 
 $(document).keydown(function (e) {
   if ((e.which == "115" || e.which == "83") && (e.ctrlKey || e.metaKey)) {
@@ -226,88 +319,92 @@ $(document).keydown(function (e) {
   return true;
 });
 
-// function modalForm(form, name, onSave) {
-
-//   if(typeof cb === 'undefined'){
-//     if(typeof form === 'string'){
-//       form = JSON.parse(form || '{}');
-//     }
-//     form = form || {};
-//     $('#myModal').remove();
-//     this.onSave = onSave;
-//     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
-//     $(this.ref).appendTo('body');
-//     this.ref.find('.modal-body').html(templates.formEditor.render());
-//     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
-//     this.ref.on('hide.bs.modal', function(){
-//       cb.destroy();
-//       delete cb;
-//     });
-//     this.ref.find('#saveForm').on('click', function(){
-//       this.onSave.call(this)
-//       this.ref.modal('hide');
-
-//     }.bind(this))
-//     this.ref.modal({backdrop: 'static'});
-
-//     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
-//     $('.modal #form').keydown(function(event) {
-//       switch(event.keyCode) {
-//         case 27://escape
-//             event.stopPropagation();
-//             cb.deactivate();
-//             return false;
-//           break;
-//       }
-//     });
-//     list = document.getElementById('sortableList');
-//     cb.addSource(list);
-//     cb.on('activate', function(){
-//       if(list.className.indexOf('hidden') == -1){
-//         list.className += ' hidden';
-//       }
-//       $('#form').removeClass('hidden');
-//     })
-//     cb.on('deactivate', function(){
-//       list.className = list.className.replace('hidden', '');
-//       $('#form').addClass('hidden');
-//     })
-//     document.getElementById('sortableList').addEventListener('click', function(e) {
-//       cb.collections[0].addItem(e.target.dataset.type);
-//     })
-//   }
-
-//   if(typeof form !== 'undefined'){
-//     var temp = $.extend(true, {}, form);
-//     for(var i in temp.fields){
-
-//       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
-//       switch(temp.fields[i].type) {
-//         case "select":
-//         case "radio":
-//           temp.fields[i].widgetType = 'select';
-//           break;
-//         case "checkbox":
-//           temp.fields[i].widgetType = 'checkbox';
-//           break;
-//         default:
-//           temp.fields[i].widgetType = 'textbox';
-//       }
-
-//     }
-
-//     list.className = list.className.replace('hidden', '');
-//     cb.collections[0].load(temp.fields);
-//   }
-// }
-
 $("#save").on("click", function () {
+  if (!isDirty()) {
+    toastr.success("All up to date!", "No Changes");
+    return;
+  }
+
+  //   if(typeof cb === 'undefined'){
+  //     if(typeof form === 'string'){
+  //       form = JSON.parse(form || '{}');
+  //     }
+  //     form = form || {};
+  //     $('#myModal').remove();
+  //     this.onSave = onSave;
+  //     this.ref = $(templates.modal.render({title: 'Form Editor: '+ name}));
+  //     $(this.ref).appendTo('body');
+  //     this.ref.find('.modal-body').html(templates.formEditor.render());
+  //     this.ref.find('.modal-footer').html('<div id="saveForm" class="btn btn-success"><i class="fa fa-check"></i> Save</div>');
+  //     this.ref.on('hide.bs.modal', function(){
+  //       cb.destroy();
+  //       delete cb;
+  //     });
+  //     this.ref.find('#saveForm').on('click', function(){
+  //       this.onSave.call(this)
+  //       this.ref.modal('hide');
+
+  //     }.bind(this))
+  //     this.ref.modal({backdrop: 'static'});
+
+  //     cb = new Cobler({formOptions:{inline:true},formTarget:$('#form'), disabled: false, targets: [document.getElementById('editor')],items:[[]]});
+  //     $('.modal #form').keydown(function(event) {
+  //       switch(event.keyCode) {
+  //         case 27://escape
+  //             event.stopPropagation();
+  //             cb.deactivate();
+  //             return false;
+  //           break;
+  //       }
+  //     });
+  //     list = document.getElementById('sortableList');
+  //     cb.addSource(list);
+  //     cb.on('activate', function(){
+  //       if(list.className.indexOf('hidden') == -1){
+  //         list.className += ' hidden';
+  //       }
+  //       $('#form').removeClass('hidden');
+  //     })
+  //     cb.on('deactivate', function(){
+  //       list.className = list.className.replace('hidden', '');
+  //       $('#form').addClass('hidden');
+  //     })
+  //     document.getElementById('sortableList').addEventListener('click', function(e) {
+  //       cb.collections[0].addItem(e.target.dataset.type);
+  //     })
+  //   }
+
+  //   if(typeof form !== 'undefined'){
+  //     var temp = $.extend(true, {}, form);
+  //     for(var i in temp.fields){
+
+  //       temp.fields[i] = Berry.normalizeItem(temp.fields[i], i);
+  //       switch(temp.fields[i].type) {
+  //         case "select":
+  //         case "radio":
+  //           temp.fields[i].widgetType = 'select';
+  //           break;
+  //         case "checkbox":
+  //           temp.fields[i].widgetType = 'checkbox';
+  //           break;
+  //         default:
+  //           temp.fields[i].widgetType = 'textbox';
+  //       }
+
+  //     }
+
+  //     list.className = list.className.replace('hidden', '');
+  //     cb.collections[0].load(temp.fields);
+  //   }
+  // }
+
+  // $("#save").on("click", function () {
   template_errors = templatePage.errors();
   script_errors = scriptPage.errors();
   var data = { code: {} };
-  data.code.css = $g.forms.style.get().code.css;
 
-  data.code.resources = resource_grid.toJSON(); //_.map(bt.models,'attributes');
+  data.code.css = stylesPage.toJSON();
+  data.code.resources = resource_grid.toJSON();
   data.code.templates = templatePage.toJSON();
 
   try {
@@ -337,6 +434,7 @@ $("#save").on("click", function () {
       }
       return _.omit(form, "i");
     });
+    // data.code.forms = formsPage.toJSON();
 
     data.updated_at = attributes.updated_at;
 
@@ -345,9 +443,20 @@ $("#save").on("click", function () {
       method: "put",
       data: data,
       success: function (e) {
+        templatePage.items = e.code.templates;
+        scriptPage.items = e.code.scripts;
+        resource_grid.items = e.code.resources;
+
+        //sync style
+        attributes.code.css = e.code.css;
+
+        //sync forms
+        attributes.code.forms = e.code.forms;
+
         attributes.updated_at = e.updated_at;
         loadInstances();
         toastr.success("", "Successfully Saved");
+        isDirty();
       },
       error: function (e) {
         toastr.error(e.statusText, "ERROR");
@@ -1013,7 +1122,8 @@ mainForm = function () {
             name: "name",
             label: "Name",
             columns: 6,
-            edit: [{ type: "matches", name: "disabled", value: false }],
+            edit: false,
+            // edit: [{ type: "matches", name: "disabled", value: false }],
           },
           {
             name: "autoFocus",
@@ -1232,6 +1342,8 @@ mainForm = function () {
           gform.renderString(
             `<div class="btn-group">
             <button type="button" class="btn btn-info go pages_new">New Form</span></button>
+            <button type="button" class="btn btn-primary rename_form">Rename Form</span></button>
+
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class=""> Select Form</span> <span class="caret"></span>
               <span class="sr-only">Toggle Dropdown</span>
@@ -1333,6 +1445,8 @@ setupform = function (index) {
     gform.renderString(
       `<div class="btn-group">
         <button type="button" class="btn btn-info go pages_new">New Form</span></button>
+        <button type="button" class="btn btn-primary rename_form">Rename</span></button>
+
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class=""> Select Form</span> <span class="caret"></span>
           <span class="sr-only">Toggle Dropdown</span>
@@ -1366,6 +1480,27 @@ document.addEventListener("DOMContentLoaded", function () {
   $("#formlist").on("click", ".form_edit", function (e) {
     setupform(parseInt(e.target.dataset.index));
   });
+  $("#formlist").on("click", ".rename_form", function (e) {
+    if (working_forms[formIndex].disabled) return;
+    new gform({
+      name: "renameform",
+      legend: "Rename Form",
+      fields: [{ name: "name", label: "Form Name" }],
+      data: working_forms[formIndex],
+    })
+      .on("save", function (e) {
+        debugger;
+        let el = gform.instances.editor.find("name");
+        el.set(e.form.get("name"));
+        el.trigger("input", el);
+        e.form.trigger("close");
+      })
+      .on("cancel", function () {
+        e.form.trigger("close");
+      })
+      .modal();
+  });
+
   $("#formlist").on("click", ".pages_new", function (e) {
     new gform({
       name: "page_name",
