@@ -5,8 +5,8 @@
     "releases": [
       {
         "notes": "",
-        "date": "July 27, 2022",
-        "version": "1.2.0-rc.1",
+        "date": "August 24, 2022",
+        "version": "1.2.0",
         "type": "Enhancement",
         "upgrade": {
           "description": "Run 'composer update' to add 'doctrine/dbal' in order to alter the column size and 'php artisan migration' to change the app and workflow descriptions columns "
