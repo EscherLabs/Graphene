@@ -326,14 +326,8 @@ $(".target").on("click", "[data-map]", function (e) {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  // myform = JSON.parse(($.jStorage.get('form') || "{}"));
   myform = JSON.parse(JSON.stringify(attributes.code.form || {}));
-  // $('#cobler').click();
   path = [];
-  // $(e.target).siblings().removeClass('active');
-  // $(e.target).addClass('active');
-  // $('#form').addClass('hidden');
-  // $('.view_source').removeClass('hidden');
   renderBuilder();
 });
 
@@ -561,6 +555,21 @@ function setSize() {
   var temp = $(window).height() - $("#flow-form").offset().top;
   $("body").append("<style>#flow-form { height: " + temp + "px; }</style>");
   $("body").append("<style>.ace_editor { height: " + temp2 + "px; }</style>");
+  $("body").append(`<style>.avatar{
+    width: 40px;
+      height: 40px;
+      background: #b4cde0;
+      text-align: center;
+      border-radius: 50%;
+      line-height: 40px;
+      font-size: 20px;
+      color: #fff;
+      float: left;
+      margin: 5px;
+  }
+  .avatar.self{
+    background:#cab4e0;
+  }</style>`);
 }
 
 window.onresize = setSize;
@@ -2492,51 +2501,114 @@ $.get("/api/groups?members=20", function (groups) {
 $("#versions").on("click", function () {
   $.ajax({
     url: root + attributes.workflow_id + "/versions",
-    success: function (data) {
+    success: function (versions) {
+      // "{{label}}{{^label}}{{updated_at.date}} - {{summary}} ({{user.last_name}}){{/label}}"
       if (!orig.stable) {
-        data.unshift({ id: orig.id, label: "Working Version" });
+        versions.unshift({ ...orig, summary: "Working Version" });
       }
+      versions.forEach($g.formatDates);
+      versions.forEach(version => {
+        // version.live = !(version.stable == 0);
+        version.label = $g.render(
+          "{{updated_at.date}} - {{summary}} ({{user.last_name}})",
+          version
+        );
+        version.user = version.user || { first_name: "-", last_name: "-" };
+        version.initials =
+          version.user.first_name[0] + version.user.last_name[0];
+      });
+      let versionList = $g.render(
+        `<div class="list-group" >
+        {{#versions}}
+        <a href="?v={{id}}" target="_blank" class="list-group-item {{#stable}}list-group-item-warning{{/stable}}" >
+          {{#stable}}<span class="pull-right"><i class="fa fa-lock fa-lg"></i></span>{{/stable}}
 
-      new gform({
-        actions: [{ type: "cancel" }, { type: "save", label: "Switch" }],
-        name: "modal",
-        data: { workflow_version_id: attributes.id },
-        legend: "Select Version",
-        fields: [
-          {
-            label: "Version",
-            name: "workflow_version_id",
-            options: data,
-            type: "select",
-            format: {
-              label: "{{label}}",
-              value: version => version.id,
-            },
-          },
-        ],
-      })
-        .on("save", e => {
-          // switch version
-          e.form.trigger("close");
+          <!--div class="btn-group parent-hover hidden" style="position: absolute;right: 15px;bottom:5px">
+            <div class="btn btn-default" data-id="{{id}}" data-click="download"><i class="fa fa-download"></i></div>
+            <a class="btn btn-default" target="_blank" href="?v={{id}}"><i class="fa fa-eye"></i></a>
+          </div-->
+          <div style="display:flex;">
+            <div class="avatar" title="" data-toggle="tooltip" data-placement="top" style="background:" data-original-title="{{user.first_name}} {{user.last_name}}">{{initials}}</div>
+            <span style="padding-left:15px;flex-grow: 1;">
+              <b>{{summary}}</b>
+              <p>{{description}}</p>
+              <div style=""><span>{{#stable}}<i class="fa fa-calendar-check-o"></i> {{/stable}}{{updated_at.date}}</span></div>
+            </span>
+          </div>
+        </a> {{/versions}}
+      </div>`,
+        { versions }
+      );
+      $g.modal({ content: versionList, title: "Versions" });
+      $('[data-toggle="tooltip"]').tooltip();
 
-          $.ajax({
-            url:
-              root +
-              attributes.workflow_id +
-              "/versions/" +
-              e.form.get("workflow_version_id"),
-            method: "get",
-            success: function (version) {
-              version.workflow = loaded.workflow;
-              loaded = version;
-              load(loaded.code);
-            },
-          });
-        })
-        .on("cancel", e => {
-          e.form.trigger("close");
-        })
-        .modal();
+      _.each(document.querySelectorAll("[data-click]"), el => {
+        el.addEventListener("click", e => {
+          let { id, click } = e.currentTarget.dataset;
+          if (click == "download") {
+            $.ajax({
+              url: "/api/apps/" + attributes.app_id + "/versions/" + id,
+              method: "get",
+              success: function (version) {
+                let title = "version_" + id;
+                var link = document.createElement("a");
+                link.setAttribute(
+                  "href",
+                  "data:application/json;charset=utf-8," +
+                    encodeURIComponent(JSON.stringify(version))
+                  // "data:text/txt;charset=utf-8," + encodeURIComponent(JSON.stringify(version))
+                );
+                link.setAttribute("download", (title || "version") + ".json");
+                document.body.appendChild(link); // Required for FF
+                link.click();
+                document.body.removeChild(link);
+              },
+            });
+          }
+        });
+      });
+
+      console.table(versions);
+      // new gform({
+      //   actions: [{ type: "cancel" }, { type: "save", label: "Switch" }],
+      //   name: "modal",
+      //   data: { workflow_version_id: attributes.id },
+      //   legend: "Select Version",
+      //   fields: [
+      //     {
+      //       label: "Version",
+      //       name: "workflow_version_id",
+      //       options: versions,
+      //       type: "select",
+      //       format: {
+      //         label: "{{label}}",
+      //         value: version => version.id,
+      //       },
+      //     },
+      //   ],
+      // })
+      //   .on("save", e => {
+      //     // switch version
+      //     e.form.trigger("close");
+
+      //     $.ajax({
+      //       url:
+      //         root +
+      //         attributes.workflow_id +
+      //         "/versions/" +
+      //         e.form.get("workflow_version_id"),
+      //       method: "get",
+      //       success: function (version) {
+      //         version.workflow = loaded.workflow;
+      //         loaded = version;
+      //         load(loaded.code);
+      //       },
+      //     });
+      //   })
+      //   .on("cancel", e => {
+      //     e.form.trigger("close");
+      //   })
+      //   .modal();
     },
   });
 });

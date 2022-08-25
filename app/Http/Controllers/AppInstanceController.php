@@ -122,7 +122,7 @@ class AppInstanceController extends Controller
         if($request->has('slug')){
             $this->validate($request,[
                 // 'name'=>['required'],
-                'slug'=>["required",
+                'slug'=>[
                     Rule::unique('app_instances', 'slug')->where(function ($query) use($app_instance) {
                         return $query->where('group_id', $app_instance->group_id);
                     })->ignore($app_instance)
@@ -137,6 +137,15 @@ class AppInstanceController extends Controller
         $app_instance->update($data);
         return AppInstance::where('id', '=',$app_instance->id)->first();
     }
+    // public function version(Request $request, AppInstance $app_instance) {
+    //     $this->validate($request,[
+    //         'version'=>['required']
+    //     ]);
+
+    //     $app_instance->app_version_id = $request->get('version');
+    //     $app_instance->save();
+    //     return AppInstance::where('id', '=',$app_instance->id)->first();
+    // }
 
     public function destroy(AppInstance $app_instance){
         if ($app_instance->delete()) {

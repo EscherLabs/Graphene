@@ -93,6 +93,9 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/apps/{app}/versions','AppController@versions')->middleware('can:get_versions,app');
     Route::get('/apps/{app}/versions/{version}','AppController@version')->middleware('can:get_versions,app');
 
+
+
+
     // Delete an existing app by app_id
     Route::delete('/apps/{app}','AppController@destroy')->middleware('can:delete,app');
 
@@ -104,8 +107,15 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::delete('/apps/{app}/developers/{user}','AppController@remove_developer')->middleware('can:remove_developer,app');
 
     /***** APP INSTANCES *****/
+
+    // Duplicate routes found below - this format matches other resources - migrate to this common format
+    Route::get('/apps/{app}/instances','AppInstanceController@list_all_app_instances')->middleware('can:get_all,App\AppInstance,app');
+    Route::get('/apps/{app}/instances/{instance}','AppInstanceController@show')->middleware('can:get,app_instance,app');
+
+
     // List all apps instances
     Route::get('/appinstances','AppInstanceController@list_all_app_instances')->middleware('can:get_all,App\AppInstance');
+    
     // Lookup specific app instance by app_instance_id
     Route::get('/appinstances/{app_instance}','AppInstanceController@show')->middleware('can:get,app_instance');
     // Create a new app instance

@@ -95,6 +95,8 @@ $g.getData(
         $.ajax({
           url: "/api/workflows/" + e.model.attributes.workflow_id + "/versions",
           success: function (e, data) {
+            data.forEach($g.formatDates);
+
             new gform({
               name: "version",
               data: e.model.attributes,
@@ -119,6 +121,8 @@ $g.getData(
                     value: function (e) {
                       return e.id;
                     },
+                    label:
+                      "{{label}}{{^label}}{{updated_at.date}} - {{summary}} ({{user.last_name}}){{/label}}",
                   },
                 },
               ],

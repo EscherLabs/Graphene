@@ -113,10 +113,10 @@ class WorkflowController extends Controller
         $workflow_versions = WorkflowVersion::select('id','summary','created_at','updated_at','user_id')
             ->with('user')->where('workflow_id','=',$workflow->id)->where('stable','=',1)
             ->orderBy('created_at', 'desc')->get();
-        foreach($workflow_versions as $i => $workflow_version) {
-            $last_name = !is_null($workflow_version->toArray()['user'])?'('.$workflow_version->toArray()['user']['last_name'].')':'';
-            $workflow_versions[$i]->label = $workflow_version->updated_at->format('Y-m-d').' - '.$workflow_version->summary.' '.$last_name;
-        }
+        // foreach($workflow_versions as $i => $workflow_version) {
+        //     $last_name = !is_null($workflow_version->toArray()['user'])?'('.$workflow_version->toArray()['user']['last_name'].')':'';
+        //     $workflow_versions[$i]->label = $workflow_version->updated_at->format('Y-m-d').' - '.$workflow_version->summary.' '.$last_name;
+        // }
         return $workflow_versions;
     }
 
