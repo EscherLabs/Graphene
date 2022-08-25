@@ -327,7 +327,7 @@ $(".target").on("click", "[data-map]", function (e) {
 
 document.addEventListener("DOMContentLoaded", function () {
   // myform = JSON.parse(($.jStorage.get('form') || "{}"));
-  myform = attributes.code.form || {};
+  myform = JSON.parse(JSON.stringify(attributes.code.form || {}));
   // $('#cobler').click();
   path = [];
   // $(e.target).siblings().removeClass('active');
@@ -1994,7 +1994,7 @@ $("#add-logic").on("click", function () {
 });
 $("#save").on("click", function () {
   if (!isDirty()) {
-    toastr.success("All up to date!", "No Changes");
+    toastr.info("All up to date!", "No Changes");
     return;
   }
 

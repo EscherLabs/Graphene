@@ -301,7 +301,7 @@ $(document).keydown(function (e) {
 
 $("#save").on("click", function () {
   if (!isDirty()) {
-    toastr.success("All up to date!", "No Changes");
+    toastr.info("All up to date!", "No Changes");
     return;
   }
 
