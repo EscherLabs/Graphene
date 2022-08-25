@@ -119,14 +119,16 @@ class AppInstanceController extends Controller
     }
 
     public function update(Request $request, AppInstance $app_instance) {
-        $this->validate($request,[
-            'name'=>['required'],
-            'slug'=>["required",
-                Rule::unique('app_instances', 'slug')->where(function ($query) use($app_instance) {
-                    return $query->where('group_id', $app_instance->group_id);
-                })->ignore($app_instance)
-            ]
-        ]);
+        if($request->has('slug')){
+            $this->validate($request,[
+                // 'name'=>['required'],
+                'slug'=>["required",
+                    Rule::unique('app_instances', 'slug')->where(function ($query) use($app_instance) {
+                        return $query->where('group_id', $app_instance->group_id);
+                    })->ignore($app_instance)
+                ]
+            ]);
+        }
         $data = $request->all();
         if(isset($data['groups'])){
             $data['groups'] = array_filter($data['groups']);
