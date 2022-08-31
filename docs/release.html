@@ -33,14 +33,14 @@
 <ul  class="list-unstyled">
 <dl class="row">
       <dt class="col-sm-2">Version</dt>
-      <dd class="col-sm-10">1.2.0</dd>
+      <dd class="col-sm-10">1.2.1</dd>
       <dt class="col-sm-2">Type</dt>
-      <dd class="col-sm-10"><span class="bg-success  text-light rounded-pill py-1 px-2">Enhancement</span></dd>
+      <dd class="col-sm-10"><span class="bg-danger  text-light rounded-pill py-1 px-2">Bug Fixes</span></dd>
       <dt class="col-sm-2">Date</dt>
-      <dd class="col-sm-10">August 24, 2022</dd>
+      <dd class="col-sm-10">September 7 2022, 2022</dd>
 
       <dt class="col-sm-2">Upgrade</dt>
-      <dd class="col-sm-10">Run &#39;composer update&#39; to add &#39;doctrine&#x2F;dbal&#39; in order to alter the column size and &#39;php artisan migration&#39; to change the app and workflow descriptions columns </dd>
+      <dd class="col-sm-10">This release closes out most of the open bugs still and brings about more stability. There should be minimal risk to side effects</dd>
 </dl>
 
 <hr><li>
@@ -50,20 +50,20 @@ NONE
 </ul>
 </li>
 
-
-<hr><li>
-<h4 class="text-success">New Features</h4>
+<li><hr>
+<h4 class="text-danger">Bug Fixes</h4>
 <ul class="list-group">
-<li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Finalize support for 0 keys in the datamap of workflows</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/34">#34</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">Workflows</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Finalize support public apis and document use. Also creates public user when a new environment is created and defaults a new users data to public when adding users.</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/43">#43</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">APIGateway</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Requires the slugs for microApp and workflow instances within a group to be unique to prevent collisions</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/56">#56</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">Workflows</span><span class="badge bg-secondary rounded-pill">microApps</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Validate uniqueness in MicroApp editor for Resource, Script, Template and Form names<br><br>Validate uniqueness in Workflow editor for Template, Method, Resources and Map names<br><br>Validate uniqueness in Api's for Route path/verb combinations and for Resource, Function and File names</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/67">#67</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">Workflows</span><span class="badge bg-secondary rounded-pill">microApps</span><span class="badge bg-secondary rounded-pill">gateway Apis</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Before leaveing the editors for microApps, workflows, or api's you are given a warning if you have unsaved changes</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/120">#120</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">Workflows</span><span class="badge bg-secondary rounded-pill">microApps</span><span class="badge bg-secondary rounded-pill">gateway Apis</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Add PATCH as a verb to microApps in Graphene and to the APIGateway</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/143">#143</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">microApps</span><span class="badge bg-secondary rounded-pill">APIGateway</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Increased the description length for microApps and workflows to 1000 characters and added validation to the input forms</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/174">#174</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">microApps</span><span class="badge bg-secondary rounded-pill">APIGateway</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Added a configurable options form that can be created for an API and then configured in the API Instance</p>
-<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/130">#130</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">microApps</span><span class="badge bg-secondary rounded-pill">APIGateway</span></div></div></li></ul>
+<li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p></p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/90">#90</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">GrapheneDataGrid</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>This is being cleared from the list after being confirmed fixed</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/141">#141</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">GrapheneForms</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>This is similar to another issue that was closed - and this is being closed since it can not be replicated as described</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/221">#221</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">GrapheneDataGrid</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Fixes Date field types not being able to be conditionally required</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/223">#223</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">GrapheneForms</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Fixes a signature field being added to a form in a microApp</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/225">#225</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">GrapheneForms</span><span class="badge bg-secondary rounded-pill">microApps</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Fixes Viewing previous versions and accessing the versioned stricture</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/226">#226</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">microApps</span><span class="badge bg-secondary rounded-pill">Workflows</span><span class="badge bg-secondary rounded-pill">APIGateway</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Fixes over aggressive change detection when leaving the page</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/232">#232</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">microApps</span></div></div></li><li class="list-group-item d-flex justify-content-between align-items-start gap-3"><div><p>Fixes API instance editing when no fields defined on options form</p>
+<span class="issue "><a target="_blank" class="link-primary" href="https://github.com/EscherLabs/Graphene/issues/234">#234</a></span></div><div><div class="vstack gap-3"><span class="badge bg-secondary rounded-pill">APIGateway</span></div></div></li></ul>
 </li>
+
 
 
 

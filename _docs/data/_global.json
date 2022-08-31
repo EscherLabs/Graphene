@@ -5,6 +5,62 @@
     "releases": [
       {
         "notes": "",
+        "date": "September 7 2022, 2022",
+        "version": "1.2.1",
+        "type": "Bug Fixes",
+        "upgrade": {
+          "description": "This release closes out most of the open bugs still and brings about more stability. There should be minimal risk to side effects"
+        },
+        "breaking": [],
+        "features": [],
+        "performance": [],
+        "bugs": [
+          {
+            "issues": ["90"],
+            "tags": ["GrapheneDataGrid"],
+            "description": ""
+          },
+          {
+            "issues": ["141"],
+            "tags": ["GrapheneForms"],
+            "description": "This is being cleared from the list after being confirmed fixed"
+          },
+          {
+            "issues": ["221"],
+            "tags": ["GrapheneDataGrid"],
+            "description": "This is similar to another issue that was closed - and this is being closed since it can not be replicated as described"
+          },
+          {
+            "issues": ["223"],
+            "tags": ["GrapheneForms"],
+            "description": "Fixes Date field types not being able to be conditionally required"
+          },
+          {
+            "issues": ["225"],
+            "tags": ["GrapheneForms", "microApps"],
+            "description": "Fixes a signature field being added to a form in a microApp"
+          },
+          {
+            "issues": ["226"],
+            "tags": ["microApps", "Workflows", "APIGateway"],
+            "description": "Fixes Viewing previous versions and accessing the versioned stricture"
+          },
+          {
+            "issues": ["232"],
+            "tags": ["microApps"],
+            "description": "Fixes over aggressive change detection when leaving the page"
+          },
+          {
+            "issues": ["234"],
+            "tags": ["APIGateway"],
+            "description": "Fixes API instance editing when no fields defined on options form"
+          }
+        ],
+        "tests": [],
+        "other": []
+      },
+      {
+        "notes": "",
         "date": "August 24, 2022",
         "version": "1.2.0",
         "type": "Enhancement",

@@ -344,6 +344,7 @@ $.ajax({
 
                     if (
                       api.api_version.options !== null &&
+                      "fields" in api.api_version.options &&
                       api.api_version.options.fields.length > 0 //&&
                       // api.api_version.file
                     ) {
