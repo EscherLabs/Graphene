@@ -174,6 +174,6 @@
   fieldset hr{display:none}
   fieldset > legend{font-size: 30px}
   fieldset fieldset legend{    font-size: 21px}
-  #myModal .modal-dialog{width:900px}
+  /* #myModal .modal-dialog{width:900px} */
   </style>
 @endsection
