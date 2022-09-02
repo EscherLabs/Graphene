@@ -312,6 +312,7 @@ function load(app_version) {
         max: 1,
       },
       "|",
+      { name: "sort", label: '<i class="fa fa-sort"></i> Sort' },
       { name: "delete" },
     ],
   };
@@ -402,6 +403,37 @@ function load(app_version) {
         e.form.dispatch("close");
       })
       .modal();
+  });
+
+  grid.on("sort", e => {
+    var tempdata = _.map(e.grid.models, ({ id, attributes }) => ({
+      id,
+      ...attributes,
+    })).reverse();
+
+    templates["sortroutes"] = {
+      render: templates_render,
+      template: `<ol id="sorter" class="list-group" style="margin: -15px;">
+        {{#items}}
+        <li id="list_{{id}}" data-id="{{id}}" class="list-group-item filterable">
+          <div class="sortableContent">
+          <div class="handle" style="position:absolute;top:0;left:0;bottom:0;margin:0"></div>
+          <div style="padding-left:45px"><div><b>{{description}}</b><span class="pull-right">{{verb}}</span></div>
+          <div>{{function_name}}<span class="pull-right">{{path}}</span></div></div>
+          </div>
+        </li>
+        {{/items}}
+      </ol>`,
+    };
+    debugger;
+    mymodal = modal({
+      title: "Sort Routes",
+      content: templates.sortroutes.render({ items: tempdata }, templates),
+      footer: '<div class="btn btn-success save-sort">Save</div>',
+    });
+    Sortable.create($(mymodal.ref.container).find("#sorter")[0], {
+      draggable: "li",
+    });
   });
 
   //adjust ace height to fill page
@@ -798,6 +830,7 @@ $("#save").on("click", function () {
           grid.items = e.routes;
           attributes.resources = e.resources;
           attributes.options = e.options;
+          grid.isDirty = false;
         }
         toastr.clear();
 
@@ -977,4 +1010,47 @@ $("#versions").on("click", function () {
         .modal();
     },
   });
+});
+$("body").on("click", ".save-sort", () => {
+  debugger;
+  // console.log(
+  //   _.map($("#sorter").children(), (item, index) => {
+  //     return { id: item.dataset.id, index: index };
+  //   })
+  // );
+
+  grid.load(
+    _.map($("#sorter").children(), ({ dataset }) => {
+      return _.find(grid.models, { id: dataset.id }).attributes;
+    }).reverse()
+  );
+  mymodal.ref.modal("hide");
+
+  // grid.load(
+  //   _.map(grid.models, ({ id, attributes }) => ({
+  //     id,
+  //     ...attributes,
+  //   }))
+  // );
+
+  // $.ajax({
+  //   url: $g.render(routes.sort, { resource_id: resource_id }),
+  //   type: "POST",
+  //   data: {
+  //     order: _.map($("#sorter").children(), (item, index) => {
+  //       return { id: item.dataset.id, index: index };
+  //     }),
+  //   },
+  //   success: response => {
+  //     _.each(response, function (item) {
+  //       var temp = grid.find({ id: parseInt(item.id) });
+  //       if (typeof temp !== "undefined" && temp.length) {
+  //         temp[0].update({ order: item.index }, true);
+  //       }
+  //     });
+  //     toastr.success("", "Order successfully updated");
+  //     mymodal.ref.modal("hide");
+  //     grid.state.set({ sort: "order", reverse: true });
+  //   },
+  // });
 });

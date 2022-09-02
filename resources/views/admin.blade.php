@@ -147,6 +147,7 @@
 
     $('[href="/admin/'+route+'"]').parent().addClass('active');
     $('body').on('click','.save-sort',() => {
+      debugger;
       $.ajax({
         url: $g.render(routes.sort, {resource_id: resource_id}),
         type: 'POST',

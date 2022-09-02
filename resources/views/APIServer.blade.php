@@ -118,6 +118,7 @@
 }
 
     $('[href="/admin/'+route+'"]').parent().addClass('active');
+
   </script>
 @endsection
 
