@@ -6,27 +6,35 @@
 		    {{/files}}
 		  </div></div>
 		  <div class="col-sm-3" style="padding:5px 0 0;">
-		  {{#editable}}
-		    	{{#hasextra}}<a href="javascript:void(0);" class="pages_extra btn btn-default pull-right" ><i class="fa fa-gears"></i></a>{{/hasextra}}
+				<div style="display:flex;">
+					{{#editable}}
+								{{#hasextra}}<a href="javascript:void(0);" class="pages_extra btn btn-default pull-right" ><i class="fa fa-gears"></i></a>{{/hasextra}}
 
-				<div class="actions" style="height:40px">
-				
-				<div class="btn-group">
-								<button type="button" class="btn  btn-info go pages_new">New <span class="">{{label}}</span></button>
-								<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									<span class="caret"></span>
-									<span class="sr-only">Toggle Dropdown</span>
-								</button>
-								<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="javascript:void(0);" class="pages_edit" ><i class="fa fa-pencil"></i> Edit Name</a></li>
-									<li><a href="javascript:void(0);" class="pages_delete" ><i class="fa fa-times"></i> Delete</a></li>
-								</ul>
-							</div>
-				</div>
+					<div class="actions" style="height:40px;flex-shrink: 0">
+					
+					<div class="btn-group">
+									<button type="button" class="btn  btn-info go pages_new">New {{label}}</button>
+									<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu dropdown-menu-right">
+										<li><a href="javascript:void(0);" class="pages_edit" ><i class="fa fa-pencil"></i> Edit Name</a></li>
+										<li><a href="javascript:void(0);" class="pages_delete" ><i class="fa fa-times"></i> Delete</a></li>
+									</ul>
+								</div>
+					</div>
 
-				  {{/editable}}
+							{{/editable}}
+{{#filter}}
+					<div class="" style="padding: 0 15px;">   
+									<label for="filter" class="sr-only">Filter</label>
+									<input type="text" class="form-control filter" data-selector="#list_{{u_id}}" data-score=".4" name="filter" placeholder="{{^filter.placeholder}}Filter...{{/filter.placeholder}}{{filter.placeholder}}">
+					</div>
 
-		  <div class="list-group" style="margin-right: 15px;">
+{{/filter}}
+			 </div>
+		  <div class="list-group" id="list_{{u_id}}" style="margin-right: 15px;">
 			{{>pages_listgroupitem}}
 		  </div>
 		  </div>

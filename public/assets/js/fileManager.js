@@ -2,6 +2,7 @@ var fileManager = function (selector, options) {
   this.$el = $(selector);
   options.hasextra = typeof options.extra == "function";
   options.u_id = gform.getUID();
+  options.filter = "filter" in options ? !!options.filter : true;
   options.label = options.label || "Section";
   options.files = _.map(options.items, function (item) {
     // item.key =
@@ -37,7 +38,6 @@ var fileManager = function (selector, options) {
   this.options = $.extend(true, { editable: true }, options);
   // this.options.files = _.extend([], this.options.files);
   this.active = this.options.files[0].key;
-
   $(selector).html(templates.pages.render(this.options, templates));
   this.gform = new gform(this.options, selector);
 
