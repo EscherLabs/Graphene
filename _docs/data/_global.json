@@ -5,7 +5,38 @@
     "releases": [
       {
         "notes": "",
-        "date": "September 7 2022, 2022",
+        "date": "September 21 2022, 2022",
+        "version": "1.2.1",
+        "type": "Bug Fixes",
+        "upgrade": {
+          "description": "This release closes out most of the open bugs still and brings about more stability. There should be minimal risk to side effects"
+        },
+        "breaking": [],
+        "bugs": [],
+        "performance": [],
+        "features": [
+          {
+            "issues": ["91"],
+            "tags": ["GrapheneDataGrid"],
+            "description": "Implements actions of a dataGrid when when viewed on a mobile device with the default mobile template"
+          },
+          {
+            "issues": ["228"],
+            "tags": ["APIGateway", "microApps", "Workflows"],
+            "description": "Adds filtering for any list of editors: functions, templates, scripts, etc"
+          },
+          {
+            "issues": ["235"],
+            "tags": ["APIGateway"],
+            "description": "Adds the ability to sort the API Routes to change priority of matching"
+          }
+        ],
+        "tests": [],
+        "other": []
+      },
+      {
+        "notes": "",
+        "date": "September 7, 2022",
         "version": "1.2.1",
         "type": "Bug Fixes",
         "upgrade": {
@@ -43,7 +74,7 @@
           {
             "issues": ["226"],
             "tags": ["microApps", "Workflows", "APIGateway"],
-            "description": "Fixes Viewing previous versions and accessing the versioned stricture"
+            "description": "Fixes Viewing previous versions and accessing the versioned structure"
           },
           {
             "issues": ["232"],
