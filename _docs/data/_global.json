@@ -49,7 +49,7 @@
           {
             "issues": ["90"],
             "tags": ["GrapheneDataGrid"],
-            "description": ""
+            "description": "Fixes an issue with the page number list that causes too many pages to be listed"
           },
           {
             "issues": ["141"],
