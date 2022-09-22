@@ -135,14 +135,16 @@ class WorkflowInstanceController extends Controller
     }
 
     public function update(Request $request, WorkflowInstance $workflow_instance) {
-        $this->validate($request,[
-            'name'=>['required'],
-            'slug'=>["required",
-                Rule::unique('workflow_instances', 'slug')->where(function ($query) use($workflow_instance) {
-                    return $query->where('group_id', $workflow_instance->group_id);
-                })->ignore($workflow_instance)
-            ]
-        ]);
+        if($request->has('slug')){
+            $this->validate($request,[
+                // 'name'=>['required'],
+                'slug'=>[
+                    Rule::unique('workflow_instances', 'slug')->where(function ($query) use($workflow_instance) {
+                        return $query->where('group_id', $workflow_instance->group_id);
+                    })->ignore($workflow_instance)
+                ]
+            ]);
+        }
         $data = $request->all();
         if(isset($data['groups'])){
             $data['groups'] = array_filter($data['groups']);
