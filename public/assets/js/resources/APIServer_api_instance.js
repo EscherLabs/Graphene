@@ -437,8 +437,9 @@ $.ajax({
             // 	delete item.parameters;
             // })
             api.route_user_map = grid.toJSON();
-            debugger;
-            api.options = gform.instances.options.get();
+            // debugger;
+            api.options =
+              "options" in gform.instances ? gform.instances.options.get() : {};
 
             $.ajax({
               url: url,
