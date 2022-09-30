@@ -575,7 +575,7 @@ function setSize() {
 window.onresize = setSize;
 function load(workflow_version) {
   // loaded.code = ;
-
+  if (!loaded.code.length) delete loaded.code;
   $.extend(
     true,
     attributes,
