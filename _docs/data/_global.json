@@ -5,6 +5,58 @@
     "releases": [
       {
         "notes": "",
+        "date": "October 19 2022, 2022",
+        "version": "1.2.1",
+        "type": "Enhancments / Bugs",
+        "upgrade": {
+          "description": "The Mermaid chart library was upgraded - issues should not be caused by this but not all edge cases are accounted for so developers should be aware "
+        },
+        "breaking": [],
+        "bugs": [
+          {
+            "issues": ["136"],
+            "tags": ["Workflows"],
+            "description": "Adds validation on state editor form when any action is taken to close the form"
+          },
+          {
+            "issues": ["238"],
+            "tags": ["Workflows"],
+            "description": "This bug was closed - no issue found"
+          },
+          {
+            "issues": ["241"],
+            "tags": ["Workflows"],
+            "description": "Fixes editing an api instance when no options are set"
+          },
+          {
+            "issues": ["242"],
+            "tags": ["Workflows"],
+            "description": "Fixes a bug when creating a new workflow, sets the appropriate defaults"
+          }
+        ],
+        "performance": [],
+        "features": [
+          {
+            "issues": ["122"],
+            "tags": ["Workflows"],
+            "description": "Adds rudementary pan zoom to workflow diagrams. This also updated the version of mermaid"
+          },
+          {
+            "issues": ["227"],
+            "tags": ["Workflows"],
+            "description": "Adds a new layer of complex filtering in a grid including multiple selections, ranges and exclusions"
+          },
+          {
+            "issues": ["240"],
+            "tags": ["Workflows"],
+            "description": "Disable loading of columns from previously saved settings if setting is disabled"
+          }
+        ],
+        "tests": [],
+        "other": []
+      },
+      {
+        "notes": "",
         "date": "September 21 2022, 2022",
         "version": "1.2.1",
         "type": "Bug Fixes",
