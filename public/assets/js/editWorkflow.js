@@ -579,7 +579,7 @@ function setSize() {
   let resize = $("body [name=resize]");
 
   let newStyle = `
-    #flow-preview{height: ${chartHeight}px;}
+    #flow-preview{height: ${chartHeight}px;box-shadow:inset 0 0 5px 0 #ccc}
     #flow-form #accordion{ max-height: ${formHeight}px; overflow:auto;margin-bottom:0}
     #form #accordion{ max-height: ${formHeight}px; overflow:auto;margin-bottom:0}
     .ace_editor { height: ${aceEditorHeight}px;margin-bottom:-15px }
