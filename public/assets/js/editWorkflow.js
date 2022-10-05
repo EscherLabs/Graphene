@@ -1,5 +1,15 @@
 workflow = true;
 gform.collections.add("files", []);
+validateForm = () => {
+  if (
+    "state_editor" in gform.instances &&
+    !gform.instances.state_editor.validate()
+  ) {
+    toastr.error("Error on State form", "Please fix");
+    return true;
+  }
+  return false;
+};
 renderBuilder = function () {
   var target = document.querySelector(".target");
   $(target).html(
@@ -1699,6 +1709,7 @@ function drawForm(name) {
       createFlow();
     })
     .on("done", function (e) {
+      if (validateForm()) return;
       if (typeof flowForm !== "undefined") {
         flowForm.destroy();
       }
@@ -2000,11 +2011,14 @@ var taskForm = [
 $("#flow-preview").on("click", ".nodes .node", function (e) {
   // console.log(e.currentTarget.id);
   // drawForm(e.currentTarget.id);
+  if (validateForm()) return;
   drawForm(e.currentTarget.textContent);
   createFlow();
 });
 
 $("#add-state").on("click", function () {
+  if (validateForm()) return;
+
   i = 0;
   while (
     typeof _.find(flow_states, {
@@ -2024,6 +2038,8 @@ $("#add-state").on("click", function () {
   createFlow();
 });
 $("#add-logic").on("click", function () {
+  if (validateForm()) return;
+
   i = 0;
   while (
     typeof _.find(flow_states, {
