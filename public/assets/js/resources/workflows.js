@@ -15,6 +15,7 @@ $g.getData([url, "/api/workflows/developers"], (workflows, developers) => {
       { label: "Tags", name: "tags", required: false },
       {
         label: "Lead Developer",
+        required: true,
         type: "user_id",
         name: "user_id",
         search: "/api/users/search/{{search}}{{value}}?workflow_developers",

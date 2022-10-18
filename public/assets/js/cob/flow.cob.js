@@ -397,7 +397,7 @@ Cobler.types.Workflow = function (container) {
       if ($("#uploader_" + item.guid).length) {
         $("#uploader_" + item.guid).html("");
         fileLoader = new Dropzone("#uploader_" + item.guid, {
-          dictDefaultMessage: "Drop files here to upload attatchments",
+          dictDefaultMessage: "Drop files here to upload attachments",
           timeout: 60000,
           url: "/api/workflowsubmissions/" + submission.id + "/files",
           init: function () {
