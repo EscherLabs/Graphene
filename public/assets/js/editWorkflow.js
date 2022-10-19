@@ -1326,7 +1326,7 @@ function drawForm(name) {
               type: "fieldset",
               fields: [
                 { name: "label", label: "Label", columns: 6 },
-                { name: "name", label: "Name", columns: 6, required: true },
+                { name: "name", label: "Name", columns: 6, required: false },
                 {
                   name: "type",
                   label: "Type",

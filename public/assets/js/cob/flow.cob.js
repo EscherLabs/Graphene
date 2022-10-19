@@ -15,8 +15,9 @@ Cobler.types.Workflow = function (container) {
     formData.user = user;
     formData.data.actor = user;
     rootPath = "/api/workflowsubmissions/" + instance.id;
-    // debugger;
-    gform.prototype.options.rootpath = "/workflows/fetch/" + instance.id + "/";
+    gform.prototype.options.rootpath =
+      "/workflows/fetch/" + instance.id + "/{{path}}/" + submission.id;
+
     $g.emit("workflow_summary", { submission: submission });
     if (submission) {
       gform.collections.update(
@@ -649,7 +650,6 @@ Cobler.types.Workflow = function (container) {
         },
         {}
       );
-
       formData.data.resources = _.reduce(
         resources,
         (resources, item, name) => {
