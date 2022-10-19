@@ -362,7 +362,7 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                 "/workflows/fetch/" +
                 mappedData.workflow.instance.id +
                 "/{{path}}/" +
-                submission.id;
+                this.get().options.id;
 
               _.each(resources, function (item, name) {
                 gform.collections.add(name, _.isArray(item) ? item : []);
