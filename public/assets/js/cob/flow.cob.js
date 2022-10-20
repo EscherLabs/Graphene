@@ -256,7 +256,7 @@ Cobler.types.Workflow = function (container) {
     let resourceList = _.map(instance.version.code.resources, "name");
 
     let app = {
-      get: (resource, callback) => {
+      getResource: (resource, data, callback) => {
         if (resourceList.indexOf(resource) > -1) {
           if (typeof callback !== "function") {
             callback = data => {
@@ -265,7 +265,11 @@ Cobler.types.Workflow = function (container) {
           }
           gform.ajax({
             path: gform.instances.workflow.getPath({ path: resource }),
+            data: data || {},
             success: callback,
+            error: e => {
+              console.log(e);
+            },
           });
         }
       },
@@ -684,7 +688,7 @@ Cobler.types.Workflow = function (container) {
       let resourceList = _.map(instance.version.code.resources, "name");
 
       let app = {
-        get: (resource, callback) => {
+        getResource: (resource, data, callback) => {
           if (resourceList.indexOf(resource) > -1) {
             if (typeof callback !== "function") {
               callback = data => {
@@ -693,7 +697,11 @@ Cobler.types.Workflow = function (container) {
             }
             gform.ajax({
               path: gform.instances.workflow.getPath({ path: resource }),
+              data: data || {},
               success: callback,
+              error: e => {
+                console.log(e);
+              },
             });
           }
         },

@@ -576,7 +576,6 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                   this.ractive.update(mappedData);
                 }
               }.bind(this);
-              debugger;
               let tformData = {
                 user: this.get().user,
                 id: this.get().options.id,
@@ -590,7 +589,6 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                 },
                 _state: mappedData.latest,
               };
-              debugger;
 
               let resourceList = _.map(
                 mappedData.workflow.instance.version.code.resources,
@@ -598,7 +596,7 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
               );
 
               let app = {
-                get: (resource, callback) => {
+                getResource: (resource, data, callback) => {
                   if (resourceList.indexOf(resource) > -1) {
                     if (typeof callback !== "function") {
                       callback = data => {
@@ -612,7 +610,11 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                       path: gform.instances.display.getPath({
                         path: resource,
                       }),
+                      data: data || {},
                       success: callback,
+                      error: e => {
+                        console.log(e);
+                      },
                     });
                   }
                 },
