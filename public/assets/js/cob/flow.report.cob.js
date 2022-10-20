@@ -613,7 +613,7 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                       data: data || {},
                       success: callback,
                       error: e => {
-                        console.log(e);
+                        // console.log(e);
                       },
                     });
                   }

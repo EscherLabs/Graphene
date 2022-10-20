@@ -268,7 +268,7 @@ Cobler.types.Workflow = function (container) {
             data: data || {},
             success: callback,
             error: e => {
-              console.log(e);
+              // console.log(e);
             },
           });
         }
@@ -700,7 +700,7 @@ Cobler.types.Workflow = function (container) {
               data: data || {},
               success: callback,
               error: e => {
-                console.log(e);
+                // console.log(e);
               },
             });
           }
