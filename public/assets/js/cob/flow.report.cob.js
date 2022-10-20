@@ -643,6 +643,10 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                         name: "_flowstate_history",
                         value: mappedData._flowstate_history,
                       },
+                      {
+                        type: "hidden",
+                        name: "id",
+                      },
                     ],
                   };
                   form.methods = this.methods;

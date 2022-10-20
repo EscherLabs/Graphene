@@ -395,8 +395,12 @@ $g = (function (options) {
         subSystems: [
           { type: "Workflow", version: "0.0.1.0" },
           { type: "microApp", version: "0.0.1.0" },
-          { type: "forms", version: "0.0.1.0", name: "gform" },
-          { type: "grids", version: "0.0.1.0", name: "gformDataGrid" },
+          { type: "forms", version: gform.VERSION, name: "gform" },
+          {
+            type: "grids",
+            version: GrapheneDataGrid.version,
+            name: "gformDataGrid",
+          },
         ],
       };
     },
