@@ -36,6 +36,8 @@ myconditions = [
           "contains",
           "requires",
           "conditions",
+
+          { label: "Watcher Method", value: "method" },
         ],
       },
       {
@@ -46,6 +48,39 @@ myconditions = [
             type: "matches",
             name: "type",
             value: ["matches", "not_matches", "contains", "requires"],
+          },
+        ],
+      },
+      {
+        label: "Watch Field", // {{#index}}({{index}}){{/index}}",
+        name: "name",
+        // array: { min: 1 },
+        show: [
+          {
+            type: "matches",
+            name: "type",
+            value: ["method"],
+          },
+        ],
+      },
+      {
+        label: "Method",
+        name: "value",
+        type: "select",
+        columns: 12,
+        show: [
+          {
+            type: "matches",
+            name: "type",
+            value: ["method"],
+          },
+        ],
+        options: [
+          "None",
+          {
+            type: "optgroup",
+            options: "methods",
+            format: { label: "Method: {{label}}" },
           },
         ],
       },
