@@ -457,10 +457,12 @@ class WorkflowInstanceController extends Controller
         }            
 
         $all_data = [
-            '_state'=>$workflow_submission['data'],
-            'request'=>$request->has('request')?$request->input('request'):$request->all(),
+            'request'=>$request->has('request')?$request->input('request'):$request->all()
         ];
 
+        if (!is_null($workflow_submission)) {
+            $all_data['form']=$workflow_submission['data'];
+        }
         $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission , $endpoint_name, $all_data);
 
         // $data = self::get_data_int($workflow_instance, $endpoint_name, $request);

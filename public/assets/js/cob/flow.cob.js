@@ -15,11 +15,14 @@ Cobler.types.Workflow = function (container) {
     formData.user = user;
     formData.data.actor = user;
     rootPath = "/api/workflowsubmissions/" + instance.id;
-    gform.prototype.options.rootpath =
-      "/workflows/fetch/" + instance.id + "/{{path}}/" + submission.id;
 
     $g.emit("workflow_summary", { submission: submission });
+
+    gform.prototype.options.rootpath =
+      "/workflows/fetch/" + instance.id + "/{{path}}/";
     if (submission) {
+      gform.prototype.options.rootpath =
+        "/workflows/fetch/" + instance.id + "/{{path}}/" + submission.id;
       gform.collections.update(
         "files",
         _.map(submission.files || [], $g.formatFile)
@@ -250,15 +253,34 @@ Cobler.types.Workflow = function (container) {
   var loadForm = () => {
     if (typeof ractive !== "undefined") ractive.set(item);
 
+    let resourceList = _.map(instance.version.code.resources, "name");
+
+    let app = {
+      get: (resource, callback) => {
+        if (resourceList.indexOf(resource) > -1) {
+          if (typeof callback !== "function") {
+            callback = data => {
+              gform.instances.workflow.collections.update(resource, data);
+            };
+          }
+          gform.ajax({
+            path: gform.instances.workflow.getPath({ path: resource }),
+            success: callback,
+          });
+        }
+      },
+    };
     // ractive.set(item);
     evalMethods = [];
     _.each(methods, (item, index) => {
       eval(
-        'evalMethods["method_' +
+        'evalMethods["' +
+          item.name +
+          '"] = evalMethods["method_' +
           index +
-          '"] = function(data,e){' +
+          '"] = function(data,app,e){' +
           item.content +
-          '\n return "";}.bind(formData,formData.data)'
+          '\n return "";}.bind(formData,formData.data,app)'
       );
     });
     var formSetup = {
@@ -659,17 +681,35 @@ Cobler.types.Workflow = function (container) {
         },
         {}
       );
+      let resourceList = _.map(instance.version.code.resources, "name");
 
+      let app = {
+        get: (resource, callback) => {
+          if (resourceList.indexOf(resource) > -1) {
+            if (typeof callback !== "function") {
+              callback = data => {
+                gform.instances.workflow.collections.update(resource, data);
+              };
+            }
+            gform.ajax({
+              path: gform.instances.workflow.getPath({ path: resource }),
+              success: callback,
+            });
+          }
+        },
+      };
       evalMethods = [];
       let tformData = { ...formData, _state: form.data || {} };
 
       _.each(methods, (item, index) => {
         eval(
-          'evalMethods["method_' +
+          'evalMethods["' +
+            item.name +
+            '"] = evalMethods["method_' +
             index +
-            '"] = function(data,e){' +
+            '"] = function(data,app,e){' +
             item.content +
-            "\n}.bind(tformData,tformData.data)"
+            '\n return "";}.bind(tformData,tformData.data,app)'
         );
       });
 

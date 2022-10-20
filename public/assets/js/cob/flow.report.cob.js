@@ -576,19 +576,62 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                   this.ractive.update(mappedData);
                 }
               }.bind(this);
+              debugger;
+              let tformData = {
+                user: this.get().user,
+                id: this.get().options.id,
+                _flowstate: mappedData.current_state.name,
+                data: {
+                  actor: this.get().user,
+                  form: {},
+                  owner: null,
+                  history: [],
+                  instance: mappedData.workflow.instance,
+                },
+                _state: mappedData.latest,
+              };
+              debugger;
+
+              let resourceList = _.map(
+                mappedData.workflow.instance.version.code.resources,
+                "name"
+              );
+
+              let app = {
+                get: (resource, callback) => {
+                  if (resourceList.indexOf(resource) > -1) {
+                    if (typeof callback !== "function") {
+                      callback = data => {
+                        gform.instances.display.collections.update(
+                          resource,
+                          data
+                        );
+                      };
+                    }
+                    gform.ajax({
+                      path: gform.instances.display.getPath({
+                        path: resource,
+                      }),
+                      success: callback,
+                    });
+                  }
+                },
+              };
+
               _.each(
                 this.get().options.workflow_version.code.methods,
-                function (item, index) {
+
+                (item, index) => {
                   eval(
                     'this.methods["' +
                       item.name +
                       '"] = this.methods["method_' +
                       index +
-                      '"] = function(data,e){' +
+                      '"] = function(data,app,e){' +
                       item.content +
-                      "\n}.bind(null,mappedData)"
+                      "\n}.bind(tformData,mappedData,app)"
                   );
-                }.bind(this)
+                }
               );
 
               $(".row .list").on(
