@@ -15,7 +15,7 @@ use App\UserOption;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
-use App\Libraries\Templater;
+// use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;

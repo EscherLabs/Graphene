@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
-use App\Libraries\Templater;
+// use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
@@ -443,7 +443,6 @@ class WorkflowInstanceController extends Controller
     }
 
     public function get_data(WorkflowInstance $workflow_instance,  $endpoint_name,Request $request, WorkflowSubmission $workflow_submission=null) {
-
         if (!$workflow_instance->public) {
             if (is_null($workflow_submission)) {
                 // Make sure that the person can fetch the current instance (submission is null)

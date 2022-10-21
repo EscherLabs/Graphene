@@ -265,6 +265,7 @@ Cobler.types.Workflow = function (container) {
           }
           gform.ajax({
             path: gform.instances.workflow.getPath({ path: resource }),
+            verb: "POST",
             data: data || {},
             success: callback,
             error: e => {
@@ -697,6 +698,7 @@ Cobler.types.Workflow = function (container) {
             }
             gform.ajax({
               path: gform.instances.workflow.getPath({ path: resource }),
+              verb: "POST",
               data: data || {},
               success: callback,
               error: e => {

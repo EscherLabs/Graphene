@@ -610,6 +610,7 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                       path: gform.instances.display.getPath({
                         path: resource,
                       }),
+                      verb: "POST",
                       data: data || {},
                       success: callback,
                       error: e => {
