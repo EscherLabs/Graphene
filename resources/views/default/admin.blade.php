@@ -12,7 +12,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="-1" />
 <meta http-equiv="Vary" content="*" />
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="/favicon.png">
     <title>{{ config('app.site')->name }}</title>
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
