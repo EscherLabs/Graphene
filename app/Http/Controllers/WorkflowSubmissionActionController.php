@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
-use App\Libraries\Templater;
+// use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;

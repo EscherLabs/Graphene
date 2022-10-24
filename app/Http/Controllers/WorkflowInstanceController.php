@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use App\Libraries\HTTPHelper;
-use App\Libraries\Templater;
+// use App\Libraries\Templater;
 use App\Libraries\PageRenderer;
 use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
@@ -443,11 +443,26 @@ class WorkflowInstanceController extends Controller
     }
 
     public function get_data(WorkflowInstance $workflow_instance,  $endpoint_name,Request $request, WorkflowSubmission $workflow_submission=null) {
-
         if (!$workflow_instance->public) {
-            $this->authorize('get_data', $workflow_instance);
+            if (is_null($workflow_submission)) {
+                // Make sure that the person can fetch the current instance (submission is null)
+                $this->authorize('fetch' ,$workflow_instance);
+            } else {
+                // Make sure that the person can view the requested submission
+                if (Gate::denies('view', $workflow_submission)) {
+                    abort(403);
+                }
+            }
+        }            
+
+        $all_data = [
+            'request'=>$request->has('request')?$request->input('request'):$request->all()
+        ];
+
+        if (!is_null($workflow_submission)) {
+            $all_data['form']=$workflow_submission['data'];
         }
-        $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission , $endpoint_name, $request->all());
+        $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission , $endpoint_name, $all_data);
 
         // $data = self::get_data_int($workflow_instance, $endpoint_name, $request);
 

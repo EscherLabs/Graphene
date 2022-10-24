@@ -1,5 +1,15 @@
 workflow = true;
 gform.collections.add("files", []);
+validateForm = () => {
+  if (
+    "state_editor" in gform.instances &&
+    !gform.instances.state_editor.validate()
+  ) {
+    toastr.error("Error on State form", "Please fix");
+    return true;
+  }
+  return false;
+};
 renderBuilder = function () {
   var target = document.querySelector(".target");
   $(target).html(
@@ -551,25 +561,71 @@ $('[href="/admin/workflows"]').parent().addClass("active");
 var root = "/api/workflows/";
 
 function setSize() {
-  var temp2 = $(window).height() - $(".nav-tabs").offset().top - 77;
-  var temp = $(window).height() - $("#flow-form").offset().top;
-  $("body").append("<style>#flow-form { height: " + temp + "px; }</style>");
-  $("body").append("<style>.ace_editor { height: " + temp2 + "px; }</style>");
-  $("body").append(`<style>.avatar{
-    width: 40px;
-      height: 40px;
-      background: #b4cde0;
-      text-align: center;
-      border-radius: 50%;
-      line-height: 40px;
-      font-size: 20px;
-      color: #fff;
-      float: left;
-      margin: 5px;
-  }
-  .avatar.self{
-    background:#cab4e0;
-  }</style>`);
+  let height = document.body.getBoundingClientRect().height;
+  let aceEditorHeight =
+    height -
+    // document.querySelector(".nav-tabs").getBoundingClientRect().top -
+    70 -
+    62;
+  let formEditorHeight = aceEditorHeight - -80;
+
+  let formHeight =
+    height -
+    // document.querySelector("#flow-form").getBoundingClientRect().top -
+    177 -
+    89;
+
+  let chartHeight =
+    height -
+    // document.querySelector("#flow-preview").getBoundingClientRect().top -
+    156 -
+    28;
+
+  let listHeight =
+    height -
+    // document.querySelector("#flow-form").getBoundingClientRect().top -
+    177;
+
+  let resize = $("body [name=resize]");
+
+  let newStyle = `
+    #flow-preview{height: ${chartHeight}px;box-shadow:inset 0 0 5px 0 #ccc}
+    #flow-form #accordion{ max-height: ${formHeight}px; overflow:auto;margin-bottom:0}
+    #form #accordion{ max-height: ${formHeight}px; overflow:auto;margin-bottom:0}
+    .ace_editor { height: ${aceEditorHeight}px;margin-bottom:-15px }
+    .panel {
+      margin-bottom: 0;
+    }
+    [id^=list_]{
+      overflow:auto;height: ${listHeight}px; 
+    }
+    .admin-main{padding-bottom:0px}
+  
+    .panel-primary{
+      width:100%;
+      overflow:auto;
+      height: ${formEditorHeight}px; 
+    }
+  
+    avatar {
+      width: 40px;
+        height: 40px;
+        background: #b4cde0;
+        text-align: center;
+        border-radius: 50%;
+        line-height: 40px;
+        font-size: 20px;
+        color: #fff;
+        float: left;
+        margin: 5px;
+    }
+    .avatar.self {
+      background:#cab4e0;
+    }`;
+
+  if (!$("body style[name=resize]").length)
+    $("body").append('<style name="resize"></style>');
+  $("body style[name=resize]").html(newStyle);
 }
 
 window.onresize = setSize;
@@ -1270,7 +1326,7 @@ function drawForm(name) {
               type: "fieldset",
               fields: [
                 { name: "label", label: "Label", columns: 6 },
-                { name: "name", label: "Name", columns: 6, required: true },
+                { name: "name", label: "Name", columns: 6, required: false },
                 {
                   name: "type",
                   label: "Type",
@@ -1653,6 +1709,7 @@ function drawForm(name) {
       createFlow();
     })
     .on("done", function (e) {
+      if (validateForm()) return;
       if (typeof flowForm !== "undefined") {
         flowForm.destroy();
       }
@@ -1954,11 +2011,14 @@ var taskForm = [
 $("#flow-preview").on("click", ".nodes .node", function (e) {
   // console.log(e.currentTarget.id);
   // drawForm(e.currentTarget.id);
+  if (validateForm()) return;
   drawForm(e.currentTarget.textContent);
   createFlow();
 });
 
 $("#add-state").on("click", function () {
+  if (validateForm()) return;
+
   i = 0;
   while (
     typeof _.find(flow_states, {
@@ -1978,6 +2038,8 @@ $("#add-state").on("click", function () {
   createFlow();
 });
 $("#add-logic").on("click", function () {
+  if (validateForm()) return;
+
   i = 0;
   while (
     typeof _.find(flow_states, {

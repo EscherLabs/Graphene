@@ -172,7 +172,14 @@
   <div role="tabpanel" class="tab-pane" id="flowchart">
     <div class="row">
       <div class="col-sm-8">
-        <div id="flow-preview" style="zoom: 150%;text-align: center;"></div>
+        <div style="display: flex;gap: 0.5em;margin: 5px 0;">
+
+          <div class="btn btn-success" data-zoom="1">+</div>
+          <div class="btn btn-info" data-zoom="-1">-</div>
+          <div class="btn btn-default" style="margin-left:auto" data-zoom="">Reset</div>
+        </div>
+        <div id="flow-preview" style="border:solid 2px #fff; overflow:auto;position:relative;"></div>
+  
       </div>
       <div class="col-sm-4" style="margin-top:5px">
 
@@ -210,7 +217,7 @@
   <script type="text/javascript" src='/assets/js/vendor/ractive.min.js?cb={{ config("app.cache_bust_id") }}'></script>    
   <script type="text/javascript" src='/assets/js/vendor/sortable.js?cb={{ config("app.cache_bust_id") }}'></script>
   <script type='text/javascript' src='/assets/js/cob/cob.js?cb={{ config("app.cache_bust_id") }}'></script>
-  <script type="text/javascript" src='/assets/js/vendor/mermaid.min.js?cb={{ config("app.cache_bust_id") }}'></script>
+  <script type="text/javascript" src='/assets/js/vendor/mermaid.min.new.js?cb={{ config("app.cache_bust_id") }}'></script>
   <script>
     mermaid.initialize({
         startOnLoad:false,
@@ -219,11 +226,18 @@
 
     var insertSvg = function(svgCode, bindFunctions){
       document.querySelector("#flow-preview").innerHTML = svgCode;
+      
     };
     myfunc=function(e){
       graph = mermaid.mermaidAPI.render(gform.getUID(), e, insertSvg);
  
     }
+    document.querySelectorAll('[data-zoom]').forEach((el)=>{
+      el.addEventListener('click', (e)=>{
+      let element =   document.querySelector("#flow-preview svg");
+      let mod = 1+(parseInt(e.currentTarget.dataset.zoom)*.1);
+      element.style.width = isNaN(mod)?"":(parseInt(element.style.width || 100)*mod)+"%";
+    })})
 </script>
 @endsection
 

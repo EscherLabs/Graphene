@@ -5,6 +5,7 @@ namespace App\Libraries;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+// it looks like this file is replaced by pagerenderer
 class Templater {
 
     private function set_defaults(&$data) {
@@ -134,7 +135,6 @@ class Templater {
         }   
         $tpl = $m->loadTemplate($data['template']);
         // return $tpl->render($data);
-
         return response($tpl->render($data))
             ->header('Content-Type', 'text/html')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')

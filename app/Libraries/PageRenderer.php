@@ -150,6 +150,8 @@ class PageRenderer {
         if(isset($render_data['user']) && isset($render_data['user']['content_admin_groups']) && isset($render_data['user']['apps_admin_groups'])){
             $render_data['group']['admin'] = in_array($render_data['group']['id'], $render_data['user']['content_admin_groups']) || in_array($render_data['group']['id'], $render_data['user']['apps_admin_groups']);   
         }
+
+        $render_data['x-crsf-token']=csrf_token();
         return $this->build_response($render_data);
         
     }
