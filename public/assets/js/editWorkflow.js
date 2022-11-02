@@ -2328,7 +2328,9 @@ loadInstances = function () {
           gform.m(
             `<div id="instances" style="margin: 0 -15px">
       <hr><h5 style="color:#fefefe">Instances</h5>
-      <style>.workflowInstance{
+      <style>
+      .dialog-wide .modal-dialog{width:768px}
+      .workflowInstance{
         color: #ddd;
         text-decoration: none;
         border:solid 1px #333;
@@ -2426,6 +2428,7 @@ loadInstances = function () {
           });
           modal({
             title: temp.name,
+            modifiers: "dialog-wide",
             content: gform.m(
               `
 
@@ -2433,7 +2436,7 @@ loadInstances = function () {
           <div class="row">
             <dl class="dl-horizontal col-md-6">
               <dt>Group:</dt>
-              <dd>{{group.name}} <span class="text-muted">({{group.id}})</span></dd>
+              <dd><a href="/admin/groups/{{group_id}}">{{group.name}} <span class="text-muted">({{group.id}})</span></a></dd>
               <dt>Name:</dt>
               <dd>{{name}}</dd>
               <dt>Slug:</dt>

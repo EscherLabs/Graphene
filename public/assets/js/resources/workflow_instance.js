@@ -1,5 +1,35 @@
 $(".navbar-header .nav a h4").html("Workflow Instance");
 $('[href="/admin/workflowinstances"]').parent().addClass("active");
+document.body.appendChild(
+  gform.create(`<style>
+
+[data-type="switch"]{
+  border-top: solid 1px #fff;
+  padding: 15px 0;
+  display: flex;
+  grid-auto-flow: column;
+  justify-content: start;
+
+}
+[data-type="switch"] > label.control-label.col-md-4 {
+
+  flex-grow:1;
+}
+
+[data-type="switch"] > label.control-label.col-md-4 div{
+  font-size: small;
+  opacity: .8;
+  margin-top: 3px;
+}
+
+
+[data-type="switch"] > div.col-md-8 {
+  width: auto;
+  flex-shrink:0;
+  margin: auto !important;
+}
+  </style>`)
+);
 root = "/api/workflowinstances/" + resource_id;
 
 $g.getData(
@@ -130,7 +160,10 @@ $g.getData(
           title: 'Value <span class="text-success pull-right">{{value}}</span>',
         };
         var flagField = {
-          columns: 6,
+          columns: 12,
+          horizontal: true,
+          inline: true,
+          forceRow: true,
           type: "switch",
           options: [
             { label: "Off", value: false },
@@ -159,27 +192,20 @@ $g.getData(
           actions: [],
           fields: [
             {
-              columns: 6,
+              columns: 4,
               name: "initial",
               label: "Initial State",
               options: _.pluck(version.code.flow, "name"),
               type: "combobox",
             },
             {
-              columns: 6,
+              columns: 4,
               name: "title",
-              label: "Title",
+              label: "Default Submission Title",
               placeholder: workflow.name,
             },
             {
-              columns: 9,
-              name: "instructions",
-              label: "Instructions",
-              type: "textarea",
-              placeholder: "Instructions to help filling out the form",
-            },
-            {
-              columns: 3,
+              columns: 4,
               name: "template",
               label: "Template",
               type: "combobox",
@@ -187,11 +213,40 @@ $g.getData(
               value: "main",
             },
             {
+              columns: 12,
+              name: "instructions",
+              label: "Instructions",
+              type: "textarea",
+              placeholder: "Instructions to help filling out the form",
+            },
+            {
               ...flagField,
-              name: "suppress_emails",
-              title: `Suppress Default Emails
-							{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}
-							{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}`,
+              name: "encrypted",
+              title: `Encrypt Data at Rest
+							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
+							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`,
+            },
+            {
+              ...flagField,
+              name: "allow_multiple_new",
+              value: false,
+              title: `Allow Multiple submissions in initial state
+							{{#value}}<div class="text-success">Multiple Submissions will be allowed in initial state</div>{{/value}}
+							{{^value}}<div class="text-danger">Only one Submission can be unsubmitted at a time</div>{{/value}}`,
+            },
+            {
+              ...flagField,
+              name: "display_required_list",
+              value: false,
+              title: `Display the Required List Summary
+						<div>Will {{^value}}<span class="text-danger">not </span>{{/value}}be Shown</div>`,
+            },
+            {
+              ...flagField,
+              name: "display_error_list",
+              value: false,
+              title: `Display the Error List Summary
+							<div>Will {{^value}}<span class="text-danger">not </span>{{/value}}be Shown</div>`,
             },
             {
               ...flagField,
@@ -201,10 +256,19 @@ $g.getData(
 							{{^value}}<div class="text-success">Custom emails (from email "Tasks") will be sent</div>{{/value}}`,
             },
             {
+              ...flagField,
+              name: "suppress_emails",
+              title: `Suppress Default Emails
+							{{#value}}<div class="text-danger">Default emails will not be sent</div>{{/value}}
+							{{^value}}<div class="text-success">Default emails will be sent</div>{{/value}}`,
+            },
+            {
               type: "radio",
               name: "default_email_options",
               label: "Default Email Options",
+              horizontal: true,
               multiple: true,
+              columns: 10,
               showColumn: true,
               show: [
                 { name: "suppress_emails", type: "matches", value: false },
@@ -245,35 +309,6 @@ $g.getData(
                   ],
                 },
               ],
-            },
-            {
-              ...flagField,
-              name: "encrypted",
-              title: `Encrypt Data at Rest
-							{{#value}}<div class="text-danger">Data will be encrypted at rest</div>{{/value}}
-							{{^value}}<div class="text-success">Data will NOT be encrypted at rest</div>{{/value}}`,
-            },
-            {
-              ...flagField,
-              name: "allow_multiple_new",
-              value: false,
-              title: `Allow Multiple submissions in initial state
-							{{#value}}<div class="text-success">Multiple Submissions will be allowed in initial state</div>{{/value}}
-							{{^value}}<div class="text-danger">Only one Submission can be unsubmitted at a time</div>{{/value}}`,
-            },
-            {
-              ...flagField,
-              name: "display_required_list",
-              value: false,
-              title: `Display the Required List Summary
-						<div>Will {{^value}}<span class="text-danger">not </span>{{/value}}be Shown</div>`,
-            },
-            {
-              ...flagField,
-              name: "display_error_list",
-              value: false,
-              title: `Display the Error List Summary
-							<div>Will {{^value}}<span class="text-danger">not </span>{{/value}}be Shown</div>`,
             },
             {
               target: () => document.querySelector("#datamap .col-sm-9"),

@@ -1106,6 +1106,10 @@ thead .form-group {
 }
 .admin-main {
   padding: 20px;
+  background-color: white;
+}
+.admin-main .table-container {
+  color: black;
 }
 
 @media (min-width: 768px) {

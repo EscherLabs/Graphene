@@ -12,7 +12,7 @@ class CustomAuth {
 
   public function __construct()
   {
-    if (config('app.site')->auth == 'CAS') {
+    if (config('app.site') !== NULL && config('app.site')->auth == 'CAS') {
       $this->cas = new CASAuth();
     }
   }

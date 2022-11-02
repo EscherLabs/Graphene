@@ -620,13 +620,17 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                   }
                 },
               };
-
+              app.methods = [];
               _.each(
                 this.get().options.workflow_version.code.methods,
 
                 (item, index) => {
                   eval(
-                    'this.methods["' +
+                    'app["' +
+                      item.name +
+                      '"] = evalMethods["' +
+                      item.name +
+                      '"] = this.methods["' +
                       item.name +
                       '"] = this.methods["method_' +
                       index +

@@ -4,6 +4,11 @@ return [
 
     /* Master CrazyStairs Site */
     'master_site' => 'graphene.escherlabs.com',
+    'site' => (object)[
+        'auth'=>false,
+        'id'=>NULL,
+        'name'=>""
+    ],
 
     /*
     |--------------------------------------------------------------------------

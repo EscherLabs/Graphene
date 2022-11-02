@@ -20,3 +20,7 @@ div#flow-preview .label {
   top: 1rem;
   left: 1rem;
 }
+
+body {
+  background-color: white;
+}

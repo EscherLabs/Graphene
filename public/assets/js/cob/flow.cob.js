@@ -279,7 +279,9 @@ Cobler.types.Workflow = function (container) {
     evalMethods = [];
     _.each(methods, (item, index) => {
       eval(
-        'evalMethods["' +
+        'app["' +
+          item.name +
+          '"] = evalMethods["' +
           item.name +
           '"] = evalMethods["method_' +
           index +

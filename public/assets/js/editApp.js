@@ -639,8 +639,23 @@ loadInstances = function () {
       gform.create(
         gform.m(
           `<div id="instances" style="margin: 0 -15px">
-      <hr><h5 style="color:#fefefe">Instances</h5>
-      <style>.appInstance{
+      <hr>
+      <div style="display:flex;align-items: center;">
+        <h5 style="color:#fefefe;flex-grow:1">Instances</h5>
+        <span class="createNew hidden"><i class="fa fa-plus"></i> Create</span>
+      </div>
+      <style>
+      .dialog-wide .modal-dialog{width:768px}
+      .createNew{
+        margin-left:auto;
+        cursor:pointer;
+        color:#aaa;
+      }
+      .createNew:hover{
+        color:#ddd;
+      }
+      
+      .appInstance{
         color: #ddd;
         text-decoration: none;
         border:solid 1px #333;
@@ -672,9 +687,9 @@ loadInstances = function () {
       <div class="appInstance">
         {{#error}}<a href="/admin/appinstances/{{id}}" target="_blank" class="fa fa-warning text-danger"></a>{{/error}}
         <div class="btn-group parent-hover" style="position: absolute;right: 2px;top:2px">
-        <a class="btn btn-xs btn-default" target="_blank" href="/app/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i></a>
-        <a class="btn btn-xs btn-default" href="/admin/appinstances/{{id}}"><i class="fa fa-pencil"></i></a>
-      </div>
+          <a class="btn btn-xs btn-default" target="_blank" href="/app/{{group_id}}/{{slug}}"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-default" href="/admin/appinstances/{{id}}"><i class="fa fa-pencil"></i></a>
+        </div>
         <div data-appID={{id}}>
         
         <div style="overflow:hidden">
@@ -724,11 +739,18 @@ loadInstances = function () {
       {{/app_instances}}
       {{^app_instances}}
       <div class="appInstance">No instances</div>
-      {{/app_instances}}</div>`,
+      {{/app_instances}}
+
+      </div>`,
           { app_instances: app_instances }
         )
       )
     );
+
+    $("#instances").on("click", ".createNew", e => {
+      document.location = "/admin/instances";
+      debugger;
+    });
     $("#instances").on(
       "click",
       "[data-appID]",
@@ -736,8 +758,9 @@ loadInstances = function () {
         var temp = _.find(app_instances, {
           id: parseInt(e.currentTarget.dataset.appid),
         });
-        modal({
+        $g.modal({
           title: temp.name,
+          modifiers: "dialog-wide",
           content: gform.m(
             `
 
@@ -745,7 +768,7 @@ loadInstances = function () {
           <div class="row">
             <dl class="dl-horizontal col-md-6">
               <dt>Group:</dt>
-              <dd>{{group.name}} <span class="text-muted">({{group.id}})</span></dd>
+              <dd><a href="/admin/groups/{{group_id}}">{{group.name}} <span class="text-muted">({{group.id}})</span></a></dd>
               <dt>Name:</dt>
               <dd>{{name}}</dd>
               <dt>Slug:</dt>

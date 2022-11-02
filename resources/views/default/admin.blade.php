@@ -12,7 +12,12 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="-1" />
 <meta http-equiv="Vary" content="*" />
-    <link rel="icon" href="/favicon.png">
+
+@if(config('app.debug'))
+<link rel="icon" href="/favicon_debug.png"> 
+@else
+<link rel="icon" href="/favicon.png"> 
+@endif
     <title>{{ config('app.site')->name }}</title>
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
