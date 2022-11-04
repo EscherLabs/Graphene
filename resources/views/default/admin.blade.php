@@ -14,7 +14,12 @@
 <meta http-equiv="Vary" content="*" />
 
 @if(config('app.debug'))
-<link rel="icon" href="/favicon_debug.png"> 
+
+  @if(config('app.env') === "local")
+  <link rel="icon" href="/favicon_local.png"> 
+  @else
+  <link rel="icon" href="/favicon_debug.png"> 
+  @endif
 @else
 <link rel="icon" href="/favicon.png"> 
 @endif
