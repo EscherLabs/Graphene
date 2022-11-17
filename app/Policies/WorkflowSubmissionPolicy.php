@@ -61,10 +61,15 @@ class WorkflowSubmissionPolicy
 
     public function delete(User $user, WorkflowSubmission $workflow_submission)
     {
-        // User is Admin of Group that Submission Instance belongs to
-        if ($user->group_admin($workflow_submission->workflowInstance->group_id)) {
+        
+        if (
+            // User is Admin of Group that Submission Instance belongs to
+            $user->group_admin($workflow_submission->workflowInstance->group_id)
+            // Or user is the onwner of the workflow and it has not been submitted yet
+            || ($workflow_submission->status == "new" && $workflow_submission->assignment_type == "user" && $workflow_submission->assignment_id == $user->id)
+        ) {
             return true;
-        }
+}
     }
 
     public function upgrade_version(User $user, WorkflowSubmission $workflow_submission)

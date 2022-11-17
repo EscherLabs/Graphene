@@ -284,7 +284,7 @@ class WorkflowSubmissionActionController extends Controller {
     }
     
     // 01/14/2021, AKT -  Added a new parameter with a default value for automated workflow actions
-    public function action(WorkflowSubmission $workflow_submission, Request $request, $is_internal=false){
+    public function action(WorkflowSubmission $workflow_submission, Request $request, $is_internal=false, $task_results = array()){
         //01/20/2021, AKT - Added the code below to check if the actions is taken internally
         //If not, then check for authentication
         // This will be called multiple times when calling in logic blocks
@@ -452,18 +452,18 @@ class WorkflowSubmissionActionController extends Controller {
                 }
             }
         }
-
+        $state_data['task_results'] = $task_results;
         // Execute Any Relevant Previous State Exit Tasks
         if(isset($previous_state->onLeave)){
-            $this->executeTasks($previous_state->onLeave, $state_data, $workflow_submission, $myWorkflowInstance);
+            $state_data['task_results'] += $this->executeTasks($previous_state->onLeave, $state_data, $workflow_submission, $myWorkflowInstance, $request);
         }
         // Execute Any Relevant Action Tasks
         if(isset($action->tasks)){
-            $this->executeTasks($action->tasks, $state_data, $workflow_submission, $myWorkflowInstance);
-        }        
+            $state_data['task_results']+=  $this->executeTasks($action->tasks, $state_data, $workflow_submission, $myWorkflowInstance, $request);
+        }
         // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
-            $this->executeTasks($state->onEnter, $state_data, $workflow_submission, $myWorkflowInstance);
+            $state_data['task_results'] += $this->executeTasks($state->onEnter, $state_data, $workflow_submission, $myWorkflowInstance, $request);
         }
 
         // Update Submission Object In DB
@@ -491,22 +491,27 @@ class WorkflowSubmissionActionController extends Controller {
             }
             $jsexec = new JSExecHelper(['_'=>'lodash.min.js','moment'=>'moment.js']);
             $logic_result = $jsexec->run($method_code,$state_data);
-
+            if(env('APP_DEBUG') && isset($logic_result['console']['debug'])){
+                $request->merge(['action'=>'error','comment'=>json_encode($logic_result['console']['debug'])]);
+                return $this->action($workflow_submission, $request,$is_internal,$state_data['task_results']);
+            }
             // 01/14/2021, AKT - Added $is_internal parameter to the action() function calls below to send the current value of $is_internal
             if ($logic_result['success']===false) {
                 $request->merge(['action'=>'error','comment'=>json_encode($logic_result['error'])]);
-                return $this->action($workflow_submission, $request,$is_internal); // action = error
+                return $this->action($workflow_submission, $request,$is_internal,$state_data['task_results']); // action = error
+            }else if (isset($logic_result['console']['error'])) {
+                $request->merge(['action'=>'error','comment'=>implode("\n",$logic_result['console']['error']) ]);
+                return $this->action($workflow_submission, $request,$is_internal,$state_data['task_results']); // action = error
             } else if ($logic_result['success']===true && $logic_result['return'] == true) { // is truthy
                 $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
                 $request->merge(['action'=>'true','comment'=>$comment]);
-                return $this->action($workflow_submission, $request,$is_internal); //action = true
+                return $this->action($workflow_submission, $request,$is_internal,$state_data['task_results']); //action = true
             } else if ($logic_result['success']===true && $logic_result['return'] == false) { // is falsy
                 $comment = isset($logic_result['console']['comment'])?implode("\n",$logic_result['console']['comment']):json_encode($logic_result['console']);
                 $request->merge(['action'=>'false','comment'=>$comment]);
-                return $this->action($workflow_submission, $request,$is_internal); // action = false
+                return $this->action($workflow_submission, $request,$is_internal,$state_data['task_results']); // action = false
             }
-        }
-        else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
+        } else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
                 !$myWorkflowInstance->configuration->suppress_emails){
             // Reset Email State Data to info for last "human" action. (Non-logic)
             $first_action_state_data = $this->get_first_action_state($state_data);
@@ -584,7 +589,7 @@ class WorkflowSubmissionActionController extends Controller {
         $activity->save();
     }
 
-    private function executeTasks($tasks, $data, &$workflow_submission, &$workflow_instance){
+    private function executeTasks($tasks, $data, &$workflow_submission, &$workflow_instance, Request $request){
         //02/11/2021, AT - Added support for array of different type of fields, such as users, groups and emails for the task emails
         $m = new \Mustache_Engine([
             'escape' => function($value) {
@@ -592,7 +597,7 @@ class WorkflowSubmissionActionController extends Controller {
                 return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
             }
         ]);
-
+        // $tast_results = array();
         foreach($tasks as $task){
             $task->data = [];
             if(isset($task->dataset)){
@@ -681,9 +686,55 @@ class WorkflowSubmissionActionController extends Controller {
                     }                    
                     if(isset($task->data)){
                         $data['request'] = $task->data;
-
                     }
-                    $data = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
+                    $result = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
+                    $data['task_results'][] = array(
+                        'task'=>$task->task,
+                        'resource'=>$task->resource,
+                        'verb'=>$task->verb,
+                        'data'=>$task->data,
+                        'content'=>$result['content'],
+                        'code'=>$result['code'],
+                        'success'=>($result['code'] == "200")
+                    );
+                break;
+                case "method":
+                    // if(isset($task->field_names) && is_array($task->field_names)){
+                    //     $protected_field_names = $task->field_names;
+                    // }
+                    
+                    if (is_string($task->method)) {
+                        $method_name = $task->method;
+                        // Lookup Logic Method
+
+                        $method = Arr::first($workflow_instance->version->code->methods, function ($value, $key) use ($method_name) {
+                            return "method_".$key === $method_name;
+                        }); // Needs error handling if this is null!
+                        
+                        $method_code = $method->content;
+                    } else {
+                        $method_code = 'return true;';
+                    }
+                    $jsexec = new JSExecHelper(['_'=>'lodash.min.js','moment'=>'moment.js']);
+
+                    $result = $jsexec->run($method_code,$data);
+                    if(isset($result['console']['comment'])){
+
+                        if(!$request->has('comment')){
+                            $request->add('comment',"");
+                        }
+                        $request->merge(['comment'=>$request->get('comment').implode("\n",$result['console']['comment']) ]);
+                    }
+
+                    if ($result['success']===false) {
+                    }else if (isset($result ['console']['error'])) {
+                    } else if ($result ['success']===true && isset($result ['return'])) { // is truthy
+                        if(isset($result ['return']['form'])){
+                            
+                            $workflow_submission->update(['data'=>(object)$result ['return']['form']]);
+                        }
+                    } 
+                    $data['task_results'][] =$result ;
                 break;
                 case "purge_fields_by_name":
                     // this is a "poor man" implementation of "Purge Protected" that clears all 
@@ -709,6 +760,7 @@ class WorkflowSubmissionActionController extends Controller {
                 break;
             }
         }
+        return $data['task_results'];
     }
 
     private function send_default_emails($state_data,$config) {

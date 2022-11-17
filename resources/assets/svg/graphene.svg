@@ -2,25 +2,49 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="210mm"
    height="297mm"
    viewBox="0 0 744.09448819 1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="1.2-dev (9ee32be, 2021-06-19)"
    sodipodi:docname="graphene.svg"
    inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"
    inkscape:export-xdpi="35.571426"
-   inkscape:export-ydpi="35.571426">
+   inkscape:export-ydpi="35.571426"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
-     id="defs4" />
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5746">
+      <stop
+         style="stop-color:#c71d71;stop-opacity:1;"
+         offset="0"
+         id="stop5744" />
+      <stop
+         style="stop-color:#f34ccd;stop-opacity:1;"
+         offset="1"
+         id="stop5742" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5746"
+       id="linearGradient5754"
+       x1="-859.2063"
+       y1="2409.449"
+       x2="-675.0907"
+       y2="2232.2834"
+       gradientUnits="userSpaceOnUse"
+       spreadMethod="reflect" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -28,11 +52,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.57726334"
-     inkscape:cx="-167.08981"
-     inkscape:cy="-1138.034"
+     inkscape:zoom="0.81637364"
+     inkscape:cx="-853.77572"
+     inkscape:cy="2634.2105"
      inkscape:document-units="px"
-     inkscape:current-layer="g4403"
+     inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:object-nodes="true"
@@ -45,11 +69,12 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-global="true"
      inkscape:snap-grids="true"
-     inkscape:window-width="1440"
-     inkscape:window-height="855"
+     inkscape:window-width="1316"
+     inkscape:window-height="847"
      inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1">
+     inkscape:window-y="175"
+     inkscape:window-maximized="0"
+     inkscape:pagecheckerboard="0">
     <inkscape:grid
        type="axonomgrid"
        id="grid4142"
@@ -76,6 +101,14 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <path
+       id="path4210"
+       style="fill:#e0e0e0;fill-opacity:1;stroke:none;stroke-width:0.763787;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -977.2793 2380.9668 A 72.168791 75 0 0 0 -1049.4473 2455.9668 A 72.168791 75 0 0 0 -977.2793 2530.9668 A 72.168791 75 0 0 0 -905.11133 2455.9668 A 72.168791 75 0 0 0 -977.2793 2380.9668 z M -977.2793 2435.9668 A 20 20 0 0 1 -957.2793 2455.9668 A 20 20 0 0 1 -977.2793 2475.9668 A 20 20 0 0 1 -997.2793 2455.9668 A 20 20 0 0 1 -977.2793 2435.9668 z "
+       transform="scale(0.9375)"
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_local.png"
+       inkscape:export-xdpi="22.756544"
+       inkscape:export-ydpi="22.756544" />
     <g
        id="g4313">
       <path
@@ -90,7 +123,6 @@
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
-         sodipodi:linespacing="125%"
          id="text8272"
          y="1783.2026"
          x="-200.61977"
@@ -118,7 +150,6 @@
          x="-173.97293"
          y="1954.3594"
          id="text8297"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_small_white.png"><tspan
@@ -144,7 +175,6 @@
          x="-182.30116"
          y="2100.6904"
          id="text4150"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_white.png"><tspan
@@ -169,7 +199,6 @@
          x="-199.66702"
          y="2181.5046"
          id="text4156"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"><tspan
@@ -181,7 +210,6 @@
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"
-         sodipodi:linespacing="125%"
          id="text4160"
          y="2255.2517"
          x="-204.44434"
@@ -206,7 +234,6 @@
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
-         sodipodi:linespacing="125%"
          id="text4201"
          y="2488.2219"
          x="-199.66702"
@@ -221,8 +248,7 @@
          style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:42.32091522px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="-192.74222"
          y="2563.8008"
-         id="text4205"
-         sodipodi:linespacing="125%"><tspan
+         id="text4205"><tspan
            sodipodi:role="line"
            id="tspan4207"
            x="-192.74222"
@@ -244,7 +270,6 @@
          x="-190.7962"
          y="2641.1597"
          id="text4213"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"><tspan
@@ -253,7 +278,6 @@
            x="-190.7962"
            y="2641.1597">GRAPHENE</tspan></text>
       <text
-         sodipodi:linespacing="125%"
          id="text4217"
          y="2714.9067"
          x="-206.36388"
@@ -282,7 +306,6 @@
          inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
-         sodipodi:linespacing="125%"
          id="text4284"
          y="2181.4924"
          x="268.95471"
@@ -298,7 +321,6 @@
          x="264.1774"
          y="2255.2395"
          id="text4288"
-         sodipodi:linespacing="125%"
          inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"><tspan
@@ -351,7 +373,6 @@
        x="-199.66702"
        y="2335.2847"
        id="text4176"
-       sodipodi:linespacing="125%"
        inkscape:export-xdpi="35.571426"
        inkscape:export-ydpi="35.571426"
        inkscape:export-filename="/Library/WebServer/Documents/GrapheneDataGrid/docs/assets/images/graphene_datagrid_logo.png"><tspan
@@ -360,7 +381,6 @@
          x="-199.66702"
          y="2335.2847">GRAPHENE</tspan></text>
     <text
-       sodipodi:linespacing="125%"
        id="text4180"
        y="2405.9104"
        x="-200.30247"
@@ -375,7 +395,10 @@
          sodipodi:role="line">DATAGRID</tspan></text>
     <g
        id="g4373"
-       transform="translate(0,-24.6351)">
+       transform="translate(0,-24.6351)"
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_success.png"
+       inkscape:export-xdpi="22.75646"
+       inkscape:export-ydpi="22.75646">
       <path
          id="path4333"
          style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000034;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
@@ -406,9 +429,9 @@
     <g
        id="g4368"
        transform="translate(-12.553558,-19.1858)"
-       inkscape:export-filename="/Users/adam/Documents/graphene_forms_icon.png"
-       inkscape:export-xdpi="35.571426"
-       inkscape:export-ydpi="35.571426">
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/logo_info.png"
+       inkscape:export-xdpi="22.75646"
+       inkscape:export-ydpi="22.75646">
       <path
          inkscape:export-filename="/Users/adam/Documents/graphene_icon.png"
          inkscape:export-ydpi="22.756544"
@@ -438,7 +461,10 @@
     </g>
     <g
        id="g4410"
-       transform="translate(0,-13.4298)">
+       transform="translate(0,-13.4298)"
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_danger.png"
+       inkscape:export-xdpi="22.75646"
+       inkscape:export-ydpi="22.75646">
       <path
          id="path4345"
          style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000034;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
@@ -468,7 +494,10 @@
     </g>
     <g
        id="g4420"
-       transform="translate(0,-2.2245)">
+       transform="translate(0,-2.2245)"
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_local.png"
+       inkscape:export-xdpi="22.75646"
+       inkscape:export-ydpi="22.75646">
       <path
          inkscape:export-filename="/Users/adam/Documents/graphene_icon.png"
          inkscape:export-ydpi="22.756544"
@@ -498,7 +527,8 @@
     </g>
     <g
        id="g4443"
-       transform="translate(3.7695315e-7,12.615145)">
+       transform="translate(3.7695315e-7,12.615145)"
+       style="fill:none;fill-opacity:1">
       <path
          id="path4434"
          style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000034;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
@@ -523,7 +553,7 @@
          inkscape:export-xdpi="22.756544"
          inkscape:connector-curvature="0"
          d="m -485.93922,1895.9182 c -7.2256,0.1966 -12.96993,6.2622 -12.77333,13.4878 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26223,-12.9699 -13.48783,-12.7733 z m 0.12028,4.4208 c 4.83646,-0.1317 8.81524,3.6364 8.94683,8.4729 0.13158,4.8363 -3.63642,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.81525,-3.6364 -8.94684,-8.4729 -0.13159,-4.8364 3.63641,-8.8152 8.47289,-8.9467 z m 43.30491,20.651 c -7.22559,0.1966 -12.96956,6.2622 -12.77298,13.4879 0.19658,7.2255 6.26188,12.9699 13.48749,12.7733 7.2256,-0.1966 12.96992,-6.2623 12.77333,-13.4878 -0.1966,-7.2257 -6.26224,-12.97 -13.48784,-12.7734 z m 0.12028,4.4207 c 4.83646,-0.1315 8.81525,3.6364 8.94684,8.4729 0.13159,4.8365 -3.63643,8.8152 -8.47289,8.9468 -4.83647,0.1317 -8.8149,-3.6364 -8.94649,-8.4729 -0.13158,-4.8365 3.63609,-8.8152 8.47254,-8.9468 z m 43.30517,-29.4925 c -7.2256,0.1966 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2255 6.26223,12.9699 13.48783,12.7733 7.22559,-0.1966 12.96992,-6.2622 12.77333,-13.4878 -0.19659,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94684,8.4729 0.13158,4.8364 -3.63642,8.8152 -8.47288,8.9468 -4.83648,0.1316 -8.81526,-3.6365 -8.94684,-8.4729 -0.13159,-4.8364 3.63642,-8.8153 8.47288,-8.9468 z m -86.971,-54.5641 c -7.2256,0.1967 -12.96993,6.2623 -12.77333,13.4879 0.19658,7.2256 6.26223,12.9699 13.48782,12.7734 7.22561,-0.1967 12.96993,-6.2622 12.77334,-13.4879 -0.19658,-7.2256 -6.26223,-12.9699 -13.48783,-12.7734 z m 0.12028,4.4208 c 4.83646,-0.1316 8.81524,3.6365 8.94683,8.4729 0.13158,4.8364 -3.63642,8.8153 -8.47289,8.9468 -4.83646,0.1316 -8.81524,-3.6365 -8.94683,-8.4728 -0.13159,-4.8365 3.63642,-8.8154 8.47289,-8.9469 z m 86.73036,-4.4207 c -7.2256,0.1966 -12.96958,6.2622 -12.77299,13.4879 0.19659,7.2255 6.26188,12.9699 13.48748,12.7733 7.2256,-0.1966 12.96993,-6.2622 12.77334,-13.4879 -0.19659,-7.2255 -6.26224,-12.9698 -13.48783,-12.7733 z m 0.12027,4.4208 c 4.83647,-0.1316 8.81525,3.6364 8.94683,8.4729 0.13159,4.8364 -3.63641,8.8152 -8.47288,8.9467 -4.83647,0.1316 -8.8149,-3.6364 -8.94649,-8.4728 -0.13159,-4.8364 3.63608,-8.8153 8.47254,-8.9468 z m -43.54547,-29.4923 c -7.2256,0.1967 -12.96992,6.262 -12.77334,13.4875 0.1966,7.2257 6.26224,12.97 13.48784,12.7734 7.2256,-0.1966 12.96993,-6.2623 12.77333,-13.4879 -0.19659,-7.2255 -6.26222,-12.9695 -13.48783,-12.773 z m 0.12028,4.4208 c 4.83647,-0.1316 8.81525,3.6361 8.94683,8.4725 0.13159,4.8365 -3.63642,8.8153 -8.47289,8.9469 -4.83647,0.1315 -8.81524,-3.6364 -8.94683,-8.4729 -0.13159,-4.8365 3.63643,-8.8149 8.47289,-8.9465 z m 33.8623,42.6182 0,32.4694 19.60004,0 0,-32.4694 -19.60004,0 z m -2.75327,37.238 -28.1186,16.2342 9.80001,16.9743 28.11861,-16.2342 -9.80002,-16.9743 z m -61.74649,0 -9.80002,16.9743 28.12344,16.2369 9.80001,-16.9743 -28.12343,-16.2369 z m -22.35088,-37.2366 0,32.4694 19.60003,0 0,-32.4694 -19.60003,0 z m 40.67188,-37.9767 -28.1186,16.2342 9.80001,16.9739 28.11861,-16.2341 -9.80002,-16.974 z m 25.10484,0 -9.80002,16.974 28.12275,16.2366 9.79967,-16.974 -28.1224,-16.2366 z"
-         style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000034;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93000034;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
          id="path4438" />
     </g>
     <g
@@ -542,7 +572,6 @@
          x="282.08957"
          y="2335.2847"
          id="text4452"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"><tspan
@@ -551,7 +580,6 @@
            x="282.08957"
            y="2335.2847">GRAPHENE</tspan></text>
       <text
-         sodipodi:linespacing="125%"
          id="text4456"
          y="2409.0317"
          x="287.92636"
@@ -586,7 +614,6 @@
          x="282.08957"
          y="2488.2219"
          id="text4480"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"><tspan
@@ -595,7 +622,6 @@
            x="282.08957"
            y="2488.2219">GRAPHENE</tspan></text>
       <text
-         sodipodi:linespacing="125%"
          id="text4484"
          y="2561.969"
          x="288.86636"
@@ -620,7 +646,6 @@
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
-         sodipodi:linespacing="125%"
          id="text4492"
          y="2641.1597"
          x="290.96039"
@@ -635,8 +660,7 @@
          style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
          x="275.3927"
          y="2714.9067"
-         id="text4496"
-         sodipodi:linespacing="125%"><tspan
+         id="text4496"><tspan
            sodipodi:role="line"
            id="tspan4498"
            x="275.3927"
@@ -658,7 +682,6 @@
          x="759.92975"
          y="2181.4924"
          id="text4232"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"><tspan
@@ -670,7 +693,6 @@
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_forms.png"
-         sodipodi:linespacing="125%"
          id="text4236"
          y="2255.2395"
          x="755.1524"
@@ -687,7 +709,6 @@
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
-         sodipodi:linespacing="125%"
          id="text4244"
          y="2335.2725"
          x="759.92975"
@@ -702,8 +723,7 @@
          style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="765.76654"
          y="2409.0195"
-         id="text4248"
-         sodipodi:linespacing="125%"><tspan
+         id="text4248"><tspan
            sodipodi:role="line"
            id="tspan4250"
            x="765.76654"
@@ -731,7 +751,6 @@
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"
          inkscape:export-ydpi="35.571426"
          inkscape:export-xdpi="35.571426"
-         sodipodi:linespacing="125%"
          id="text4258"
          y="2488.2097"
          x="759.92975"
@@ -746,8 +765,7 @@
          style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:80.21292114px;line-height:125%;font-family:Futura;-inkscape-font-specification:'Futura Medium';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="766.70654"
          y="2561.9568"
-         id="text4262"
-         sodipodi:linespacing="125%"><tspan
+         id="text4262"><tspan
            sodipodi:role="line"
            id="tspan4264"
            x="766.70654"
@@ -769,7 +787,6 @@
          x="768.8006"
          y="2641.1475"
          id="text4270"
-         sodipodi:linespacing="125%"
          inkscape:export-xdpi="35.571426"
          inkscape:export-ydpi="35.571426"
          inkscape:export-filename="/Users/adam/Documents/graphene_small.png"><tspan
@@ -778,7 +795,6 @@
            x="768.8006"
            y="2641.1475">GRAPHENE</tspan></text>
       <text
-         sodipodi:linespacing="125%"
          id="text4274"
          y="2714.8945"
          x="753.23291"
@@ -789,5 +805,40 @@
            id="tspan4276"
            sodipodi:role="line">CHARTS</tspan></text>
     </g>
+    <path
+       id="path4434-4"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m -928.14031,2258.6857 c -0.1966,-7.2256 -6.2622,-12.9699 -13.4878,-12.7733 -7.2256,0.1966 -12.9699,6.2622 -12.7734,13.4878 0.1967,7.2256 6.2622,12.9699 13.4879,12.7734 7.2255,-0.1966 12.9699,-6.2623 12.7733,-13.4879 z m -4.4208,0.1203 c 0.1317,4.8365 -3.6364,8.8152 -8.4729,8.9468 -4.8363,0.1316 -8.8152,-3.6364 -8.9467,-8.4728 -0.1316,-4.8365 3.6364,-8.8153 8.4729,-8.9469 4.8364,-0.1316 8.8152,3.6364 8.9467,8.4729 z m -20.651,43.3049 c -0.1966,-7.2256 -6.2622,-12.9695 -13.4879,-12.773 -7.2255,0.1966 -12.9699,6.2619 -12.7733,13.4875 0.1966,7.2256 6.2623,12.9699 13.4878,12.7734 7.2257,-0.1966 12.97,-6.2623 12.7734,-13.4879 z m -4.4207,0.1203 c 0.1315,4.8365 -3.6364,8.8152 -8.4729,8.9468 -4.8365,0.1316 -8.8152,-3.6364 -8.9468,-8.4729 -0.1317,-4.8364 3.6364,-8.8149 8.4729,-8.9464 4.8365,-0.1316 8.8152,3.636 8.9468,8.4725 z m 29.4925,43.3052 c -0.1966,-7.2256 -6.2623,-12.97 -13.4879,-12.7734 -7.2255,0.1966 -12.9699,6.2623 -12.7733,13.4879 0.1966,7.2256 6.2622,12.9699 13.4878,12.7733 7.2256,-0.1966 12.9699,-6.2622 12.7734,-13.4878 z m -4.4208,0.1202 c 0.1316,4.8365 -3.6364,8.8153 -8.4729,8.9469 -4.8364,0.1316 -8.8152,-3.6364 -8.9468,-8.4729 -0.1316,-4.8365 3.6365,-8.8153 8.4729,-8.9468 4.8364,-0.1316 8.8153,3.6364 8.9468,8.4728 z m 54.5641,-86.971 c -0.1967,-7.2256 -6.2623,-12.9699 -13.4879,-12.7733 -7.2256,0.1966 -12.9699,6.2622 -12.7734,13.4878 0.1967,7.2256 6.2622,12.97 13.4879,12.7734 7.2256,-0.1966 12.9699,-6.2623 12.7734,-13.4879 z m -4.4208,0.1203 c 0.1316,4.8365 -3.6365,8.8153 -8.4729,8.9468 -4.8364,0.1316 -8.8153,-3.6364 -8.9468,-8.4728 -0.1316,-4.8365 3.6365,-8.8153 8.4728,-8.9469 4.8365,-0.1316 8.8154,3.6364 8.9469,8.4729 z m 4.4207,86.7304 c -0.1966,-7.2256 -6.2622,-12.9696 -13.4879,-12.773 -7.2255,0.1966 -12.9699,6.2619 -12.7733,13.4875 0.1966,7.2256 6.2622,12.9699 13.4879,12.7733 7.2255,-0.1966 12.9698,-6.2622 12.7733,-13.4878 z m -4.4208,0.1202 c 0.1316,4.8365 -3.6364,8.8153 -8.4729,8.9469 -4.8364,0.1316 -8.8152,-3.6364 -8.9467,-8.4729 -0.1316,-4.8365 3.6364,-8.8149 8.4728,-8.9465 4.8364,-0.1316 8.8153,3.6361 8.9468,8.4725 z m 29.4923,-43.5454 c -0.1967,-7.2256 -6.262,-12.9699 -13.4875,-12.7734 -7.2257,0.1966 -12.97,6.2623 -12.7734,13.4879 0.1966,7.2256 6.2623,12.9699 13.4879,12.7733 7.2255,-0.1966 12.9695,-6.2622 12.773,-13.4878 z m -4.4208,0.1203 c 0.1316,4.8364 -3.6361,8.8152 -8.4725,8.9468 -4.8365,0.1316 -8.8153,-3.6364 -8.9469,-8.4729 -0.1315,-4.8365 3.6364,-8.8152 8.4729,-8.9468 4.8365,-0.1316 8.8149,3.6364 8.9465,8.4729 z m -42.6182,33.8623 h -32.4694 v 19.6 h 32.4694 z m -37.238,-2.7533 -16.2342,-28.1186 -16.9743,9.8 16.2342,28.1186 z m 0,-61.7465 -16.9743,-9.8 -16.2369,28.1234 16.9743,9.8 z m 37.2366,-22.3509 h -32.4694 v 19.6 h 32.4694 z m 37.9767,40.6719 -16.2342,-28.1186 -16.9739,9.8 16.2341,28.1186 z m 0,25.1048 -16.974,-9.8 -16.2366,28.1228 16.974,9.7996 z"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="22.756544"
+       inkscape:export-ydpi="22.756544"
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_local.png" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1.57219;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4436-5"
+       width="126.557"
+       height="126.557"
+       x="2239.1897"
+       y="852.92096"
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_local.png"
+       inkscape:export-xdpi="22.756544"
+       inkscape:export-ydpi="22.756544"
+       transform="rotate(90)" />
+    <path
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_local.png"
+       inkscape:export-ydpi="22.756544"
+       inkscape:export-xdpi="22.756544"
+       inkscape:connector-curvature="0"
+       d="m -928.14031,2258.6857 c -0.1966,-7.2256 -6.2622,-12.9699 -13.4878,-12.7733 -7.2256,0.1966 -12.9699,6.2622 -12.7734,13.4878 0.1967,7.2256 6.2622,12.9699 13.4879,12.7734 7.2255,-0.1966 12.9699,-6.2623 12.7733,-13.4879 z m -4.4208,0.1203 c 0.1317,4.8365 -3.6364,8.8152 -8.4729,8.9468 -4.8363,0.1316 -8.8152,-3.6364 -8.9467,-8.4728 -0.1316,-4.8365 3.6364,-8.8153 8.4729,-8.9469 4.8364,-0.1316 8.8152,3.6364 8.9467,8.4729 z m -20.651,43.3049 c -0.1966,-7.2256 -6.2622,-12.9695 -13.4879,-12.773 -7.2255,0.1966 -12.9699,6.2619 -12.7733,13.4875 0.1966,7.2256 6.2623,12.9699 13.4878,12.7734 7.2257,-0.1966 12.97,-6.2623 12.7734,-13.4879 z m -4.4207,0.1203 c 0.1315,4.8365 -3.6364,8.8152 -8.4729,8.9468 -4.8365,0.1316 -8.8152,-3.6364 -8.9468,-8.4729 -0.1317,-4.8364 3.6364,-8.8149 8.4729,-8.9464 4.8365,-0.1316 8.8152,3.636 8.9468,8.4725 z m 29.4925,43.3052 c -0.1966,-7.2256 -6.2623,-12.97 -13.4879,-12.7734 -7.2255,0.1966 -12.9699,6.2623 -12.7733,13.4879 0.1966,7.2256 6.2622,12.9699 13.4878,12.7733 7.2256,-0.1966 12.9699,-6.2622 12.7734,-13.4878 z m -4.4208,0.1202 c 0.1316,4.8365 -3.6364,8.8153 -8.4729,8.9469 -4.8364,0.1316 -8.8152,-3.6364 -8.9468,-8.4729 -0.1316,-4.8365 3.6365,-8.8153 8.4729,-8.9468 4.8364,-0.1316 8.8153,3.6364 8.9468,8.4728 z m 54.5641,-86.971 c -0.1967,-7.2256 -6.2623,-12.9699 -13.4879,-12.7733 -7.2256,0.1966 -12.9699,6.2622 -12.7734,13.4878 0.1967,7.2256 6.2622,12.97 13.4879,12.7734 7.2256,-0.1966 12.9699,-6.2623 12.7734,-13.4879 z m -4.4208,0.1203 c 0.1316,4.8365 -3.6365,8.8153 -8.4729,8.9468 -4.8364,0.1316 -8.8153,-3.6364 -8.9468,-8.4728 -0.1316,-4.8365 3.6365,-8.8153 8.4728,-8.9469 4.8365,-0.1316 8.8154,3.6364 8.9469,8.4729 z m 4.4207,86.7304 c -0.1966,-7.2256 -6.2622,-12.9696 -13.4879,-12.773 -7.2255,0.1966 -12.9699,6.2619 -12.7733,13.4875 0.1966,7.2256 6.2622,12.9699 13.4879,12.7733 7.2255,-0.1966 12.9698,-6.2622 12.7733,-13.4878 z m -4.4208,0.1202 c 0.1316,4.8365 -3.6364,8.8153 -8.4729,8.9469 -4.8364,0.1316 -8.8152,-3.6364 -8.9467,-8.4729 -0.1316,-4.8365 3.6364,-8.8149 8.4728,-8.9465 4.8364,-0.1316 8.8153,3.6361 8.9468,8.4725 z m 29.4923,-43.5454 c -0.1967,-7.2256 -6.262,-12.9699 -13.4875,-12.7734 -7.2257,0.1966 -12.97,6.2623 -12.7734,13.4879 0.1966,7.2256 6.2623,12.9699 13.4879,12.7733 7.2255,-0.1966 12.9695,-6.2622 12.773,-13.4878 z m -4.4208,0.1203 c 0.1316,4.8364 -3.6361,8.8152 -8.4725,8.9468 -4.8365,0.1316 -8.8153,-3.6364 -8.9469,-8.4729 -0.1315,-4.8365 3.6364,-8.8152 8.4729,-8.9468 4.8365,-0.1316 8.8149,3.6364 8.9465,8.4729 z m -42.6182,33.8623 h -32.4694 v 19.6 h 32.4694 z m -37.238,-2.7533 -16.2342,-28.1186 -16.9743,9.8 16.2342,28.1186 z m 0,-61.7465 -16.9743,-9.8 -16.2369,28.1234 16.9743,9.8 z m 37.2366,-22.3509 h -32.4694 v 19.6 h 32.4694 z m 37.9767,40.6719 -16.2342,-28.1186 -16.9739,9.8 16.2341,28.1186 z m 0,25.1048 -16.974,-9.8 -16.2366,28.1228 16.974,9.7996 z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.93;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#be249b;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.9375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="path4438-1" />
+    <path
+       inkscape:export-filename="/Users/adamsmallcomb/Documents/GitHub/Graphene/public/favicon_local.png"
+       inkscape:export-ydpi="22.756544"
+       inkscape:export-xdpi="22.756544"
+       inkscape:connector-curvature="0"
+       d="m -764.63686,2277.1593 c -0.1966,-7.2256 -6.2622,-12.9699 -13.4878,-12.7733 -7.2256,0.1966 -12.9699,6.2622 -12.7734,13.4878 0.1967,7.2256 6.2622,12.9699 13.4879,12.7734 7.2255,-0.1966 12.9699,-6.2623 12.7733,-13.4879 z m -4.4208,0.1203 c 0.1317,4.8365 -3.6364,8.8152 -8.4729,8.9468 -4.8363,0.1316 -8.8152,-3.6364 -8.9467,-8.4728 -0.1316,-4.8365 3.6364,-8.8153 8.4729,-8.9469 4.8364,-0.1316 8.8152,3.6364 8.9467,8.4729 z m -20.651,43.3049 c -0.1966,-7.2256 -6.2622,-12.9695 -13.4879,-12.773 -7.2255,0.1966 -12.9699,6.2619 -12.7733,13.4875 0.1966,7.2256 6.2623,12.9699 13.4878,12.7734 7.2257,-0.1966 12.97,-6.2623 12.7734,-13.4879 z m -4.4207,0.1203 c 0.1315,4.8365 -3.6364,8.8152 -8.4729,8.9468 -4.8365,0.1316 -8.8152,-3.6364 -8.9468,-8.4729 -0.1317,-4.8364 3.6364,-8.8149 8.4729,-8.9464 4.8365,-0.1316 8.8152,3.636 8.9468,8.4725 z m 29.4925,43.3052 c -0.1966,-7.2256 -6.2623,-12.97 -13.4879,-12.7734 -7.2255,0.1966 -12.9699,6.2623 -12.7733,13.4879 0.1966,7.2256 6.2622,12.9699 13.4878,12.7733 7.2256,-0.1966 12.9699,-6.2622 12.7734,-13.4878 z m -4.4208,0.1202 c 0.1316,4.8365 -3.6364,8.8153 -8.4729,8.9469 -4.8364,0.1316 -8.8152,-3.6364 -8.9468,-8.4729 -0.1316,-4.8365 3.6365,-8.8153 8.4729,-8.9468 4.8364,-0.1316 8.8153,3.6364 8.9468,8.4728 z m 54.5641,-86.971 c -0.1967,-7.2256 -6.2623,-12.9699 -13.4879,-12.7733 -7.2256,0.1966 -12.9699,6.2622 -12.7734,13.4878 0.1967,7.2256 6.2622,12.97 13.4879,12.7734 7.2256,-0.1966 12.9699,-6.2623 12.7734,-13.4879 z m -4.4208,0.1203 c 0.1316,4.8365 -3.6365,8.8153 -8.4729,8.9468 -4.8364,0.1316 -8.8153,-3.6364 -8.9468,-8.4728 -0.1316,-4.8365 3.6365,-8.8153 8.4728,-8.9469 4.8365,-0.1316 8.8154,3.6364 8.9469,8.4729 z m 4.4207,86.7304 c -0.1966,-7.2256 -6.2622,-12.9696 -13.4879,-12.773 -7.2255,0.1966 -12.9699,6.2619 -12.7733,13.4875 0.1966,7.2256 6.2622,12.9699 13.4879,12.7733 7.2255,-0.1966 12.9698,-6.2622 12.7733,-13.4878 z m -4.4208,0.1202 c 0.1316,4.8365 -3.6364,8.8153 -8.4729,8.9469 -4.8364,0.1316 -8.8152,-3.6364 -8.9467,-8.4729 -0.1316,-4.8365 3.6364,-8.8149 8.4728,-8.9465 4.8364,-0.1316 8.8153,3.6361 8.9468,8.4725 z m 29.4923,-43.5454 c -0.1967,-7.2256 -6.262,-12.9699 -13.4875,-12.7734 -7.2257,0.1966 -12.97,6.2623 -12.7734,13.4879 0.1966,7.2256 6.2623,12.9699 13.4879,12.7733 7.2255,-0.1966 12.9695,-6.2622 12.773,-13.4878 z m -4.4208,0.1203 c 0.1316,4.8364 -3.6361,8.8152 -8.4725,8.9468 -4.8365,0.1316 -8.8153,-3.6364 -8.9469,-8.4729 -0.1315,-4.8365 3.6364,-8.8152 8.4729,-8.9468 4.8365,-0.1316 8.8149,3.6364 8.9465,8.4729 z m -42.6182,33.8623 h -32.4694 v 19.6 h 32.4694 z m -37.238,-2.7533 -16.2342,-28.1186 -16.9743,9.8 16.2342,28.1186 z m 0,-61.7465 -16.9743,-9.8 -16.2369,28.1234 16.9743,9.8 z m 37.2366,-22.3509 h -32.4694 v 19.6 h 32.4694 z m 37.9767,40.6719 -16.2342,-28.1186 -16.9739,9.8 16.2341,28.1186 z m 0,25.1048 -16.974,-9.8 -16.2366,28.1228 16.974,9.7996 z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient5754);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.9375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="path4438-1-5" />
   </g>
 </svg>

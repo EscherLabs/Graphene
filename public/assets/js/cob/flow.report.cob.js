@@ -235,6 +235,17 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                   "deleted_at",
                   "deleted_by"
                 );
+
+                // try {
+                //   newEvent.comment = JSON.stringify(
+                //     JSON.parse(newEvent.comment),
+                //     null,
+                //     2
+                //   );
+                //   debugger;
+                // } catch (e) {
+                //   // return false;
+                // }
                 newEvent.assignemnt = {
                   type: event.assignment_type,
                   id: event.assignment_id,
@@ -621,6 +632,7 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                 },
               };
               app.methods = [];
+              evalMethods = [];
               _.each(
                 this.get().options.workflow_version.code.methods,
 
