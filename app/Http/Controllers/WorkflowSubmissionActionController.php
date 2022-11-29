@@ -466,7 +466,7 @@ class WorkflowSubmissionActionController extends Controller {
         }
 
         $workflow_submission->update();
-        
+
         // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
             $state_data['task_results'] += $this->executeTasks($state->onEnter, $state_data, $workflow_submission, $myWorkflowInstance, $request);
@@ -693,9 +693,9 @@ class WorkflowSubmissionActionController extends Controller {
                     if(isset($task->data)){
                         $data['request'] = $task->data;
 
-                        $data['request']["form"]=$data['form'];
+                        // $data['request']["form"]=$data['form'];
                     }else{
-                        $data['request'] = ["form"=>$data['form']];
+                        // $data['request'] = ["form"=>$data['form']];
                     }
                     
                     $result = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
