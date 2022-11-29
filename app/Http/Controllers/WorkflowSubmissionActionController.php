@@ -457,10 +457,16 @@ class WorkflowSubmissionActionController extends Controller {
         if(isset($previous_state->onLeave)){
             $state_data['task_results'] += $this->executeTasks($previous_state->onLeave, $state_data, $workflow_submission, $myWorkflowInstance, $request);
         }
+
+        $workflow_submission->update();
+
         // Execute Any Relevant Action Tasks
         if(isset($action->tasks)){
             $state_data['task_results']+=  $this->executeTasks($action->tasks, $state_data, $workflow_submission, $myWorkflowInstance, $request);
         }
+
+        $workflow_submission->update();
+        
         // Execute Any Relevant New State Entry Tasks
         if(isset($state->onEnter)){
             $state_data['task_results'] += $this->executeTasks($state->onEnter, $state_data, $workflow_submission, $myWorkflowInstance, $request);
@@ -680,13 +686,18 @@ class WorkflowSubmissionActionController extends Controller {
                         $file->delete();
                     }
                 break;
-                case "resource":
+                case "resource":                    
                     if(isset($task->verb)){
                         $data['verb'] = $task->verb;
                     }                    
                     if(isset($task->data)){
                         $data['request'] = $task->data;
+
+                        $data['request']["form"]=$data['form'];
+                    }else{
+                        $data['request'] = ["form"=>$data['form']];
                     }
+                    
                     $result = $this->resourceService->get_data_int($workflow_instance,$workflow_submission, $task->resource, $data);
                     $data['task_results'][] = array(
                         'task'=>$task->task,
@@ -721,7 +732,7 @@ class WorkflowSubmissionActionController extends Controller {
                     if(isset($result['console']['comment'])){
 
                         if(!$request->has('comment')){
-                            $request->add('comment',"");
+                            $request->merge(['comment',""]);
                         }
                         $request->merge(['comment'=>$request->get('comment').implode("\n",$result['console']['comment']) ]);
                     }
@@ -730,7 +741,6 @@ class WorkflowSubmissionActionController extends Controller {
                     }else if (isset($result ['console']['error'])) {
                     } else if ($result ['success']===true && isset($result ['return'])) { // is truthy
                         if(isset($result ['return']['form'])){
-                            
                             $workflow_submission->update(['data'=>(object)$result ['return']['form']]);
                         }
                     } 

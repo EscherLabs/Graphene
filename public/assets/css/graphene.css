@@ -1522,7 +1522,12 @@ input:checked + .slider:before {
 .control-group.success .combobox-container .caret {
   border-top-color: #468847;
 }
-
+#flow-preview {
+  border: solid 2px #fff;
+  overflow: auto;
+  position: relative;
+  text-align: center;
+}
 #flow-preview foreignObject {
   /* overflow: visible; */
   /* height:11px */
