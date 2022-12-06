@@ -68,6 +68,7 @@ Cobler.types.Workflow = function (container) {
   //  action: required
   //  signature: used if required
   function submitFlow(additionalInfo) {
+    message.clear();
     let formState = workflowForm.find("_state");
     gform.types.fieldset.edit.call(formState, false);
     formState.el.style.opacity = 0.7;
