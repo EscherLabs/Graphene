@@ -397,7 +397,7 @@ Cobler.types.Workflow = function (container) {
         _.throttle(e => {
           if (_.isEqual(lastSynced, e.form.get("_state"))) return;
           message.status = "saving";
-          _saveDelay = setTimeout(sync, 1500);
+          message.timer = setTimeout(sync, 1500);
           updateRequiredFields(e.form);
         }, 500)
       )
@@ -598,6 +598,7 @@ Cobler.types.Workflow = function (container) {
       clear: () => {
         message.status = "";
       },
+      timer: null,
     };
 
     Object.defineProperty(_obj, "value", {
@@ -611,7 +612,7 @@ Cobler.types.Workflow = function (container) {
       set: e => {
         let el = $("#flow-status");
         el.removeClass("label-success").removeClass("label-danger");
-        clearTimeout(_saveDelay);
+        clearTimeout(_obj.timer);
         $g.waiting = false;
         gform.removeClass(panelEL, "error");
         gform.removeClass(panelEL, "success");
