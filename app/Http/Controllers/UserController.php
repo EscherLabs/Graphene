@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\User;
+use App\BulkUser;
 use App\Site;
 use App\Group;
 use App\SiteMember;
@@ -142,6 +143,112 @@ class UserController extends Controller
         return $user;
     }
 
+    public function unique(Request $request,$unique_id)
+    {
+        $user = BulkUser::where(['unique_id'=>$unique_id])->with(['group_memberships'=>function($query){
+            $query->where(['site_id'=>config('app.site')->id])->select('id','site_id','slug','name');
+        }])->first();
+        
+        if($request->has('groups')){
+            $groupSelect = $request->get('groups');
+            
+            if(is_array($groupSelect) || !strlen($groupSelect)){
+
+                //if value is empty but set use default values
+                if(!is_array($groupSelect) || (count($groupSelect) == 1 && !strlen($groupSelect[0]))){
+                    $groupSelect = ['id','slug','name'];
+                }
+
+
+                //if groups provided and either it is empty or is a valid array return array of objects
+                // ?groups  || ?groups[] || ?groups[]=slug || ?groups[]=slug || ?groups[]=slug&groups[]=name
+                foreach($user['group_memberships'] as $membership){
+                    $groups[] = array_intersect_key($membership->toArray(), array_flip($groupSelect));
+                }
+
+                $user->groups = $groups;
+            }else{
+                //if only one attribute is requested as a string return array of those values
+                // ?groups=slug
+                $user->groups = $user['group_memberships']->pluck($groupSelect)->toArray();
+            }
+
+        }
+
+        unset($user['group_memberships']);
+        return $user;
+    }
+
+    public function update_unique(Request $request, $unique_id)
+    {
+        $user = BulkUser::where(['unique_id'=>$unique_id])->first();
+        if(!isset($user) || $user == null){
+            $user = BulkUser::create($request->all());
+        }
+        // $user->update($request->all());
+        if ($request->has('unique_id')) {
+            $user->unique_id = $request->unique_id;
+            $user->save();
+        }
+
+
+        $user->update($request->all());
+        if ($request->has('unique_id')) {
+            $user->unique_id = $request->unique_id;
+            $user->save();
+        }
+        return $user;
+    }
+
+
+    public function create_unique(Request $request)
+    {
+
+        $user = BulkUser::create($request->all());
+        // $user->update($request->all());
+        if ($request->has('unique_id')) {
+            $user->unique_id = $request->unique_id;
+            $user->save();
+        }
+        return $user;
+
+
+        // $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);
+
+        // $id = $request->unique_id;
+        // $email = $request->email;
+
+        // $users = User::select('id')
+        //              ->where(function ($query) use ($id, $email) {
+        //                $query->where('unique_id','=',$id)
+        //                ->orWhere('email','=',$email);
+        //             })->whereHas('site_members', function($query) {
+        //                 $query->where('site_id','=',config('app.site')->id);
+        //             })->get();
+        
+        // if($users->isEmpty()){
+        //     $user = new User($request->all());
+        //     if(!empty($user->password)){
+        //         $user->password = bcrypt($request->password);
+        //     }
+        //     $user->save();
+
+        //     $site = Site::find(Auth::user()->site->id);
+        //     if ($request->has('developer') && $request->has('site_admin')) {
+        //         $site->add_member($user,$request->site_admin, $request->developer);
+        //     } else {
+        //         $site->add_member($user);
+        //     }
+        //     return $user;
+        // }
+        // else{
+        //     return response(['error'=>'User with that email or unique id already exists.'], 400);
+        // }
+    }
+
+    
+
+
     public function info(User $user)
     {
         $user->load(array('site_members'=>function($query){
@@ -245,6 +352,7 @@ class UserController extends Controller
         }
     }
 
+    
     public function update(Request $request, User $user)
     {
         $user->update($request->all());

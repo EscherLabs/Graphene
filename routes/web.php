@@ -207,6 +207,9 @@ Route::group(['middleware' => ['no.save.session'],'prefix' => 'api'], function (
     Route::get('/users/search/{search_string?}','UserController@search')->middleware('can:get_all,App\User');
     // Lookup specific user by user_id
     Route::get('/users/{user}','UserController@show')->middleware('can:get,user');
+    // Lookup specific user by unique_id
+    Route::get('/users/unique/{unique_id}','UserController@unique')->middleware('can:get_all,App\User');
+
     // Create a new user
     Route::post('/users','UserController@create')->middleware('can:create,App\User');
     Route::put('/users/{user}','UserController@update')->middleware('can:update,user');

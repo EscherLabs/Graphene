@@ -7,7 +7,7 @@ Route::group(['middleware' => ['public.api.auth', 'no.save.session'], 'prefix' =
 
     /* Manage Groups */
     Route::get('/groups','GroupController@list_all_groups');
-    Route::get('/groups','GroupController@list_all_groups');
+    // Route::get('/groups','GroupController@list_all_groups');
     Route::post('/groups/update/{slug}','GroupController@update_group_by_slug');
     Route::get('/groups/members/{slug?}', 'GroupController@members_by_slug');
     Route::post('/groups/members/{slug?}', 'GroupController@add_members_by_slug');
@@ -31,4 +31,11 @@ Route::group(['middleware' => ['public.api.auth', 'no.save.session'], 'prefix' =
     // PUT [data=>[],comment='']
     Route::put('/workflows/submissions/{workflow_submission}/user/{unique_id}/action/{action}','WorkflowSubmissionActionController@api_action')
         ->middleware('validate.user'); // Build User Object from unique_id
+
+    // Manage users
+    Route::post('/users','UserController@create_unique');
+    Route::get('/users/{unique_id}','UserController@unique');
+    Route::put('/users/{unique_id}','UserController@update_unique');
+
+    //look into user deletion as it relates to workflow history - possibly only remove site membership
 });
