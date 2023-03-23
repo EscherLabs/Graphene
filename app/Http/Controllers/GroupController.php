@@ -21,7 +21,7 @@ class GroupController extends Controller
     
     public function list_all_groups(Request $request)
     {
-        if (Auth::user()->site_admin) {
+        if (Auth::user() == NULL || Auth::user()->site_admin) {
             $groups = Group::where('site_id',config('app.site')->id)->orderBy('order')->get();
         } else {
             $groups = Group::where('site_id',config('app.site')->id)->whereIn('id',array_merge(Auth::user()->content_admin_groups,Auth::user()->apps_admin_groups))->orderBy('order')->get();

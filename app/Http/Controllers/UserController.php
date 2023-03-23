@@ -145,9 +145,7 @@ class UserController extends Controller
 
     public function unique(Request $request,$unique_id)
     {
-        $user = BulkUser::where(['unique_id'=>$unique_id])->with(['group_memberships'=>function($query){
-            $query->where(['site_id'=>config('app.site')->id])->select('id','site_id','slug','name');
-        }])->first();
+        $user = BulkUser::where(['unique_id'=>$unique_id])->memberships()->first();
         
         if($request->has('groups')){
             $groupSelect = $request->get('groups');
@@ -158,7 +156,6 @@ class UserController extends Controller
                 if(!is_array($groupSelect) || (count($groupSelect) == 1 && !strlen($groupSelect[0]))){
                     $groupSelect = ['id','slug','name'];
                 }
-
 
                 //if groups provided and either it is empty or is a valid array return array of objects
                 // ?groups  || ?groups[] || ?groups[]=slug || ?groups[]=slug || ?groups[]=slug&groups[]=name
@@ -179,13 +176,24 @@ class UserController extends Controller
         return $user;
     }
 
+    public function unique_groups(Request $request,$unique_id)
+    {
+        $user = BulkUser::where(['unique_id'=>$unique_id])->memberships()->first();
+
+        $groupSelect = ['id','slug','name'];
+        foreach($user['group_memberships'] as $membership){
+            $groups[] = array_intersect_key($membership->toArray(), array_flip($groupSelect));
+        }
+        return $groups;
+    }
     public function update_unique(Request $request, $unique_id)
     {
-        $user = BulkUser::where(['unique_id'=>$unique_id])->first();
+        $user = BulkUser::where(['unique_id'=>$unique_id,])->first();
+        //should check if member or site before allowing update
+        
         if(!isset($user) || $user == null){
             $user = BulkUser::create($request->all());
         }
-        // $user->update($request->all());
         if ($request->has('unique_id')) {
             $user->unique_id = $request->unique_id;
             $user->save();
@@ -203,49 +211,87 @@ class UserController extends Controller
 
     public function create_unique(Request $request)
     {
-
         $user = BulkUser::create($request->all());
-        // $user->update($request->all());
         if ($request->has('unique_id')) {
             $user->unique_id = $request->unique_id;
             $user->save();
         }
         return $user;
-
-
-        // $this->validate($request,['first_name'=>['required'],'last_name'=>['required'],'email'=>['required']]);
-
-        // $id = $request->unique_id;
-        // $email = $request->email;
-
-        // $users = User::select('id')
-        //              ->where(function ($query) use ($id, $email) {
-        //                $query->where('unique_id','=',$id)
-        //                ->orWhere('email','=',$email);
-        //             })->whereHas('site_members', function($query) {
-        //                 $query->where('site_id','=',config('app.site')->id);
-        //             })->get();
-        
-        // if($users->isEmpty()){
-        //     $user = new User($request->all());
-        //     if(!empty($user->password)){
-        //         $user->password = bcrypt($request->password);
-        //     }
-        //     $user->save();
-
-        //     $site = Site::find(Auth::user()->site->id);
-        //     if ($request->has('developer') && $request->has('site_admin')) {
-        //         $site->add_member($user,$request->site_admin, $request->developer);
-        //     } else {
-        //         $site->add_member($user);
-        //     }
-        //     return $user;
-        // }
-        // else{
-        //     return response(['error'=>'User with that email or unique id already exists.'], 400);
-        // }
     }
 
+    public function update_unique_groups(Request $request, $unique_id)
+    {
+        $user = BulkUser::where(['unique_id'=>$unique_id])->memberships()->first();
+        
+
+        $requested = $request->get('groups');
+        $current = $user['group_memberships']->pluck('slug')->toArray();
+        $remove = array_values(array_diff($current,$requested));
+        $add = array_values(array_diff($requested, $current));
+        $stable = array_intersect($current,$requested);
+
+        if(!$request->has('test')){
+            $membershipsSearch = $user->groups()->get()->pluck('pivot')->toArray();
+
+            $memberships = $user['group_memberships']->keyBy("group_id");
+
+            foreach($membershipsSearch as $item){
+                $memberships[$item['group_id']]['status'] = $item['status'];
+            }
+            
+            foreach($remove as $group_slug){
+                $group = $user['group_memberships']->where('slug',$group_slug)->first();
+                if($group !== null && $group['status'] == "external"){
+                    $user->Groups()->detach($group->group_id);
+                }
+            }
+
+            foreach($add as $group_slug){
+                $group = Group::where(['site_id'=>config('app.site')->id,'slug'=>$group_slug])->first();
+                if($group !== null){
+                    $user->Groups()->attach($group, ["status"=>'external']);
+                }
+            }
+
+            $user = BulkUser::where(['unique_id'=>$unique_id])->memberships()->first();
+            $result = $user['group_memberships']->pluck('slug')->toArray();
+            return  $request->has('debug')?[
+                "initial"=>$current,
+                "requested"=>$requested,
+                "add"=>$add,
+                "remove"=>$remove,
+                "stable"=>$stable
+            ]:1;
+        }else{
+            // $result = "test";
+             return [
+                "initial"=>$current,
+                "requested"=>$requested,
+                "add"=>$add,
+                "remove"=>$remove,
+                "stable"=>$stable,
+                // "result"=>$result
+            ];
+        }
+        // return [
+        //     "initial"=>$current,
+        //     "requested"=>$requested,
+        //     "add"=>$add,
+        //     "remove"=>$remove,
+        //     "stable"=>$stable,
+        //     "result"=>$result
+        // ];
+
+        if ($request->has('unique_id')) {
+            $user->unique_id = $request->unique_id;
+            $user->save();
+        }
+        return $user;
+    }
+
+    public function inactivate(User $user){
+        return true;
+    }
     
 
 

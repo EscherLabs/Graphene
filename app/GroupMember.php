@@ -10,6 +10,7 @@ class GroupMember extends Model
     protected $fillable = ['group_id','user_id','status'];
     protected $primaryKey = ['user_id', 'group_id'];
     public $incrementing = false;
+    
     protected $dispatchesEvents = ['saved'=>UpdateUser::class];
 
     public function group() {
@@ -20,7 +21,7 @@ class GroupMember extends Model
     }
 
     public function bulkuser() {
-      return $this->belongsTo(BulkUser::class, 'user_id');
+      return $this->belongsToMany(BulkUser::class, 'user_id');
     }
 
     public static function remove($group_id, $user_id) {
