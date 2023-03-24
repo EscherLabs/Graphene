@@ -18,9 +18,9 @@ class BulkUser extends Authenticatable
         return $this->hasManyThrough(Group::class,GroupMember::class,'user_id','id','id','group_id');
     }
    
-    public function scopeMemberships(){
-        return $this->with(['group_memberships'=>function($query){
-            $query->where(['site_id'=>config('app.site')->id])->select('id','site_id','group_id','slug','name');
+    public function scopeMemberships($query){
+        return $query->with(['group_memberships'=>function($query){
+            return $query->where('site_id',config('app.site')->id);//->select('id','site_id','group_id','slug','name',);
         }]);
     }
     // public function getExternalGroups() {

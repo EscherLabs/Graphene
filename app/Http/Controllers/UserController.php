@@ -181,6 +181,7 @@ class UserController extends Controller
         $user = BulkUser::where(['unique_id'=>$unique_id])->memberships()->first();
 
         $groupSelect = ['id','slug','name'];
+        $groups = [];
         foreach($user['group_memberships'] as $membership){
             $groups[] = array_intersect_key($membership->toArray(), array_flip($groupSelect));
         }
