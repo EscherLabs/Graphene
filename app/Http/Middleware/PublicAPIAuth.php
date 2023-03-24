@@ -46,7 +46,7 @@ class PublicAPIAuth
             if (!is_null($request->route('unique_id'))) {
                 $current_user = User::where('unique_id',$request->route('unique_id'))->first();
                 if (is_null($current_user)) {
-                    return response()->make('User '.$unique_id.' not found!', 404, $headers);
+                    return response()->make('User '.$request->route('unique_id').' not found!', 404, $headers);
                 }
                 Auth::login($current_user);
             }
