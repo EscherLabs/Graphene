@@ -21,7 +21,7 @@ class GroupMember extends Model
     }
 
     public function bulkuser() {
-      return $this->belongsToMany(BulkUser::class, 'user_id');
+      return $this->belongsTo(BulkUser::class, 'user_id');
     }
 
     public static function remove($group_id, $user_id) {
