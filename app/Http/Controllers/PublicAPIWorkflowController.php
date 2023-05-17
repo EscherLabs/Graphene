@@ -75,7 +75,7 @@ class PublicAPIWorkflowController extends Controller
         }
         $query = DB::table('workflow_submissions')
             ->select('workflow_submissions.id','state','data','status','assignment_type','assignment_id',
-                'workflow_submissions.created_at','workflow_submissions.updated_at',
+                'workflow_submissions.created_at','workflow_submissions.updated_at','workflow_submissions.opened_at',
                 'assignment_users.first_name as assignment_first_name', 'assignment_users.last_name  as assignment_last_name', 'assignment_users.email as assignment_email', 'assignment_users.unique_id as assignment_unique_id',
                 'users.first_name', 'users.last_name', 'users.email', 'users.unique_id',
                 'groups.name', 'groups.slug')
