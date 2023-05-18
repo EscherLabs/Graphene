@@ -135,7 +135,7 @@ class PublicAPIWorkflowController extends Controller
         }
         $submissions = collect();
         foreach($rows as $row) {
-            $submission = (Object)Arr::only((Array)$row,['id','assignment_type','state','status','created_at','updated_at']);
+            $submission = (Object)Arr::only((Array)$row,['id','assignment_type','state','status','created_at','updated_at','opened_at']);
             $submission->data = json_decode($row->data,true);
             $submission->user = Arr::only((Array)$row,['email','first_name','last_name','unique_id']);
             if (isset($submission->data['_encrypted']) && $submission->data['_encrypted']===true && isset($submission->data['data'])) {
