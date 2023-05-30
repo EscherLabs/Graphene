@@ -37,7 +37,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\ValidateUser::class,
         ],
         'api' => [
-            'throttle:60,1',
+            'throttle:300,1',
             'bindings',
         ],
     ];
