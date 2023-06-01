@@ -45,7 +45,7 @@ Route::group(['middleware' => ['public.api.auth', 'no.save.session'], 'prefix' =
     Route::post('/users','UserController@create_unique');
 
     Route::get('/users/{unique_id}','UserController@unique');
-    Route::put('/users/{unique_id}','UserController@update_unique');
+    Route::put('/users/{u_id}','UserController@update_unique');
     Route::get('/users/{unique_id}/groups','UserController@unique_groups');
     Route::put('/users/{unique_id}/groups','UserController@update_unique_groups');
     Route::delete('/users/{unique_id}','UserController@inactivate');
