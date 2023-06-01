@@ -34,14 +34,14 @@ class Site extends Model
       return $this->members()->with('user')->where('site_admin','=',1)->get()->pluck('user');
     }
 
-    public function add_member(User $user, $site_admin = false, $site_developer = false)
+    public function add_member($user, $site_admin = false, $site_developer = false)
     {
       self::remove_member($user); // First Delete the member from the site
       $site_member = SiteMember::create(['site_id'=>$this->id,'user_id'=>$user->id,
         'site_developer'=>$site_developer?1:0,'site_admin'=>$site_admin?1:0]);
       return $site_member;
     }
-    public function remove_member(User $user)
+    public function remove_member($user)
     {
       return SiteMember::remove($this->id,$user->id);
     }

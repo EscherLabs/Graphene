@@ -1210,11 +1210,11 @@ gform.types["user"] = _.extend({}, gform.types["combobox"], {
     search: "/api/users/search/{{search}}{{value}}",
     format: {
       title:
-        '{{{label}}}{{^label}}User{{/label}}<span class="text-success pull-right">{{value}}</span>',
+        "{{{label}}}{{^label}}User{{/label}}<span class='text-success pull-right'>{{value}}</span>",
       label: "{{first_name}}{{#last_name}} {{last_name}}{{/last_name}}",
       value: "{{unique_id}}",
       display:
-        '{{first_name}} {{last_name}}<div style="color:#aaa">{{email}}</div>',
+        "{{first_name}} {{last_name}}<div style='color:#aaa'>{{email}}</div>",
     },
   },
 });

@@ -187,13 +187,17 @@ class UserController extends Controller
         }
         return $groups;
     }
-    public function update_unique(Request $request, $unique_id)
+    public function update_unique(Request $request, $u_id)
     {
-        $user = BulkUser::where(['unique_id'=>$unique_id,])->first();
-        //should check if member or site before allowing update
+        $user = BulkUser::where(['unique_id'=>$u_id,])->first();
+        //should check if member of site before allowing update
         
         if(!isset($user) || $user == null){
             $user = BulkUser::create($request->all());
+            $user->unique_id = $u_id;
+            $site = Site::find(config('app.site')->id);
+
+            $site->add_member($user);
         }
         if ($request->has('unique_id')) {
             $user->unique_id = $request->unique_id;
@@ -217,6 +221,10 @@ class UserController extends Controller
             $user->unique_id = $request->unique_id;
             $user->save();
         }
+        $site = Site::find(config('app.site')->id);
+
+        $site->add_member($user);
+            
         return $user;
     }
 
