@@ -134,7 +134,9 @@ Cobler.types.WorkflowSubmissionReport = function (container) {
                 )
               );
 
-              mappedData = _.pick(this.get().options, "status", "state");
+              mappedData = $g.formatDates(
+                _.pick(this.get().options, "status", "state", "opened_at")
+              );
               mappedData.report_url = this.get().report_url;
               mappedData.owner = _.pick(
                 this.get().options.user,
