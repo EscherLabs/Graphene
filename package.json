@@ -8,10 +8,14 @@
     "marked": "^4.0.18",
     "mocha": "^10.0.0",
     "mustache": "^2.2.1",
+    "sinon": "^15.2.0",
     "vue": "^2.0.1",
     "vue-resource": "^1.0.3"
   },
   "devDependencies": {
     "cypress": "^10.0.3"
+  },
+  "scripts": {
+    "test": "mocha ./resources/tests/**/*.js --file ./public/assets/js/vendor/lodash.min.js  --file ./public/assets/js/vendor/gform_bootstrap.min.js --file ./public/assets/js/lib.js"
   }
 }
