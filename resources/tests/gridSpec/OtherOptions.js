@@ -1,7 +1,7 @@
 describe('Other customization options', function () {
     var options = {
         el:'#myGrapheneDataGrid',
-        schema:[{type:"text", name:"number", label:"Numbers"}, {type:"text", name:"name",label:"Names"}],
+        schema:[{type:"number", name:"number", label:"Numbers"}, {type:"text", name:"name",label:"Names"}],
         data: [
             {name:'Gru', number: 19},
             {name:'Joe Mama', number: 20},
@@ -67,7 +67,7 @@ describe('Other customization options', function () {
         expect(document.querySelector('i.fa.fa-download').hidden).to.be.false;
         options = {                                         //switch options for non-default tests
             el:'#myGrapheneDataGrid',
-            schema:[{type:"text", name:"number", label:"Numbers"}, {type:"text", name:"name",label:"Names"}],
+            schema:[{type:"number", name:"number", label:"Numbers"}, {type:"text", name:"name",label:"Names"}],
             count: 6, entries: [10,20,30], search: false, filter: false, columns: false, upload: false, download: false,
             data: [
                 {name:'Gru', number: 19},
