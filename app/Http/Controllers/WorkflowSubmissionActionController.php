@@ -201,7 +201,7 @@ class WorkflowSubmissionActionController extends Controller {
         }
         $m = new \Mustache_Engine;
         $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
-        $myWorkflowInstance->findVersion();
+        $myWorkflowInstance->findVersion($workflow_submission->workflow_version_id);
         $owner = User::find($workflow_submission->user_id);
         $start_state = $workflow_submission->state;
         $start_assignment = $workflow_submission->only('assignment_type','assignment_id');
@@ -299,7 +299,7 @@ class WorkflowSubmissionActionController extends Controller {
         }
         $m = new \Mustache_Engine;
         $myWorkflowInstance = WorkflowInstance::with('workflow')->where('id', '=', $workflow_submission->workflow_instance_id)->first();
-        $myWorkflowInstance->findVersion();
+        $myWorkflowInstance->findVersion($workflow_submission->workflow_version_id);
         $owner = User::find($workflow_submission->user_id);
         $start_state = $workflow_submission->state;
         $start_assignment = $workflow_submission->only('assignment_type','assignment_id');
@@ -880,7 +880,7 @@ submitted by {{owner.first_name}} {{owner.last_name}}.<br><br>
             //Check if the instance exist
             if(isset($instance)){
                 //Calling findVersion function to get the related version information/ data
-                $instance->findVersion();
+                $instance->findVersion($submission->workflow_version_id);
                 config(["app.site"=>$instance->group->site]);
 
                 //Getting the current state of the workflow
