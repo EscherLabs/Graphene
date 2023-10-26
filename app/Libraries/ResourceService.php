@@ -40,7 +40,11 @@ class ResourceService
 
         $state_data = [];
         $state_data['is'] = $state_data['was'] = $state_data['previous'] = [];
-        $WorkflowInstance->findVersion();
+        if (!is_null($workflow_submission)) {
+            $WorkflowInstance->findVersion($workflow_submission->workflow_version_id);
+        } else {
+            $WorkflowInstance->findVersion();
+        }
         $flow = $WorkflowInstance->version->code->flow;
 
         if(!is_null($workflow_submission)){
@@ -123,7 +127,7 @@ class ResourceService
         //      $current_user = new User;
         //      if (is_null($workflow_instance)) { abort(403); }
         //  }
-        $workflow_instance->findVersion();
+        $workflow_instance->findVersion($workflow_submission->workflow_version_id);
         if($workflow_instance != null){
             $data = [
                 // 'user'=>$current_user
@@ -231,7 +235,7 @@ class ResourceService
         
         // session_write_close(); // Don't keep waiting
         if(!isset($workflow_instance->workflow->code)){
-            $workflow_instance->findVersion();
+            $workflow_instance->findVersion($workflow_submission->workflow_version_id);
         }
 
         //  if (!$workflow_instance->public) {
