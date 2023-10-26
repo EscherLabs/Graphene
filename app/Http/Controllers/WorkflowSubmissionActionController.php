@@ -72,7 +72,7 @@ class WorkflowSubmissionActionController extends Controller {
         $workflow_submission->workflow_version_id = $myWorkflowInstance->version->id;
         $workflow_submission->workflow_instance_configuration = $myWorkflowInstance->configuration;
         $workflow_submission->data = $request->has('_state')?$request->get('_state'):(isset($workflow_submission->data)?$workflow_submission->data:(Object)[]);
-        $workflow_submission->state = $myWorkflowInstance->configuration->initial;
+        $workflow_submission->state = $workflow_submission->workflow_instance_configuration->initial;
         $workflow_submission->status = 'new';
         $workflow_submission->user_id = $current_user->id;
         $workflow_submission->assignment_type = 'user';
@@ -113,7 +113,7 @@ class WorkflowSubmissionActionController extends Controller {
         }, $data['form']);
 
         try{
-            $workflow_submission->title = $m->render((isset($myWorkflowInstance->configuration->title) && $myWorkflowInstance->configuration->title !== "")?$myWorkflowInstance->configuration->title:'{{workflow.name}}',$data);
+            $workflow_submission->title = $m->render((isset($workflow_submission->workflow_instance_configuration->title) && $workflow_submission->workflow_instance_configuration->title !== "")?$workflow_submission->workflow_instance_configuration->title:'{{workflow.name}}',$data);
         } catch(Exception $e){
             $workflow_submission->title = $m->render('{{workflow.name}}',$data);
         }
@@ -217,7 +217,7 @@ class WorkflowSubmissionActionController extends Controller {
             return $value->name === request()->get('action');
         });  
         // Set New State (String)
-        $workflow_submission->state = $myWorkflowInstance->configuration->initial;
+        $workflow_submission->state = $workflow_submission->workflow_instance_configuration->initial;
         // Determine New State (Object) -- State we are entering
         $state = Arr::first($flow, function ($value, $key) use ($workflow_submission) {
             return $value->name === $workflow_submission->state;
@@ -254,10 +254,10 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['previous']['state'] = $previous_state->name;
         $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
         $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
-        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
+        $state_data['was']['initial'] = ($workflow_submission->workflow_instance_configuration->initial == $state_data['previous']['state']);
         $state_data['datamap'] = $state_data['assignment'] = [];
-        if(isset($myWorkflowInstance->configuration->map)){
-            foreach($myWorkflowInstance->configuration->map as $resource){
+        if(isset($workflow_submission->workflow_instance_configuration->map)){
+            foreach($workflow_submission->workflow_instance_configuration->map as $resource){
                 $state_data['datamap'][$resource->name] = $resource->value;
             }
         }
@@ -270,7 +270,7 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['is']['actionable'] = (count($state_data['actions'])>0);
         $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
         $state_data['is']['closed'] = ($state_data['status']=='closed')?true:false;
-        $state_data['is']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
+        $state_data['is']['initial'] = ($workflow_submission->workflow_instance_configuration->initial == $state_data['state']);
         // if (isset($state->assignment) && !isset($state->logic)) {
         //     $state_data['assignment']['type'] = $workflow_submission->assignment_type = $state->assignment->type;
         //     $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
@@ -360,10 +360,10 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['previous']['state'] = $previous_state->name;
         $state_data['was']['open'] = ($state_data['previous']['status']=='open')?true:false;
         $state_data['was']['closed'] = ($state_data['previous']['status']=='closed')?true:false;
-        $state_data['was']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['previous']['state']);
+        $state_data['was']['initial'] = ($workflow_submission->workflow_instance_configuration->initial == $state_data['previous']['state']);
         $state_data['datamap'] = $state_data['assignment'] = [];
-        if(isset($myWorkflowInstance->configuration->map)){
-            foreach($myWorkflowInstance->configuration->map as $resource){
+        if(isset($workflow_submission->workflow_instance_configuration->map)){
+            foreach($workflow_submission->workflow_instance_configuration->map as $resource){
                 $state_data['datamap'][$resource->name] = $resource->value;
             }
         }
@@ -384,7 +384,7 @@ class WorkflowSubmissionActionController extends Controller {
         $state_data['is']['actionable'] = (count($state_data['actions'])>0);
         $state_data['is']['open'] = ($state_data['status']=='open')?true:false;
         $state_data['is']['closed'] = ($state_data['status']=='closed')?true:false;
-        $state_data['is']['initial'] = ($myWorkflowInstance->configuration->initial == $state_data['state']);
+        $state_data['is']['initial'] = ($workflow_submission->workflow_instance_configuration->initial == $state_data['state']);
         if (isset($state->assignment) && !isset($state->logic)) {
             $state_data['assignment']['type'] = $workflow_submission->assignment_type = $state->assignment->type;
             $state_data['assignment']['id'] = $m->render($state->assignment->id, $state_data);
@@ -517,8 +517,8 @@ class WorkflowSubmissionActionController extends Controller {
                 $request->merge(['action'=>'false','comment'=>$comment]);
                 return $this->action($workflow_submission, $request,$is_internal,$state_data['task_results']); // action = false
             }
-        } else if(!isset($myWorkflowInstance->configuration->suppress_emails) || 
-                !$myWorkflowInstance->configuration->suppress_emails){
+        } else if(!isset($workflow_submission->workflow_instance_configuration->suppress_emails) || 
+                !$workflow_submission->workflow_instance_configuration->suppress_emails){
             // Reset Email State Data to info for last "human" action. (Non-logic)
             $first_action_state_data = $this->get_first_action_state($state_data);
             if ($first_action_state_data !== false) {
@@ -530,7 +530,7 @@ class WorkflowSubmissionActionController extends Controller {
             } else {
                 $email_state_data = $state_data;
             }
-            $this->send_default_emails($email_state_data,$myWorkflowInstance->configuration);
+            $this->send_default_emails($email_state_data,$workflow_submission->workflow_instance_configuration);
         }
         return WorkflowSubmission::with('workflowVersion')->with('workflow')->where('id', '=', $workflow_submission->id)->first();
     }
@@ -613,7 +613,7 @@ class WorkflowSubmissionActionController extends Controller {
             }
             switch($task->task) {
                 case "email":
-                    if(!isset($workflow_instance->configuration->suppress_email_tasks) || !$workflow_instance->configuration->suppress_email_tasks){ 
+                    if(!isset($workflow_submission->workflow_instance_configuration->suppress_email_tasks) || !$workflow_submission->workflow_instance_configuration->suppress_email_tasks){ 
                         $content = "Workflow Notification Email";
                         if(isset($task->template) && !is_null($task->template)){
                             $template_name = $task->template;
