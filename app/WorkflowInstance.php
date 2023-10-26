@@ -69,6 +69,9 @@ class WorkflowInstance extends Model
         }
         $this->workflow->code = $myWorkflowVersion->code;
         $this->workflow->version = $myWorkflowVersion->id;
+        // Override Workflow Instance Version ID to correspond with the version found here
+        // This is necessary so the getVersionAttribute function will return the correct workflow version
+        $this->workflow_version_id = $myWorkflowVersion->id;
     }
     private function iterate($fields,$afunc,&$data){
         foreach($fields as $field){
