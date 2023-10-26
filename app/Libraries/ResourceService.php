@@ -59,13 +59,8 @@ class ResourceService
 
         $state_data['owner'] = $owner->only('first_name','last_name','email','unique_id','params');
         $state_data['owner']['is'] = [];
-        if (isset($previous_state->logic)) {
-            $state_data['actor'] = null;
-            $state_data['owner']['is']['actor'] = false;
-        } else {
-            $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
-            $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
-        }
+        $state_data['actor'] = Auth::user()->only('first_name','last_name','email','unique_id','params');
+        $state_data['owner']['is']['actor'] = ($owner->id === Auth::user()->id);
         $state_data['workflow'] = $WorkflowInstance->workflow->only('name','description');
         $state_data['workflow']['instance'] = $WorkflowInstance->only('group_id','slug','name','icon','public','configuration');
         $state_data['workflow']['version'] = $WorkflowInstance->version->only('id','summary','description','stable');
