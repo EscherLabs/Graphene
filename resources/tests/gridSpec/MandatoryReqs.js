@@ -1,5 +1,5 @@
 describe('Mandatory Options', function () {
-    const schema = [{type:"text", name:"number", label:"Numbers"}, {type:"text", name:"string",label:"Strings"}];
+    const schema = [{type:"number", name:"number", label:"Numbers"}, {type:"text", name:"string",label:"Strings"}];
     beforeEach(function() {  			
         gdg = new GrapheneDataGrid({
             el:'#myGrapheneDataGrid',

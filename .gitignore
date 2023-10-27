@@ -22,3 +22,6 @@ Homestead.json
 Procfile
 _config.yml
 build.sh
+package-lock.json
+resources/tests/intro/play.js
+resources/tests/test.html
