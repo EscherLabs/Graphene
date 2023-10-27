@@ -133,9 +133,9 @@ class ResourceService
         //      if (is_null($workflow_instance)) { abort(403); }
         //  }
         if (!is_null($workflow_submission)) {
-            $WorkflowInstance->findVersion($workflow_submission->workflow_version_id);
+            $workflow_instance->findVersion($workflow_submission->workflow_version_id);
         } else {
-            $WorkflowInstance->findVersion();
+            $workflow_instance->findVersion();
         }
         if($workflow_instance != null){
             $data = [
@@ -245,9 +245,9 @@ class ResourceService
         // session_write_close(); // Don't keep waiting
         if(!isset($workflow_instance->workflow->code)){
             if (!is_null($workflow_submission)) {
-                $WorkflowInstance->findVersion($workflow_submission->workflow_version_id);
+                $workflow_instance->findVersion($workflow_submission->workflow_version_id);
             } else {
-                $WorkflowInstance->findVersion();
+                $workflow_instance->findVersion();
             }
         }
 
