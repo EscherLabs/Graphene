@@ -10,6 +10,7 @@ use App\AppVersion;
 use App\AppDevelopers;
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class AppController extends Controller
 {
@@ -72,6 +73,23 @@ class AppController extends Controller
         }
 
         $app_version->code = $request->code;
+        if(false){
+          $content = "";
+          $tailkey = count($app_version->code->templates) ;
+          foreach($request->code['templates'] as $key=>$template){
+            if($template['name'] == 'tailwind'){
+              $tailkey = $key;
+            }else{
+              $content .= $template['content'];
+            }
+          };
+          Storage::disk('local')->put('cache/temp.html', $content);
+          $code = $request->code;
+
+          $code['templates'][$tailkey] = ["name"=>"tailwind",'disabled'=>'true', "content"=>shell_exec('npx tailwindcss -i ../resources/assets/css/dynamic.tailwind.css -c ../dynamic.tailwind.config.js --content ../storage/app/cache/temp.html')];
+          $app_version->code = $code ;
+
+        }
         $app_version->user_id = Auth::user()->id;
         $app_version->save();
         return $app_version;

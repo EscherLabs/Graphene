@@ -9,7 +9,7 @@ class BulkUser extends Authenticatable
 {
     protected $table = 'users';
     protected $fillable = ['first_name', 'last_name', 'email', 'password'];
-    protected $hidden = ['password','remember_token','created_at','updated_at','invalidate_cache'];
+    protected $hidden = ['password','remember_token','created_at','updated_at','invalidate_cache','params'];
     protected $casts = ['params' => 'object'];
 
 

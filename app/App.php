@@ -28,6 +28,11 @@ class App extends Model
     {
       return $this->hasMany(AppVersion::class);
     }
+
+    public function Projects()
+    {
+      return $this->belongsToMany(Project::class,'project_apps');
+    }
     public function add_developer(User $user, $status = false)
     {
         self::remove_developer($user); // First Delete the developer from the app

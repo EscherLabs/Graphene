@@ -23,6 +23,9 @@ class WorkflowActivityLog extends Model
     public function user() {
         return $this->belongsTo(BulkUser::class,'user_id');
     }
+    public function actor() {
+        return $this->belongsTo(BulkUser::class,'user_id');
+    }
     public function getDataAttribute($value) {
         $payload = json_decode($value,true);
         if (isset($payload['_encrypted']) && $payload['_encrypted']===true && isset($payload['data'])) {

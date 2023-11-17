@@ -10,6 +10,7 @@ class APIUser extends Authenticatable
     use Notifiable;
 
     protected $fillable = ['app_name', 'config','site_id'];
+    // ATS - is there a reason this is commented out?
     // protected $hidden = ['app_secret'];
     protected $casts = ['config' => 'object'];
     protected $table = 'api_users';

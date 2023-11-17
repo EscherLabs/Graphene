@@ -55,6 +55,8 @@ class RouteServiceProvider extends ServiceProvider
             'middleware' => 'web',
             'namespace' => $this->namespace,
         ], function ($router) {
+            require base_path('routes/projects.php');
+            require base_path('routes/reports.php');
             require base_path('routes/web.php');
             require base_path('routes/workflows.php');
         });
@@ -72,9 +74,9 @@ class RouteServiceProvider extends ServiceProvider
         Route::group([
             'middleware' => 'api',
             'namespace' => $this->namespace,
-            'prefix' => 'api',
+            'prefix' => 'api/public',
         ], function ($router) {
-            require base_path('routes/api.php');
+            require base_path('routes/api_public.php');
         });
     }
 }

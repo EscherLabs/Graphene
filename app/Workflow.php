@@ -28,6 +28,12 @@ class Workflow extends Model
     {
       return $this->hasMany(WorkflowVersion::class);
     }
+
+    public function Projects()
+    {
+      return $this->belongsToMany(Project::class,'project_workflows');
+    }
+
     public function add_developer(User $user, $status = false)
     {
         self::remove_developer($user); // First Delete the developer from the workflow

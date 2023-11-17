@@ -121,14 +121,12 @@ class WorkflowController extends Controller
     }
 
     public function version(Request $request, Workflow $workflow, WorkflowVersion $version) { 
-
         return $version;
     }
     public function update(Request $request, Workflow $workflow) {  
         $workflow->update($request->all());
         $workflow->save();
         return Workflow::with('user')->where('id',$workflow->id)->first();
-
     }
 
     public function destroy(Workflow $workflow) {
@@ -136,7 +134,14 @@ class WorkflowController extends Controller
             return 1;
         }
     }
-    public function admin(Workflow $workflow) {
+    public function admin(Request $request, Workflow $workflow) {
+      if($request->has('v')){
+        return response(view('adminWorkflow', ['workflow'=>WorkflowVersion::with('workflow')->where('workflow_id','=',$workflow->id)->orderBy('created_at', 'desc')->find($request->get('v') )]))
+        ->header('Content-Type', 'text/html')
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        ->header('Expires', '0')
+        ->header('Pragma', 'no-cache');
+      }
         return response(view('adminWorkflow', ['workflow'=>WorkflowVersion::with('workflow')->where('workflow_id','=',$workflow->id)->orderBy('created_at', 'desc')->first()]))
         ->header('Content-Type', 'text/html')
         ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -151,6 +156,7 @@ class WorkflowController extends Controller
             $query->where('site_id','=',config('app.site')->id);
         })->get();
     }
+    
     public function list_all_developers()
     {
         return User::select('id','unique_id','first_name','last_name','email')
@@ -163,7 +169,7 @@ class WorkflowController extends Controller
             })
             ->get();
     }
-    public function add_developer(Workflow $workflow, User $user, Request $request)
+    public function add_developer(Request $request, Workflow $workflow, User $user)
     {
         if ($request->has('status')) {
             return $workflow->add_developer($user,$request->status);

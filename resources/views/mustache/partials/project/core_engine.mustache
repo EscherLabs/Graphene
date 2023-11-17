@@ -1,0 +1,509 @@
+<div class="hidden-xs"> </div>
+{{#debug}}
+    {{! JavaScript Includes}}
+    {{#includes.javascript.src.body}}
+        <script type="text/javascript" src="{{file}}?cb={{cache_bust_id}}" {{#attributes}}{{name}}="{{value}}" {{/attributes}}></script>
+    {{/includes.javascript.src.body}}
+    {{! CSS Includes}}
+    {{#includes.css.src.body}}
+        <link href="{{file}}?cb={{cache_bust_id}}" rel="stylesheet" type="text/css" {{#attributes}}{{name}}="{{value}}" {{/attributes}}>
+    {{/includes.css.src.body}}
+{{/debug}}
+{{^debug}}
+    {{#includes.javascript.src.body.0}} {{! Check if any exists first}}
+        <script src="/assets/compiled/js/graphenecore.body.min.js?cb={{cache_bust_id}}"></script>
+    {{/includes.javascript.src.body.0}}
+    {{#includes.css.src.body.0}} {{! Check if any exists first}}
+        <link href="/assets/compiled/css/graphenecore.body.min.css?cb={{cache_bust_id}}" rel="stylesheet" type="text/css">
+    {{/includes.css.src.body.0}}
+{{/debug}}
+<script type="text/javascript" src="/assets/js/appEngines/gReportEngine_0001.js" ></script>
+
+<script type="text/javascript" src="/assets/js/vendor/gform.tailwind.js"></script>
+<script type="text/javascript" src="/assets/js/cob/project/report/table.cob.js"></script>
+<script type="text/javascript" src="/assets/js/cob/project/menu.cob.js"></script>
+
+
+{{! Include stuff here that doesn't minify particularly well (like ACE and Nivo Slider)}}
+<script src="/assets/js/vendor/ace/ace.js?cb={{cache_bust_id}}" charset="utf-8"></script>
+{{#is_admin}}
+    <script src='/assets/js/vendor/state-machine.js?cb={{cache_bust_id}}'></script>
+    <script>
+      Ractive.DEBUG = false;
+      startContent = "<div>"+
+      "<a href='#' style='border-left-color:#31708f' class='list-group-action' data-action='createinstance'><i class='fa fa-cubes'></i> App Instance</a>"+
+      "<a href='#' style='border-left-color:#337ab7' class='list-group-action' data-action='createpage'><i class='fa fa-file'></i> Page</a>"+
+      "<a href='#' style='border-left-color:#555' class='list-group-action' data-action='createimage'><i class='fa fa-image'></i> Image</a>"+
+      "<a href='#' style='' class='list-group-action' data-action='createlink'><i class='fa fa-link'></i> Link</a>"+
+      "</div>";
+    </script>
+{{/is_admin}}
+<!-- Included Scripts -->
+{{#scripts}}
+<script name="{{name}}" src='{{src}}'></script> 
+{{/scripts}}
+<!-- End Included Scripts-->
+<script >
+	resource_type = "{{resource}}"||"page";
+	var config = {{{config_json}}};
+	var mobile_order = {{{mobile_order}}}{{^mobile_order}}[]{{/mobile_order}};
+	var apps = {{{apps_json}}};
+	_.findWhere = _.find;
+	_.where = _.filter;
+	
+	group_id = {{group.id}}{{^group}}0{{/group}};
+	
+	group_admin = {{#group.admin}}true{{/group.admin}}{{^group.admin}}false{{/group.admin}};
+	if(group_admin){
+		$('body').addClass('admin');
+	}
+		appMode = false;
+		resource_id={{#id}}{{id}}{{/id}}{{^id}}null{{/id}};
+		
+	{{#app_mode}}
+		appMode = true;
+		if(resource_type == 'app'){
+			var fields = JSON.parse(apps[0].app.code.forms[1].content || '{}').fields;
+			if(typeof fields !== 'undefined' && fields.length){
+				$('#edit_instance').show();
+				$('#edit_instance').on('click', function(){
+					editUserOptions(cb.collections[0].getItems()[0])    
+				})
+			}
+		}
+	{{/app_mode}}
+
+
+	$('.'+resource_type+resource_id).addClass('active');
+
+	$('#group'+group_id).addClass('in');
+
+	layouts = [
+			{
+				value: '0',
+				classes: 'bu-3-6-3',
+				title: 'Wide Middle (3-6-3)',
+				label: '<i title="Wide Middle" class="bu-3-6-3"></i>',
+				template: '<div class="col-md-3 col-sm-4 cobler_container"></div><div class="col-sm-8 col-md-6 cobler_container"></div><div class="col-md-3 col-sm-12 cobler_container"></div>'
+			},
+			{
+				value: '1',
+				classes: 'bu-6-3-3',
+				title: 'Wide Left (6-3-3)',
+				label: '<i title="Wide Left" class="bu-6-3-3"></i>',
+				template: '<div class="col-md-6 col-sm-8 cobler_container"></div><div class="col-md-3 col-sm-4 cobler_container"></div><div class="col-md-3 col-sm-12 cobler_container"></div>'
+			},
+			{
+				value: '2',
+				classes: 'bu-4-4-4',
+				title: 'Even (4-4-4)',
+				label: '<i title="Even" class="bu-4-4-4"></i>',
+				template: '<div class="col-md-4 col-sm-6 cobler_container"></div><div class="col-md-4 col-sm-6 cobler_container"></div><div class="col-md-4 col-sm-12 cobler_container"></div>'
+			},
+			{
+				value: '3',
+				classes: 'bu-6-6',
+				title: 'Split (6-6)',
+				label: '<i title="Split" class="bu-6-6"></i>',
+				template: '<div class="col-sm-6 cobler_container"></div><div class="col-sm-6 cobler_container"></div>'
+			},
+			{
+				value: '4',
+				classes: 'bu-12-12',
+				title: 'Full Page (12)',
+				label: '<i title="Full" class="bu-12-12"></i>',
+				template: '<div class="col-lg-12 cobler_container"></div>'
+			},
+			{
+				value: '5',
+				classes: 'bu-oddshape',
+				title: 'Odd Shape',
+				label: '<i title="Odd Split" class="bu-oddshape"></i>',
+				template: '<div class="col-sm-4 cobler_container"></div><div class="col-sm-8"><div class="row"><div class="col-sm-12 cobler_container"></div></div><div class="row"><div class="col-sm-6 cobler_container"></div><div class="col-sm-6 cobler_container"></div></div></div>'
+			},
+			{
+				value: '6',
+				classes: 'bu-doubledown',
+				title: 'Double Down (12 6-6 12)',
+				label: '<i title="Double Down" class="bu-doubledown"></i>',
+				template: '<div class="col-sm-12"><div class="row"><div class="col-sm-12 cobler_container"></div></div><div class="row"> <div class="col-sm-6 cobler_container"></div><div class="col-sm-6 cobler_container"></div></div><div class="row"><div class="col-sm-12 cobler_container"></div></div></div>'
+			},
+			{
+				value: '7',
+				classes: 'bu-3-6-3',
+				title: 'Middle Only (_-6-_)',
+				label: '<i title="Middle Only" class="bu-3-6-3"></i>',
+				template: '<div class="col-lg-offset-3 col-md-offset-2  col-lg-6 col-md-8 col-sm-12 cobler_container"></div></div>'
+			}
+		];
+
+
+$g.collections.add('layouts',layouts)
+
+	function layout() {
+		new gform({
+			legend: 'Change Layout', 
+			horizontal: true,
+			data:config,
+			fields:[
+				fieldLibrary.layout
+			]
+		}).on('save',function(e){
+			$.ajax({
+				url:'/api/pages/{{id}}',
+				data:{"content": JSON.stringify($.extend({}, config,{layout:parseInt(e.form.get().layout)}))} ,
+				method:'PUT',
+				success: function(data) {
+					config = data.content;
+					location.reload()
+				}
+			})
+		}).on('cancel',function(e){
+			e.form.trigger('close');
+		}).modal();
+	}
+
+	function manage(){
+		switch(resource_type){
+			case "page":
+			load(false);
+			break;			
+			case "workflow":
+			document.location = "/admin/workflowinstances/"+resource_id
+			break;			
+			case "app":
+			document.location = "/admin/appinstances/"+resource_id
+			break;
+		}
+	}
+
+	function load(status){
+
+    templates["widgets_container"]={render:templates_render,template:'<div style="{{#collapsed}}min-height:30px{{/collapsed}}" class="widget {{widgetType}} {{#limit}}{{#group.ids}}group_{{.}} {{/group.ids}}{{^group.ids}}group_all {{/group.ids}}{{/limit}}{{^limit}}group_all{{/limit}} {{device}}" id="{{id}}"></div>'};
+
+
+
+		$('body').toggleClass('editor', !status)
+		if(typeof cb !== 'undefined'){
+			cb.destroy();
+			delete cb;
+		}
+		var template = 'widgets_container'
+		var target = 'widget';
+		if(!status){
+			template = 'widgets_edit_container';
+		}
+
+
+		var data = config.sections || [[]];// [[{"title":"This is the title","app_id":1,"widgetType":"uApp"}]];
+
+		if(window.getComputedStyle($('.hidden-xs')[0]).display == 'none'){
+				tempdata = [].concat.apply([],config.sections || [[]])
+
+				if(typeof mobile_order !== 'undefined'){
+					tempdata = _.sortBy(tempdata, function(o) {
+						return mobile_order.indexOf(o.guid);
+					})
+				}
+				data = [tempdata];
+				$('#page_layout').html(layouts[4].template);
+
+		}else{
+			if(typeof config.layout == 'string' && config.layout.length > 1){
+				$('#page_layout').html(config.layout);
+			}else{
+				$('#page_layout').html(layouts[config.layout || 0].template);
+			}
+
+		}
+
+		cb = new Cobler({ disabled: status, targets: document.querySelectorAll('.cobler_container, [data-cobler]'),itemContainer: template,itemTarget:target, items:data})
+		if(!status){
+			if(document.getElementById('sortableList') != null){
+				cb.addSource(document.getElementById('sortableList'));
+			}
+			if("{{slug}}" == 'dashboard'){
+				var save = function(){
+					$.post('/api/dashboard',{"config":JSON.stringify({"sections":cb.toJSON({editor: true})}) },function(data){
+					// config = JSON.parse(data.config);
+					config = data.config;
+				})}
+			}else{
+				var save = function(){$.ajax({
+					url:'/api/pages/{{id}}',
+					data:{"content": JSON.stringify( {"sections":cb.toJSON({editor: true})  ,"layout":config.layout})} ,
+					method:'PUT',
+					success: function(data){
+						config = data.content;
+					}
+				})}
+			}
+			cb.on('moved',save);
+			cb.on('reorder', save);
+			cb.on('remove', save);
+			cb.on('change',save);
+			cb.on('manage',function(item){
+				new gform({name: 'modal', data: item.get(), legend: 'Display Settings',fields:[
+					{label: 'Device', name: 'device', type: 'select', value:'widget', options: [{label: 'All', value:'widget'}, {label: 'Desktop Only', value:'hidden-xs hidden-sm'},{label: 'Tablet and Desktop', value:'hidden-xs'} ,{label: 'Tablet and Phone', value:'hidden-md hidden-lg'} ,{label: 'Phone Only', value:'visible-xs-block'} ] },
+					{label: 'Enclose in a Container?', name:'container', type: 'checkbox'},
+					{label: 'Display Title Bar?', name:'titlebar', type: 'checkbox', show:[{type:'matches',name:'container',value:true}]},
+					{label: 'Allow Minimization?', name: 'enable_min', type: 'checkbox', show:[{type:'matches',name:'container',value:true}]}, //show:!item.get().no_minimize},
+					{label:' Start Minimized?', name:'collapsed',type:'checkbox', show:[{type:'matches',name:'enable_min',value:true}],parse:'show'},
+					{label: 'Limit to Group', name: 'limit', type: 'checkbox', show:  [{type:'test',test: function(){return group_composites.length >0;}}] },
+						{legend: 'Groups',name:"group", 'show': [{type:'matches', name: 'limit',value: true}],type:'fieldset',fields:[
+										{label: false, name: 'ids',array:{create:{label:"Add a group"},min:0,max:100}, type: 'select', options: group_composites}
+								]
+						},
+				]}
+				).on('save',function(e){
+
+					this.container.update(e.form.get(),this)
+					e.form.trigger('close');
+					save();
+					e.form.destroy();
+				}.bind(item)).on('cancel',function(e){e.form.trigger('close');e.form.destroy()}).modal();
+
+			})
+
+			// cb.on('min', function(item){
+			// 	item.container.update({collapsed:!item.get().collapsed},item)
+			// 	save();
+			// })
+
+		}else{
+			cb.on('min', function(item){
+				$(item.container.elementOf(item)).find('.collapsible').toggle(400 , $.proxy(function() {
+					item.set({collapsed: $(item.container.elementOf(item)).find('.widget').toggleClass('cob-collapsed').hasClass('cob-collapsed') });
+					Lockr.set(item.get().guid,{collapsed:item.get().collapsed});
+				},item) );
+			})
+			cb.on('user_edit', editUserOptions)
+		}
+
+		$.ajax({
+				url:'/api/workflowsubmissions/user/assignments/count',
+				dataType : 'json',
+				type: 'GET',
+				success  : function(assignments){
+					var total = assignments.count;
+					$('.notificationCount, [data-id="notification-count"]').toggle(!!total).html(total)
+					if(total>0){
+						$('.notificationCount, [data-id="notification-count"]').next().addClass('shake')
+					}
+				}
+		})
+
+		$g.emit('load')
+	}
+
+function editMobileOrder(){
+	var tempdata = [].concat.apply([],config.sections || [[]])
+	if(typeof mobile_order !== 'undefined'){
+		tempdata = _.sortBy(tempdata, function(o) {
+			return mobile_order.indexOf(o.guid);
+		})
+	}
+
+
+
+	mymodal = modal({title: "Mobile Layout", content: templates.listing.render({widgets:tempdata} ), footer: '<div class="btn btn-success save-mobile">Save</div>'})
+
+	Sortable.create($(mymodal.ref.container).find('#sorter')[0], {draggable:'li'})
+		
+	$('.save-mobile').on('click', function(e){
+		new_mobile_order = _.map($(mymodal.ref).find('.modal-content ol').find('li'), function(item){return item.dataset.guid});
+		$.ajax(
+			{
+				url: '/api/pages/' + resource_id, 
+				data: {'mobile_order': JSON.stringify(new_mobile_order)},
+				method: 'PUT',
+				success: function(e){
+					mobile_order = new_mobile_order;
+					mymodal.ref.modal('hide');
+				}
+		});
+	})
+}
+
+
+	function editUserOptions(item){
+		if(typeof item.appEngine !== 'undefined'){
+			new gform($.extend(true, {legend:'Edit Options',name:'user_options', data: item.appEngine.data.user.options, actions:[{type:'cancel'},{type:"save"}]},JSON.parse(_.find(item.appEngine.options.config.forms,{name:'User Options'}).content))).modal().on('save', function(e){
+				if(!e.form.validate()){toastr.error("Please check form for errors","Invalid Options");return false;}
+				var url = '/api/apps/instances/'+item.appEngine.config.app_instance_id+'/user_options';
+				if(typeof item.appEngine.data.user.id !== 'undefined') {
+					$.ajax({
+						type: 'POST',
+						dataType : 'json',
+						url:url,
+						contentType: 'application/json',
+						data: JSON.stringify({'options': e.form.get()}),
+						success:function(app,data){
+							app.update({user:{options:data.options}});
+							this.trigger('close');
+							app.trigger('options');
+							app.alert({title:'Options Updated Successfully'})
+						}.bind(e.form,item.appEngine.app),
+						error:function(data){
+								toastr.error(data.statusText, 'An error occured updating options')
+						}
+					})
+				}else{
+					item.appEngine.app.update({user:{options:e.form.get()}});
+					Lockr.set(url, {'options': e.form.get()})
+					e.form.trigger('close');
+					toastr.success('', 'Options Updated Successfully');
+				}
+			}).on('cancel',function(e){
+				e.form.trigger('close')
+			})
+		}
+	}
+	function addWidget(e) { 
+		cb.collections[0].addItem(e); 	
+	}
+
+
+
+ window.onload = load.bind(null,true);
+
+	$('body').keydown(function(event) {
+		switch(event.keyCode) {
+			case 27://escape
+					cb.deactivate();
+				break;
+		}
+	});
+
+
+	// Automatically cancel unfinished ajax requests 
+	// when the user navigates elsewhere.
+	(function($) {
+		var xhrPool = [];
+		$(document).ajaxSend(function(e, jqXHR, options){
+			xhrPool.push(jqXHR);
+		});
+		$(document).ajaxComplete(function(e, jqXHR, options) {
+			xhrPool = $.grep(xhrPool, function(x){return x!=jqXHR});
+		});
+		var abort = function() {
+			$.each(xhrPool, function(idx, jqXHR) {
+				jqXHR.abort();
+			});
+		};
+
+		var oldbeforeunload = window.onbeforeunload;
+		window.onbeforeunload = function() {
+			abort();
+			return oldbeforeunload ? oldbeforeunload() : undefined;
+		}
+	})(jQuery);
+
+
+
+
+</script>
+
+		<style>
+/*			.view-as.group_all i{display: none;}
+			.group_all .view-as.group_all i{ display:inline;}
+*/
+			.group_ .widget,.group_ .page-menu ul li{display:none;}
+
+{{#group.composites}}
+			.group_{{ composite_group_id }} .widget,.group_{{ composite_group_id }} .page-menu ul li{display:none;}
+			.editor .widget,.editor .page-menu ul li{display: block;}
+			.group_{{ composite_group_id }} .widget.group_all,.group_{{ composite_group_id }} .widget.group_{{ composite_group_id }}{display: block;}
+			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: block}
+
+@media (min-width: 768px) {
+			.page-menu ul li.group_all,.group_ .page-menu ul li {display: table-cell}
+			.group_ .page-menu ul li.group_all,.group_ .page-menu ul li {display: none}
+			.group_{{ composite_group_id }} .page-menu ul li.group_all,.group_{{ composite_group_id }} .page-menu ul li.group_{{ composite_group_id }} {display: table-cell}
+}
+			.view-as.group_{{ composite_group_id }} i{visibility: hidden;}
+			.group_{{ composite_group_id }} .view-as.group_{{ composite_group_id }} i{visibility: visible;}
+
+{{/group.composites}}
+
+		</style>
+
+		<script>
+
+			var group_composites =[];
+
+			{{#group.composites}}
+			group_composites.push({"id": {{group.id}},'name': "{{group.name}}","value": "{{group.id}}",'label': "{{group.name}}"  });
+			{{/group.composites}}
+
+
+		// window.onload = function(){
+			$('.page-menu ul li').each(function(my, item){
+					var groups =($(item).data('groups')+"").split(',')
+					for(var i in groups){
+						$(item).addClass('group_'+groups[i]);
+					}
+				
+			})
+
+
+
+
+			$('.view-as').on('click', function(e){
+				e.stopPropagation();
+				if($(e.currentTarget).data('group') == 'reset'){
+
+					$('body').attr('class',bodyClasses);
+
+					for(var i in groups){
+						$('body').toggleClass('group_'+groups[i]);
+
+					}
+					
+				
+				}else if($(e.currentTarget).data('group') == 'all'){
+					$('body').attr('class',bodyClasses);
+					
+					for(var i in group_composites){
+						$('.view-as.group_'+group_composites[i].id).click();
+					}
+
+				}else if($(e.currentTarget).data('group') == 'clear'){
+					$('body').attr('class',bodyClasses);
+					
+				}else{
+					//$('body').removeClass('group_all');
+
+					$('body').toggleClass('group_'+$(e.currentTarget).data('group'));
+					// if(window.getComputedStyle($(".page-menu .page_"+page_id)[0]).display == 'none'){
+					// 	// modal({title:'HIDDEN',content:'This Page is not visible to members of this group'})
+
+					// 	$('body').attr('class','app');
+					// }
+				}
+			})
+			groups = [{{#user.groups}}{{.}},{{/user.groups}}];
+			bodyClasses = $('body').attr('class');
+			for(var i in groups){
+				$('.view-as.group_'+groups[i]).click();
+			}
+			var visit = {
+				width:window.innerWidth
+			}
+			if(resource_type !== null){
+				visit.resource_type = resource_type;
+				if(resource_id !== null){
+					visit.resource_id = resource_id;
+				}			
+			}
+			$.ajax({
+					url: '/api/visit/log_visit',
+					type: 'post',
+					data: visit,
+					success: function(){}
+			});
+			function inspect(row,element){
+				formatter = new JSONFormatter(cb.collections[0].getItems()[0].appEngine.data,1, {hoverPreviewEnabled: true})
+				mymodal = modal({title: "Widget Summary", content: formatter.render() });//templates.widgets_summary.render(cb.collections[row||0].getItems()[element||0].appEngine.data)});
+			}
+		</script>

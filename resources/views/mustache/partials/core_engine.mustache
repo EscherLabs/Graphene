@@ -274,9 +274,9 @@ $g.collections.add('layouts',layouts)
 				type: 'GET',
 				success  : function(assignments){
 					var total = assignments.count;
-					$('.notificationCount').toggle(!!total).html(total)
+					$('.notificationCount, [data-id="notification-count"]').toggle(!!total).html(total)
 					if(total>0){
-						$('.notificationCount').next().addClass('shake')
+						$('.notificationCount, [data-id="notification-count"]').next().addClass('shake')
 					}
 				}
 		})
@@ -421,7 +421,9 @@ function editMobileOrder(){
 			var group_composites =[];
 
 			{{#group.composites}}
+      {{#group.id}}
 			group_composites.push({"id": {{group.id}},'name': "{{group.name}}","value": "{{group.id}}",'label': "{{group.name}}"  });
+      {{/group.id}}
 			{{/group.composites}}
 
 

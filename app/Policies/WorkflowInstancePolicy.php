@@ -53,7 +53,7 @@ class WorkflowInstancePolicy
         }
     }
 
-    public function update(User $user, WorkflowInstance $workflow_instance)
+    public function update($user, WorkflowInstance $workflow_instance)
     {
         if ($user->site_admin || $user->group_apps_admin($workflow_instance->group_id)) {
             return true;

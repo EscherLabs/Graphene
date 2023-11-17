@@ -1,0 +1,96 @@
+{
+  "_CheckIcon-cf73135a.js": {
+    "file": "assets/CheckIcon-cf73135a.js",
+    "imports": [
+      "_menuBar-f267832e.js"
+    ]
+  },
+  "_menuBar-1b28d7a1.js": {
+    "file": "assets/menuBar-1b28d7a1.js"
+  },
+  "_menuBar-373bfd18.js": {
+    "file": "assets/menuBar-373bfd18.js",
+    "imports": [
+      "_runtime-dom.esm-bundler-5ae8e0d3.js"
+    ]
+  },
+  "_menuBar-f267832e.js": {
+    "file": "assets/menuBar-f267832e.js"
+  },
+  "_reports-2c4617e7.js": {
+    "css": [
+      "assets/reports-d1623aee.css"
+    ],
+    "file": "assets/reports-2c4617e7.js",
+    "imports": [
+      "_menuBar-1b28d7a1.js"
+    ]
+  },
+  "_reports-2cbe8d18.js": {
+    "css": [
+      "assets/reports-d1623aee.css"
+    ],
+    "file": "assets/reports-2cbe8d18.js",
+    "imports": [
+      "_menuBar-1b28d7a1.js"
+    ]
+  },
+  "_reports-de8fd83c.js": {
+    "css": [
+      "assets/reports-d1623aee.css"
+    ],
+    "file": "assets/reports-de8fd83c.js",
+    "imports": [
+      "_menuBar-1b28d7a1.js"
+    ]
+  },
+  "_runtime-dom.esm-bundler-5ae8e0d3.js": {
+    "file": "assets/runtime-dom.esm-bundler-5ae8e0d3.js"
+  },
+  "reports.css": {
+    "file": "assets/reports-d1623aee.css",
+    "src": "reports.css"
+  },
+  "resources/assets/js/adminProject.js": {
+    "file": "assets/adminProject-40d53f21.js",
+    "imports": [
+      "_menuBar-f267832e.js",
+      "_CheckIcon-cf73135a.js"
+    ],
+    "isEntry": true,
+    "src": "resources/assets/js/adminProject.js"
+  },
+  "resources/assets/js/components/adminProject.vue": {
+    "file": "assets/adminProject-aef0486d.js",
+    "imports": [
+      "_menuBar-373bfd18.js",
+      "_runtime-dom.esm-bundler-5ae8e0d3.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/assets/js/components/adminProject.vue"
+  },
+  "resources/assets/js/project.js": {
+    "file": "assets/project-a4488d70.js",
+    "imports": [
+      "_menuBar-f267832e.js"
+    ],
+    "isEntry": true,
+    "src": "resources/assets/js/project.js"
+  },
+  "resources/assets/js/reports.css": {
+    "file": "assets/reports-d1623aee.css",
+    "src": "resources/assets/js/reports.css"
+  },
+  "resources/assets/js/reports.js": {
+    "css": [
+      "assets/reports-d1623aee.css"
+    ],
+    "file": "assets/reports-42d43279.js",
+    "imports": [
+      "_menuBar-f267832e.js",
+      "_CheckIcon-cf73135a.js"
+    ],
+    "isEntry": true,
+    "src": "resources/assets/js/reports.js"
+  }
+}

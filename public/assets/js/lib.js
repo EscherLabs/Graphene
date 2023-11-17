@@ -247,7 +247,6 @@ $g = (function (options) {
       });
     },
     // getID:generateUUID,
-    grid: GrapheneDataGrid,
     collections: gform.collections,
     apps: {},
     engines: {},
@@ -313,6 +312,212 @@ $g = (function (options) {
       );
       return file;
     },
+  };
+  if (typeof GrapheneDataGrid !== "undefined") {
+    api.grid = GrapheneDataGrid;
+  }
+  pathSelect = function (object, path, target) {
+    if (typeof path == "string") {
+      return _.property(path)(object);
+    }
+    if (typeof path == "object") {
+      return Object.keys(path).reduce((result, key) => {
+        result[key] = _.selectPath(object, path[key]);
+        return result;
+      }, target || {});
+    }
+
+    // return _.propertyOf(object)(path)
+    // I believe both of the above are equivilent
+
+    //   //trying lodash native method
+    if (typeof object == "undefined") return undefined;
+    var obj = object;
+    if (typeof object.toJSON == "function") {
+      obj = object.toJSON();
+    } else {
+      obj = _.extend({}, obj);
+    }
+    return _.reduce(
+      _.toPath(path),
+      (i, map) => {
+        if (typeof i == "object" && i !== null) {
+          return i[map];
+        } else {
+          return undefined;
+        }
+      },
+      obj
+    );
+  };
+  api.selectPath = pathSelect;
+  patch = function (object, patch, options = {}) {
+    const { key = "path", value: _target = "value" } = options;
+    if (!_.isArray(patch)) {
+      patch = [patch];
+    }
+    return _.reduce(
+      patch,
+      function (original, task) {
+        var stack = task[key];
+        if (typeof stack !== "string" || original == null) {
+          return original;
+        }
+        // var stack = stack.split('...')
+
+        // stack.splice(stack.length-1,1,...stack[stack.length-1].split('[]'))
+
+        // var stack = _.toPath(stack);
+        if (stack[0] == "/") {
+          stack = stack.substring(1);
+        }
+        var stack = stack.split("/");
+        var object = original;
+        while (stack.length > 1) {
+          var target = stack.shift();
+
+          if (typeof object[target] !== "object") {
+            if (isFinite(stack[0])) {
+              // stack[0] = parseInt(stack[0]);
+              if (!_.isArray(object[target])) {
+                if (task.op == "delete") return original;
+                object[target] = [];
+              }
+            } else {
+              if (task.op == "delete") return original;
+
+              object[target] = {};
+            }
+          }
+          if (object[target] != null) {
+            object = object[target];
+          }
+        }
+        var target = stack.shift();
+        if (task.op == "delete") {
+          if (_.isArray(object)) {
+            object.splice(target, 1);
+          } else {
+            delete object[target];
+            object = _.compact(object);
+          }
+        } else {
+          let value = task[_target];
+
+          if (target && typeof value !== "undefined")
+            object[target] =
+              typeof value == "object" && value !== null && target in value
+                ? value[target]
+                : value;
+        }
+
+        return original;
+      },
+      object || {}
+    );
+  };
+
+  let assign = ({ source, search, result, target, transform = null }) => {
+    let newValue = pathSelect(source, search);
+
+    if (transform) {
+      newValue = transform(newValue);
+    }
+
+    patch(result, [
+      { op: "delete", path: search },
+      {
+        op: "add",
+        path: target,
+        value: newValue,
+      },
+    ]);
+  };
+  let processArray = (
+    subSource,
+    indeces,
+    chunks,
+    depth,
+    result,
+    index,
+    target,
+    transform
+  ) => {
+    let collection = _j.pathSelect(subSource, chunks[depth]);
+
+    depth++;
+    _.each(collection, (item, index) => {
+      if (indeces.length > depth) {
+        //result =
+        processArray(
+          item,
+          indeces,
+          chunks,
+          depth,
+          result,
+          index,
+          target,
+          transform
+        );
+      } else {
+        let renderData = { ...item };
+        renderData[indeces[depth - 1]] = index;
+        assign({
+          source: item,
+          search: chunks[depth], //_j.render(chunks[depth - 1], renderData),
+          result,
+          target: _j.render(target, renderData),
+          transform,
+        });
+      }
+    });
+
+    // return result;
+  };
+  api.etl = (source, destination, map) => {
+    let result = destination || JSON.parse(JSON.stringify(source));
+    _.each(map, ({ source: search, target, transform, conditions }) => {
+      //find selections in source to reuse in target
+
+      //convert /options/{{i}}/post -> /options/(?<i>[0-9a-zA-Z])/post regex
+      // and then use that in followup to render target
+      let finder = /{?{{[a-zA-Z]+}}?}+/g;
+      let indeces = _.map(
+        search.match(finder),
+        item => item.match(/[a-zA-Z]+/g)[0]
+      );
+      let chunks = search.split(finder);
+
+      if (indeces !== null && indeces.length) {
+        let indecesIndex = 0;
+        let loop = indeces[indecesIndex];
+
+        // _.each(indeces, (loop, indecesIndex) => {
+        // console.log(_j.pathSelect(source, chunks[indecesIndex]));
+
+        // console.log(indecesIndex);
+        let parts = search.split(loop);
+        let loopOn = parts.shift();
+
+        _.each(pathSelect(source, loopOn), (loopItem, index) => {
+          console.log(indecesIndex + ":" + index);
+
+          let renderData = { ...loopItem };
+          renderData[loop.match(/[a-zA-Z]+/g)[0]] = index;
+          assign({
+            source: loopItem,
+            search: _j.render(parts[0], renderData),
+            result,
+            target: _j.render(target, renderData),
+            transform,
+          });
+        });
+        // });
+      } else {
+        assign({ source, search, result, target, transform });
+      }
+    });
+    return result;
   };
 
   api.worker.onmessage = message => {
@@ -824,9 +1029,10 @@ $("body").on("keyup", "[name=filter]", function (event) {
   }
 });
 
-templates.listing = Hogan.compile(
-  '<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>'
-);
+if (typeof templates !== "undefined")
+  templates.listing = Hogan.compile(
+    '<ol class="list-group">{{#widgets}}<li data-guid="{{guid}}" class="list-group-item"><div class="handle"></div>{{widgetType}} - {{title}}</li>{{/widgets}}</ol>'
+  );
 
 gform.validations.is_https = value =>
   value.startsWith("https://")
@@ -1584,7 +1790,7 @@ gform.stencils.base64_file = `
   </div>
 </div>
 `;
-(gform.stencils.base64_file_preview = `<li class="list-group-item ">
+gform.stencils.base64_file_preview = `<li class="list-group-item ">
   <div><div class="btn-group pull-right hidden-print" role="group" aria-label="...">
         <button type="button" class="btn btn-danger gform-remove" title="Remove"><i class="fa fa-times"></i></button>
         <button type="button" class="btn btn-info gform-replace" title="Replace"><i class="fa fa-refresh"></i></button>
@@ -1592,8 +1798,9 @@ gform.stencils.base64_file = `
       <span class="badge">{{name}}</span>
       <div style="background: #eee;text-align: center;line-height: 120px;border-radius: 20px;overflow: hidden;width: 120px;height: 120px;">{{#icon}}
       <i class="fa {{{icon}}} fa-3x" style="padding-top: 4px;"></i>
-      {{/icon}}{{^icon}}<img data-dz-thumbnail /></div>\n {{/icon}} </div></li>`),
-  (Dropzone.autoDiscover = false);
+      {{/icon}}{{^icon}}<img data-dz-thumbnail /></div>\n {{/icon}} </div></li>`;
+if (typeof Dropzone !== "undefined") Dropzone.autoDiscover = false;
+
 gform.types.base64_file = _.extend(
   {},
   gform.types["input"],
@@ -2520,12 +2727,12 @@ gform.types.upload = _.extend({}, gform.types["input"], {
           (i.DefaultProperties = r(7)),
           (("object" == typeof t && t ? t : window).Cleave = i),
           (e.exports = i);
-      }.call(
+      }).call(
         t,
         (function () {
           return this;
         })()
-      ));
+      );
     },
     function (e, t) {
       "use strict";
@@ -3277,12 +3484,12 @@ gform.types.upload = _.extend({}, gform.types["input"], {
           },
         };
         e.exports = r;
-      }.call(
+      }).call(
         t,
         (function () {
           return this;
         })()
-      ));
+      );
     },
   ]);
 });

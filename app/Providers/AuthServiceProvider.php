@@ -28,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Image' => 'App\Policies\ImagePolicy',
         'App\Tag' => 'App\Policies\TagPolicy',
         'App\APIUser' => 'App\Policies\APIUserPolicy',
+        'App\Report' => 'App\Policies\ReportPolicy',
     ];
 
     /**

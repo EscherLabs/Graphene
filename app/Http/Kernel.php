@@ -36,6 +36,10 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\ForceHTTPS::class,
             \App\Http\Middleware\ValidateUser::class,
         ],
+        'public_api' => [
+            'throttle:300,1',
+            'bindings',
+        ],
         'api' => [
             'throttle:300,1',
             'bindings',

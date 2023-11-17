@@ -1,0 +1,38 @@
+<nav class="fixed inset-0 h-12 px-4 bg-brand-800 bg border-b border-neutral-100 bottom-auto shadow-lg text-sm z-10">
+  <div class="flex items-center h-full">
+
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand flex items-center gap-4 text-lg  text-white" href="/">
+      <i class="bu-b bu text-2xl "></i>Bing Local
+      </a>
+      <ul class="flex ml-auto gap-4">
+        {{> project/notifications}}
+        <li class="">
+          <a href="" class="" role="button">
+            <img alt="{user.first_name}} {{user.last_name}}" class="rounded-sm h-8 w-8 border border-slate-200" src="https://www.gravatar.com/avatar/{{user_md5_email}}?d=mm" /> 
+            <p class="truncate hidden">{{^logged_in}}Guest{{/logged_in}}{{user.first_name}} {{user.last_name}}</p>
+            <span class="caret"></span>
+          </a>
+          <ul class="hidden">
+            {{^logged_in}}
+              <li><a href="{{ url.login }}"><i class="fa fa-sign-in fa-fw"></i> Login</a></li>
+            {{/logged_in}}
+            {{#logged_in}}
+              {{#is_admin}}
+                <li><a href="{{ url.admin }}"><i class="fa fa-gear"></i> Admin</a></li>
+                <li><a href="#" id="graphene-quick-create"><i class="fa fa-bolt"></i> Quick Create</a></li>
+                <li><a href="/workflows"><i class="fa fa-check-square-o"></i> Workflows</a></li>
+              {{/is_admin}}  
+              <li><a href="{{ url.logout }}"><i class="fa fa-times-circle"></i> Logout</a></li>
+            {{/logged_in}}
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

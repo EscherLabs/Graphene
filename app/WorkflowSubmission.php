@@ -5,15 +5,19 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use \Carbon\Carbon;
+use App\Traits\Filter;
 class WorkflowSubmission extends Model
 {
     use SoftDeletes;
+    use Filter;
+
     protected $fillable = ['workflow_id','workflow_version_id','workflow_instance_id','workflow_instance_configuration','user_id','assignment_type','assignment_id','state','data','status'];
     protected $casts = ['workflow_instance_configuration'=>'object'];
-    protected $appends = ['history'];
+    protected $appends = ['history']; // I believe this only used in action controller remove the appends and make it a query or relationship to limit eager loading of history
     protected $hidden = ['history']; // Don't share the full history
     protected $dates = ['opened_at'];
-
+    
     protected function serializeDate(\DateTimeInterface $date) {
         return $date->format('Y-m-d H:i:s');
     }
@@ -30,6 +34,9 @@ class WorkflowSubmission extends Model
     public function user() {
         return $this->belongsTo(BulkUser::class,'user_id');
     }
+    public function owner() {
+        return $this->belongsTo(BulkUser::class,'user_id');
+    }
     public function assignment_user() {
         return $this->belongsTo(BulkUser::class,'assignment_id');
     }
@@ -39,15 +46,16 @@ class WorkflowSubmission extends Model
     public function logs() {
         return $this->hasMany(WorkflowActivityLog::class);
     }
+
     public function files() {
         return $this->hasMany(WorkflowSubmissionFile::class);
     }
 
     public function getAssignment() {
         if($this->assignment_type == "user"){
-            $this->assignee = User::where("id", '=', $this->assignment_id)->first();
+            $this->assignee = BulkUser::where("id", '=', $this->assignment_id)->select('first_name','last_name','email','unique_id')->first();
              if($this->assignee !== null){
-                $this->assignee = $this->assignee->only('first_name','last_name','email','unique_id','params');
+                $this->assignee = $this->assignee;
              }
         }else{
             $this->assignee = Group::where("id",'=',$this->assignment_id)->where('site_id',config('app.site')->id)->select('name','slug','id')->first();
@@ -105,4 +113,44 @@ class WorkflowSubmission extends Model
         }
         return $history;
     }
+    public function scopeCreatedBetweenDates($query, array $dates)
+    {
+          if(is_null($dates[0])){
+            $dates[0] =Carbon::parse('2016-1-1');
+          }
+          $start = ($dates[0] instanceof Carbon) ? $dates[0] : Carbon::parse($dates[0]);
+          $end   = ($dates[1] instanceof Carbon) ? $dates[1] : Carbon::parse($dates[1]);
+
+          return $query->whereBetween('created_at', [
+            $start->startOfDay(),
+            $end->endOfDay()
+        ]);
+    }
+    public function scopeUpdatedBetweenDates($query, array $dates)
+    {
+          if(is_null($dates[0])){
+            $dates[0] =Carbon::parse('2016-1-1');
+          }
+          $start = ($dates[0] instanceof Carbon) ? $dates[0] : Carbon::parse($dates[0]);
+          $end   = ($dates[1] instanceof Carbon) ? $dates[1] : Carbon::parse($dates[1]);
+
+          return $query->whereBetween('updated_at', [
+            $start->startOfDay(),
+            $end->endOfDay()
+        ]);
+    }
+
+    public function scopeHasState($query, array $states)
+    {
+        if(isset($states[0])){
+          $query->whereIn('state',$states[0]);
+        }
+        if(isset($states[1])){
+          $query->whereNotIn('state',$states[1]);
+        }
+        return $query;
+    }
+
+
+    
 }

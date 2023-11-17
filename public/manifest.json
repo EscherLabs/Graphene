@@ -1,0 +1,56 @@
+{
+  "_menuBar-373bfd18.js": {
+    "file": "assets/menuBar-373bfd18.js",
+    "imports": [
+      "_runtime-dom.esm-bundler-5ae8e0d3.js"
+    ]
+  },
+  "_runtime-dom.esm-bundler-5ae8e0d3.js": {
+    "file": "assets/runtime-dom.esm-bundler-5ae8e0d3.js"
+  },
+  "resources/assets/js/adminProject.js": {
+    "dynamicImports": [
+      "resources/assets/js/components/adminProject.vue"
+    ],
+    "file": "assets/adminProject-51e97dc9.js",
+    "imports": [
+      "_runtime-dom.esm-bundler-5ae8e0d3.js"
+    ],
+    "isEntry": true,
+    "src": "resources/assets/js/adminProject.js"
+  },
+  "resources/assets/js/components/adminProject.vue": {
+    "file": "assets/adminProject-aef0486d.js",
+    "imports": [
+      "_menuBar-373bfd18.js",
+      "_runtime-dom.esm-bundler-5ae8e0d3.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/assets/js/components/adminProject.vue"
+  },
+  "resources/assets/js/project.js": {
+    "file": "assets/project-9342c8b0.js",
+    "imports": [
+      "_runtime-dom.esm-bundler-5ae8e0d3.js",
+      "_menuBar-373bfd18.js"
+    ],
+    "isEntry": true,
+    "src": "resources/assets/js/project.js"
+  },
+  "resources/assets/js/reports.css": {
+    "file": "assets/reports-d1623aee.css",
+    "src": "resources/assets/js/reports.css"
+  },
+  "resources/assets/js/reports.js": {
+    "css": [
+      "assets/reports-d1623aee.css"
+    ],
+    "file": "assets/reports-c8b6f0ca.js",
+    "imports": [
+      "_runtime-dom.esm-bundler-5ae8e0d3.js",
+      "_menuBar-373bfd18.js"
+    ],
+    "isEntry": true,
+    "src": "resources/assets/js/reports.js"
+  }
+}

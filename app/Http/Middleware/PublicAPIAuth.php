@@ -27,6 +27,7 @@ class PublicAPIAuth
      */
     public function handle($request, Closure $next)
     {
+        if(Auth::check())return $next($request);
         $logged_in = false;
         if ($request->header('PHP_AUTH_USER', null) && $request->header('PHP_AUTH_PW', null)) {
             $username = $request->header('PHP_AUTH_USER');
@@ -42,6 +43,12 @@ class PublicAPIAuth
             $headers = ['WWW-Authenticate' => 'Basic'];
             return response()->make('Invalid credentials.', 401, $headers);
         } else {
+
+            //ATS - doing this universally becomes problematic if you have "unique_id" in your route 
+            // but this is not the desired action 
+            // - this should be explicetly requested via query parameter or handled in specific routes 
+            // or with additional middleware on routes that desire this action
+
             // If unique_id was passed as part of the API, attempt to authenticate as that user.
             if (!is_null($request->route('unique_id'))) {
                 $current_user = User::where('unique_id',$request->route('unique_id'))->first();
@@ -49,6 +56,10 @@ class PublicAPIAuth
                     return response()->make('User '.$request->route('unique_id').' not found!', 404);
                 }
                 Auth::login($current_user);
+            }else{
+              Auth::login($user);
+              Auth::user()->site_admin = 1;
+              Auth::user()->site_developer = 1;
             }
             return $next($request);
         }    

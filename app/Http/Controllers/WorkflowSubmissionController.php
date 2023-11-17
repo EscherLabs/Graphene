@@ -26,6 +26,8 @@ use \Carbon\Carbon;
 use App\Libraries\CustomAuth;
 use App\Libraries\JSExecHelper;
 use \Ds\Vector;
+use Illuminate\Support\Facades\DB;
+
 
 class WorkflowSubmissionController extends Controller {
     public function __construct() {
@@ -136,6 +138,89 @@ class WorkflowSubmissionController extends Controller {
             })->count();
         return ['count'=>$submissions];
     } 
+
+
+  //   public function paginate_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
+  //     if (!Auth::check()) { abort(403); }
+  //     $limit = 15;
+  //     $states = [];
+  //     $status =  'new';
+  //     // return $request->get('dates')[0];
+  //      if($request->has('state')){
+  //       $states = $request->get('state');
+  //     }
+  //       if($request->has('limit')){
+  //         $limit =$request->get('limit');
+  //       }
+  //       if($request->has('status')){
+  //         $status =$request->get('status');
+  //       }
+       
+  //       $query = WorkflowSubmission::where('workflow_instance_id','=',$workflow_instance->id)
+  //       ->where('status',$request->has('status')?"=":"!=",$status)
+  //       ->hasState($states);
+
+  //       if($request->has('updated_at')){
+  //         $dates = $request->get('updated_at');
+  //         $dates[0] = (isset($dates[0]))?$dates[0]:null;
+  //         $dates[1] = (isset($dates[1]))?$dates[1]:null;
+  //         $query->updatedBetweenDates($dates);
+  //       }
+
+  //       if($request->has('created_at')){
+  //         $dates = $request->get('created_at');
+  //         $dates[0] = (isset($dates[0]))?$dates[0]:null;
+  //         $dates[1] = (isset($dates[1]))?$dates[1]:null;
+  //         $query->createdBetweenDates($dates);
+  //       }
+  //       if($request->has('sort')){
+  //         $order = $request->get('sort');
+  //         // return $order;
+  //         if(isset($order[0])){
+  //           foreach($order[0] as $asc){
+  //             $query->orderBy($asc, 'asc');
+  //           }
+  //         }
+
+  //         if(isset($order[1])){
+  //           foreach($order[1] as $desc){
+  //             $query->orderBy($desc, 'desc');
+  //           }
+  //         }
+  //       }else{
+  //         $query->orderBy('created_at');
+  //       }
+
+
+  //       if($request->has('group_by')){
+
+  //         // return DB::table('workflow_submissions')
+  //         //        ->where('workflow_instance_id','=',$workflow_instance->id)
+  //         //        ->select('assignment_type',$request->get('group_by'), DB::raw('count(*) as total'))
+  //         //        ->groupBy(['assignment_type',$request->get('group_by')])
+  //         //        ->get();
+
+  //         return DB::table('workflow_submissions')->where('workflow_instance_id','=',$workflow_instance->id)->groupBy([$request->get('group_by')])->select($request->get('group_by'), DB::raw('count(*) as total'))->get();
+  //       }
+
+  //       $submissions = $query->select('assignment_id','assignment_type','created_at','updated_at','opened_at','id','state','status','user_id','workflow_version_id', 'title','data')
+  //       ->with('user')->paginate($limit)->onEachSide(2);
+
+  //       foreach($submissions as $submission) {
+  //         $submission->getAssignment(); 
+  //       }
+  //       return $submissions->withPath('');
+  //       $returnable = $submissions->withPath('');
+  //       $returnable->extra = "stuff";
+  //       return $returnable;
+  //        return [
+  //         'total'=>$submissions->total(),
+  //         'data'=>$submissions->items()
+  //       ];
+      
+
+  // }
+
 
     public function list_instance_workflow_submissions(WorkflowInstance $workflow_instance, Request $request) {
         if (!Auth::check()) { abort(403); }

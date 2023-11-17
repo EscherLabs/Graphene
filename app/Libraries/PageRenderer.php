@@ -40,9 +40,16 @@ class PageRenderer {
             'partials_loader' => $partials_loader,
             'cache' => storage_path('cache/mustache'),
         ]);
+        try{
+          $tpl = $m->loadTemplate($data['template']);
+        }
+        catch(\Throwable $e){
+          $tpl = $m->loadTemplate('main');
+
+          // $tpl = $m->loadTemplate(in_array($data['template'],array_keys((array)$site_templates->partials))?$data['template']:'main');
+      
+      }
             
-        $tpl = $m->loadTemplate(in_array($data['template'],array_keys((array)$site_templates->partials))?$data['template']:'main');
-        
         return response($tpl->render($data))
             ->header('Content-Type', 'text/html')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
