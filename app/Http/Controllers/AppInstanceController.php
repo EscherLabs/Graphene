@@ -313,29 +313,32 @@ class AppInstanceController extends Controller
             // especially when an endpoint is responding very slowly.
             DB::connection()->disconnect(); 
             $httpHelper = new HTTPHelper();
-            if ($endpoint->type == 'http_no_auth') {
-                $response = $httpHelper->http_fetch(['url'=>$url, 'verb'=>$verb, 'data'=>$all_data['request']]);
-            } else if ($endpoint->type == 'http_basic_auth') {
-                $http_config = [
-                    'url'  => $url,
-                    'verb' => $verb,
-                    'data' => $all_data['request'],
-                    'username' => $endpoint->config->username,
-                    'password' => $endpoint->getSecret(),
-                ];
-                if (isset($endpoint->config->content_type) && $endpoint->config->content_type !== '') {
-                    $http_config['content_type'] = $endpoint->config->content_type;
-                }
-                if (isset($endpoint->config->timeout) && $endpoint->config->timeout !== '') {
-                    $http_config['timeout'] = $endpoint->config->timeout;
-                }
-                if (isset($endpoint->config->headers) && is_array($endpoint->config->headers)) {
-                    $http_config['headers'] = $endpoint->config->headers;
-                }
-                $response = $httpHelper->http_fetch($http_config);
-            } else {
+            $http_config = [
+              'url'  => $url,
+              'verb' => $verb,
+              'data' => $all_data['request'],
+            ];
+            
+            if (isset($endpoint->config->content_type) && $endpoint->config->content_type !== '') {
+              $http_config['content_type'] = $endpoint->config->content_type;
+            }
+            if (isset($endpoint->config->timeout) && $endpoint->config->timeout !== '') {
+                $http_config['timeout'] = $endpoint->config->timeout;
+            }
+            if (isset($endpoint->config->headers) && is_array($endpoint->config->headers)) {
+                $http_config['headers'] = $endpoint->config->headers;
+            }
+
+            if ($endpoint->type == 'http_basic_auth') {
+              $http_config['username'] =$endpoint->config->username;
+              $http_config['password'] =$endpoint->getSecret();
+              
+            } else if ($endpoint->type !== 'http_no_auth') {
                 abort(505,'Authentication Type Not Supported');
             }
+
+            $response = $httpHelper->http_fetch($http_config);
+
 
             if ($resource_info->cache === true || $resource_info->cache === 'true') {
                 // TJC -- Laravel has a "non-bug" which prevents updateOrCreate from working 
