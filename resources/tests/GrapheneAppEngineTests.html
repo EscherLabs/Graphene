@@ -9,10 +9,12 @@
 </head>
 
 <body>
+  <div class="main"></div>
+
   <div id="mocha"></div>
   <div id="gform" style="display:none"></div>
   <!-- Add the Chai assertion library -->
-  <script src="http://chaijs.com/chai.js"></script>
+  <script src="https://chaijs.com/chai.js"></script>
   <!-- Add the Sinon test double library-->
   <script src="../../node_modules/sinon/pkg/sinon.js"></script>
   <!-- Add the Mocha test library -->
@@ -28,19 +30,24 @@
   <!-- Import the sum function -->
   <script src="../../public/assets/js/vendor/lodash.min.js"></script>
   <script src="../../public/assets/js/vendor/jquery.min.js"></script>
-  <script src="../../public/assets/js/lib.js"></script>
-  <script src="../../public/assets/js/vendor/GrapheneDataGrid.min.js"></script>
-  <script src="../../public/assets/js/vendor/gform_bootstrap.min.js"></script>
   <script src="../../public/assets/js/vendor/toastr.min.js"></script>
+  <!-- <script src="../../public/assets/js/vendor/GrapheneDataGrid.min.js"></script> -->
+  <script src="../../public/assets/js/vendor/dropzone.js"></script>
+  <script src="../../public/assets/js/vendor/gform_bootstrap.min.js"></script>
+  <script src="../../public/assets/js/vendor/ractive.min.js"></script>
+  <script src="../../public/assets/js/vendor/bootstrap.min.js"></script>
+  <script src="../../public/assets/js/lib.js"></script>
   <script src="../../public/assets/js/appEngines/grapheneAppEngine.js"></script>
 
   <!-- <script src="./appEngineSpec/ExampleSpec.js"></script> -->
   <script src="./appEngineSpec/Alert.js"></script>
+  <script src="./appEngineSpec/Click.js"></script>
+  <script src="./appEngineSpec/Modal.js"></script>
+  <script src="./appEngineSpec/Render.js"></script>
   <script>
 
   // Run the tests with Mocha
   mocha.run();
   </script>
-
 </body>
 </html>
