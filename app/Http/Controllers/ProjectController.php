@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Group;
 use App\Project;
+use App\Report;
 use App\User;
 // use App\ProjectVersion;
 // use App\ProjectDevelopers;
@@ -15,11 +16,13 @@ use App\Libraries\PageRenderer;
 
 class ProjectController extends Controller
 {
-  public function admin(Project $project, $report=null) {
+  public function admin(Project $project, Report $report=null) {
     
     $project->load(['reports'=>function($q){
       $q->currentVersion();
     }]);
+    $project->load('instances');
+    
     foreach($project->reports as $key=>$projectReport){
 
       $project->reports[$key]->config = $projectReport->versions[0]->config;
@@ -30,9 +33,12 @@ class ProjectController extends Controller
       unset($projectReport->versions);
       unset($projectReport->pivot);
     }
-
-    // return $project;
-    return response(view('adminVue',['data'=>$project, 'id'=>$project->id, 'project'=>$project, 'resource'=>'Project']));
+    $asset = ($report == null)?"":"report";
+    // $report = ReportVersion::with('report')->where('report_id','=',$report->id)->orderBy('created_at', 'desc')->first();
+    // 'report'=>$report
+    // return $report;
+    $project->report= $report;
+    return response(view('adminVue',['data'=>$project, 'id'=>$project->id, 'project'=>$project, 'asset'=>$asset, 'resource'=>'project',]));
 
   }
   public function view(Request $request, $project) {

@@ -84,8 +84,8 @@ class WorkflowInstanceController extends Controller
     }
 
     public function show(WorkflowInstance $workflow_instance) {
-
         $myWorkflow = WorkflowInstance::with('workflow')->with('group')->where('id', '=', $workflow_instance->id)->first();
+        // return $myWorkflow->version['id'];
 
         $myWorkflow->findVersion();
         return $myWorkflow;

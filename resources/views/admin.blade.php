@@ -97,7 +97,7 @@
     var tableConfig = {
       entries: [25, 50, 100],
       count: 25,
-      autoSize: -20,
+      autoSize: -1,
       el: '#table',
       events:[
         {

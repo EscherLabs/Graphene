@@ -14,9 +14,9 @@ class Project extends Model
     public function site() {
       return $this->belongsTo(Site::class);
     }
-    // public function project_instances() {
-    //   return $this->hasMany(ProjectInstance::class);
-    // }
+    public function instances() {
+      return $this->hasMany(ProjectInstance::class);
+    }
     public function user() {
       return $this->belongsTo(User::class);
     }

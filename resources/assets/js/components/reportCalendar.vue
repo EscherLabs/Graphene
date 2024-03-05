@@ -41,111 +41,134 @@
       </span>
     </div>
   </ul>
-  <div class="bg-gray-50 px-4 py-2 flex gap-2">
-    <nav
-      class="isolate inline-flex -space-x-px rounded-md shadow-sm"
-      aria-label="Pagination"
-    >
-      <button
-        v-for="link in navInfo.links"
-        :href="link.url"
-        @click.prevent="created_at(link.url)"
-        :disabled="!link.url"
-        data-paginate=""
-        aria-current="page"
-        :class="[
-          'disabled:text-gray-400  disabled:ring-gray-300 disabled:hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset focus:z-20 focus:outline-offset-0',
-          link.active
-            ? 'z-10    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
-            : 'text-gray-900 ring-gray-300 hover:bg-gray-50',
-          link.label == 'Previous' ? 'rounded-l-md' : '',
-          link.label == 'Next' ? 'rounded-r-md' : '',
-        ]"
+  <div class="bg-slate-100">
+    <div class="px-4 py-2 flex gap-2">
+      <nav
+        class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+        aria-label="Pagination"
       >
-        <span class="sr-only">{{ link.label }}</span>
-        <svg
-          v-if="link.label == 'Previous'"
-          class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <span
-          v-if="link.label !== 'Previous' && link.label !== 'Next'"
-          class="text-gray-900"
-          >{{ link.label }}</span
-        >
-        <svg
-          v-if="link.label == 'Next'"
-          class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </button>
-    </nav>
-    <span
-      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold"
-      >{{ year }}</span
-    >
-  </div>
-  <div class="grid grid-cols-7 justify-items-center bg-none gap-0.5 p-0.5">
-    <div
-      v-for="weekday in weekdays"
-      class="hidden md:block w-full bold text-lg bg-white"
-      style="color: #888"
-    >
-      <div style="text-align: center">{{ weekday }}</div>
-    </div>
-    <div
-      v-for="weekday in shortdays"
-      class="block md:hidden w-full bold text-lg bg-white"
-      style="color: #888"
-    >
-      <div style="text-align: center">{{ weekday }}</div>
-    </div>
-    <div
-      v-for="day in days"
-      :class="day.contained ? 'bg-white' : 'bg-gray-100'"
-      class="w-full flex flex-col gap-1 py-1"
-      style="min-height: 12vh"
-    >
-      <div
-        :class="
-          day.isToday
-            ? 'bg-blue-500 text-white'
-            : day.events.length && day.contained
-            ? 'bg-green-100 text-slate-700'
-            : 'bg-gray-100 text-slate-700'
-        "
-        class="flex items-center justify-center ml-1 w-7 h-7 rounded-full"
-        style="font-weight: 300"
-      >
-        {{ day.date }}
-      </div>
-      <div class="overflow-scroll" style="max-height: 80px">
-        <div
-          v-for="event in day.events"
+        <button
+          v-for="link in navInfo.links"
+          :href="link.url"
+          @click.prevent="created_at(link.url)"
+          :disabled="!link.url"
+          data-paginate=""
+          aria-current="page"
           :class="[
-            event.start == day.date ? 'rounded-l ml-1 pl-1 border-l-none' : '',
-            event.end == day.date ? 'mr-1 rounded-r pr-1 border-r-none' : '',
+            'disabled:text-gray-400  disabled:ring-gray-300 disabled:hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset focus:z-20 focus:outline-offset-0',
+            link.active
+              ? 'z-10    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
+              : 'text-gray-900 ring-gray-300 hover:bg-gray-50',
+            link.label == 'Previous' ? 'rounded-l-md' : '',
+            link.label == 'Next' ? 'rounded-r-md' : '',
           ]"
-          class="eventItem mb-0.5 px-2 py-0.5 text-sm bg-blue-400 text-white"
         >
-          <span v-if="event.start == day.date">{{ event.title }}</span>
-          <div v-if="event.start !== day.date" class="text-center">-</div>
+          <span class="sr-only">{{ link.label }}</span>
+          <svg
+            v-if="link.label == 'Previous'"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span
+            v-if="link.label !== 'Previous' && link.label !== 'Next'"
+            class="text-gray-900"
+            >{{ link.label }}</span
+          >
+          <svg
+            v-if="link.label == 'Next'"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </nav>
+      <span
+        class="relative inline-flex items-center px-4 py-2 text-sm font-semibold"
+        >{{ year }}</span
+      >
+    </div>
+    <div class="grid grid-cols-7 justify-items-center bg-none gap-0.5 p-0.5">
+      <div
+        v-for="weekday in weekdays"
+        class="hidden md:block w-full bold text-lg bg-white"
+        style="color: #888"
+      >
+        <div style="text-align: center">{{ weekday }}</div>
+      </div>
+      <div
+        v-for="weekday in shortdays"
+        class="block md:hidden w-full bold text-lg bg-white"
+        style="color: #888"
+      >
+        <div style="text-align: center">{{ weekday }}</div>
+      </div>
+      <div
+        v-for="day in days"
+        :class="day.contained ? 'bg-white' : 'bg-gray-100'"
+        class="w-full flex flex-col gap-1 py-1"
+        style="min-height: 12vh"
+      >
+        <div
+          :class="
+            day.isToday
+              ? 'bg-blue-500 text-white'
+              : day.events.length && day.contained
+              ? 'bg-green-100 text-slate-700'
+              : 'bg-gray-100 text-slate-700'
+          "
+          class="flex items-center justify-center ml-1 w-7 h-7 rounded-full"
+          style="font-weight: 300"
+        >
+          {{ day.date }}
+        </div>
+        <template v-for="event in day.events">
+          <div
+            v-if="event.start !== event.end"
+            :class="[
+              event.start == day.date
+                ? 'rounded-l ml-1 pl-1 border-l-none'
+                : '',
+              event.end == day.date ? 'mr-1 rounded-r pr-1 border-r-none' : '',
+            ]"
+            class="eventItem mb-0.5 px-2 py-0.5 text-sm bg-blue-400 text-white"
+          >
+            <span v-if="event.start == day.date">{{ event.title }}</span>
+            <div v-if="event.start !== day.date" class="text-center">-</div>
+          </div>
+        </template>
+        <div class="overflow-scroll" style="max-height: 60px">
+          <template v-for="event in day.events">
+            <div
+              v-if="event.start == event.end"
+              :class="[
+                event.start == day.date
+                  ? 'rounded-l ml-1 pl-1 border-l-none'
+                  : '',
+                event.end == day.date
+                  ? 'mr-1 rounded-r pr-1 border-r-none'
+                  : '',
+              ]"
+              class="eventItem mb-0.5 px-2 py-0.5 text-sm bg-blue-400 text-white"
+            >
+              <span v-if="event.start == day.date">{{ event.title }}</span>
+              <div v-if="event.start !== day.date" class="text-center">-</div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -224,7 +247,7 @@ const created_at = url => {
 
 const genMenu = () => {
   const [m, y] = format(date.value, "MMMM yyyy").split(" ");
-  debugger;
+  // debugger;
   month.value = m;
   year.value = y;
   const nextMonth = addMonths(date.value, 1);

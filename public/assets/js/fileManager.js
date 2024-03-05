@@ -128,7 +128,6 @@ var fileManager = function (selector, options) {
                     {
                       type: "custom",
                       test: function (files, e) {
-                        debugger;
                         return _.includes(files, e.value)
                           ? "Name already used - please choose a unique name"
                           : false;
@@ -141,7 +140,6 @@ var fileManager = function (selector, options) {
               .on(
                 "save",
                 function (e) {
-                  debugger;
                   if (!e.form.validate()) return;
                   this.add(e.form.get().name, "");
                   e.form.dispatch("close");

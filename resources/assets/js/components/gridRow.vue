@@ -24,19 +24,30 @@
       :data-col="field.name"
       :style="'width:var(--col-' + field.name + '-width)'"
       :class="[
-        'grid-cell truncate',
+        'grid-cell truncate empty:hidden',
         'px-4 py-2 w-72 flex flex-col flex-grow-0 flex-shrink-0',
       ]"
-    >
-      <div>{{ data[field.name] }}</div>
-      <div>{{ data[field.secondary] }}</div>
-    </td>
+      v-html="cellContent(field)"
+    ></td>
     <td class="flex-1"></td>
   </tr>
 </template>
 <script setup>
 import { ref, watch } from "vue";
-
+import {
+  format,
+  // endOfMonth,
+  // startOfMonth,
+  // getDay,
+  // addDays,
+  // addMonths,
+  // // getMonth,
+  // // getYear,
+  // isSameMonth,
+  // getDate,
+  parseISO,
+  parse,
+} from "date-fns";
 import { CheckIcon } from "@heroicons/vue/20/solid";
 const mark = target => {
   // props.checked = !props.checked;
@@ -49,6 +60,51 @@ const emit = defineEmits(["check"]);
 //     emit("check", newVal);
 //   }
 // );
+
+function customRender(content, data = {}) {
+  var myRegexp = /\[(.*?)\]/g;
+  var match = myRegexp.exec(content);
+  var response = JSON.parse(JSON.stringify(content));
+  var temp;
+
+  while (match != null) {
+    try {
+      let formatPattern = "L";
+      if (match[1].indexOf(":") >= 0) {
+        var parts = match[1].split(":");
+        formatPattern = parts[1];
+        match[1] = parts[0];
+      }
+      temp = format(parseISO(data[match[1]]), formatPattern);
+    } catch (e) {
+      temp = match[1];
+    }
+    const newID = $g.uuid;
+    data[newID] = temp;
+    response = response.replace(match[0], `{{_data.${newID}}}`);
+    match = myRegexp.exec(content);
+  }
+  return { template: response, data };
+}
+
+const cellContent = field => {
+  if (!("include" in field) || field.include !== false) {
+    const { template, data } =
+      "display" in field
+        ? customRender(field.display, props.data)
+        : { data: field.data, template: false };
+
+    return template
+      ? $g.render(template, {
+          _data: data,
+          [field.name]: props.data[field.name],
+        })
+      : `<div>${props.data[field.name]}</div>`;
+  } else {
+    return "";
+  }
+  // <div>{{ data[field.secondary] }}</div>
+};
 var props = defineProps({
   data: {
     default: {},

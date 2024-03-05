@@ -186,12 +186,41 @@ return $renderer->render([
     return Report::with('user')->where('id',$report->id)->first();
   }
 
-  public function update(Request $request, Report $report) {  
-    $report->update($request->all());
+  public function update(Request $request, $report) {  
 
-    return $request->all();
-    $report->save();
-    return Report::with('user')->where('id',$report->id)->first();
+    $reportVersion = ReportVersion::where("report_id", "=", $report)->orderBy('created_at', 'desc')->first();
+    $config = $reportVersion->config;
+    if($request->has('schema')){
+      $config->resource->schema = $request->get('schema');
+    }
+    if($request->has('states')){
+      $config->resource->states = $request->get('states');
+    }
+    if($request->has('map')){
+      $config->resource->map = $request->get('map');
+    }
+    if($request->has('primary')){
+      $config->resource->primary = $request->get('primary');
+    }
+    if($request->has('secondary')){
+      $config->resource->secondary = $request->get('secondary');
+    }
+    // return $config;
+    $reportVersion->config = $config;
+    // $reportVersion->update($request->all());
+    // return $report->load('versions');
+    // return $report;
+    // return $reportVersion->config->resource->schema;
+
+// [
+//   {"name": "title", "label": "Title"},
+//   {"name": "nice", "label": "Simple Stuff"},
+//   {"name": "name", "type": "text", "label": "Name"}
+// ]
+
+    $reportVersion->save();
+    // return Report::with('user')->where('id',$report->id)->first();
+    return Report::with('user')->currentVersion()->find($report);
 
   }
 
@@ -254,9 +283,10 @@ return $renderer->render([
     }
 
     $query = WorkflowSubmission::where('workflow_instance_id','=',$workflow_instance->id)
-      ->hasState(ReportController::parseParam($request->get('state')))
       ->where('status', $request->has('status')?"=":"!=",$status);
-   
+      // return ReportController::parseParam($request->get('state'));
+    $query->hasState(ReportController::parseParam($request->get('state')));
+
       // $query->dataFilter($request->get('q'));
       $query->filter($request->get('q'));
       
@@ -272,16 +302,17 @@ return $renderer->render([
     if($request->has('updated_at')){
       $dates = explode(',',$request->get('updated_at'));
 
-      $dates[0] = (isset($dates[0]))?$dates[0]:null;
-      $dates[1] = (isset($dates[1]))?$dates[1]:null;
+      $dates[0] = (isset($dates[0]) && !empty($dates[0] ))?$dates[0]:null;
+      $dates[1] = (isset($dates[1]) && !empty($dates[1] ))?$dates[1]:null;
       $query->updatedBetweenDates($dates);
     }
 
     if($request->has('created_at')){
       $dates = explode(',',$request->get('created_at'));
 
-      $dates[0] = (isset($dates[0]))?$dates[0]:null;
-      $dates[1] = (isset($dates[1]))?$dates[1]:null;
+      $dates[0] = (isset($dates[0]) && !empty($dates[0] ))?$dates[0]:null;
+      $dates[1] = (isset($dates[1]) && !empty($dates[1] ))?$dates[1]:null;
+
       $query->createdBetweenDates($dates);
     }
 

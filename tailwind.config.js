@@ -78,6 +78,7 @@ export default {
         // 40% HEX: #BDBEBD
         // 20% HEX: #DEDEDE
         // brand: colors.orange,
+        success: colors.emerald,
         info: colors.blue,
         danger: colors.red,
         error: colors.red,

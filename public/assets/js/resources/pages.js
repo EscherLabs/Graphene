@@ -50,7 +50,6 @@ $g.getData(
           content: templates.sortlist.render({ items: tempdata }, templates),
           footer: '<div class="btn btn-success save-sort">Save</div>',
         });
-        debugger;
         Sortable.create($(mymodal.ref.container).find("#sorter")[0], {
           draggable: "li",
         });

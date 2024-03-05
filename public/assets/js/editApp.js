@@ -1512,7 +1512,6 @@ document.addEventListener("DOMContentLoaded", function () {
       data: working_forms[formIndex],
     })
       .on("save", function (e) {
-        debugger;
         let el = gform.instances.editor.find("name");
         el.set(e.form.get("name"));
         el.trigger("input", el);

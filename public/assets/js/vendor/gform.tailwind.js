@@ -568,13 +568,15 @@ input:placeholder-shown + div > .gform-clear {
     opacity: 0;
     pointer-events: none;
 }
+
+.count:empty + button{display:none}
 `,
   _icons: {
     times_circle_outline: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
     plus: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4V20M20 12L4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     minus: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 12H4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 
-    times_circle: `<svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>`,
+    times_circle: `<svg class="w-6 h-6 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>`,
   },
   _arraycontainer: `
     <div data-id="{{id}}" class="col-xs-12">
@@ -599,7 +601,7 @@ input:placeholder-shown + div > .gform-clear {
   </form>`,
 
   _clear: `
-    <span data-id="{{id}}" class="transition duration-300 ease-in-out gform-clear cursor-pointer relative right-1 text-gray-300 hover:text-gray-500">
+    <span data-id="{{id}}" data-click="clear" class="transition duration-300 ease-in-out gform-clear cursor-pointer relative right-1 text-gray-300 hover:text-gray-500">
     {{>_icons.times_circle}}
     </span>
   `,
@@ -1387,7 +1389,6 @@ gform.types["custom_editable"] = _.extend({}, gform.types["input"], {
     tempEl.addEventListener("mousedown", () => {
       if (document.activeElement == tempEl) return;
       tempEl.setAttribute("contenteditable", true);
-      debugger;
       gform.types["custom_editable"].focus(tempEl);
     });
     tempEl.addEventListener("blur", () => {
@@ -1701,6 +1702,710 @@ gform.types["address"] = _.extend(
   }
 );
 
+gform.stencils["tristate"] = `
+<a id="{{id}}" href="#" class="" style="display: block;text-decoration:none; ">
+<div type="button" class="text-slate-600 flex items-center gap-2 px-2 py-1 hover:bg-gray-100 border border-transparent hover:border-white pointer rounded" name="{{name}}">
+  {{#options}}
+  {{#optgroup}}
+    {{#options}}
+    <svg style="width:1.25em;font-size:1em" data-id="{{optgroup.id}}" name="{{id}}" data-id="{{optgroup.id}}" class="{{style}} {{^selected}} {{defaultClass}}{{/selected}}{{#selected}} {{selectedClass}}{{/selected}}" value="{{i}}" data-value="{{value}}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">{{{label}}}</svg>
+    {{/options}}
+  {{/optgroup}}
+  {{/options}}
+  <span data-id="{{optgroup.id}} {{^editable}}disabled{{/editable}} {{^visible}}hidden{{/visible}}">{{label}}{{^label}}{{name}}{{/label}}</span>
+</div>
+</a>
+`;
+gform.types["tristate"] = _.extend(
+  {},
+  gform.types["input"],
+  gform.types["collection"],
+  {
+    set: function (value) {
+      if (value == "" || value == null || typeof value == "undefined") {
+        value = "indeterminate";
+      }
+      if (this.label == "State") debugger;
+      let target = this.el.querySelector('[data-value="' + value + '"]');
+      var elem = this.el.querySelector(
+        "." + this.selectedClass.split(" ").join(".")
+      );
+      if (elem != null) elem.setAttribute("class", this.defaultClass);
+      target.setAttribute(
+        "class",
+        [
+          this.selectedClass,
+          _.find(this.mapOptions.getoptions(), { value: value }).style,
+        ].join(" ")
+      );
+
+      this.el.dataset.value = value;
+    },
+    defaults: {
+      selectedClass: "active",
+      defaultClass: "hidden",
+    },
+    get: function () {
+      if (!("el" in this)) {
+        return this.internalValue;
+      }
+      // return this.el.dataset.value + "";
+
+      let cv = (
+        this.el.querySelector(
+          "." + this.selectedClass.split(" ").join(".")
+        ) || { dataset: { value: "" } }
+      ).dataset.value;
+
+      // console.log(cv);
+      return cv == "indeterminate" ? null : cv;
+    },
+    next: function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      let val = (
+        _.find(this.mapOptions.getoptions(), {
+          value: this.value + "",
+        }) || { i: 1 }
+      ).i;
+      if (e.ctrlKey || e.metaKey) val = 2;
+      if (e.shiftKey) val = 0;
+
+      this.set(this.mapOptions.getoptions()[val % 3].value);
+
+      this.owner.trigger("change", this);
+      this.owner.trigger("input", this);
+    },
+    initialize: function () {
+      this.el.addEventListener("click", gform.types[this.type].next.bind(this));
+      gform.types[this.type].setLabel.call(this);
+    },
+    create: function () {
+      var tempEl = document.createElement("li");
+      tempEl.setAttribute("id", "el_" + this.id);
+      gform.addClass(tempEl, "filterItem-select");
+      tempEl.innerHTML = this.render();
+      return tempEl;
+    },
+    edit: function (state) {
+      this.editable = state;
+
+      this.el.disabled = !state;
+    },
+  }
+);
+
+gform.stencils[
+  "tristateCollection"
+] = `<div name="{{name}}" id="{{id}}" data-type="{{type}}" style="position:relative">
+<div class="flex flex-row justify-between">
+{{^hideLabel}}<label>{{{label}}}{{^label}}&nbsp;{{/label}}</label>{{/hideLabel}}
+<span class="rounded-lg group py-0.25 bg-blue-400 hover:bg-blue-600 text-white" style=""><span class="count empty:hidden px-2"></span><button class="greset pointer  group-hover:border-l border-blue-200 w-0 group-hover:w-6 text-center transition-all">X</button></span>
+</div>
+
+<ul class="dropdown-menu" style="left:initial;padding: 5px 0 0;z-index: 10;">
+
+  <li style="position:relative" class="hidden"><input type="text" placeholder="Search..." style="margin:-3px 2px 2px;width:auto" class="form-control"/> <div class="gclear" >
+
+<svg class="" style="width:1.25em;height:1.25em;cursor:pointer;transition-duration: 300ms;transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);transition-property: color;color:#333;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+
+    </div></li>
+<ul class="gap-0.5 py-1.5 grid overflow-scroll border-y border-gray-100pl-0 max-h-64"></ul>
+</ul></div>
+</div></div>`;
+
+gform.types["tristateCollection"] = _.extend(
+  {},
+  gform.types["input"],
+  gform.types["section"],
+  {
+    render: function () {
+      if (this.section) {
+        return gform.render(
+          this.owner.options.sections + "tristateCollection",
+          this
+        );
+      } else {
+        return gform.render("tristateCollection", this);
+      }
+    },
+
+    rowTemplate: '<li class="filterable"></li>',
+    // rowSelector: ".list-group-item",
+    rowClass: "filterItem-select",
+    create: function () {
+      var tempEl = gform.create(this.render());
+      this.container = tempEl.querySelector("ul");
+
+      gform.addClass(
+        tempEl,
+        gform.columnClasses[this.columns || gform.prototype.options.columns]
+      );
+      gform.addClass(
+        tempEl,
+        gform.offsetClasses[this.offset || gform.prototype.options.offset]
+      );
+      gform.toggleClass(tempEl, "gform_isArray", !!this.array);
+
+      return tempEl;
+    },
+    get: function (name) {
+      if (!this.active) return [];
+      if (typeof name !== "undefined") {
+        return gform.toJSON.call(this, name);
+      }
+      let temp = _.selectPath(gform.toJSON.call(this), this.map);
+      // let result =
+      return _.compact(
+        _.map(temp, (item, key) =>
+          typeof item !== "undefined" && item !== null && item.length
+            ? (item !== "true" ? "!" : "") + key
+            : null
+        )
+      );
+
+      // return _.compact(
+      //   _.map(result, ({ key = "", invert = false }) => {
+      //     return (invert ? "!" : "") + key;
+      //   })
+      // ).join(","); // invert: true }), "key"))
+      let inverted = _.map(_.filter(result, { invert: true }), "key");
+      let selected = _.map(_.filter(result, { invert: false }), "key");
+      let tokens = [selected, inverted];
+
+      // if (selected.length) {
+      //   tokens.push({
+      //     key: this.search,
+      //     invert: false,
+      //     action: ":",
+      //     // search: _.map(selected, s => ({
+      //     //   action: "~",
+      //     //   lower: s.toLowerCase(),
+      //     //   raw: s,
+      //     //   string: s + "",
+      //     // })),
+      //     search: _.map(selected, s => {
+      //       if (typeof s == "string" && s.indexOf(" ") != -1) {
+      //         s = '"' + s + '"';
+      //       }
+      //       return {
+      //         action: "~",
+      //         lower: (s + "").toLowerCase(),
+      //         raw: s,
+      //         string: s + "",
+      //       };
+      //     }),
+      //   });
+      // }
+      // if (inverted.length) {
+      //   tokens.push({
+      //     key: this.search,
+      //     invert: true,
+      //     action: ":",
+      //     // search: _.map(inverted, s => ({
+      //     //   action: "~",
+      //     //   lower: s.toLowerCase(),
+      //     //   raw: s,
+      //     //   string: s + "",
+      //     // })),
+      //     search: _.map(inverted, s => {
+      //       if (typeof s == "string" && s.indexOf(" ") != -1) {
+      //         s = '"' + s + '"';
+      //       }
+      //       return {
+      //         action: "~",
+      //         lower: (s + "").toLowerCase(),
+      //         raw: s,
+      //         string: s + "",
+      //       };
+      //     }),
+      //   });
+      // }
+      return tokens;
+    },
+    resetValue: function () {
+      return this.item.defaultValue || [];
+    },
+    set: function (value, silent) {
+      if (this.mapOptions.waiting) {
+        this.waitingValue = value;
+        return true;
+      }
+
+      if (typeof value == "string") {
+        value = JSON.parse(value);
+        if (value.length) {
+          value = [].concat.apply(
+            [],
+            _.map(value, ({ search, invert }) =>
+              _.map(search, ({ raw }) => ({ raw, invert }))
+            )
+          );
+          value = _.transform(
+            value,
+            (result, item) => {
+              result[item.raw] = !item.invert + "";
+              return result;
+            },
+            {}
+          );
+          value = _.reduce(
+            this.fields,
+            (result, field) => {
+              result.push(field.name in value ? value[field.name] : "");
+              return result;
+            },
+            []
+          );
+        }
+        // value = _.map(JSON.parse(value)[0].search, "raw");
+        // value = [].concat.apply([],_.map(JSON.parse(value),({search,invert})=>_.map(search,({raw})=>({raw,invert}))))
+      }
+
+      if (_.isEmpty(value)) {
+        gform.each.call(this, function (field) {
+          field.set("");
+        });
+        this.update({}, true);
+      } else {
+        _.each(
+          value,
+          function (item, index) {
+            let field = this.items[index];
+            if (typeof field == "undefined" || field == null) return;
+            field.set(item);
+          }.bind(this)
+        );
+      }
+      this.render();
+      if (!silent) {
+        this.owner.trigger(["change", "input"], this);
+      }
+      return true;
+    },
+    edit: function (state) {
+      this.editable = state;
+
+      this.el.disabled = !state;
+    },
+    initialize: function () {
+      //handle rows
+
+      this.rowManager = gform.rowManager(this);
+      // this.initialValue = this.initialValue || [];
+      //   typeof this.value == "string"
+      //     ? _.reduce(
+      //         this.value.split(","),
+      //         (result, item) => {
+      //           let check = item.split("!");
+      //           let index = check.length - 1;
+      //           result[index].push(check[index]);
+      //           return result;
+      //         },
+      //         [[], []]
+      //       )
+      //     : this.initialValue || this.value;
+      Object.defineProperty(this, "value", {
+        get: function () {
+          // return true;
+          return this.get();
+        },
+        enumerable: true,
+      });
+      function processFilter(searchTerm, collection) {
+        _.each(collection, field => {
+          if (
+            _.score(
+              field.el.innerText.replace(/\s+/g, " ").toLowerCase(),
+              searchTerm
+            ) > 0.4
+          ) {
+            gform.removeClass(field.el, "hidden");
+          } else {
+            gform.addClass(field.el, "hidden");
+          }
+        });
+      }
+      this.el.querySelector(".gclear").addEventListener("click", e => {
+        e.stopPropagation();
+        this.el.querySelector("input").value = "";
+        _.each(this.fields, field => gform.removeClass(field.el, "hidden"));
+        this.el.querySelector("input").focus();
+      });
+      this.el.querySelector(".greset").addEventListener("click", e => {
+        e.stopPropagation();
+        this.el.querySelector("input").value = "";
+        _.each(this.fields, field => gform.removeClass(field.el, "hidden"));
+        this.el.querySelector("input").focus();
+        _.each(this.fields, field => field.set(""));
+
+        this.owner.trigger("change", this);
+        this.owner.trigger("input", this);
+      });
+
+      this.el.querySelector("input").addEventListener("input", e => {
+        processFilter(event.currentTarget.value.toLowerCase(), this.fields);
+      });
+      $(this.el)
+        .on("shown.bs.dropdown", () => {
+          this.el.querySelector("input").focus();
+        })
+        .on("hidden.bs.dropdown", () => {
+          this.el.querySelector("input").value = "";
+          _.each(this.fields, field => gform.removeClass(field.el, "hidden"));
+        });
+      gform.types[this.type].setLabel.call(this);
+      this.mapOptions = new gform.mapOptions(
+        this,
+        this.value,
+        0,
+        this.owner.collections
+      );
+      this.owner.on("collection", e => {
+        let fields = _.map(
+          _.map(this.mapOptions.getoptions(), ({ value, label }) => ({
+            name: value + "",
+            label,
+            row: false,
+            target: () => this.el.querySelector("ul > ul"),
+          })),
+          field => {
+            return {
+              options: [
+                {
+                  type: "optgroup",
+                  format: { label: "{{{label}}}" },
+                  options: [
+                    {
+                      label:
+                        '<circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>',
+                      value: "false",
+                      style: "text-red-500",
+                      selected:
+                        this.initialValue.indexOf("!" + field.name) >= 0,
+                    },
+                    {
+                      label: "",
+                      value: "indeterminate",
+                      selected:
+                        this.initialValue.indexOf("!" + field.name) < 0 &&
+                        this.initialValue.indexOf("" + field.name) < 0,
+                    },
+                    {
+                      label: '<polyline points="20 6 9 17 4 12"></polyline>',
+                      value: "true",
+                      style: "text-green-500",
+                      selected: this.initialValue.indexOf("" + field.name) >= 0,
+                    },
+                  ],
+                },
+              ],
+              type: "tristate",
+              value:
+                this.initialValue.indexOf("" + field.name) >= 0
+                  ? "true"
+                  : this.initialValue.indexOf("!" + field.name) >= 0
+                  ? "false"
+                  : "indeterminate",
+              ...field,
+            };
+          }
+        );
+        _.each(this._items, item => {
+          item.destroy();
+        });
+        // console.log(this.owner.options.data);
+        this._items = _.map(
+          fields,
+          this.owner.fieldMethods.cultivate.bind(null, {
+            data: this.value, //.owner.options.data,
+            parent: this,
+          })
+        );
+        // field._items = _.map(
+        //   field.fields,
+        //   form.fieldMethods.cultivate.bind(null, {
+        //     data: options.data,
+        //     parent: field,
+        //   })
+        // );
+        _.each(this.items, item => {
+          this.owner.call("show", item, item.visible);
+          this.owner.call("edit", item, item.editable);
+        });
+        this.reflow();
+        if (this.mapOptions.waiting) return;
+        else if (typeof this.waitingValue == "string") {
+          this.set(this.waitingValue);
+          this.waitingValue = null;
+        }
+        if (this.el.querySelector(".count") != null) {
+          const { value } = this;
+
+          this.el.querySelector(".count").innerHTML = `${value.length}`;
+        }
+        // this.options = this.mapOptions.getoptions();
+        // if (this.shown) {
+        //   this.renderMenu();
+        // }
+        // if (typeof this.value !== "undefined") {
+        //   gform.types[this.type].set.call(this, this.value);
+        // }
+      });
+      // _.map(this.mapOptions.getoptions(), item =>
+      // _.pick(item, "label", "value")
+      // )
+      let self = this;
+      this.owner.on("change", s => {
+        if (
+          "field" in s &&
+          "parent" in s.field &&
+          s.field.parent.id == self.id
+        ) {
+          if (this.el.querySelector(".count") != null) {
+            const { value } = this;
+            // (this.value[0] || []).length + (this.value[1] || []).length;
+            // _.reduce(
+            //   _.map(this.value, "search"),
+            //   (r, s) => {
+            //     r += s.length;
+            //     return r;
+            //   },
+            //   0
+            // ) || "";
+
+            this.el.querySelector(".count").innerHTML = `${value.length}`;
+          }
+        }
+      });
+
+      this.fields = _.map(
+        _.map(this.mapOptions.getoptions(), ({ value, label }) => ({
+          name: value + "",
+          label,
+          row: false,
+          target: () => this.el.querySelector("ul > ul"),
+        })),
+        field => {
+          return {
+            options: [
+              {
+                type: "optgroup",
+                format: { label: "{{{label}}}" },
+                options: [
+                  {
+                    label:
+                      '<circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>',
+                    // value: "-{{name}}:{{field.name}}",
+                    value: "false",
+                    style: "text-red-500",
+                    selected: this.initialValue.indexOf("!" + field.name) >= 0,
+                  },
+                  {
+                    label: "",
+                    value: "indeterminate",
+                    selected:
+                      this.initialValue.indexOf("!" + field.name) < 0 &&
+                      this.initialValue.indexOf("" + field.name) < 0,
+                  },
+                  {
+                    label: '<polyline points="20 6 9 17 4 12"></polyline>',
+                    // value: "{{name}}:{{field.name}}",
+                    value: "true",
+                    style: "text-green-500",
+                    selected: this.initialValue.indexOf("" + field.name) >= 0,
+                  },
+                ],
+              },
+            ],
+            type: "tristate",
+            value:
+              this.initialValue.indexOf("" + field.name) >= 0
+                ? "true"
+                : this.initialValue.indexOf("!" + field.name) >= 0
+                ? "false"
+                : "indeterminate",
+            ...field,
+          };
+        }
+      );
+    },
+  }
+);
+gform.types["date_range"] = _.extend(
+  {},
+  gform.types["input"],
+  // gform.types["date"],
+  {
+    base: "date",
+    edit: function (state) {
+      this.editable = state;
+    },
+    initialize: function () {
+      this.onchangeEvent = function (input) {
+        this.value = this.get();
+        if (this.el.querySelector(".count") != null) {
+          var text = (this.value + "").length;
+          if (this.limit > 1) {
+            text += "/" + this.limit;
+          }
+          this.el.querySelector(".count").innerHTML = text;
+        }
+        gform.types[this.type].setup.call(this);
+        this.parent.trigger(["change"], this, { input: this.value });
+        if (input) {
+          this.parent.trigger(["input"], this, { input: this.value });
+        }
+      }.bind(this);
+      this.input = this.input || false;
+      this.el.addEventListener("input", this.onchangeEvent.bind(null, true));
+
+      this.el.addEventListener("change", this.onchangeEvent.bind(null, false));
+
+      // this.el.querySelector(".gclear").addEventListener("click", e => {
+      //   e.stopPropagation();
+      //   let inputEl = this.el.querySelector(
+      //     "input[name='min_" + this.name + "']"
+      //   );
+      //   if (inputEl != null) {
+      //     inputEl.value = "";
+      //     inputEl.focus();
+      //   }
+
+      //   // this.owner.trigger("change", this);
+      //   this.owner.trigger("input", this);
+      // });
+      // this.el
+      //   .querySelector(".gclear[data-clear='max_']")
+      //   .addEventListener("click", e => {
+      //     e.stopPropagation();
+      //     let inputEl = this.el.querySelector(
+      //       "input[name='max_" + this.name + "']"
+      //     );
+      //     if (inputEl != null) {
+      //       inputEl.value = "";
+      //       inputEl.focus();
+      //     }
+
+      //     this.owner.trigger("input", this);
+      //   });
+      gform.types[this.type].setup.call(this);
+    },
+    get: function () {
+      let min =
+        "el" in this
+          ? this.el.querySelector('input[name="min_' + this.name + '"]').value
+          : this.internalValue;
+      let max =
+        "el" in this
+          ? this.el.querySelector('input[name="max_' + this.name + '"]').value
+          : this.internalValue;
+
+      min = _.trim(min, ['"', "'"]);
+      max = _.trim(max, ['"', "'"]);
+      // let obj = this.innerValue || [
+      //   {
+      //     invert: false,
+      //     key: "",
+      //     action: ":",
+      //     search: [{ action: "~", string: "", raw: "", lower: "" }],
+      //   },
+      // ];
+      // obj[0].key = this.search;
+
+      // let wrapper = obj[0].search[0].toLower ? "'" : '"';
+      // let value =
+      //   (min ? wrapper + min + wrapper : "") +
+      //   "-" +
+      //   (max ? wrapper + max + wrapper : "");
+
+      // if (value == "-") return "";
+      // obj[0].search[0].string = obj[0].search[0].raw = value;
+
+      // obj[0].search[0].lower = obj[0].search[0].string.toLowerCase();
+      let result = [];
+      if (min || max) {
+        result.push(min);
+        if (max) {
+          result.push(max);
+        }
+      }
+      return result;
+
+      let value = min + " - " + max;
+      if (value == " - ") return;
+      let obj =
+        typeof value == "object"
+          ? value
+          : this.innerValue || [
+              {
+                invert: false,
+                key: "",
+                action: ":",
+                search: [{ action: "~", string: "", raw: "", lower: "" }],
+              },
+            ];
+      obj[0].key = this.search;
+      obj[0].search[0].raw = _.trim(value, ['"', "'"]);
+
+      // if (obj[0].search[0].toLower) {
+      //   obj[0].search[0].raw = "'" + obj[0].search[0].raw + "'";
+      // } else {
+      //   obj[0].search[0].raw = '"' + obj[0].search[0].raw + '"';
+      // }
+      obj[0].search[0].raw = "[" + obj[0].search[0].raw + "]";
+      obj[0].search[0].string = obj[0].search[0].raw + "";
+      obj[0].search[0].lower = obj[0].search[0].string.toLowerCase();
+
+      return obj;
+    },
+
+    set: function (value) {
+      if ("el" in this) {
+        if (typeof value == "string") {
+          try {
+            value = (value || "").split(","); // JSON.parse(value);
+          } catch (error) {}
+        }
+        // if (typeof value == "object" && value !== null) {
+        //   value[0].search[0].raw = _.trim(value[0].search[0].raw, [
+        //     '"',
+        //     "'",
+        //     " ",
+        //     "[",
+        //     "]",
+        //   ]);
+        // }
+        this.innerValue = value;
+
+        // this regex removes non numeric characters and '-' from front then selects a date formated 0000-00-00 or 0000/00/00 and saves it to 'min'
+        // and then removes non numberic characters that follow then selects a second date formated 0000-00-00 and saves it to 'max'
+        // and then removes non numberic characters that follow
+        // '01-01-2000' returns a 'min' value of 01-01-2000
+        // '- 01-01-2000' returns a 'max' value of 01-01-2000
+        // '01-01-2000 - 01-01-2010' returns a 'min' value of 01-01-2000 and a 'max' value of 01-01-2010
+        // '"*[ 01-01-2000 - 01-01-2010 ]*"' also returns a 'min' value of 01-01-2000 and a 'max' value of 01-01-2010
+
+        let [min = "", max = ""] = value || [];
+        // let { min = "", max = "" } =
+        //   typeof value == "object" && value !== null
+        //     ? value[0].search[0].raw.match(
+        //         /[^0-9-]*(?<min>[0-9]{4}(?:[-/[0-9]{3}){2}|-)?[^0-9]*(?<max>[0-9]{4}(?:[-/[0-9]{3}){2})?[^0-9]*/
+        //       ).groups
+        //     : [];
+
+        this.el.querySelector('input[name="min_' + this.name + '"]').value =
+          typeof value == "object" && value !== null ? min : value;
+
+        this.el.querySelector('input[name="max_' + this.name + '"]').value =
+          typeof value == "object" && value !== null ? max : value;
+      }
+    },
+  }
+);
+
 gform.stencils[
   "number_range"
 ] = `<div class="row clearfix form-group {{modifiers}}" data-type="{{type}}">
@@ -1732,16 +2437,15 @@ gform.stencils[
   "date_range"
 ] = `<div class=" clearfix form-group {{modifiers}}" data-type="{{type}}">
 <div class="">
-  <span class="flex flex-col items-center overflow-hidden">
-    <span class="flex-1 relative"><input autocomplete="off" class="peer pr-8 {{_inputClass}}" size=4 maxlength="4" placeholder="Min" type="date" name="min_{{name}}" id="min_{{id}}" value="" /> 
+{{>_label}}
+  <span class="flex flex-row items-center gap-1 overflow-hidden">
     
-    <div class="gclear absolute  flex items-center right-1 inset-y-0" data-clear="min_"><svg style="width:1.25em;height:1.25em;cursor:pointer;transition-duration: 300ms;transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);transition-property: color;color:#333;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div></span>
-    
-    <span class="flex-1 relative"><input autocomplete="off" class="peer pr-8 {{_inputClass}}" size=4 maxlength="4" placeholder="Max" type="date" name="max_{{name}}" id="max_{{id}}" value="" /> 
-    <div class="gclear absolute  flex items-center right-1 inset-y-0" data-clear="max_"><svg style="width:1.25em;height:1.25em;cursor:pointer;transition-duration: 300ms;transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);transition-property: color;color:#333;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div></span>
+    <input autocomplete="off" class="peer p-1 disabled:bg-gray-200 disabled:text-gray-600 transition ease-in-out col-span-12 border-gray-300 focus:border-gform-300 focus:ring focus:ring-gform-200 focus:ring-opacity-50 rounded-md shadow-sm" size=4 maxlength="4" placeholder="Min" type="date" name="min_{{name}}" id="min_{{id}}" value="" />    
+    <input autocomplete="off" class="peer p-1 disabled:bg-gray-200 disabled:text-gray-600 transition ease-in-out col-span-12 border-gray-300 focus:border-gform-300 focus:ring focus:ring-gform-200 focus:ring-opacity-50 rounded-md shadow-sm" size=4 maxlength="4" placeholder="Max" type="date" name="max_{{name}}" id="max_{{id}}" value="" /> 
   </span>
   </div>
 </div>`;
+
 gform.stencils[
   "filter"
 ] = `<div name="{{name}}" id="{{id}}" data-type="{{type}}" style="position:relative">
@@ -1763,6 +2467,8 @@ gform.stencils[
     <li class="greset text-danger"><a href="#" style="color: inherit">Reset {{{label}}} Filters</a></li>
 </ul></div>
 </div></div>`;
+
+document.body.removeChild(document.querySelector('style[name="gform_style"]'));
 
 document.body.appendChild(
   gform.create("<style>" + gform.render("_style", {}, "all") + "</style>")

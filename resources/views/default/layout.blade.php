@@ -45,7 +45,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand flex items-center gap-4 text-lg  text-white" href="/"><img style="height:25px" src="/assets/img/graphene_logo_white.png"><i class="bu-b bu text-2xl "></i>{{ config('app.site')->name }}</a>
+      <a class="navbar-brand flex items-center gap-4 text-lg  text-white" href="/"><img style="height:25px" src="/assets/img/graphene_logo_white.png"><i class="bu-b bu text-2xl fa-fw"></i>{{ config('app.site')->name }}</a>
 
       <ul class="flex ml-auto gap-4">
         

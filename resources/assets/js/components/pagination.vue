@@ -58,7 +58,7 @@ const per_page = ref(
 watch(
   () => props.navInfo,
   () => {
-    debugger;
+    // debugger;
     // per_page.value = _.find(props.pageCounts, {
     //   value: parseInt(props.navInfo.per_page),
     // });

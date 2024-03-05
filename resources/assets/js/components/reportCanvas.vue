@@ -44,13 +44,16 @@
       @click="go(record)"
       href="/workflows/report/{{id}}"
       target="_blank"
-      class="pointer hover:bg-slate-100 p-4 px-2 gap-2 bg-white flex w-full cursor-pointer"
+      class="pointer hover:shadow group hover:bg-white rounded-sm p-4 px-2 gap-2 bg-slate-50 flex w-full cursor-pointer first-line:"
     >
       <div>
         <div>
-          <div>
-            {{ record.title }}
-            <p v-if="!record.title" class="text-slate-300">(no title)</p>
+          <div class="group-hover:text-green-500 transition-all">
+            <p
+              v-if="config.primary"
+              class="text-slate-300"
+              v-html="primary(record)"
+            ></p>
           </div>
           <div>{{ record.opened_at }}</div>
         </div>
@@ -59,7 +62,7 @@
         <div :class="[stateClass(record)]">{{ statelabel(record) }}</div>
         <div
           :class="[
-            'uppercase rounded px-1 py-0.25 mt-1',
+            'uppercase rounded px-1 py-0.25 mt-1 ',
             record.status == 'open'
               ? 'bg-green-100 text-green-500'
               : 'bg-red-100 text-red-500',
@@ -86,6 +89,7 @@ var props = defineProps({
     default: "",
     type: String,
   },
+  columns: { type: Number, default: 1 },
   // navInfo: {
   //   type: Object,
   //   default: {},
@@ -99,7 +103,8 @@ var props = defineProps({
 watch(
   () => props.records,
   newRecords => {
-    debugger;
+    computedRecords.value = newRecords;
+    return;
     if (
       !("map" in props.config) ||
       typeof props.config.map !== "object" ||
@@ -108,13 +113,16 @@ watch(
       computedRecords.value = newRecords;
       return;
     }
-    computedRecords.value = _.map(newRecords, record =>
-      $g.etl(
+    computedRecords.value = _.map(newRecords, record => {
+      debugger;
+
+      return $g.etl(
         $g.selectPath(record, props.config.path || ""),
         record,
         props.config.map
-      )
-    );
+      );
+    });
+
     // console.log(newList);
     // debugger;
   }
@@ -138,7 +146,6 @@ const statelabel = record => {
 };
 const stateClass = record => {
   if (props.config.states && "state" in record) {
-    // debugger;
     const state = _.find($g.collections.get("_states"), {
       value: record.state,
     });
@@ -150,10 +157,13 @@ const reportClass = computed(() => {
   if (props.status == "waiting" || !props.records.length) {
     return "grid-cols-1";
   }
-  const { columns = 1, padding = 4 } = props.config;
+  const { columns = 1, padding = 4 } = props;
   return `grid-cols-${columns} gap-${padding} p-${padding}`;
 });
 
+const primary = record => {
+  return record[props.config.primary.split("data.").join("")] || "(no title)";
+};
 /*
 
 {{#if assignment_type=="user"}}

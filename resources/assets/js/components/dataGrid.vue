@@ -5,28 +5,44 @@
         class="noselect flex h-10 divide-x items-center bg-slate-50 border-b border-b-slate-300"
       >
         <th
-          class="cursor-pointer select-col w-14 text-slate-600 font-normal flex-grow-0 flex-shrink-0"
+          class="cursor-pointer select-col w-14 text-slate-600 font-normal flex-grow-0 flex-shrink-0 flex justify-center"
           @click="toggleAll"
         >
-          <CheckIcon
-            :class="[
-              'hidden h-5 w-5 bg-white rounded border border-slate-400',
-              checked ? ' text-emerald-500 block' : ' text-white ',
-            ]"
-            aria-hidden="true"
-          />
-          {{ selected }}
+          <div
+            class="h-5 w-5 bg-white rounded border border-slate-400 items-center justify-center inline-flex"
+            :title="selected"
+          >
+            <CheckIcon
+              class="text-emerald-500 block"
+              v-if="selected >= computedRecords.length"
+              aria-hidden="true"
+            />
+            <span
+              class="text-blue-500"
+              v-show="selected > 0 && selected < computedRecords.length"
+              >-</span
+            >
+            <span class="text-white hover:text-gray-200" v-show="selected == 0"
+              >+</span
+            >
+          </div>
         </th>
         <th
           v-for="field in schema"
           :data-col="field.name"
           :style="'width:var(--col-' + field.name + '-width)'"
-          class="grid-cell px-4 text-slate-600 whitespace-nowrap flex items-center gap-2 font-normal w-72 flex-grow-0 flex-shrink-0 truncate"
+          class="empty:hidden grid-cell px-4 text-slate-600 whitespace-nowrap flex items-center gap-2 font-normal w-72 flex-grow-0 flex-shrink-0 truncate"
         >
-          <span class="cursor-pointer" @click="sortBy(field)">{{
-            field.label
-          }}</span>
-          <div class="flex flex-col cursor-pointer">
+          <span
+            v-if="!('include' in field) || field.include"
+            class="cursor-pointer"
+            @click="sortBy(field)"
+            >{{ field.label }}</span
+          >
+          <div
+            class="flex flex-col cursor-pointer"
+            v-if="field.include || !('include' in field)"
+          >
             <ChevronUpIcon
               @click="sortBy(field, 1)"
               class="h-5 w-5 hover:text-slate-400 relative top-1"
@@ -125,6 +141,8 @@ import {
 
 import gridRow from "./gridRow.vue";
 
+const emit = defineEmits(["selection"]);
+
 const table = ref(null);
 const computedRecords = ref([]);
 
@@ -181,7 +199,6 @@ watch(
   () => props.records,
   newRecords => {
     // computedRecords.value = newRecords;
-    debugger;
     if (
       !("map" in props.config) ||
       typeof props.config.map !== "object" ||
@@ -205,6 +222,7 @@ watch(
     });
 
     selected.value = 0;
+    emit("selection", selected.value);
   }
 );
 
@@ -236,6 +254,7 @@ const rowClick = record => {
 };
 const updateSelected = () => {
   selected.value = _.filter(computedRecords.value, "checked").length;
+  emit("selection", selected.value);
 };
 const toggleAll = () => {
   const targetChecked = selected.value == 0;
@@ -244,6 +263,7 @@ const toggleAll = () => {
     record.checked = targetChecked;
   });
   selected.value = targetChecked ? computedRecords.value.length : 0;
+  emit("selection", selected.value);
 };
 
 const sortBy = (field, direction = 0) => {

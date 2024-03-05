@@ -16,7 +16,7 @@
 @php
     $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
 @endphp
-<script type="module" src="/build/{{ $manifest['resources/assets/js/admin'.$resource.'.js']['file'] }}"></script>
+<script type="module" src="/build/{{ $manifest['resources/assets/js/admin'.ucfirst($resource).'.js']['file'] }}"></script>
 <script type="module" >
 
 const app = Array.from(document.querySelectorAll('*')).find((e) => e.__vue_app__).__vue_app__

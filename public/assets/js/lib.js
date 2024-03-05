@@ -190,11 +190,16 @@ $g = (function (options) {
     render: gform.m,
     alert: function (options, data) {
       let {
-        status = "info",
+        status,
+        type,
         content = "",
         title = "",
+        message = "",
       } = typeof options == "string" ? { content: options } : options;
-      toastr[status](gform.m(content, data || {}), title);
+      toastr[(status || type || "info").toLowerCase()](
+        gform.m(content || message, data || {}),
+        title
+      );
     },
     emit: globalevents.emit,
     on: globalevents.on,
@@ -318,6 +323,9 @@ $g = (function (options) {
   }
   pathSelect = function (object, path, target) {
     if (typeof path == "string") {
+      if (path == "") {
+        return object;
+      }
       return _.property(path)(object);
     }
     if (typeof path == "object") {

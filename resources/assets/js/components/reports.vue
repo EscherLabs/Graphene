@@ -38,7 +38,12 @@ const props = defineProps({
     default: "",
   },
 });
+
+const selected = ref(0);
 // provide("query", props.query);
+const selection = selectedCount => {
+  selected.value = selectedCount;
+};
 const setQuery = queryObj => {
   const { page = 1, limit = 10, q = "" } = props.query;
   props.query = { page, limit, q, ...queryObj };
@@ -109,7 +114,7 @@ watch(
   (report, oldReport) => {
     if (report == undefined) {
     } else {
-      resource.value = report.config.resource;
+      resource.value = report.config?.resource;
       const { states } = resource.value;
 
       props.id = report.id;
@@ -156,7 +161,7 @@ onMounted(() => {
     return false;
   }
 
-  resource.value = props.report.config.resource;
+  resource.value = props.report.config?.resource;
 });
 const takeAction = action => {
   console.log(action);
@@ -184,12 +189,13 @@ const takeAction = action => {
     >
       <actionsBar
         :config="resource"
+        :selected="selected"
         @action="takeAction"
-        v-if="report.config.display !== 'calendar'"
+        v-if="report.config?.display !== 'calendar'"
       />
 
       <reportCalendar
-        v-if="report.config.display == 'calendar'"
+        v-if="report.config?.display == 'calendar'"
         :records="records"
         :status="status"
         :config="resource"
@@ -197,20 +203,22 @@ const takeAction = action => {
         :query="query"
       />
       <reportCanvas
-        v-if="report.config.display == 'list'"
+        v-if="report.config?.display == 'list'"
         :records="records"
+        :columns="report.config?.columns"
         :status="status"
         :config="resource"
       />
       <dataGrid
-        v-if="report.config.display == 'grid'"
+        v-if="report.config?.display == 'grid'"
         :records="computedRecords"
         :status="status"
         :config="resource"
         :schema="resource.schema"
+        @selection="selection"
       />
       <pagination
-        v-if="report.config.display !== 'calendar'"
+        v-if="report.config?.display !== 'calendar'"
         :navInfo="navInfo"
         @query="setQuery"
         :query="query"

@@ -142,10 +142,10 @@ class WorkflowSubmission extends Model
 
     public function scopeHasState($query, array $states)
     {
-        if(isset($states[0])){
+        if(isset($states[0]) && !empty($states[0])){
           $query->whereIn('state',$states[0]);
         }
-        if(isset($states[1])){
+        if(isset($states[1]) && !empty($states[1])){
           $query->whereNotIn('state',$states[1]);
         }
         return $query;
