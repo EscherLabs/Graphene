@@ -10,7 +10,7 @@ describe('Mandatory Options', function () {
         });
     });
     afterEach(function() {
-        gdg.destroy();
+        gridCleanup(gdg);
     });
     it('grid should be an object', function () {
         expect(gdg).to.be.an('object');

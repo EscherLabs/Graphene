@@ -2,6 +2,7 @@ describe('Other customization options', function () {
     var options = {
         el:'#myGrapheneDataGrid',
         schema:[{type:"number", name:"number", label:"Numbers"}, {type:"text", name:"name",label:"Names"}],
+        search: true,
         data: [
             {name:'Gru', number: 19},
             {name:'Joe Mama', number: 20},
@@ -39,32 +40,35 @@ describe('Other customization options', function () {
         gdg = new GrapheneDataGrid(options);
     });
     afterEach(function() {
-        gdg.destroy();
+        gridCleanup(gdg);
     });
     it('default count', function () {
-        expect(gdg.grab(gdg.options).length).to.equal(25);
+        expect(gdg.options.count).to.equal(25);
+    });
+    it('page count for default', function () {
+        expect(gdg.options.pagecount).to.equal(2);
     });
     it('default entries', function () {
-        var opt = document.querySelector('select.form-control');
-        var arr = [10000, 25, 50, 100];
-        for (let i = 1; i < opt.length; i++) {
-            expect(parseInt(opt[i].value)).to.equal(arr[i]);
+        var opt = gdg.options.entries;
+        var arr = [25, 50, 100];
+        for (let i = 0; i < opt.length; i++) {
+            expect(opt[i]).to.equal(arr[i]);
         } 
     });
-    it('default search = true', function() {
-        expect(document.querySelector('input.form-control.pull-right').disabled).to.be.false;
-    });
+    it('default search', function() {        
+        expect(gdg.showSearch).to.be.true;
+    });   
     it('default filter = true', function() {
-        expect(document.querySelector('tr.filter').hidden).to.be.false;
+        expect(gdg.options.filter).to.be.true;
     });
     it('default columns = true', function() {
-        expect(document.querySelector('div.btn-group.columnEnables').hidden).to.be.false;
+        expect(gdg.options.columns).to.be.true;
     });
     it('default upload = true', function() {
-        expect(document.querySelector('i.fa.fa-upload').hidden).to.be.false;
+        expect(gdg.options.upload).to.be.true;
     });
     it('default download = true', function() {
-        expect(document.querySelector('i.fa.fa-download').hidden).to.be.false;
+        expect(gdg.options.download).to.be.true;
         options = {                                         //switch options for non-default tests
             el:'#myGrapheneDataGrid',
             schema:[{type:"number", name:"number", label:"Numbers"}, {type:"text", name:"name",label:"Names"}],
@@ -104,28 +108,31 @@ describe('Other customization options', function () {
         };
     });
     it('custom count', function() {
-        expect(gdg.grab(gdg.options).length).to.equal(6);
+        expect(gdg.options.count).to.equal(6);
+    });
+    it('page count for custom', function () {
+        expect(gdg.options.pagecount).to.equal(5);
     });
     it('custom entries', function() {
-        var opt = document.querySelector('select.form-control');
-        var arr = [10000, 10, 20, 30];
-        for (let i = 1; i < opt.length; i++) {
-            expect(parseInt(opt[i].value)).to.equal(arr[i]);
+        var opt = gdg.options.entries;
+        var arr = [10, 20, 30];
+        for (let i = 0; i < opt.length; i++) {
+            expect(opt[i]).to.equal(arr[i]);
         } 
     });
-    it('search = false', function() {
-        expect(document.querySelector('input.form-control.pull-right')).to.be.null;
+    it('search = false', function() {    
+        expect(gdg.showSearch).to.be.false;
     });
     it('filter = false', function() {
-        expect(document.querySelector('tr.filter')).to.be.null;
+        expect(gdg.options.filter).to.be.false;
     });
     it('columns = false', function() {
-        expect(document.querySelector('div.btn-group.columnEnables')).to.be.null;
+        expect(gdg.options.columns).to.be.false;
     });
     it('upload = false', function() {
-        expect(document.querySelector('i.fa.fa-upload')).to.be.null;
+        expect(gdg.options.upload).to.be.false;
     });
     it('download = false', function() {
-        expect(document.querySelector('i.fa.fa-download')).to.be.null;
+        expect(gdg.options.download).to.be.false;
     });
 });

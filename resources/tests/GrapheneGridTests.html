@@ -7,13 +7,14 @@
   <!-- Include Mocha CSS styles -->
   <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet">
   <!-- <style>
-    .hidden,#myModal{display: none !important;}
-  </style> -->
+    .hidden,#myModal{display: none !important;}                         
+  </style>  -->
 </head>
 
 <body>
   <div id="mocha"></div>
-  <div id="myGrapheneDataGrid" style="display: none;"></div>
+  <div id="myGrapheneDataGrid" ></div> 
+  <!-- style="display: none;" -->
   <!-- Add the Chai assertion library -->
   <script src="http://chaijs.com/chai.js"></script>
   <!-- Add the Sinon test double library-->
@@ -22,6 +23,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.min.js"></script>
 
   <script>
+    function gridCleanup(grid){
+      _.each(gform.instances,(form)=>{
+            form.destroy()
+            $('#myModal').remove();
+        } ) 
+        grid.destroy();
+    }
     // Set chai.expect as a global variable
     var expect = chai.expect;
     // Setup Mocha to use the BDD interface
@@ -40,8 +48,9 @@
   <script src="./gridSpec/SortAndMultiEdit.js"></script>
   <script src="./gridSpec/OtherOptions.js"></script>
   <script src="./gridSpec/CreateActions.js"></script>
-  <script src="./gridSpec/EditActions.js"></script>
+  <script src="./gridSpec/EditActions.js"></script> 
   <script src="./gridSpec/DeleteActions.js"></script>
+  <script src="./gridSpec/CustomAction.js"></script>
   <script>
     
   // Run the tests with Mocha

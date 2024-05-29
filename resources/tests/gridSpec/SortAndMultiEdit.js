@@ -19,8 +19,11 @@ describe('Sort and MultiEdit Options', function () {
         });
     });
     afterEach(function() {
-        gdg.destroy();
+        gridCleanup(gdg);
     });
+    // after(function() {
+    //     document.querySelector('div.hidden').remove();               //do not do this, removing things from the DOM is a bad idea
+    // });
     it('grid should be sorted in decreasing order', function () {
         var max = gdg.grab(gdg.options)[0].attributes.number;
         for (let i = 1; i < gdg.grab(gdg.options).length; i++) {
@@ -42,13 +45,13 @@ describe('Sort and MultiEdit Options', function () {
         gdg.$el.find('[data-event="edit"]').click();
         expect(triggerOnEdit.calledOnce).to.be.true;
         expect(triggerOnModelEdit.calledTwice).to.be.true;
-        expect(document.querySelector('h4#myModalLabel.modal-title').textContent.match(/\d+/)[0]).to.be.equal('2');
-        expect(document.querySelector('form#f153.gform').length).to.be.equal(2);
-        expect(document.querySelector('form#f153.gform')[0].value).to.be.equal('30');
-        expect(document.querySelector('form#f153.gform')[1].value).to.be.equal('value');
-        document.querySelector('input#f154.form-control').value = 5; 
-        document.querySelector('input#f155.form-control').value = 'str'; 
-        document.querySelector('button#el_f157.btn.btn-default.hidden-print.btn-success').click();
+        expect(document.querySelector('h4#myModalLabel.modal-title').textContent.match(/\d+/)[0]).to.be.equal('2');     
+        expect(document.querySelector('form').length).to.be.equal(2);
+        expect(document.querySelector('form')[0].value).to.be.equal('30');
+        expect(document.querySelector('form')[1].value).to.be.equal('value');
+        document.querySelector('form')[0].value = '5'; 
+        document.querySelector('form')[1].value = 'str'; 
+        document.querySelector('button.btn-success').click();
         expect(triggerOnEdited.calledOnce).to.be.true;
         expect(triggerOnModelEdited.calledTwice).to.be.true;
         expect(gdg.models[2].attributes.number).to.be.equal(5);
