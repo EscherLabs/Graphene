@@ -31,9 +31,9 @@ class CustomAuth {
         if(!$skip && !$request->is('login*')){
           return redirect('/login?redirect='.urlencode(URL::full()));
         }else{
+
             if(!$request->is('api/usersetup*')){
-              // return new Response();
-              if(!count(User::get())){
+              if(is_null(User::first()) ){
                 if(!$request->is('setup')){
                   return redirect('/setup');
                 }else{
