@@ -26,24 +26,31 @@ class PageRenderer {
     }
 
     private function build_response($data) {
-        $site_templates = config('app.site')->select('templates')->first()->templates;
-        $loader = new \Mustache_Loader_CascadingLoader([
-            new \Mustache_Loader_ArrayLoader((array)$site_templates->partials),
-            new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
-        ]);
-        $partials_loader = new \Mustache_Loader_CascadingLoader([
-            new \Mustache_Loader_ArrayLoader((array)$site_templates->partials),
-            new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
-        ]);
-        $m = new \Mustache_Engine([
-            'loader' => $loader,
-            'partials_loader' => $partials_loader,
-            'cache' => storage_path('cache/mustache'),
-        ]);
-            
-        $tpl = $m->loadTemplate(in_array($data['template'],array_keys((array)$site_templates->partials))?$data['template']:'main');
+
+        switch($data['config']->engine){
+          case 'html':
+          $content = $data['config']->content;
+          break;
+          default:
         
-        return response($tpl->render($data))
+          $site_templates = config('app.site')->select('templates')->first()->templates;
+          $loader = new \Mustache_Loader_CascadingLoader([
+              new \Mustache_Loader_ArrayLoader((array)$site_templates->partials),
+              new \Mustache_Loader_FilesystemLoader(base_path().'/resources/views/mustache/partials')
+          ]);
+  
+          $m = new \Mustache_Engine([
+              'loader' => $loader,
+              'partials_loader' => $loader,
+              'cache' => storage_path('cache/mustache'),
+          ]);
+
+          //check if template exists as partial or file
+          $tpl = $m->loadTemplate(isset($data['template']) && (in_array($data['template'],array_keys((array)$site_templates->partials)) || in_array($data['template'].'.mustache',scandir(base_path().'/resources/views/mustache/partials')))?$data['template']:'main');
+          $content = $tpl->render($data);
+        }
+
+        return response($content)
             ->header('Content-Type', 'text/html')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Expires', '0')
@@ -100,13 +107,8 @@ class PageRenderer {
         $menu_data = $this->build_menu($group);
 
         // Build Data Object
-        $render_data = [];
-        if (!isset($data['template'])) {
-            $render_data['template'] = 'main';
-        } else{
+        $render_data['template'] = $data['template'];
 
-            $render_data['template'] = $data['template'];
-        }
         $this->set_defaults($render_data);
         $slice_size = 5;
         $render_data['mygroups'] = [
@@ -144,6 +146,7 @@ class PageRenderer {
         }
         $render_data['apps_json'] = json_encode($render_data['apps']);
         $render_data['config_json'] = json_encode($data['config']);
+        $render_data['engine'] = (isset($data['config']->engine)?$data['config']->engine:"mustache");
         $render_data['mobile_order'] = json_encode(isset($data['mobile_order'])?$data['mobile_order']:[]);
 
         /* Determine is Authenticated User Is Group Admin */
@@ -151,7 +154,7 @@ class PageRenderer {
             $render_data['group']['admin'] = in_array($render_data['group']['id'], $render_data['user']['content_admin_groups']) || in_array($render_data['group']['id'], $render_data['user']['apps_admin_groups']);   
         }
 
-        $render_data['x-crsf-token']=csrf_token();
+        $render_data['x-crsf-token'] = csrf_token();
         return $this->build_response($render_data);
         
     }
