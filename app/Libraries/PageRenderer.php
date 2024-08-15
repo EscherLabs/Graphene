@@ -27,9 +27,9 @@ class PageRenderer {
 
     private function build_response($data) {
 
-        switch($data['config']->engine){
+        switch($data['engine']){
           case 'html':
-          $content = $data['config']->content;
+          $content = $data['content'];
           break;
           default:
         
@@ -147,6 +147,7 @@ class PageRenderer {
         $render_data['apps_json'] = json_encode($render_data['apps']);
         $render_data['config_json'] = json_encode($data['config']);
         $render_data['engine'] = (isset($data['config']->engine)?$data['config']->engine:"mustache");
+        $render_data['content'] = (isset($data['config']->content)?$data['config']->content:"");
         $render_data['mobile_order'] = json_encode(isset($data['mobile_order'])?$data['mobile_order']:[]);
 
         /* Determine is Authenticated User Is Group Admin */
