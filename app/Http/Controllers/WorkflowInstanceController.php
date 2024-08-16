@@ -59,7 +59,7 @@ class WorkflowInstanceController extends Controller
         return $workflow_instances->get();
     }
 
-    public function list_user_workflow_instances($group_id = null,Request $request) {
+    public function list_user_workflow_instances(Request $request,$group_id = null) {
         if (!Auth::check()) {
             abort(403); // You must be authenticated to fetch links
         }

@@ -107,7 +107,7 @@ class PageRenderer {
         $menu_data = $this->build_menu($group);
 
         // Build Data Object
-        $render_data['template'] = $data['template'];
+        $render_data['template'] = isset($data['template'])?$data['template']:"main";
 
         $this->set_defaults($render_data);
         $slice_size = 5;
