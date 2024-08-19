@@ -319,7 +319,7 @@ $(document).keydown(function (e) {
   return true;
 });
 
-$("#save").on("click", function () {
+const save = function (options) {
   if (!isDirty()) {
     toastr.info("All up to date!", "No Changes");
     return;
@@ -425,7 +425,7 @@ $("#save").on("click", function () {
   }
   var errorCount = template_errors.length + script_errors.length; //+ css_errors.length
 
-  if (!errorCount) {
+  if (!errorCount || options.ignore) {
     data.code.scripts = scriptPage.toJSON();
     data.code.forms = _.map(working_forms, function (original_form) {
       var form = JSON.parse(JSON.stringify(original_form));
@@ -434,10 +434,9 @@ $("#save").on("click", function () {
       }
       return _.omit(form, "i");
     });
-    // data.code.forms = formsPage.toJSON();
 
     data.updated_at = attributes.updated_at;
-
+    if (options.force) data.force = true;
     $.ajax({
       url: root + attributes.app_id + "/code",
       method: "put",
@@ -462,30 +461,49 @@ $("#save").on("click", function () {
         toastr.error(e.statusText, "ERROR");
       },
       statusCode: {
-        404: function () {
-          toastr.error("You are no longer logged in", "Logged Out");
+        403: function (response) {
+          toastr.error(
+            response.responseJSON.details || "You may no longer be logged in",
+            response.responseJSON.message
+          );
         },
-        409: function (error) {
-          test = JSON.parse(JSON.parse(error.responseText).error.message);
+        409: function (code, error) {
           toastr.warning("conflict detected:" + error.statusText, "NOT SAVED");
+
+          test = JSON.parse(error.responseJSON.message).code;
+
           conflictResults = {};
-          conflictResults.sources =
-            JSON.stringify(test.sources) !== JSON.stringify(this.model.sources);
-          conflictResults.css =
-            JSON.stringify(test.css) !== JSON.stringify(this.model.css);
-          conflictResults.options =
-            JSON.stringify(test.options) !== JSON.stringify(this.model.options);
+          conflictResults.css = test.css !== code.css;
+          conflictResults.resources =
+            JSON.stringify(test.resources) !== JSON.stringify(code.resources);
+
+          conflictResults.templates =
+            JSON.stringify(test.templates) !== JSON.stringify(code.templates);
+
           conflictResults.scripts =
-            JSON.stringify(test.script) !== JSON.stringify(this.model.script);
-          conflictResults.template =
-            JSON.stringify(test.template) !==
-            JSON.stringify(this.model.template);
-          modal({
+            JSON.stringify(test.scripts) !== JSON.stringify(code.scripts);
+
+          $g.modal({
             headerClass: "bg-danger",
             title: "Conflict(s) detected",
-            content: render("conflict", conflictResults),
-          }); //, footer:'<div class="btn btn-danger">Force Save</div>'})
-        }.bind(this),
+            content: render("", conflictResults),
+            actions: [
+              {
+                type: "save",
+                label: '<i class="fa fa-times"></i> Override Conflict',
+                modifiers: "btn btn-danger pull-right",
+              },
+              {
+                type: "cancel",
+                label: '<i class="fa fa-times"></i> Cancel',
+                modifiers: "btn btn-default pull-right",
+              },
+            ],
+          }).on("save", e => {
+            e.form.destroy();
+            save({ ...options, force: true });
+          });
+        }.bind(null, data.code),
         401: function () {
           toastr.error(
             "You are not authorized to perform this action",
@@ -499,17 +517,33 @@ $("#save").on("click", function () {
       "Please correct the compile/syntax errors (" + errorCount + ")",
       "Errors Found"
     );
-    modal({
-      headerClass: "danger",
+    $g.modal({
+      headerClass: "bg-danger",
       title: "Syntax Error(s)",
       content: render("error", {
         count: errorCount,
         temp: template_errors,
         script: script_errors /*, css: css_errors*/,
       }),
-    }); //, footer:'<div class="btn btn-danger">Force Save</div>'})
+      actions: [
+        {
+          type: "save",
+          label: '<i class="fa fa-times"></i> Ignore Errors',
+          modifiers: "btn btn-warning pull-right",
+        },
+        {
+          type: "cancel",
+          label: '<i class="fa fa-times"></i> Cancel',
+          modifiers: "btn btn-default pull-right",
+        },
+      ],
+    }).on("save", e => {
+      e.form.destroy();
+      save({ ignore: true });
+    });
   }
-});
+};
+$("#save").on("click", save);
 
 $("#import").on("click", function () {
   new gform({

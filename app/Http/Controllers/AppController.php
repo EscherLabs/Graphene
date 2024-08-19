@@ -57,17 +57,24 @@ class AppController extends Controller
         
         $app_version = AppVersion::where('app_id','=',$app->id)->orderBy('created_at', 'desc')->first();
         $post_data = $request->all();
-        if(!isset($post_data['updated_at']) && !isset($post_data['force']) ){
+        $force = $request->get('force');
+
+        // Uncomment to limit the "force" ability to app owner
+        // if($force && $app->user_id != Auth::user()->id){
+        //   return response(['message'=>'Forbidden', 'details'=>'Only the app Owner can Force an update'], 403);
+        // }
+        
+        if(!isset($post_data['updated_at']) && !$force ){
             abort(403, $app_version);
         }
-
+        
         $first = Carbon::parse($post_data['updated_at']);
         $second = Carbon::parse($app_version->updated_at);
 
         if(is_null($app_version) || $app_version->stable){
             $app_version = new AppVersion();
             $app_version->app_id = $app->id;
-        }else if(!($first->gte($second) || isset($post_data['force']))){
+        }else if( !($first->gte($second) || $force) ){
             abort(409, $app_version);
         }
 
