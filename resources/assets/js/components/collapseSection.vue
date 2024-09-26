@@ -18,6 +18,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  total: {
+    type: Number,
+    default: null,
+  },
   // model: Object,
   uuid: String,
   overflow: {
@@ -154,7 +158,10 @@ watch(
           >{{ name }}
         </span>
         <div ref="summary" class="ml-auto -my-1">
-          <span v-if="count">({{ count }})</span>
+          <span v-if="total || count"
+            >({{ count }}<span v-if="total">/{{ total }}</span
+            >)</span
+          >
         </div>
         <span class="w-8 items-end">
           <svg

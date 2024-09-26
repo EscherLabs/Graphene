@@ -84,6 +84,7 @@ onMounted(() => {
   const filter = new gform(
     {
       // name: get().config.resource.id,
+      name: "filter",
       actions: [],
       data,
       collections: $g.collections,

@@ -23,6 +23,9 @@ class Project extends Model
 
     public function reports() {
       return $this->belongsToMany(Report::class,'project_reports');
+      // return $this->hasMany(Report::class);
+    
+
     }
     public function workflows() {
       return $this->belongsToMany(Workflow::class,'project_workflows');

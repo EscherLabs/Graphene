@@ -44,11 +44,21 @@
             v-if="field.include || !('include' in field)"
           >
             <ChevronUpIcon
-              @click="sortBy(field, 1)"
+              @click="sortBy(field, 'true')"
+              :class="
+                'sort' in query && query.sort.includes('!' + field.name)
+                  ? 'text-gray-100'
+                  : ''
+              "
               class="h-5 w-5 hover:text-slate-400 relative top-1"
               aria-hidden="true"
             /><ChevronDownIcon
-              @click="sortBy(field, -1)"
+              :class="
+                'sort' in query && query.sort.includes(field.name)
+                  ? 'text-gray-100'
+                  : ''
+              "
+              @click="sortBy(field, 'false')"
               class="h-5 w-5 hover:text-slate-400 relative bottom-1"
               aria-hidden="true"
             />
@@ -70,7 +80,7 @@
         :data="record.data"
         :checked="record.checked"
         @check="check"
-        @click="rowClick(record)"
+        @click="recordClick(record)"
         ref="rows"
         :schema="schema"
       ></gridRow>
@@ -141,7 +151,7 @@ import {
 
 import gridRow from "./gridRow.vue";
 
-const emit = defineEmits(["selection"]);
+const emit = defineEmits(["selection", "record"]);
 
 const table = ref(null);
 const computedRecords = ref([]);
@@ -180,6 +190,10 @@ var props = defineProps({
     type: Array,
   },
 
+  query: {
+    type: Object,
+    default: {},
+  },
   status: {
     default: "",
     type: String,
@@ -249,8 +263,8 @@ const check = (id, target) => {
   updateSelected();
 };
 
-const rowClick = record => {
-  console.log("Clicked on row:" + record.id);
+const recordClick = record => {
+  emit("record", record, "click");
 };
 const updateSelected = () => {
   selected.value = _.filter(computedRecords.value, "checked").length;
@@ -266,8 +280,15 @@ const toggleAll = () => {
   emit("selection", selected.value);
 };
 
-const sortBy = (field, direction = 0) => {
-  console.log(field.name + (direction ? direction : "toggle"));
+const sortBy = (field, direction = "indeterminate") => {
+  let target = gform.instances.filter.find("sort." + field.name);
+  if (target) {
+    if (target.value == direction) {
+      direction = "indeterminate";
+    }
+    target.set(direction);
+    target.trigger("input");
+  }
 };
 
 const colorClaim = (col, index) => {

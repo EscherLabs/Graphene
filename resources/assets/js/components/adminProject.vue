@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, toRaw } from "vue";
 
 import {
   // PopoverArrow,
@@ -78,7 +78,7 @@ const props = defineProps({
   },
   states: {
     type: Object,
-    default: {},
+    default: [],
   },
   map: {
     type: Object,
@@ -87,6 +87,7 @@ const props = defineProps({
 });
 
 const primary = ref(props.fields[0]);
+const secondary = ref(props.fields[1]);
 
 const toggleField = field => {
   props.status = "changed";
@@ -116,8 +117,11 @@ const toggleState = state => {
     ["desc", "asc", "asc"]
   );
 };
-const save = async () => {
+const save = async report => {
+  console.debug("Save Called");
+
   props.status = "waiting";
+  debugger;
   let content = {
     schema: _.map(_.filter(props.fields, "include"), i =>
       _.omit(i, "include", "key")
@@ -126,20 +130,31 @@ const save = async () => {
       _.omit(i, "include", "key")
     ),
     map: _.map(props.map, i => _.omit(i, "key")),
+    name: report.name,
+    display: report.config.display,
+    resource: report.config.resource.id,
+    // description: props.report.description,
   };
   if (primary.value) content.primary = primary.value;
-  const response = await fetch(`/api/reports/${props.report.id}`, {
-    method: "PUT",
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
+  if (secondary.value) content.secondary = secondary.value;
+  var reports = toRaw(props.reports);
+  // props.reports = [];
 
-    body: JSON.stringify(content),
-  })
+  const response = await fetch(
+    `/api/projects/${props.id}/reports/${report.id}`,
+    {
+      method: report.id ? "PUT" : "POST",
+      mode: "cors", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+
+      body: JSON.stringify(content),
+    }
+  )
     .then(res => {
       const { status, ok } = res;
       //   return { ok, status, body: await response.json() };
@@ -155,10 +170,76 @@ const save = async () => {
         return res.json();
       }
     })
+    .then(({ id }) => {
+      // props.report = _.find(props.reports, { id: report.id });
+
+      reports.splice(_.findIndex(reports, { id }), 1, props.report);
+      props.reports = reports;
+
+      // console.log(props.reports[_.findIndex(props.reports, { id: props.id })]);
+    })
     .catch(error => {
       props.status = "error";
 
       $g.alert({ type: "error", title: "Error Saving" });
+      console.error(error);
+    }); // body data type must match "Content-Type" header
+};
+
+const detach = async report => {
+  console.debug("Detach Called");
+  console.debug(report);
+
+  props.status = "waiting";
+  debugger;
+  // let content = {
+  //   schema: _.map(_.filter(props.fields, "include"), i =>
+  //     _.omit(i, "include", "key")
+  //   ),
+  //   states: _.map(_.filter(props.states, "include"), i =>
+  //     _.omit(i, "include", "key")
+  //   ),
+  //   map: _.map(props.map, i => _.omit(i, "key")),
+  //   name: report.name,
+  //   display: report.config.display,
+  //   resource: report.config.resource.id,
+  //   // description: props.report.description,
+  // };
+  // if (primary.value) content.primary = primary.value;
+  var reports = toRaw(props.reports);
+  // props.reports = [];
+
+  const response = await fetch(
+    `/api/projects/${props.id}/reports/${report.id}`,
+    {
+      method: "DELETE",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+    }
+  )
+    .then(res => {
+      const { status, ok } = res;
+      if (!ok) {
+        return res.text().then(text => {
+          throw new Error(text);
+        });
+      } else {
+        props.status = "success";
+
+        $g.alert({ type: "success", title: "Report Removed Successfully!" });
+
+        return res.json();
+      }
+    })
+    .then(({ id }) => {
+      reports.splice(_.findIndex(reports, { id }), 1);
+      props.reports = reports;
+      // props.report == props.reports[0];
+    })
+    .catch(error => {
+      props.status = "error";
+      $g.alert({ type: "error", title: "Error Removing Report" });
       console.error(error);
     }); // body data type must match "Content-Type" header
 };
@@ -184,6 +265,7 @@ watch(
       props.report == props.reports[0];
       return;
     }
+    // if (report.id == -1) return;
     resource.value = report.config.resource;
     const { states, schema = [] } = resource.value;
     // props.id = report.id;
@@ -206,7 +288,6 @@ watch(
         props.status = "error";
         console.error(error);
       }); // body data type must match "Content-Type" header
-
     const {
       name: instance_name,
       configuration,
@@ -313,7 +394,6 @@ watch(
           };
         }).concat(
           _.map(flow, state => {
-            // debugger;
             const { name, state_id: id, label, styles, status } = state;
             if (!_.find(report.config.resource.states, { name })) {
               return { id, name, label, styles, status, include: false };
@@ -330,11 +410,19 @@ watch(
       return item;
     });
     $g.collections.update(`map`, props.map);
-
-    gform.instances.data.set(
-      _.pick(props.report.config.resource, "primary", "secondary")
-    );
-    getData();
+    if (data in gform.instances) {
+      gform.instances.data.set(
+        _.pick(props.report.config.resource, "primary", "secondary")
+      );
+      getData();
+    }
+  }
+);
+watch(
+  () => props.reports,
+  (reports, oldList) => {
+    // if (reports.length > oldList.length) console.log("new");
+    // if (reports.length < oldList.length) console.log("removed");
   }
 );
 onMounted(() => {
@@ -414,15 +502,24 @@ onMounted(() => {
     },
     dataForm.value
   ).on("change", ({ form }) => {
+    debugger;
+    if (
+      props.report.config.resource.primary == form.get("primary") &&
+      props.report.config.resource.secondary == form.get("secondary")
+    )
+      return;
+
     primary.value = form.get("primary");
-    // props.status = "changed";
+    secondary.value = form.get("secondary");
+    props.status = "changed";
   });
 });
 const takeAction = action => {
-  console.log(action);
+  console.debug("Action: " + action);
 };
 const editField = field => {
-  console.log(field);
+  console.debug("Editing Field:");
+  console.debug(field);
   new gform({
     legend: "Edit Field",
     data: field,
@@ -448,7 +545,12 @@ const editField = field => {
 };
 
 const editState = state => {
-  console.log(state);
+  console.debug("Edit State:");
+  console.debug(state);
+
+  console.debug("For Field:");
+  console.debug(field);
+
   new gform({
     legend: "Edit State",
     data: state,
@@ -477,7 +579,9 @@ const editState = state => {
     .modal();
 };
 const editTransform = transform => {
-  console.log(transform);
+  console.debug("Edit Transform");
+
+  console.debug(transform);
   new gform({
     legend: "Edit Transform",
     data: transform,
@@ -511,7 +615,6 @@ const editTransform = transform => {
     })
     .on("save", e => {
       props.status = "changed";
-      debugger;
 
       Object.assign(transform, e.form.toJSON());
       props.map = _.orderBy(props.map, ["name"], ["asc"]);
@@ -592,19 +695,44 @@ const addState = () => {
     .modal();
 };
 
-const updateReport = newreport => {
+const selectReport = newreport => {
+  console.debug("selectReport Called");
   props.report = newreport;
+};
+const saveReport = report => {
+  console.debug("saveReport Called");
+  save(!report || report instanceof Event ? props.report : report);
+  // props.report = report;
+};
+const createReport = report => {
+  // props.report = report;
+  save(report);
+  console.debug("createReport Called");
+  // props.report = report;
+};
+
+const deleteReport = report => {
+  // props.report = report;
+  console.debug("deleteReport Called");
+
+  console.debug(report);
+  detach(report);
+  // props.report = report;
 };
 </script>
 <template>
   <div class="flex-grow overflow-scroll flex">
     <aside
-      class="flex-1 overflow-x-hidden w-72 max-w-[18rem] relative bg-slate-50 shadow-lg flex-col xl:block hidden border-gray-300 border-r"
+      class="flex-1 overflow-x-hidden w-72 max-w-[18rem] relative bg-slate-50 flex-col xl:block hidden border-gray-300 border-r"
     >
       <menuBar
         :reports="reports"
         :id="report ? report.id : reports[0].id"
-        @report="updateReport"
+        :status="status"
+        @select="selectReport"
+        @update="saveReport"
+        @create="createReport"
+        @delete="deleteReport"
         editable="true"
       />
     </aside>
@@ -615,7 +743,7 @@ const updateReport = newreport => {
         <div>Preview</div>
         <button
           type="button"
-          @click="save"
+          @click="saveReport"
           :disabled="status !== 'changed'"
           class="text-white ml-auto bg-success-500 hover:bg-success-600 active:bg-success-800 focus:border-success-800 focus:ring-success-200 justify-self-start px-2 py-2 border border-gray-200 rounded-md font-semibold text-xs tracking-widest focus:ring focus:outline-none disabled:opacity-25 transition"
           cclass="disabled:opacity-30 bg-green-300 text-green-700 hover:bg-green-500 hover:text-green-900 p-2 cursor-pointer border rounded border-green-500 active:bg-green-200 active:border-green-300"
@@ -649,19 +777,17 @@ const updateReport = newreport => {
         :open="true"
         overflow="true"
       >
-        <ul class="flex flex-col gap-1 px-2" ref="dataForm">
-          <li class="justify-between flex flex-row gap-2">
-            <Icon class="w-6 h-6" icon="mdi:primary-key" aria-hidden="true" />
-            <div id="primary"></div>
-          </li>
-        </ul>
+        <ul class="flex flex-col gap-1 px-2" ref="dataForm"></ul>
       </collapseSection>
 
       <collapseSection
-        v-show="status !== 'waiting'"
+        v-show="
+          false && status !== 'waiting' && report?.config?.display == 'grid'
+        "
         :uuid="uuid"
         name="Fields"
         :count="fields.filter(i => i.include).length"
+        :total="fields.length"
         :open="true"
       >
         <ul class="flex flex-col gap-1 px-2">
@@ -842,9 +968,10 @@ const updateReport = newreport => {
       </collapseSection>
 
       <collapseSection
-        v-show="status !== 'waiting'"
+        v-show="false && status !== 'waiting'"
         :uuid="uuid"
-        :count="'error' || states.filter(i => i.include).length"
+        :count="states.filter(i => i?.include).length"
+        :total="states.length"
         name="States"
         :open="true"
       >

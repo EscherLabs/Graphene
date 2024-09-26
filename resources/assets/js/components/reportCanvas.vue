@@ -41,7 +41,7 @@
     </div>
     <li
       v-for="record in computedRecords"
-      @click="go(record)"
+      @click="select(record)"
       href="/workflows/report/{{id}}"
       target="_blank"
       class="pointer hover:shadow group hover:bg-white rounded-sm p-4 px-2 gap-2 bg-slate-50 flex w-full cursor-pointer first-line:"
@@ -99,6 +99,7 @@ var props = defineProps({
     default: {},
   },
 });
+const emit = defineEmits(["selection", "record"]);
 
 watch(
   () => props.records,
@@ -130,8 +131,10 @@ watch(
 onMounted(e => {
   // console.log("Cobler Mounted");
 });
-const go = ({ id }) => {
-  window.open(`/workflows/report/${id}`, "_blank");
+
+const select = record => {
+  emit("record", record, "click");
+  // console.log(record);
 };
 
 const statelabel = record => {

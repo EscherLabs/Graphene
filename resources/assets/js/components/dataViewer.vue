@@ -135,12 +135,17 @@ const getData = () => {
     },
   });
 };
+const rowClicked = ({ id }, action) => {
+  console.log("event:" + action + ":" + id);
+  window.open(`/workflows/report/${id}`, "_blank");
+};
 onMounted(() => {
   // debugger;
   // setQuery(Object.fromEntries(new URLSearchParams(document.location.search)));
-
-  props.id = props.report.id;
-  getData();
+  if ("id" in props.report) {
+    props.id = props.report.id;
+    getData();
+  }
 });
 </script>
 <template>
@@ -164,6 +169,7 @@ onMounted(() => {
     :columns="report.config?.columns"
     :status="status"
     :config="resource"
+    @record="rowClicked"
   />
   <dataGrid
     v-if="report.config?.display == 'grid'"
@@ -171,6 +177,7 @@ onMounted(() => {
     :status="status"
     :config="resource"
     :schema="resource.schema"
+    @record="rowClicked"
   />
   <pagination
     v-if="report.config?.display !== 'calendar'"

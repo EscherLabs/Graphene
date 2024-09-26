@@ -4,7 +4,7 @@ import { ref, onMounted, watch } from "vue";
 import menuBar from "./menuBar.vue";
 
 const resource = ref({});
-const historyNaveFlag = ref(true);
+const historynavflag = ref(true);
 const computedRecords = ref([]);
 
 const props = defineProps({
@@ -53,10 +53,10 @@ const getData = () => {
   props.status = "waiting";
   const { id: report_id } = props;
   const target = new URLSearchParams(props.query).toString();
-  if (!historyNaveFlag.value) {
+  if (!historynavflag.value) {
     history.pushState({ reportID: report_id }, null, `${report_id}?${target}`);
   }
-  historyNaveFlag.value = false;
+  historynavflag.value = false;
 
   $.ajax({
     url: `/api/workflowinstances/${id}/paged_submissions?${target}`,
@@ -134,7 +134,7 @@ onMounted(() => {
   window.addEventListener("popstate", event => {
     if ("reportID" in event.state) {
       console.log("popped");
-      historyNaveFlag.value = true;
+      historynavflag.value = true;
       props.report = _.find(props.reports, { id: event.state.reportID });
     }
   });
@@ -156,7 +156,7 @@ const takeAction = action => {
 <template>
   <div class="flex-grow overflow-scroll flex">
     <aside
-      class="flex-1 overflow-x-hidden w-72 max-w-[18rem] relative bg-slate-50 shadow-lg flex-col xl:block hidden border-gray-300 border-r"
+      class="flex-1 overflow-x-hidden w-72 max-w-[18rem] relative bg-slate-50 flex-col xl:block hidden border-gray-300 border-r"
     >
       <menuBar
         :reports="reports"

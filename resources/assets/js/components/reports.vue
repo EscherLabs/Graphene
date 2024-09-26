@@ -1,15 +1,16 @@
 <script setup>
 import { ref, onMounted, watch, provide } from "vue";
 
-import reportCanvas from "./reportCanvas.vue";
-import reportCalendar from "./reportCalendar.vue";
+// import reportCanvas from "./reportCanvas.vue";
+// import reportCalendar from "./reportCalendar.vue";
 
 import configBar from "./configBar.vue";
 import menuBar from "./menuBar.vue";
 import toolbar from "./toolbar.vue";
-import pagination from "./pagination.vue";
-import dataGrid from "./dataGrid.vue";
-import actionsBar from "./actionsBar.vue";
+// import pagination from "./pagination.vue";
+// import dataGrid from "./dataGrid.vue";
+// import actionsBar from "./actionsBar.vue";
+import dataViewer from "./dataViewer.vue";
 
 const resource = ref({});
 const historyNavFlag = ref(true);
@@ -62,6 +63,7 @@ const getData = () => {
   // document.app = app;
   // app.update({ data: [], waiting: true });
   const { id } = resource.value;
+  if (!id) console.log("ID of resource is falsey:" + id);
   props.records = [];
   props.status = "waiting";
   const { id: report_id } = props;
@@ -164,19 +166,20 @@ onMounted(() => {
   resource.value = props.report.config?.resource;
 });
 const takeAction = action => {
+  if (action.name == "view") document.location = "./" + selected[0].id;
+
   console.log(action);
 };
 </script>
 <template>
-  <toolbar class="shrink-0"></toolbar>
   <div class="flex-grow overflow-scroll flex">
     <aside
-      class="flex-1 overflow-x-hidden w-72 max-w-[18rem] relative bg-slate-50 shadow-lg flex-col xl:block hidden border-gray-300 border-r"
+      class="flex-1 overflow-x-hidden w-72 max-w-[18rem] relative bg-slate-50 flex-col xl:block hidden border-gray-300 border-r"
     >
       <menuBar
         :reports="reports"
         :id="report ? report.id : null"
-        @report="
+        @select="
           newreport => {
             props.query = {};
             report = newreport;
@@ -184,55 +187,72 @@ const takeAction = action => {
         "
       />
     </aside>
-    <section
-      class="overflow-x-hidden flex-1 flex-col justify-stretch relative bg-slate-200 min-w-[28rem] w-72 flex shadow-inner"
-    >
-      <actionsBar
-        :config="resource"
-        :selected="selected"
-        @action="takeAction"
-        v-if="report.config?.display !== 'calendar'"
-      />
+    <main class="flex flex-col flex-grow">
+      <toolbar class="shrink-0"></toolbar>
+      <section class="flex flex-grow">
+        <section
+          class="overflow-x-hidden flex-1 flex-col justify-stretch relative bg-slate-200 min-w-[28rem] w-72 flex shadow-inner"
+        >
+          <dataViewer
+            :records="records"
+            :record="record"
+            :resource="resource"
+            :report="report"
+          >
+          </dataViewer>
+          <div v-if="false">
+            <actionsBar
+              :config="resource"
+              :selected="selected"
+              @action="takeAction"
+              v-if="report.config?.display !== 'calendar'"
+            />
 
-      <reportCalendar
-        v-if="report.config?.display == 'calendar'"
-        :records="records"
-        :status="status"
-        :config="resource"
-        @query="setQuery"
-        :query="query"
-      />
-      <reportCanvas
-        v-if="report.config?.display == 'list'"
-        :records="records"
-        :columns="report.config?.columns"
-        :status="status"
-        :config="resource"
-      />
-      <dataGrid
-        v-if="report.config?.display == 'grid'"
-        :records="computedRecords"
-        :status="status"
-        :config="resource"
-        :schema="resource.schema"
-        @selection="selection"
-      />
-      <pagination
-        v-if="report.config?.display !== 'calendar'"
-        :navInfo="navInfo"
-        @query="setQuery"
-        :query="query"
-      />
-    </section>
-    <aside
-      class="flex-1 overflow-x-hidden relative w-72 max-w-[18rem] hidden lg:block bg-slate-50 flex-col border-gray-300 border-l"
-    >
-      <configBar
-        :reports="reports"
-        :config="resource"
-        :query="query"
-        @query="setQuery"
-      />
-    </aside>
+            <reportCalendar
+              v-if="report.config?.display == 'calendar'"
+              :records="records"
+              :status="status"
+              :config="resource"
+              @query="setQuery"
+              :query="query"
+            />
+            <reportCanvas
+              v-if="report.config?.display == 'list'"
+              :records="records"
+              :columns="report.config?.columns"
+              :status="status"
+              :config="resource"
+            />
+            <dataGrid
+              v-if="report.config?.display == 'grid'"
+              :records="computedRecords"
+              :status="status"
+              :config="resource"
+              :schema="resource.schema"
+              @selection="selection"
+              @query="setQuery"
+              :query="query"
+            />
+            <pagination
+              v-if="report.config?.display !== 'calendar'"
+              :navInfo="navInfo"
+              @query="setQuery"
+              :query="query"
+            />
+          </div>
+        </section>
+        <aside
+          class="flex-1 overflow-x-hidden relative w-72 max-w-[18rem] hidden lg:block bg-slate-50 flex-col border-gray-300 border-l"
+        >
+          <configBar
+            :reports="reports"
+            :config="resource"
+            :query="query"
+            @query="setQuery"
+            class="absolute"
+          />
+        </aside>
+      </section>
+    </main>
   </div>
 </template>

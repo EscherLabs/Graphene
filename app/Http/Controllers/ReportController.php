@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Group;
 use App\Report;
+use App\Project;
 use App\User;
 use App\AppInstance;
 // use App\Project;
@@ -168,7 +169,7 @@ return $renderer->render([
     return $reports;
   }
 
-  public function create(Request $request) {
+  public function create(Request $request, Project $project=null) {
     $this->validate($request, ['name'=>['required']]);
 
     $data = $request->all();
@@ -177,19 +178,24 @@ return $renderer->render([
     }
     $report = new Report($data);
     $report->site_id = Auth::user()->site->id;
+
+    if($request->has('name')){
+      $report->name = $request->get('name');
+    }
+    if($request->has('description')){
+      $report->description = $request->get('description');
+    }
     $report->save();
 
     $report_version = new ReportVersion($data);
-    $report_version->config = [];
-    $report_version->report_id = $report->id;
-    $report_version->save();
-    return Report::with('user')->where('id',$report->id)->first();
-  }
+    $config = (Object)['resource'=>(Object)[]];
 
-  public function update(Request $request, $report) {  
-
-    $reportVersion = ReportVersion::where("report_id", "=", $report)->orderBy('created_at', 'desc')->first();
-    $config = $reportVersion->config;
+    if($request->has('resource')){
+      $config->resource->id = $request->get('resource');
+    }
+    if($request->has('type')){
+      $config->resource->type = $request->get('type');
+    }
     if($request->has('schema')){
       $config->resource->schema = $request->get('schema');
     }
@@ -205,8 +211,55 @@ return $renderer->render([
     if($request->has('secondary')){
       $config->resource->secondary = $request->get('secondary');
     }
-    // return $config;
+    $report_version->config = $config;
+
+
+    $report_version->report_id = $report->id;
+    $report_version->save();
+    if(!is_null($project)){
+      $project->reports()->syncWithoutDetaching([$report->id]);
+    }
+    return Report::with('user')->where('id',$report->id)->first();
+  }
+
+  public function update(Request $request, Project $project=null, Report $report) {  
+
+    $reportVersion = ReportVersion::where("report_id", "=", $report->id)->orderBy('created_at', 'desc')->first();
+    $config = $reportVersion->config;
+
+    if($request->has('resource')){
+      $config->resource->id = $request->get('resource');
+    }
+    if($request->has('display')){
+      $config->display = $request->get('display');
+    }
+    if($request->has('schema')){
+      $config->resource->schema = $request->get('schema');
+    }
+    if($request->has('states')){
+      $config->resource->states = $request->get('states');
+    }
+    if($request->has('map')){
+      $config->resource->map = $request->get('map');
+    }
+    if($request->has('primary')){
+      $config->resource->primary = $request->get('primary');
+    }
+    if($request->has('secondary')){
+      $config->resource->secondary = $request->get('secondary');
+    }
     $reportVersion->config = $config;
+
+
+
+    if($request->has('name')){
+      $report->name = $request->get('name');
+    }
+    if($request->has('description')){
+      $report->description = $request->get('description');
+    }
+
+
     // $reportVersion->update($request->all());
     // return $report->load('versions');
     // return $report;
@@ -219,13 +272,18 @@ return $renderer->render([
 // ]
 
     $reportVersion->save();
+    $report->save();
     // return Report::with('user')->where('id',$report->id)->first();
-    return Report::with('user')->currentVersion()->find($report);
+    return Report::with('user')->currentVersion()->find($report->id);
 
   }
 
-  public function destroy(Report $report) {
-      if ($report->delete()) {
+  public function destroy(Project $project=null, Report $report) {
+
+    if(!is_null($project)){
+      $project->reports()->detach([$report->id]);
+      return $report;
+    }else if ($report->delete()) {
           return 1;
       }
   }

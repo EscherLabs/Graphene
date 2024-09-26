@@ -1,393 +1,42 @@
 {
-  "_actionsBar-03d15f48.js": {
+  "_dataViewer-8fe0a6e6.js": {
     "css": [
-      "assets/actionsBar-d1623aee.css"
+      "assets/dataViewer-d1623aee.css"
     ],
-    "file": "assets/actionsBar-03d15f48.js",
+    "file": "assets/dataViewer-8fe0a6e6.js",
     "imports": [
-      "_menuBar-beb2a357.js"
+      "_menuBar-96d44e41.js"
     ]
   },
-  "_actionsBar-0ad2bfb2.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-0ad2bfb2.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
+  "_menuBar-96d44e41.js": {
+    "file": "assets/menuBar-96d44e41.js"
   },
-  "_actionsBar-0d1f4899.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-0d1f4899.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-1b99646a.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-1b99646a.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-1c3c2022.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-1c3c2022.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-28a5e642.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-28a5e642.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-2b8ee5be.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-2b8ee5be.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-2bb60ffe.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-2bb60ffe.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-3abb8a04.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-3abb8a04.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-3c060b11.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-3c060b11.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-428791ba.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-428791ba.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-4a17f3fe.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-4a17f3fe.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-4f8cce9d.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-4f8cce9d.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-4fb69746.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-4fb69746.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-5b942536.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-5b942536.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-5bb38df5.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-5bb38df5.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-5fecfba3.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-5fecfba3.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-65e783bc.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-65e783bc.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-6b5f4bd0.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-6b5f4bd0.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-737daaf3.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-737daaf3.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-7ae036d6.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-7ae036d6.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-7d185616.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-7d185616.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-7f3be6bd.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-7f3be6bd.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-8058bfff.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-8058bfff.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-85175fb1.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-85175fb1.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-866095da.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-866095da.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-87f25fb4.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-87f25fb4.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-9198c57b.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-9198c57b.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-a04e3845.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-a04e3845.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-a48fa0ba.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-a48fa0ba.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-b1b9e5d2.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-b1b9e5d2.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-b356ed57.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-b356ed57.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-b805bdae.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-b805bdae.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-c3caada9.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-c3caada9.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-cf1a5a1e.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-cf1a5a1e.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-cf531224.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-cf531224.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-d51f6ee5.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-d51f6ee5.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-d62e8155.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-d62e8155.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-d82d7203.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-d82d7203.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_actionsBar-fb91eb77.js": {
-    "css": [
-      "assets/actionsBar-d1623aee.css"
-    ],
-    "file": "assets/actionsBar-fb91eb77.js",
-    "imports": [
-      "_menuBar-beb2a357.js"
-    ]
-  },
-  "_menuBar-beb2a357.js": {
-    "file": "assets/menuBar-beb2a357.js"
-  },
-  "actionsBar.css": {
-    "file": "assets/actionsBar-d1623aee.css",
-    "src": "actionsBar.css"
+  "dataViewer.css": {
+    "file": "assets/dataViewer-d1623aee.css",
+    "src": "dataViewer.css"
   },
   "resources/assets/js/adminProject.js": {
-    "file": "assets/adminProject-beacf62b.js",
+    "file": "assets/adminProject-81fdde1c.js",
     "imports": [
-      "_menuBar-beb2a357.js",
-      "_actionsBar-87f25fb4.js"
+      "_menuBar-96d44e41.js",
+      "_dataViewer-8fe0a6e6.js"
     ],
     "isEntry": true,
     "src": "resources/assets/js/adminProject.js"
   },
   "resources/assets/js/project.js": {
-    "file": "assets/project-021fbb07.js",
+    "file": "assets/project-83b0ee09.js",
     "imports": [
-      "_menuBar-beb2a357.js"
+      "_menuBar-96d44e41.js"
     ],
     "isEntry": true,
     "src": "resources/assets/js/project.js"
   },
   "resources/assets/js/reports.js": {
-    "file": "assets/reports-b93bff82.js",
+    "file": "assets/reports-d978cd0c.js",
     "imports": [
-      "_menuBar-beb2a357.js",
-      "_actionsBar-87f25fb4.js"
+      "_menuBar-96d44e41.js",
+      "_dataViewer-8fe0a6e6.js"
     ],
     "isEntry": true,
     "src": "resources/assets/js/reports.js"

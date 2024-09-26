@@ -1,6 +1,6 @@
 <template>
   <tr
-    class="h-16 flex items-stretch flex-shrink-0 odd:bg-slate-50 even:bg-white group hover:bg-blue-200 text-slate-600 hover:text-slate-700 divide-x border-gray-300"
+    class="h-16 flex items-stretch flex-shrink-0 odd:bg-slate-50 even:bg-white group hover:bg-blue-200 text-slate-600 hover:text-slate-800 divide-x border-gray-300"
   >
     <td
       @click.stop="mark()"
@@ -51,6 +51,7 @@ import {
 import { CheckIcon } from "@heroicons/vue/20/solid";
 const mark = target => {
   // props.checked = !props.checked;
+  console.log(props.data);
   emit("check", props.id);
 };
 const emit = defineEmits(["check"]);

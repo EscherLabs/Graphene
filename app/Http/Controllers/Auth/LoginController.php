@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\AppInstance;
 use App\Group;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -49,15 +50,19 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request )
     {
-        $current_user_apps = AppInstance::where('public','=','1')->whereHas('group', function($q){
-            $q->where('site_id', '=', config('app.site')->id);
-        })->with('app')->get();
+      if(Auth::user() && $request->has('redirect')){         
+        return redirect($request->get('redirect'));
+      }  
 
-        return view('auth.login', ['apps'=>$current_user_apps, 'links'=>Group::publicAppsPages()->get()]);
+      $current_user_apps = AppInstance::where('public','=','1')->whereHas('group', function($q){
+          $q->where('site_id', '=', config('app.site')->id);
+      })->with('app')->get();
 
-        //return view('auth.login');
+      return view('auth.login', ['apps'=>$current_user_apps, 'links'=>Group::publicAppsPages()->get()]);
+
+      //return view('auth.login');
     }
 
     /**

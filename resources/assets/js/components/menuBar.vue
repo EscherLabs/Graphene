@@ -32,11 +32,13 @@
 
     <ul
       v-show="isOpen"
-      id="reports"
+      id="reports_list"
       class="flex flex-col gap-1 mb-2 px-2 max-h-52 overflow-x-auto"
+      :class="status != 'waiting' ? '' : 'opacity-50'"
     >
       <li
         v-for="report in reports"
+        :key="id"
         class="px-4 py-2 flex rounded-md items-center gap-2 border border-transparent hover:border-white cursor-pointer group"
         :class="
           report.id == id
@@ -104,7 +106,7 @@
 
                         'group leading-none rounded-md flex w-full items-center px-2 py-2 text-sm relative select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-danger-100',
                       ]"
-                      @click="editReport(report)"
+                      @click.stop="editReport(report)"
                     >
                       <Icon
                         class="mr-2 text-lg text-slate-600"
@@ -126,7 +128,7 @@
                         'group leading-none rounded-md flex w-full items-center px-2 py-2 text-sm relative select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-danger-100',
                       ]"
                       value="Delete"
-                      @click="deleteReport"
+                      @click.stop="deleteReport(report)"
                     >
                       <Icon
                         class="mr-2 text-slate-600 text-lg"
@@ -144,7 +146,7 @@
 
         <DropdownMenuRoot :open="false" v-if="false">
           <DropdownMenuTrigger
-            class="text-slate-300 group-hover:text-slate-500 block"
+            class="text-slate-300 group-hover:text-slate-500 block ml-auto"
             aria-label="Options"
           >
             <Icon icon="radix-icons:dots-horizontal" aria-hidden="true" />
@@ -159,7 +161,7 @@
               <DropdownMenuItem
                 value="Edit"
                 class="group leading-none text-slate-600 rounded flex items-center h-8 px-2 relative select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-100"
-                @click="editReport(report)"
+                @click.stop="editReport(report)"
               >
                 <Icon
                   class="mr-2"
@@ -173,7 +175,7 @@
               <DropdownMenuItem
                 value="Delete"
                 class="group leading-none text-danger-600 rounded flex items-center h-8 px-2 relative select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-danger-100"
-                @click="deleteReport"
+                @click.stop="deleteReport(report)"
               >
                 <Icon
                   class="mr-2 text-slate-600"
@@ -189,6 +191,17 @@
         </DropdownMenuRoot>
       </li>
     </ul>
+    <div
+      v-if="editable"
+      class="flex flex-row justify-end gap mx-3 px-2 mb-2 border-t"
+    >
+      <button
+        class="text-white bg-gform-500 hover:bg-gform-600 active:bg-gform-800 focus:border-gform-800 focus:ring-gform-200 justify-self-start mt-2 px-2 py-2 border border-gray-200 rounded-md font-semibold text-xs tracking-widest focus:ring focus:outline-none disabled:opacity-25 transition"
+        @click="addReport"
+      >
+        Add Report
+      </button>
+    </div>
   </section>
 </template>
 
@@ -214,91 +227,123 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 
 import { Icon } from "@iconify/vue";
 
-const emit = defineEmits(["report"]);
+const emit = defineEmits(["select", "update", "create", "delete"]);
 
-const editReport = report => {
-  console.log(report);
-  new gform({
-    legend: "Edit Report",
-    data: report,
+const reportFields = [
+  { label: "Name", required: true },
+  // { label: "Title", parse: [{ type: "requires" }] },
+  { label: "Description", parse: [{ type: "requires" }] },
+  {
+    type: "fieldset",
+    name: "config",
+    label: false,
     fields: [
-      { label: "Name" },
-      { label: "Title", parse: [{ type: "requires" }] },
       {
         type: "fieldset",
-        name: "config",
+        name: "resource",
         label: false,
+        // edit: false,
         fields: [
           {
-            type: "fieldset",
-            name: "resource",
-            label: false,
-            edit: false,
-            fields: [
-              {
-                label: "Type",
-                name: "type",
-                options: ["", "Workflow", "Resource"],
-                format: {
-                  value: i => i.value.toLowerCase(),
-                  label: "{{label}}",
-                },
-                edit: [{ type: "matches", value: "" }],
-              },
-              {
-                label: "Workflow",
-                show: [{ type: "matches", name: "type", value: "workflow" }],
-                name: "id",
-                options: "/api/workflowinstances",
-                format: { value: i => i.id, label: "{{name}} ({{slug}})" },
-              },
-            ],
+            label: "Type",
+            name: "type",
+            required: true,
+            show: false,
+            value: "workflow",
+            options: ["Workflow", "Resource"],
+            options: ["Workflow"],
+            format: {
+              value: i => i.value.toLowerCase(),
+              label: "{{label}}",
+            },
+            // edit: [{ type: "matches", value: "" }],
           },
           {
-            label: "Display",
-            options: ["List", "Calendar", "Grid"],
-            format: {
-              value: ({ value }) => value.toLowerCase(),
-            },
-          },
-          {
-            label: "Columns",
-            type: "custom_radio",
-            defaultValue: 1,
-            format: {
-              value: ({ i }) => i,
-              label: "{{value}} column{{^first}}s{{/first}}",
-            },
-            options: [{ type: "optgroup", min: 1, max: 5 }],
-            show: [{ type: "matches", name: "display", value: "list" }],
+            label: "Workflow",
+            required: true,
+            show: [{ type: "matches", name: "type", value: "workflow" }],
+            name: "id",
+            options: "/api/workflowinstances",
+            format: { value: i => i.id, label: "{{name}} ({{slug}})" },
           },
         ],
       },
+      {
+        label: "Display",
+        options: ["List", "Calendar", "Grid"],
+        options: ["List", "Grid"],
+        required: true,
+        format: {
+          value: ({ value }) => value.toLowerCase(),
+        },
+      },
+      {
+        label: "Columns",
+        type: "custom_radio",
+        defaultValue: 1,
+        format: {
+          value: ({ i }) => i,
+          label: "{{value}} column{{^first}}s{{/first}}",
+        },
+        options: [{ type: "optgroup", min: 1, max: 5 }],
+        show: [{ type: "matches", name: "display", value: "list" }],
+      },
     ],
+  },
+];
+
+const deleteReport = report => {
+  console.debug("Delete Report");
+  console.debug(report);
+  emit("delete", report);
+};
+const editReport = report => {
+  console.debug("Edit Report");
+  console.debug(report);
+  new gform({
+    legend: "Edit Report",
+    data: report,
+    fields: reportFields,
   })
     .on("cancel", e => {
       e.form.destroy();
     })
     .on("save", e => {
-      console.log("old:");
-      console.log(report);
-      Object.assign(report, e.form.toJSON());
-      console.log("new:");
-      console.log(report);
+      Object.assign(report, e.form.get());
+      report.title = report.name;
+      e.form.trigger("close");
+      emit("update", report);
+    })
+    .modal();
+};
+const addReport = () => {
+  let report = { id: "" };
+  new gform({
+    legend: "New Report",
+    data: report,
+    fields: reportFields,
+  })
+    .on("cancel", e => {
+      e.form.destroy();
+    })
+    .on("save", e => {
+      Object.assign(report, e.form.get());
+
+      report.title = report.name;
+      props.reports.push(report);
+      emit("create", report);
       e.form.trigger("close");
     })
     .modal();
 };
-const contextClick = report => {
-  debugger;
-  // document.querySelector("#radix-1").click();
-  document.querySelector(`[data-reportID="${report.id}"] button`).click();
 
-  // report.open = true;
+const contextClick = report => {
+  document.querySelector(`[data-reportID="${report.id}"] button`).click();
 };
 const props = defineProps({
   reports: Array,
   id: Object,
+  status: "",
   isOpen: { default: true, type: Boolean },
   editable: { type: Boolean, default: false },
   // apps: Array,
@@ -306,6 +351,7 @@ const props = defineProps({
   // resources: Array,
 });
 const go = report => {
-  emit("report", report);
+  console.debug("go");
+  emit("select", report);
 };
 </script>

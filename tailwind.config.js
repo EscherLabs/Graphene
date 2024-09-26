@@ -44,7 +44,7 @@ export default {
         ...mauve,
 
         gform: colors.blue,
-
+        graphene: colors.orange,
         brand: {
           // CMYK: C25 M0 Y98 K0
           // HEX: #CEDC00

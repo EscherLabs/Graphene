@@ -33,11 +33,11 @@ class ProjectController extends Controller
       unset($projectReport->versions);
       unset($projectReport->pivot);
     }
-    $asset = ($report == null)?"":"report";
+    $asset = ($report == null)?"reports":"reports";
     // $report = ReportVersion::with('report')->where('report_id','=',$report->id)->orderBy('created_at', 'desc')->first();
     // 'report'=>$report
     // return $report;
-    $project->report= $report;
+    if(!is_null($report)) $project->report= $report;
     return response(view('adminVue',['data'=>$project, 'id'=>$project->id, 'project'=>$project, 'asset'=>$asset, 'resource'=>'project',]));
 
   }
